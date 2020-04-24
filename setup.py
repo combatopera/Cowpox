@@ -88,7 +88,7 @@ setup(
         ],
     package_data={'buildozer': ['default.spec']},
     include_package_data=True,
-    install_requires=['pexpect', 'virtualenv', 'sh'],
+    install_requires=['pexpect', 'virtualenv', 'sh', 'Cython==0.28.6', 'wheel', 'pip'],
     classifiers=[
         'Development Status :: 4 - Beta', 'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',

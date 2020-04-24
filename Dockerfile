@@ -83,7 +83,7 @@ RUN usermod -append --groups sudo $USER
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 WORKDIR /root/project
 COPY . .
-RUN pip3 install --upgrade Cython==0.28.6 wheel pip . && rm -rfv "$PWD"
+RUN pip3 install --upgrade . && rm -rfv "$PWD"
 USER $USER
 RUN mkdir -pv ~/.buildozer $WORK_DIR/.buildozer
 WORKDIR $WORK_DIR
