@@ -67,10 +67,10 @@
 FROM ubuntu:18.04
 
 ENV USER="user"
-ENV HOME_DIR="/home/${USER}"
-ENV WORK_DIR="${HOME_DIR}/hostcwd" \
-    SRC_DIR="${HOME_DIR}/src" \
-    PATH="${HOME_DIR}/.local/bin:${PATH}"
+ENV HOME_DIR="/home/$USER"
+ENV WORK_DIR="$HOME_DIR/hostcwd" \
+    SRC_DIR="$HOME_DIR/src" \
+    PATH="$HOME_DIR/.local/bin:$PATH"
 
 # configures locale
 RUN apt-get update && \
@@ -106,16 +106,16 @@ RUN apt-get install --yes --no-install-recommends \
     zlib1g-dev
 
 # prepares non root env
-RUN useradd --create-home --shell /bin/bash ${USER}
+RUN useradd --create-home --shell /bin/bash $USER
 # with sudo access and no password
-RUN usermod -append --groups sudo ${USER}
+RUN usermod -append --groups sudo $USER
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-USER ${USER}
-WORKDIR ${WORK_DIR}
-COPY --chown=user:user . ${SRC_DIR}
+USER $USER
+WORKDIR $WORK_DIR
+COPY --chown=$USER:$USER . $SRC_DIR
 
 # installs buildozer and dependencies
-RUN pip3 install --user --upgrade Cython==0.28.6 wheel pip virtualenv ${SRC_DIR}
+RUN pip3 install --user --upgrade Cython==0.28.6 wheel pip virtualenv $SRC_DIR
 
 ENTRYPOINT ["buildozer"]
