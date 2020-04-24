@@ -112,6 +112,7 @@ RUN usermod -append --groups sudo $USER
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 USER $USER
+RUN mkdir -pv ~/.buildozer $WORK_DIR/.buildozer
 WORKDIR $WORK_DIR
 COPY --chown=$USER:$USER . $SRC_DIR
 
