@@ -75,6 +75,7 @@ ENV WORK_DIR="${HOME_DIR}/hostcwd" \
 # configures locale
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
+    apt-utils \
     locales && \
     locale-gen en_US.UTF-8
 ENV LANG="en_US.UTF-8" \
