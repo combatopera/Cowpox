@@ -120,3 +120,4 @@ COPY --chown=$USER:$USER . $SRC_DIR
 RUN pip3 install --user --upgrade Cython==0.28.6 wheel pip virtualenv $SRC_DIR
 
 ENTRYPOINT ["buildozer"]
+CMD ["android", "debug"]
