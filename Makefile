@@ -40,4 +40,4 @@
 
 .PHONY: all
 all:
-	docker build --tag kivy/buildozer .
+	docker build -t buildozer .
