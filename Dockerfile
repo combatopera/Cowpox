@@ -73,8 +73,8 @@ ENV WORK_DIR="${HOME_DIR}/hostcwd" \
     PATH="${HOME_DIR}/.local/bin:${PATH}"
 
 # configures locale
-RUN apt update -qq > /dev/null && \
-    apt install -qq --yes --no-install-recommends \
+RUN apt-get update && \
+    apt-get install --yes --no-install-recommends \
     locales && \
     locale-gen en_US.UTF-8
 ENV LANG="en_US.UTF-8" \
@@ -82,7 +82,7 @@ ENV LANG="en_US.UTF-8" \
     LC_ALL="en_US.UTF-8"
 
 # system requirements to build most of the recipes
-RUN apt install -qq --yes --no-install-recommends \
+RUN apt-get install --yes --no-install-recommends \
     autoconf \
     automake \
     build-essential \
