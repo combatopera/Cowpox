@@ -38,32 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# Dockerfile for providing buildozer
-#
-# Build with:
-# docker build --tag=kivy/buildozer .
-# 
-# In order to give the container access to your current working directory
-# it must be mounted using the --volume option.
-# Run with (e.g. `buildozer --version`):
-# docker run \
-#   --volume "$HOME/.buildozer":/home/user/.buildozer \
-#   --volume "$PWD":/home/user/hostcwd \
-#   kivy/buildozer --version
-#
-# Or for interactive shell:
-# docker run --interactive --tty --rm \
-#   --volume "$HOME/.buildozer":/home/user/.buildozer \
-#   --volume "$PWD":/home/user/hostcwd \
-#   --entrypoint /bin/bash \
-#   kivy/buildozer
-#
-# If you get a `PermissionError` on `/home/user/.buildozer/cache`,
-# try updating the permissions from the host with:
-# sudo chown $USER -R ~/.buildozer
-# Or simply recreate the directory from the host with:
-# rm -rf ~/.buildozer && mkdir ~/.buildozer
-
 FROM ubuntu:18.04
 
 ENV USER="user"
