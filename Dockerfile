@@ -42,10 +42,7 @@ FROM ubuntu:18.04
 
 ENV USER="user"
 ENV HOME_DIR="/home/$USER"
-ENV WORK_DIR="$HOME_DIR/hostcwd" \
-    SRC_DIR="$HOME_DIR/src" \
-    PATH="$HOME_DIR/.local/bin:$PATH"
-
+ENV WORK_DIR="$HOME_DIR/hostcwd"
 # configures locale
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
@@ -84,14 +81,11 @@ RUN useradd --create-home --shell /bin/bash $USER
 # with sudo access and no password
 RUN usermod -append --groups sudo $USER
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
+WORKDIR /root/project
+COPY . .
+RUN pip3 install --upgrade Cython==0.28.6 wheel pip . && rm -rfv "$PWD"
 USER $USER
 RUN mkdir -pv ~/.buildozer $WORK_DIR/.buildozer
 WORKDIR $WORK_DIR
-COPY --chown=$USER:$USER . $SRC_DIR
-
-# installs buildozer and dependencies
-RUN pip3 install --user --upgrade Cython==0.28.6 wheel pip virtualenv $SRC_DIR
-
 ENTRYPOINT ["buildozer"]
 CMD ["android", "debug"]
