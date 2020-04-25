@@ -38,9 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-FROM ubuntu:18.04 AS base
+FROM python AS base
 RUN apt-get update && \
-    apt-get install --yes --no-install-recommends \
+    apt-get install --yes --no-install-recommends apt-utils software-properties-common && \
+    wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - && \
+    add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
     autoconf \
     automake \
     build-essential \
@@ -51,25 +55,22 @@ RUN apt-get update && \
     libffi-dev \
     libltdl-dev \
     libtool \
-    openjdk-8-jdk \
+    adoptopenjdk-8-hotspot \
     patch \
     pkg-config \
-    python2.7 \
-    python3-pip \
-    python3-setuptools \
     unzip \
     zip \
     zlib1g-dev
 WORKDIR /root/project
 COPY requirements.txt .
-RUN pip3 install --upgrade -r requirements.txt
+RUN pip install --upgrade -r requirements.txt
 COPY . .
 
 FROM base
-RUN pip3 install pyflakes && pyflakes .
+RUN pip install pyflakes && pyflakes .
 
 FROM base
-RUN pip3 install . && rm -rv "$PWD" | tail -1
+RUN pip install . && rm -rv "$PWD" | tail -1
 ARG USER=bdoz
 RUN useradd --create-home --shell /bin/bash $USER
 WORKDIR /project
