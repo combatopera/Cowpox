@@ -543,7 +543,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                 if (mSDLThread == null) {
                     // This is the entry point to the C app.
                     // Start up the C app thread and enable sensor input for the first time
-                    // FIXME: Why aren't we enabling sensor input at start?
+                    // fixme: Why aren't we enabling sensor input at start?
 
                     mSDLThread = new Thread(new SDLMain(), "SDLThread");
                     mSurface.enableSensor(Sensor.TYPE_ACCELEROMETER, true);
@@ -1235,7 +1235,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     @Override
     protected Dialog onCreateDialog(int ignore, Bundle args) {
 
-        // TODO set values from "flags" to messagebox dialog
+        // todo set values from "flags" to messagebox dialog
 
         // get colors
 
@@ -1318,7 +1318,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                 button.setTextColor(textColor);
             }
             if (buttonBorderColor != Color.TRANSPARENT) {
-                // TODO set color for border of messagebox button
+                // todo set color for border of messagebox button
             }
             if (buttonBackgroundColor != Color.TRANSPARENT) {
                 Drawable drawable = button.getBackground();
@@ -1331,7 +1331,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                 }
             }
             if (buttonSelectedColor != Color.TRANSPARENT) {
-                // TODO set color for selected messagebox button
+                // todo set color for selected messagebox button
             }
             buttons.addView(button);
         }
@@ -1794,7 +1794,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         int i = -1;
         float x,y,p;
 
-        // !!! FIXME: dump this SDK check after 2.0.4 ships and require API14.
+        // !!! fixme: dump this SDK check after 2.0.4 ships and require API14.
         // 12290 = Samsung DeX mode desktop mouse
         if ((event.getSource() == InputDevice.SOURCE_MOUSE || event.getSource() == 12290) && SDLActivity.mSeparateMouseAndTouch) {
             if (Build.VERSION.SDK_INT < 14) {
@@ -1879,7 +1879,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
     // Sensor events
     public void enableSensor(int sensortype, boolean enabled) {
-        // TODO: This uses getDefaultSensor - what if we have >1 accels?
+        // todo: This uses getDefaultSensor - what if we have >1 accels?
         if (enabled) {
             mSensorManager.registerListener(this,
                             mSensorManager.getDefaultSensor(sensortype),
@@ -1892,7 +1892,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // TODO
+        // todo
     }
 
     @Override
@@ -2025,11 +2025,11 @@ class DummyEdit extends View implements View.OnKeyListener {
     @Override
     public boolean onKeyPreIme (int keyCode, KeyEvent event) {
         // As seen on StackOverflow: http://stackoverflow.com/questions/7634346/keyboard-hide-event
-        // FIXME: Discussion at http://bugzilla.libsdl.org/show_bug.cgi?id=1639
-        // FIXME: This is not a 100% effective solution to the problem of detecting if the keyboard is showing or not
-        // FIXME: A more effective solution would be to assume our Layout to be RelativeLayout or LinearLayout
-        // FIXME: And determine the keyboard presence doing this: http://stackoverflow.com/questions/2150078/how-to-check-visibility-of-software-keyboard-in-android
-        // FIXME: An even more effective way would be if Android provided this out of the box, but where would the fun be in that :)
+        // fixme: Discussion at http://bugzilla.libsdl.org/show_bug.cgi?id=1639
+        // fixme: This is not a 100% effective solution to the problem of detecting if the keyboard is showing or not
+        // fixme: A more effective solution would be to assume our Layout to be RelativeLayout or LinearLayout
+        // fixme: And determine the keyboard presence doing this: http://stackoverflow.com/questions/2150078/how-to-check-visibility-of-software-keyboard-in-android
+        // fixme: An even more effective way would be if Android provided this out of the box, but where would the fun be in that :)
         if (event.getAction()==KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
             if (SDLActivity.mTextEdit != null && SDLActivity.mTextEdit.getVisibility() == View.VISIBLE) {
                 SDLActivity.onNativeKeyboardFocusLost();
