@@ -236,19 +236,20 @@ class Recipe(with_metaclass(RecipeMeta)):
             if mirrorpath.exists():
                 info("Already downloaded: %s", url) # XXX: How to enable debug?
             else:
+                partialpath = mirrorpath.with_name(mirrorpath.name + '.part')
                 # Download item with multiple attempts (for bad connections):
                 attempts = 0
                 while True:
                     try:
-                        urlretrieve(url, mirrorpath, report_hook)
+                        urlretrieve(url, partialpath, report_hook)
+                        break
                     except OSError:
                         attempts += 1
                         if attempts >= 5:
                             raise
-                        stdout.write('Download failed retrying in a second...')
-                        time.sleep(1)
-                        continue
-                    break
+                    stdout.write('Download failed retrying in a second...')
+                    time.sleep(1)
+                partialpath.rename(mirrorpath)
             Path(target).symlink_to(mirrorpath)
             return target
         elif parsed_url.scheme in {'git', 'git+file', 'git+ssh', 'git+http', 'git+https'}:
