@@ -72,7 +72,7 @@ class MysqldbRecipe(CompiledComponentsPythonRecipe):
         env = super(MysqldbRecipe, self).get_recipe_env(arch)
 
         hostpython = self.get_recipe('hostpython2', self.ctx)
-        # TODO: fix hardcoded path
+        # todo: fix hardcoded path
         env['PYTHONPATH'] = (join(hostpython.get_build_dir(arch.arch),
                                   'build', 'lib.linux-x86_64-2.7') +
                              ':' + env.get('PYTHONPATH', ''))

@@ -26,6 +26,6 @@
 +        numpy_incl = os.environ['NUMPY_INCLUDES']
 +    else:
 +        numpy_incl = pkg_resources.resource_filename("numpy", "core/include")
-     # TODO: Is this really necessary here?
+     # todo: Is this really necessary here?
      for ext in extensions:
          if hasattr(ext, "include_dirs") and numpy_incl not in ext.include_dirs:

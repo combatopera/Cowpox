@@ -42,7 +42,7 @@ import os
 from pythonforandroid.recipe import PythonRecipe
 
 
-# TODO: CompiledComponentsPythonRecipe
+# todo: CompiledComponentsPythonRecipe
 class Pysha3Recipe(PythonRecipe):
     version = '1.0.2'
     url = 'https://github.com/tiran/pysha3/archive/{version}.tar.gz'

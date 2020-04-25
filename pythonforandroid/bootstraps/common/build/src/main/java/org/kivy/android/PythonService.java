@@ -160,8 +160,8 @@ public class PythonService extends Service implements Runnable {
         } else {
             // for android 8+ we need to create our own channel
             // https://stackoverflow.com/questions/47531742/startforeground-fail-after-upgrade-to-android-8-1
-            String NOTIFICATION_CHANNEL_ID = "org.kivy.p4a";    //TODO: make this configurable
-            String channelName = "Background Service";                //TODO: make this configurable
+            String NOTIFICATION_CHANNEL_ID = "org.kivy.p4a";    //todo: make this configurable
+            String channelName = "Background Service";                //todo: make this configurable
             NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, 
                 NotificationManager.IMPORTANCE_NONE);
             

@@ -622,7 +622,7 @@ glob3(Char *pathbuf, Char *pathend, Char *pathend_last,
 	errno = 0;
 
 	if ((dirp = g_opendir(pathbuf, pglob)) == NULL) {
-		/* TODO: don't call for ENOENT or ENOTDIR? */
+		/* todo: don't call for ENOENT or ENOTDIR? */
 		if (pglob->gl_errfunc) {
 			if (g_Ctoc(pathbuf, buf, sizeof(buf)))
 				return (GLOB_ABORTED);

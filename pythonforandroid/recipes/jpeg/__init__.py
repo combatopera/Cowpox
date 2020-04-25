@@ -61,7 +61,7 @@ class JpegRecipe(Recipe):
     def build_arch(self, arch):
         build_dir = self.get_build_dir(arch.arch)
 
-        # TODO: Fix simd/neon
+        # todo: Fix simd/neon
         with current_directory(build_dir):
             env = self.get_recipe_env(arch)
             toolchain_file = join(self.ctx.ndk_dir,

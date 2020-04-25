@@ -23,7 +23,7 @@ diff -Naur a/io.c b/io.c
 -		spec->dot = lc->decimal_point;
 -		spec->sep = lc->thousands_sep;
 -		spec->grouping = lc->grouping;
-+		/* TODO: Android does not have localeconv(); we'll just use C locale values for now */
++		/* todo: Android does not have localeconv(); we'll just use C locale values for now */
 +		spec->dot = ".";
 +		spec->sep = "";
 +		spec->grouping = "";

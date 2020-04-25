@@ -60,7 +60,7 @@ class PyZMQRecipe(CythonRecipe):
 
     def get_recipe_env(self, arch=None):
         env = super(PyZMQRecipe, self).get_recipe_env(arch)
-        # TODO: fix hardcoded path
+        # todo: fix hardcoded path
         # This is required to prevent issue with _io.so import.
         # hostpython = self.get_recipe('hostpython2', self.ctx)
         # env['PYTHONPATH'] = (

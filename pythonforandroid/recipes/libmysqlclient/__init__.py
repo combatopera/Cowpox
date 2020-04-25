@@ -92,7 +92,7 @@ class LibmysqlclientRecipe(Recipe):
     #   env = self.get_recipe_env(arch)
     #   with current_directory(self.get_build_dir(arch.arch)):
     #       # configure = sh.Command('./configure')
-    #       # TODO: should add openssl as an optional dep and compile support
+    #       # todo: should add openssl as an optional dep and compile support
     #       # shprint(configure, '--enable-shared', '--enable-assembler',
     #       #         '--enable-thread-safe-client', '--with-innodb',
     #       #         '--without-server', _env=env)

@@ -388,7 +388,7 @@ class HIDDeviceBLESteamController extends BluetoothGattCallback implements HIDDe
             }
         }
         if (op != null) {
-            boolean result = op.finish(); // TODO: Maybe in main thread as well?
+            boolean result = op.finish(); // todo: Maybe in main thread as well?
 
             // Our operation failed, let's add it back to the beginning of our queue.
             if (!result) {

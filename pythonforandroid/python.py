@@ -272,7 +272,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         build_dir = join(recipe_build_dir, 'android-build')
         ensure_dir(build_dir)
 
-        # TODO: Get these dynamically, like bpo-30386 does
+        # todo: Get these dynamically, like bpo-30386 does
         sys_prefix = '/usr/local'
         sys_exec_prefix = '/usr/local'
 
@@ -300,7 +300,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
                 _env=env
             )
 
-            # TODO: Look into passing the path to pyconfig.h in a
+            # todo: Look into passing the path to pyconfig.h in a
             # better way, although this is probably acceptable
             sh.cp('pyconfig.h', join(recipe_build_dir, 'Include'))
 
@@ -372,7 +372,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         # copy the site-packages into place
         ensure_dir(join(dirn, 'site-packages'))
         ensure_dir(self.ctx.get_python_install_dir())
-        # TODO: Improve the API around walking and copying the files
+        # todo: Improve the API around walking and copying the files
         with current_directory(self.ctx.get_python_install_dir()):
             filens = list(walk_valid_filens(
                 '.', self.site_packages_dir_blacklist,

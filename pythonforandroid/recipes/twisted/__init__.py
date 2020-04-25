@@ -53,7 +53,7 @@ class TwistedRecipe(CythonRecipe):
 
     def prebuild_arch(self, arch):
         super(TwistedRecipe, self).prebuild_arch(arch)
-        # TODO Need to whitelist tty.pyo and termios.so here
+        # todo Need to whitelist tty.pyo and termios.so here
         print('Should remove twisted tests etc. here, but skipping for now')
 
     def get_recipe_env(self, arch):
