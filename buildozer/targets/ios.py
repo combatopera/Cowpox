@@ -347,7 +347,7 @@ class TargetIos(Target):
             cwd=self.ios_dir)
 
     def _create_index(self):
-        # TODO
+        # todo
         pass
 
     def check_configuration_tokens(self):

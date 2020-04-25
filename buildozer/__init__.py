@@ -675,7 +675,7 @@ class Buildozer(object):
 
     def file_extract(self, archive, cwd=None):
         if archive.endswith('.tgz') or archive.endswith('.tar.gz'):
-            # XXX tarfile doesn't work for NDK-r8c :(
+            # xxx tarfile doesn't work for NDK-r8c :(
             #tf = tarfile.open(archive, 'r:*')
             #tf.extractall(path=cwd)
             #tf.close()
@@ -683,7 +683,7 @@ class Buildozer(object):
             return
 
         if archive.endswith('.tbz2') or archive.endswith('.tar.bz2'):
-            # XXX same as before
+            # xxx same as before
             self.cmd('tar xjf {0}'.format(archive), cwd=cwd)
             return
 
@@ -781,7 +781,7 @@ class Buildozer(object):
         self._add_sitecustomize()
 
     def _copy_application_sources(self):
-        # XXX clean the inclusion/exclusion algo.
+        # xxx clean the inclusion/exclusion algo.
         source_dir = realpath(self.config.getdefault('app', 'source.dir', '.'))
         include_exts = self.config.getlist('app', 'source.include_exts', '')
         exclude_exts = self.config.getlist('app', 'source.exclude_exts', '')
@@ -854,7 +854,7 @@ class Buildozer(object):
                     continue
 
                 # filter based on the extension
-                # TODO more filters
+                # todo more filters
                 basename, ext = splitext(fn)
                 if ext:
                     ext = ext[1:]
