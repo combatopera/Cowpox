@@ -82,9 +82,8 @@ COPY requirements.txt .
 RUN pip3 install --upgrade -r requirements.txt
 COPY . .
 RUN pip3 install . && rm -rfv "$PWD"
+WORKDIR /project
+RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin .) && mkdir -pv "${volumes[@]}" && chown -v $USER:$USER "${volumes[@]}"'
 USER $USER
-ENV WORK_DIR="/home/$USER/hostcwd"
-RUN mkdir -pv ~/.buildozer ~/.gradle $WORK_DIR/.buildozer $WORK_DIR/bin
-WORKDIR $WORK_DIR
 ENTRYPOINT ["buildozer"]
 CMD ["android", "debug"]
