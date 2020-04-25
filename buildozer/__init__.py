@@ -38,46 +38,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-Buildozer
-=========
-
-Generic Python packager for Android / iOS. Desktop later.
-
-'''
-
-__version__ = '1.0.1-dev0'
-
-import os
-import re
-import sys
-import select
-import codecs
-import textwrap
 from buildozer.jsonstore import JsonStore
-from sys import stdout, stderr, exit
-from re import search
-from os.path import join, exists, dirname, realpath, splitext, expanduser
-from subprocess import Popen, PIPE
-from os import environ, unlink, walk, sep, listdir, makedirs
+from configparser import SafeConfigParser
 from copy import copy
-from shutil import copyfile, rmtree, copytree, move
 from fnmatch import fnmatch
 from hashlib import md5
+from os import environ, unlink, walk, sep, listdir, makedirs
+from os.path import join, exists, dirname, realpath, splitext, expanduser
 from pathlib import Path
 from pprint import pformat
+from re import search
+from shutil import copyfile, rmtree, copytree, move
+from subprocess import Popen, PIPE
+from sys import stdout, stderr, exit
+from urllib.request import FancyURLopener
+import codecs, os, re, select, sys, textwrap
 
-try:  # Python 3
-    from urllib.request import FancyURLopener
-    from configparser import SafeConfigParser
-except ImportError:  # Python 2
-    from urllib import FancyURLopener
-    from ConfigParser import SafeConfigParser
+__version__ = '1.0.1-dev0'
 try:
     import fcntl
 except ImportError:
-    # on windows, no fcntl
-    fcntl = None
+    fcntl = None # on windows, no fcntl
 try:
     # if installed, it can give color to windows as well
     import colorama
