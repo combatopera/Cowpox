@@ -38,6 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+FROM p4a
+
 FROM python AS base
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends apt-utils software-properties-common && \
@@ -62,8 +64,9 @@ RUN apt-get update && \
     zip \
     zlib1g-dev
 WORKDIR /root/project
+COPY --from=p4a /*.whl wheels/
 COPY requirements.txt .
-RUN pip install --upgrade -r requirements.txt
+RUN pip install --upgrade -f wheels -r requirements.txt
 COPY . .
 
 FROM base

@@ -1,6 +1,4 @@
 pexpect
-virtualenv<20
-sh
 Cython==0.28.6
 wheel
 pip

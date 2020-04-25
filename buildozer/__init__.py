@@ -42,16 +42,15 @@ from .jsonstore import JsonStore
 from configparser import SafeConfigParser
 from copy import copy
 from fnmatch import fnmatch
-from hashlib import md5
 from os import environ, unlink, walk, sep, listdir, makedirs
 from os.path import join, exists, dirname, realpath, splitext, expanduser
 from pathlib import Path
 from pprint import pformat
+from pythonforandroid.mirror import Mirror
 from re import search
 from shutil import copyfile, rmtree, copytree, move
 from subprocess import Popen, PIPE
 from sys import stdout, stderr, exit
-from urllib.request import FancyURLopener
 import codecs, logging, os, re, select, sys, textwrap
 
 log = logging.getLogger(__name__)
@@ -96,15 +95,6 @@ except ImportError:
 LOG_LEVELS_C = (RED, BLUE, BLACK)
 LOG_LEVELS_T = 'EID'
 SIMPLE_HTTP_SERVER_PORT = 8000
-
-class ChromeDownloader(FancyURLopener):
-    version = (
-        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
-        '(KHTML, like Gecko) Chrome/28.0.1500.71 Safari/537.36')
-
-
-urlretrieve = ChromeDownloader().retrieve
-
 
 class BuildozerException(Exception):
     '''
@@ -687,31 +677,13 @@ class Buildozer(object):
             return
         rmtree(self.platform_dir)
 
-    mirror = Path('/mirror') # TODO: Make configurable.
-
     def download(self, url, filename, cwd):
-        def report_hook(index, blksize, size):
-            if size <= 0:
-                progression = '{0} bytes'.format(index * blksize)
-            else:
-                progression = '{0:.2f}%'.format(
-                        index * blksize * 100. / float(size))
-            if "CI" not in environ:
-                stdout.write('- Download {}\r'.format(progression))
-                stdout.flush()
-
         url = url + filename
         filename = join(cwd, filename)
         if self.file_exists(filename):
             unlink(filename)
-
         self.debug('Downloading {0}'.format(url))
-        mirrorpath = self.mirror / md5(url.encode('ascii')).hexdigest()
-        if mirrorpath.exists():
-            log.debug("Already downloaded: %s", url)
-        else:
-            urlretrieve(url, mirrorpath, report_hook)
-        Path(filename).symlink_to(mirrorpath)
+        Path(filename).symlink_to(Mirror.download(url))
         return filename
 
     def get_version(self):
