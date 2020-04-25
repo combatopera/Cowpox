@@ -38,6 +38,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+.ONESHELL:
+SHELL = /bin/bash
+export BASH_ENV = bash_env
+
+TAG = buildozer
+PREVIOUS = $(TAG):previous
+
 .PHONY: all
 all:
-	docker build -t buildozer .
+	docker build .
+	image=$$(docker build -q .)
+	docker tag '$(TAG)' '$(PREVIOUS)' || true
+	docker tag $$image '$(TAG)'
+	docker rmi '$(PREVIOUS)' || true
