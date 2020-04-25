@@ -77,11 +77,7 @@ RUN pip3 install --upgrade -r requirements.txt
 COPY . .
 RUN pip3 install . && rm -rfv "$PWD" | tr '\n' ' '
 ARG USER=bdoz
-# prepares non root env
 RUN useradd --create-home --shell /bin/bash $USER
-# with sudo access and no password
-RUN usermod -append --groups sudo $USER
-RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 WORKDIR /project
 RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin .) && mkdir -pv "${volumes[@]}" && chown -v $USER:$USER "${volumes[@]}"'
 USER $USER
