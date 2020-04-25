@@ -171,7 +171,7 @@ class BuildozerRemote(Buildozer):
                 self.package_full_name)
         self.debug('Remote build directory: {}'.format(self.remote_build_dir))
         self._ssh_mkdir(self.remote_build_dir)
-        self._ssh_sync(__path__[0])
+        self._ssh_sync(eval('__path__')[0])
 
     def _sync_application_sources(self):
         self.info('Synchronize application sources')
