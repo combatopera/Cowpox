@@ -39,18 +39,8 @@
 # THE SOFTWARE.
 
 FROM ubuntu:18.04
-# configures locale
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
-    apt-utils \
-    locales && \
-    locale-gen en_US.UTF-8
-ENV LANG="en_US.UTF-8" \
-    LANGUAGE="en_US.UTF-8" \
-    LC_ALL="en_US.UTF-8"
-
-# system requirements to build most of the recipes
-RUN apt-get install --yes --no-install-recommends \
     autoconf \
     automake \
     build-essential \
@@ -67,7 +57,6 @@ RUN apt-get install --yes --no-install-recommends \
     python2.7 \
     python3-pip \
     python3-setuptools \
-    sudo \
     unzip \
     zip \
     zlib1g-dev
