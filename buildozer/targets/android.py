@@ -71,7 +71,7 @@ from os.path import exists, join, realpath, expanduser, basename, relpath
 from platform import architecture
 from shutil import copyfile
 from glob import glob
-
+from pkg_resources import resource_filename
 from buildozer.libs.version import parse
 from distutils.version import LooseVersion
 
@@ -97,7 +97,6 @@ class TargetAndroid(Target):
     targetname = 'android'
     p4a_apk_cmd = "apk --debug --bootstrap="
     p4a_recommended_ndk_version = None
-    extra_p4a_args = ''
 
     def __init__(self, *args, **kwargs):
         super(TargetAndroid, self).__init__(*args, **kwargs)
@@ -105,8 +104,7 @@ class TargetAndroid(Target):
             'app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = join(
             self.buildozer.platform_dir, 'build-{}'.format(self._arch))
-        executable = sys.executable or 'python'
-        self._p4a_cmd = '{} -m pythonforandroid.toolchain '.format(executable)
+        self._p4a_cmd = '{} -m pythonforandroid.toolchain '.format(sys.executable)
         self._p4a_bootstrap = self.buildozer.config.getdefault(
             'app', 'p4a.bootstrap', 'sdl2')
         self.p4a_apk_cmd += self._p4a_bootstrap
@@ -138,21 +136,7 @@ class TargetAndroid(Target):
                 self.buildozer.error(error)
 
     def _p4a(self, cmd, **kwargs):
-        kwargs.setdefault('cwd', self.p4a_dir)
         return self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args, **kwargs)
-
-    @property
-    def p4a_dir(self):
-        """The directory where python-for-android is/will be installed."""
-
-        # Default p4a dir
-        p4a_dir = join(self.buildozer.platform_dir, "python-for-android")
-        # Possibly overriden by user setting
-        system_p4a_dir = self.buildozer.config.getdefault('app', 'p4a.source_dir')
-        if system_p4a_dir:
-            p4a_dir = expanduser(system_p4a_dir)
-
-        return p4a_dir
 
     @property
     def p4a_recommended_android_ndk(self):
@@ -169,7 +153,7 @@ class TargetAndroid(Target):
         # check p4a's recommendation file, and in case that exists find the
         # recommended android's NDK version, otherwise return buildozer's one
         ndk_version = DEFAULT_ANDROID_NDK_VERSION
-        rec_file = join(self.p4a_dir, "pythonforandroid", "recommendations.py")
+        rec_file = resource_filename('pythonforandroid', 'recommendations.py')
         if not os.path.isfile(rec_file):
             self.buildozer.error(MSG_P4A_RECOMMENDED_NDK_ERROR)
             return ndk_version
