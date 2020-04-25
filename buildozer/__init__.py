@@ -1117,12 +1117,6 @@ class Buildozer(object):
     def check_root(self):
         '''If effective user id is 0, display a warning and require
         user input to continue (or to cancel)'''
-
-        if IS_PY3:
-            input_func = input
-        else:
-            input_func = raw_input
-
         warn_on_root = self.config.getdefault('buildozer', 'warn_on_root', '1')
         try:
             euid = os.geteuid() == 0
@@ -1135,8 +1129,7 @@ class Buildozer(object):
             print('\033[91mThis is \033[1mnot\033[0m \033[91mrecommended, and may lead to problems later.\033[0m')
             cont = None
             while cont not in ('y', 'n'):
-                cont = input_func('Are you sure you want to continue [y/n]? ')
-
+                cont = input('Are you sure you want to continue [y/n]? ')
             if cont == 'n':
                 sys.exit()
 

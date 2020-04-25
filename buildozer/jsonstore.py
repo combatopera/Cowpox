@@ -46,11 +46,8 @@ This is currently needed to correctly support db between Python 2 and 3.
 __all__ = ["JsonStore"]
 
 import io
-import sys
-from json import load, dump, dumps
+from json import load, dump
 from os.path import exists
-
-IS_PY3 = sys.version_info[0] >= 3
 
 class JsonStore(object):
 
@@ -87,9 +84,5 @@ class JsonStore(object):
 
     def sync(self):
         # http://stackoverflow.com/questions/12309269/write-json-data-to-file-in-python/14870531#14870531
-        if IS_PY3:
-            with open(self.filename, 'w') as fd:
-                dump(self.data, fd, ensure_ascii=False)
-        else:
-            with io.open(self.filename, 'w', encoding='utf-8') as fd:
-                fd.write(unicode(dumps(self.data, ensure_ascii=False)))
+        with open(self.filename, 'w') as fd:
+            dump(self.data, fd, ensure_ascii=False)

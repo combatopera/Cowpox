@@ -67,7 +67,7 @@ except ImportError:
     from ConfigParser import SafeConfigParser
 try:
     import termios
-    import tty
+    #import tty
     has_termios = True
 except ImportError:
     has_termios = False
