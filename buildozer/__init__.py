@@ -687,7 +687,7 @@ class Buildozer(object):
             return
         rmtree(self.platform_dir)
 
-    mirror = Path('/mirror')
+    mirror = Path('/mirror') # TODO: Make configurable.
 
     def download(self, url, filename, cwd):
         def report_hook(index, blksize, size):
@@ -707,7 +707,9 @@ class Buildozer(object):
 
         self.debug('Downloading {0}'.format(url))
         mirrorpath = self.mirror / md5(url.encode('ascii')).hexdigest()
-        if not mirrorpath.exists():
+        if mirrorpath.exists():
+            log.debug("Already downloaded: %s", url)
+        else:
             urlretrieve(url, mirrorpath, report_hook)
         Path(filename).symlink_to(mirrorpath)
         return filename
