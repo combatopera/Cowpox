@@ -730,7 +730,7 @@ def get_package_dependencies(package,
             new_reqs = set()
             if verbose:
                 print("get_package_dependencies: resolving dependency "
-                      "to package name: ".format(package_dep))
+                      "to package name: {}".format(package_dep))
             package = get_package_name(package_dep)
             if package.lower() in packages_processed:
                 continue

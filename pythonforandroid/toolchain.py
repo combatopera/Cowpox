@@ -1141,7 +1141,7 @@ class ToolchainCL(object):
 
         if dists:
             print('{Style.BRIGHT}Distributions currently installed are:'
-                  '{Style.RESET_ALL}'.format(Style=Out_Style, Fore=Out_Fore))
+                  '{Style.RESET_ALL}'.format(Style=Out_Style))
             pretty_log_dists(dists, print)
         else:
             print('{Style.BRIGHT}There are no dists currently built.'
