@@ -224,17 +224,10 @@ class Recipe(with_metaclass(RecipeMeta)):
             return None
         return self.url.format(version=self.version)
 
-    def download_file(self, url, target, cwd=None):
-        """
-        (internal) Download an ``url`` to a ``target``.
-        """
+    def download_file(self, url, target):
         if not url:
             return
         info('Downloading {} from {}'.format(self.name, url))
-
-        if cwd:
-            target = join(cwd, target)
-
         parsed_url = urlparse(url)
         if parsed_url.scheme in ('http', 'https'):
             def report_hook(index, blksize, size):
