@@ -38,17 +38,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-Main Buildozer client
-=====================
-
-'''
-
-import sys
 from buildozer import Buildozer, BuildozerCommandException, BuildozerException
+from pathlib import Path
+import logging, sys
 
+log = logging.getLogger(__name__)
+
+def disablegradledaemon():
+    path = Path.home() / '.gradle' / 'gradle.properties'
+    line = 'org.gradle.daemon=false'
+    try:
+        with path.open() as f:
+            if line == f.read().splitlines()[-1]:
+                log.debug('Gradle Daemon already disabled.')
+                return
+    except FileNotFoundError:
+        pass
+    log.info('Disabling Gradle Daemon.')
+    with path.open('a') as f:
+        print(line, file = f)
 
 def main():
+    logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
+    disablegradledaemon()
     try:
         Buildozer().run_command(sys.argv[1:])
     except BuildozerCommandException:
