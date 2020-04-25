@@ -75,7 +75,7 @@ WORKDIR /root/project
 COPY requirements.txt .
 RUN pip3 install --upgrade -r requirements.txt
 COPY . .
-RUN pip3 install . && rm -rfv "$PWD"
+RUN pip3 install . && rm -rfv "$PWD" | tr '\n' ' '
 ARG USER=bdoz
 # prepares non root env
 RUN useradd --create-home --shell /bin/bash $USER
