@@ -55,12 +55,6 @@ if not six.PY3:
     import codecs
     stdout = codecs.getwriter('utf8')(stdout)
     stderr = codecs.getwriter('utf8')(stderr)
-
-if six.PY2:
-    unistr = unicode  # noqa F821
-else:
-    unistr = str
-
 # monkey patch to show full output
 sh.ErrorReturnCode.truncate_cap = 999999
 
@@ -154,13 +148,11 @@ def shorten_string(string, max_width):
         return string
     visible = max_width - 16 - int(log10(string_len))
     # expected suffix len "...(and XXXXX more)"
-    if not isinstance(string, unistr):
-        visstring = unistr(string[:visible], errors='ignore')
+    if not isinstance(string, str):
+        visstring = str(string[:visible], errors='ignore')
     else:
         visstring = string[:visible]
-    return u''.join((visstring, u'...(and ',
-                     unistr(string_len - visible), u' more)'))
-
+    return u''.join((visstring, u'...(and ', str(string_len - visible), u' more)'))
 
 def get_console_width():
     try:

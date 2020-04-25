@@ -38,13 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import glob
 from io import open  # for open(..,encoding=...) parameter in python 2
 from os import walk
 from os.path import join, dirname, sep
-import os
-import re
 from setuptools import setup, find_packages
+import glob, re
 
 # NOTE: All package data should also be set in MANIFEST.in
 

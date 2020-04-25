@@ -250,7 +250,7 @@ class Sound(object):
         self._volume = 1.
         self.serial = str(sound_serial)
         sound_serial += 1
-
+        file = eval('file')
         if isinstance(what, file):  # noqa F821
             self.file = what
         else:
