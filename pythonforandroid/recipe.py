@@ -220,7 +220,7 @@ class Recipe(with_metaclass(RecipeMeta)):
             return
         info('Downloading {} from {}'.format(self.name, url))
         parsed_url = urlparse(url)
-        if parsed_url.scheme in ('http', 'https'):
+        if parsed_url.scheme in {'http', 'https'}:
             def report_hook(index, blksize, size):
                 if size <= 0:
                     progression = '{0} bytes'.format(index * blksize)
@@ -248,7 +248,7 @@ class Recipe(with_metaclass(RecipeMeta)):
                     continue
                 break
             return target
-        elif parsed_url.scheme in ('git', 'git+file', 'git+ssh', 'git+http', 'git+https'):
+        elif parsed_url.scheme in {'git', 'git+file', 'git+ssh', 'git+http', 'git+https'}:
             if isdir(target):
                 with current_directory(target):
                     shprint(sh.git, 'fetch', '--tags')
