@@ -40,27 +40,25 @@
 
 from pathlib import Path
 from setuptools import find_packages, setup
-import codecs, io, re
+import re
 
 def find_version(*file_paths):
     here = Path(__file__).parent.resolve()
     # Open in Latin-1 so that we avoid encoding errors.
-    # Use codecs.open for Python 2 compatibility
-    with codecs.open(Path(here, *file_paths), 'r', 'utf-8') as f:
+    with Path(here, *file_paths).open(encoding = 'utf-8') as f:
         version_file = f.read()
     # The version line must have the form
     # __version__ = 'ver'
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                              version_file, re.M)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M)
     if version_match:
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 
-curdir = Path(__file__).parent
-with io.open(curdir / 'README.md', encoding = "utf-8") as fd:
-    readme = fd.read()
-with io.open(curdir / 'CHANGELOG.md', encoding = "utf-8") as fd:
-    changelog = fd.read()
+projectroot = Path(__file__).parent
+with (projectroot / 'README.md').open(encoding = 'utf-8') as f:
+    readme = f.read()
+with (projectroot / 'CHANGELOG.md').open(encoding = 'utf-8') as f:
+    changelog = f.read()
 setup(
     name='buildozer',
     version=find_version('buildozer', '__init__.py'),
