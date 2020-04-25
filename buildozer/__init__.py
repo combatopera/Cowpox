@@ -730,8 +730,7 @@ class Buildozer(object):
                 stdout.flush()
 
         url = url + filename
-        if cwd:
-            filename = join(cwd, filename)
+        filename = join(cwd, filename)
         if self.file_exists(filename):
             unlink(filename)
 
