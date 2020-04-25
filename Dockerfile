@@ -76,7 +76,7 @@ COPY requirements.txt .
 RUN pip3 install --upgrade -r requirements.txt
 COPY . .
 RUN pip3 install . && rm -rfv "$PWD"
-ENV USER="user"
+ARG USER=bdoz
 # prepares non root env
 RUN useradd --create-home --shell /bin/bash $USER
 # with sudo access and no password
