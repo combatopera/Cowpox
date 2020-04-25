@@ -52,8 +52,9 @@ from shutil import copyfile, rmtree, copytree, move
 from subprocess import Popen, PIPE
 from sys import stdout, stderr, exit
 from urllib.request import FancyURLopener
-import codecs, os, re, select, sys, textwrap
+import codecs, logging, os, re, select, sys, textwrap
 
+log = logging.getLogger(__name__)
 __version__ = '1.0.1-dev0'
 try:
     import fcntl
