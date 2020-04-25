@@ -95,7 +95,6 @@ MSG_P4A_RECOMMENDED_NDK_ERROR = (
 
 class TargetAndroid(Target):
     targetname = 'android'
-    p4a_directory_name = "python-for-android"
     p4a_apk_cmd = "apk --debug --bootstrap="
     p4a_recommended_ndk_version = None
     extra_p4a_args = ''
@@ -147,8 +146,7 @@ class TargetAndroid(Target):
         """The directory where python-for-android is/will be installed."""
 
         # Default p4a dir
-        p4a_dir = join(self.buildozer.platform_dir, self.p4a_directory_name)
-
+        p4a_dir = join(self.buildozer.platform_dir, "python-for-android")
         # Possibly overriden by user setting
         system_p4a_dir = self.buildozer.config.getdefault('app', 'p4a.source_dir')
         if system_p4a_dir:
