@@ -1184,8 +1184,8 @@ class TargetPythonRecipe(Recipe):
         raise NotImplementedError('{} does not implement create_python_bundle'.format(self))
 
     def reduce_object_file_names(self, dirn):
-        """Recursively renames all files named XXX.cpython-...-linux-gnu.so"
-        to "XXX.so", i.e. removing the erroneous architecture name
+        """Recursively renames all files named YYY.cpython-...-linux-gnu.so"
+        to "YYY.so", i.e. removing the erroneous architecture name
         coming from the local system.
         """
         py_so_files = shprint(sh.find, dirn, '-iname', '*.so')

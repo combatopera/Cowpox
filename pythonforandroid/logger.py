@@ -147,7 +147,7 @@ def shorten_string(string, max_width):
     if string_len <= max_width:
         return string
     visible = max_width - 16 - int(log10(string_len))
-    # expected suffix len "...(and XXXXX more)"
+    # expected suffix len "...(and YYYYY more)"
     if not isinstance(string, str):
         visstring = str(string[:visible], errors='ignore')
     else:
