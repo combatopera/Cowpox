@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-FROM ubuntu:18.04
+FROM ubuntu:18.04 AS base
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
     autoconf \
@@ -64,7 +64,12 @@ WORKDIR /root/project
 COPY requirements.txt .
 RUN pip3 install --upgrade -r requirements.txt
 COPY . .
-RUN pip3 install . && rm -rfv "$PWD" | tr '\n' ' '
+
+FROM base
+RUN pip3 install pyflakes && pyflakes .
+
+FROM base
+RUN pip3 install . && rm -rv "$PWD" | tail -1
 ARG USER=bdoz
 RUN useradd --create-home --shell /bin/bash $USER
 WORKDIR /project
