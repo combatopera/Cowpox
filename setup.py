@@ -38,23 +38,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from os.path import dirname, join
 from pathlib import Path
 from setuptools import find_packages, setup
-import codecs
-import os
-import re
-import io
-
-here = os.path.abspath(os.path.dirname(__file__))
-
+import codecs, io, re
 
 def find_version(*file_paths):
+    here = Path(__file__).parent.resolve()
     # Open in Latin-1 so that we avoid encoding errors.
     # Use codecs.open for Python 2 compatibility
-    with codecs.open(os.path.join(here, *file_paths), 'r', 'utf-8') as f:
+    with codecs.open(Path(here, *file_paths), 'r', 'utf-8') as f:
         version_file = f.read()
-
     # The version line must have the form
     # __version__ = 'ver'
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
@@ -63,13 +56,11 @@ def find_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 
-
-curdir = dirname(__file__)
-with io.open(join(curdir, "README.md"), encoding="utf-8") as fd:
+curdir = Path(__file__).parent
+with io.open(curdir / 'README.md', encoding = "utf-8") as fd:
     readme = fd.read()
-with io.open(join(curdir, "CHANGELOG.md"), encoding="utf-8") as fd:
+with io.open(curdir / 'CHANGELOG.md', encoding = "utf-8") as fd:
     changelog = fd.read()
-
 setup(
     name='buildozer',
     version=find_version('buildozer', '__init__.py'),
