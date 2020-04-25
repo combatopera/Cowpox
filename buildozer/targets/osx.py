@@ -38,34 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-OSX target, based on kivy-sdk-packager
-'''
-
+from buildozer.target import Target
+from os.path import exists, join, abspath, dirname
+from subprocess import check_call, check_output
 import sys
+
 if sys.platform != 'darwin':
     raise NotImplementedError('This will only work on osx')
-
-#Global variables
-
-#Global imports
-import traceback
-import os
-import io
-from pipes import quote
-from sys import platform, executable
-from buildozer import BuildozerException
-from buildozer import IS_PY3
-from buildozer.target import Target
-from os import environ
-from os.path import (exists, join, realpath, expanduser,
-    basename, relpath, abspath, dirname)
-from shutil import copyfile
-from glob import glob
-from subprocess import check_call, check_output
-
-from buildozer.libs.version import parse
-
 
 class TargetOSX(Target):
     targetname = "osx"
