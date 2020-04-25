@@ -85,7 +85,7 @@ WORKDIR /root/project
 COPY . .
 RUN pip3 install --upgrade . && rm -rfv "$PWD"
 USER $USER
-RUN mkdir -pv ~/.buildozer $WORK_DIR/.buildozer
+RUN mkdir -pv ~/.buildozer ~/.gradle $WORK_DIR/.buildozer $WORK_DIR/bin
 WORKDIR $WORK_DIR
 ENTRYPOINT ["buildozer"]
 CMD ["android", "debug"]
