@@ -39,9 +39,6 @@
 # THE SOFTWARE.
 
 FROM ubuntu:18.04
-
-ENV USER="user"
-ENV WORK_DIR="/home/$USER/hostcwd"
 # configures locale
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
@@ -74,7 +71,7 @@ RUN apt-get install --yes --no-install-recommends \
     unzip \
     zip \
     zlib1g-dev
-
+ENV USER="user"
 # prepares non root env
 RUN useradd --create-home --shell /bin/bash $USER
 # with sudo access and no password
@@ -86,6 +83,7 @@ RUN pip3 install --upgrade -r requirements.txt
 COPY . .
 RUN pip3 install . && rm -rfv "$PWD"
 USER $USER
+ENV WORK_DIR="/home/$USER/hostcwd"
 RUN mkdir -pv ~/.buildozer ~/.gradle $WORK_DIR/.buildozer $WORK_DIR/bin
 WORKDIR $WORK_DIR
 ENTRYPOINT ["buildozer"]
