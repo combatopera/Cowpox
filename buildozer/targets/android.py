@@ -64,10 +64,9 @@ import os
 import io
 import re
 import ast
-import sh
 from pipes import quote
 from sys import platform, executable
-from buildozer import BuildozerException, USE_COLOR, IS_PY3
+from buildozer import BuildozerException, USE_COLOR
 from buildozer.target import Target
 from os import environ
 from os.path import exists, join, realpath, expanduser, basename, relpath
