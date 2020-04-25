@@ -68,7 +68,7 @@ RUN pip3 install . && rm -rfv "$PWD" | tr '\n' ' '
 ARG USER=bdoz
 RUN useradd --create-home --shell /bin/bash $USER
 WORKDIR /project
-RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin .) && mkdir -pv "${volumes[@]}" && chown -v $USER:$USER "${volumes[@]}"'
+RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin . /mirror) && mkdir -pv "${volumes[@]}" && chown -v $USER:$USER "${volumes[@]}"'
 USER $USER
 ENTRYPOINT ["buildozer"]
 CMD ["android", "debug"]

@@ -63,7 +63,8 @@ from os import environ, unlink, walk, sep, listdir, makedirs
 from copy import copy
 from shutil import copyfile, rmtree, copytree, move
 from fnmatch import fnmatch
-
+from hashlib import md5
+from pathlib import Path
 from pprint import pformat
 
 try:  # Python 3
@@ -718,6 +719,8 @@ class Buildozer(object):
             return
         rmtree(self.platform_dir)
 
+    mirror = Path('/mirror')
+
     def download(self, url, filename, cwd):
         def report_hook(index, blksize, size):
             if size <= 0:
@@ -735,7 +738,10 @@ class Buildozer(object):
             unlink(filename)
 
         self.debug('Downloading {0}'.format(url))
-        urlretrieve(url, filename, report_hook)
+        mirrorpath = self.mirror / md5(url.encode('ascii')).hexdigest()
+        if not mirrorpath.exists():
+            urlretrieve(url, mirrorpath, report_hook)
+        Path(filename).symlink_to(mirrorpath)
         return filename
 
     def get_version(self):
