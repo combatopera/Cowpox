@@ -67,12 +67,14 @@ WORKDIR /root/project
 COPY --from=p4a /*.whl wheels/
 COPY requirements.txt .
 RUN pip install --upgrade -f wheels -r requirements.txt
+
+FROM base
+RUN pip install pyflakes
 COPY . .
+RUN pyflakes .
 
 FROM base
-RUN pip install pyflakes && pyflakes .
-
-FROM base
+COPY . .
 RUN pip install . && rm -rv "$PWD" | tail -1
 ARG USER=bdoz
 RUN useradd --create-home --shell /bin/bash $USER
