@@ -38,60 +38,44 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-Android target, based on python-for-android project
-'''
+from buildozer import BuildozerException, USE_COLOR
+from buildozer.libs.version import parse
+from buildozer.target import Target
+from distutils.version import LooseVersion
+from glob import glob
+from os import environ
+from os.path import exists, join, realpath, expanduser, basename, relpath
+from pipes import quote
+from pkg_resources import resource_filename
+from platform import architecture, uname
+from shutil import copyfile
+from sys import platform
+import os, sys, traceback
 
-import sys
 if sys.platform == 'win32':
     raise NotImplementedError('Windows platform not yet working for Android')
-
-from platform import uname
 WSL = 'Microsoft' in uname()[2]
-
 ANDROID_API = '27'
 ANDROID_MINAPI = '21'
 APACHE_ANT_VERSION = '1.9.4'
-
 # This constant should *not* be updated, it is used only in the case
 # that python-for-android cannot provide a recommendation, which in
 # turn only happens if the python-for-android is old and probably
 # doesn't support any newer NDK.
 DEFAULT_ANDROID_NDK_VERSION = '17c'
-
-import traceback
-import os
-import io
-from pipes import quote
-from sys import platform
-from buildozer import BuildozerException, USE_COLOR
-from buildozer.target import Target
-from os import environ
-from os.path import exists, join, realpath, expanduser, basename, relpath
-from platform import architecture
-from shutil import copyfile
-from glob import glob
-from pkg_resources import resource_filename
-from buildozer.libs.version import parse
-from distutils.version import LooseVersion
-
 # buildozer.spec tokens that used to exist but are now ignored
 DEPRECATED_TOKENS = (('app', 'android.sdk'), )
-
 # Default SDK tag to download. This is not a configurable option
 # because it doesn't seem to matter much, it is normally correct to
 # download once then update all the components as buildozer already
 # does.
 DEFAULT_SDK_TAG = '4333796'
-
 DEFAULT_ARCH = 'armeabi-v7a'
-
 MSG_P4A_RECOMMENDED_NDK_ERROR = (
     "WARNING: Unable to find recommended Android NDK for current "
     "installation of python-for-android, defaulting to the default "
     "version r{android_ndk}".format(android_ndk=DEFAULT_ANDROID_NDK_VERSION)
 )
-
 
 class TargetAndroid(Target):
     targetname = 'android'
@@ -327,7 +311,7 @@ class TargetAndroid(Target):
             import xml.etree.ElementTree as ET
             fn = join(self.android_sdk_dir, 'platform-tools', 'api',
                       'api-versions.xml')
-            with io.open(fn, encoding='utf-8') as fd:
+            with open(fn, encoding = 'utf-8') as fd:
                 doc = ET.fromstring(fd.read())
             fields = doc.findall(
                 './/class[@name="android/Manifest$permission"]/field[@name]')
@@ -1121,7 +1105,7 @@ class TargetAndroid(Target):
                 'target=android-{}\n'.format(self.android_api),
                 'APP_PLATFORM={}\n'.format(self.android_minapi)]
         else:
-            with io.open(project_fn, encoding='utf-8') as fd:
+            with open(project_fn, encoding = 'utf-8') as fd:
                 content = fd.readlines()
 
         # extract library reference
@@ -1150,8 +1134,7 @@ class TargetAndroid(Target):
             references.append(ref)
 
         # recreate the project.properties
-        with io.open(project_fn, 'w', encoding='utf-8') as fd:
-
+        with open(project_fn, 'w', encoding = 'utf-8') as fd:
             try:
                 fd.writelines((line.decode('utf-8') for line in content))
             except:
