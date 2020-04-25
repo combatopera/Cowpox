@@ -98,7 +98,7 @@ public class Hardware {
                 resultString += String.format(",Vendor=" + s.getVendor());
                 resultString += String.format(",Version=" + s.getVersion());
                 resultString += String.format(",MaximumRange=" + s.getMaximumRange());
-                // XXX MinDelay is not in the 2.2
+                // xxx MinDelay is not in the 2.2
                 //resultString += String.format(",MinDelay=" + s.getMinDelay());
                 resultString += String.format(",Power=" + s.getPower());
                 resultString += String.format(",Type=" + s.getType() + "\n");

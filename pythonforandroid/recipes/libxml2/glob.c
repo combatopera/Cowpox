@@ -731,7 +731,7 @@ globextend(const Char *path, glob_t *pglob, size_t *limit)
 
 	for (p = path; *p++;)
 		continue;
-	len = MB_CUR_MAX * (size_t)(p - path);	/* XXX overallocation */
+	len = MB_CUR_MAX * (size_t)(p - path);	/* xxx overallocation */
 	if ((copy = malloc(len)) != NULL) {
 		if (g_Ctoc(path, copy, len)) {
 			free(copy);
