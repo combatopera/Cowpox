@@ -114,8 +114,6 @@ except ImportError:
 LOG_LEVELS_C = (RED, BLUE, BLACK)
 LOG_LEVELS_T = 'EID'
 SIMPLE_HTTP_SERVER_PORT = 8000
-IS_PY3 = sys.version_info[0] >= 3
-
 
 class ChromeDownloader(FancyURLopener):
     version = (
@@ -359,10 +357,7 @@ class Buildozer(object):
                 if get_stdout:
                     ret_stdout.append(chunk)
                 if show_output:
-                    if IS_PY3:
-                        stdout.write(chunk.decode('utf-8', 'replace'))
-                    else:
-                        stdout.write(chunk)
+                    stdout.write(chunk.decode('utf-8', 'replace'))
             if fd_stderr in readx:
                 chunk = process.stderr.read()
                 if not chunk:
@@ -370,11 +365,7 @@ class Buildozer(object):
                 if get_stderr:
                     ret_stderr.append(chunk)
                 if show_output:
-                    if IS_PY3:
-                        stderr.write(chunk.decode('utf-8', 'replace'))
-                    else:
-                        stderr.write(chunk)
-
+                    stderr.write(chunk.decode('utf-8', 'replace'))
             stdout.flush()
             stderr.flush()
 
@@ -415,11 +406,7 @@ class Buildozer(object):
         show_output = kwargs.pop('show_output')
 
         if show_output:
-            if IS_PY3:
-                kwargs['logfile'] = codecs.getwriter('utf8')(stdout.buffer)
-            else:
-                kwargs['logfile'] = codecs.getwriter('utf8')(stdout)
-
+            kwargs['logfile'] = codecs.getwriter('utf8')(stdout.buffer)
         if not sensible:
             self.debug('Run (expect) {0!r}'.format(command))
         else:
