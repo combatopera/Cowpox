@@ -718,7 +718,7 @@ class Buildozer(object):
             return
         rmtree(self.platform_dir)
 
-    def download(self, url, filename, cwd=None):
+    def download(self, url, filename, cwd):
         def report_hook(index, blksize, size):
             if size <= 0:
                 progression = '{0} bytes'.format(index * blksize)
