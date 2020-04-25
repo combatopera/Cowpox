@@ -38,11 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-Buildozer
-'''
-
-from setuptools import setup
+from setuptools import find_packages, setup
 from os.path import dirname, join
 import codecs
 import os
@@ -83,9 +79,7 @@ setup(
     author_email='mat@kivy.org',
     url='http://github.com/kivy/buildozer',
     license='MIT',
-    packages=[
-        'buildozer', 'buildozer.targets', 'buildozer.libs', 'buildozer.scripts'
-        ],
+    packages = find_packages(exclude = ['tests*']),
     package_data={'buildozer': ['default.spec']},
     include_package_data=True,
     install_requires=['pexpect', 'virtualenv', 'sh', 'Cython==0.28.6', 'wheel', 'pip'],
