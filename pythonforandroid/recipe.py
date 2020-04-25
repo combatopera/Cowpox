@@ -38,28 +38,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .logger import logger, info, warning, debug, shprint, info_main
+from .util import urlretrieve, current_directory, ensure_dir, BuildInterruptingException
+from os import listdir, unlink, environ, mkdir, curdir, walk
 from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
-import glob
+from pathlib import Path
+from re import match
 from shutil import rmtree
 from six import PY2, with_metaclass
-
-import hashlib
-from re import match
-
-import sh
-import shutil
-import fnmatch
-from os import listdir, unlink, environ, mkdir, curdir, walk
 from sys import stdout
-import time
-try:
-    from urlparse import urlparse
-except ImportError:
-    from urllib.parse import urlparse
-from pythonforandroid.logger import (logger, info, warning, debug, shprint, info_main)
-from pythonforandroid.util import (urlretrieve, current_directory, ensure_dir,
-                                   BuildInterruptingException)
-
+from urllib.parse import urlparse
+import fnmatch, glob, hashlib, sh, shutil, time
 
 def import_recipe(module, filename):
     if PY2:
@@ -223,6 +212,8 @@ class Recipe(with_metaclass(RecipeMeta)):
         if self.url is None:
             return None
         return self.url.format(version=self.version)
+
+    mirror = Path('/mirror') # TODO: Make configurable.
 
     def download_file(self, url, target):
         if not url:
