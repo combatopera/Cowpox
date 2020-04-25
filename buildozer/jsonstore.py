@@ -38,27 +38,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""
-Replacement for shelve, using json.
-This is currently needed to correctly support db between Python 2 and 3.
-"""
+import io, json, os
 
-__all__ = ["JsonStore"]
-
-import io
-from json import load, dump
-from os.path import exists
-
-class JsonStore(object):
+class JsonStore:
 
     def __init__(self, filename):
         super(JsonStore, self).__init__()
         self.filename = filename
         self.data = {}
-        if exists(filename):
+        if os.path.exists(filename):
             try:
                 with io.open(filename, encoding='utf-8') as fd:
-                    self.data = load(fd)
+                    self.data = json.load(fd)
             except ValueError:
                 print("Unable to read the state.db, content will be replaced.")
 
@@ -83,6 +74,7 @@ class JsonStore(object):
         return self.data.keys()
 
     def sync(self):
-        # http://stackoverflow.com/questions/12309269/write-json-data-to-file-in-python/14870531#14870531
-        with open(self.filename, 'w') as fd:
-            dump(self.data, fd, ensure_ascii=False)
+        with open(self.filename, 'w') as f:
+            json.dump(self.data, f, ensure_ascii = False)
+
+__all__ = [JsonStore.__name__]
