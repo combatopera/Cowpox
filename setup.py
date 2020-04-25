@@ -38,8 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from setuptools import find_packages, setup
 from os.path import dirname, join
+from pathlib import Path
+from setuptools import find_packages, setup
 import codecs
 import os
 import re
@@ -82,7 +83,7 @@ setup(
     packages = find_packages(exclude = ['tests*']),
     package_data={'buildozer': ['default.spec']},
     include_package_data=True,
-    install_requires=['pexpect', 'virtualenv', 'sh', 'Cython==0.28.6', 'wheel', 'pip'],
+    install_requires=Path('requirements.txt').read_text().splitlines(),
     classifiers=[
         'Development Status :: 4 - Beta', 'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',

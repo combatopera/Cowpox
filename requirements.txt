@@ -1,0 +1,6 @@
+pexpect
+virtualenv
+sh
+Cython==0.28.6
+wheel
+pip

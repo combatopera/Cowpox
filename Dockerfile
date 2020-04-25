@@ -82,9 +82,10 @@ RUN useradd --create-home --shell /bin/bash $USER
 RUN usermod -append --groups sudo $USER
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 WORKDIR /root/project
+COPY requirements.txt .
+RUN pip3 install --upgrade -r requirements.txt
 COPY . .
-# TODO: Install deps upfront.
-RUN pip3 install --upgrade . && rm -rfv "$PWD"
+RUN pip3 install . && rm -rfv "$PWD"
 USER $USER
 RUN mkdir -pv ~/.buildozer ~/.gradle $WORK_DIR/.buildozer $WORK_DIR/bin
 WORKDIR $WORK_DIR
