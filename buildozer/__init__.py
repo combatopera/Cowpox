@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from buildozer.jsonstore import JsonStore
+from .jsonstore import JsonStore
 from configparser import SafeConfigParser
 from copy import copy
 from fnmatch import fnmatch
@@ -479,8 +479,7 @@ class Buildozer(object):
         self.mkdir(self.bin_dir)
 
         self.mkdir(self.applibs_dir)
-        self.state = JsonStore(join(self.buildozer_dir, 'state.db'))
-
+        self.state = JsonStore(Path(self.buildozer_dir, 'state.db'))
         target = self.targetname
         if target:
             self.mkdir(join(self.global_platform_dir, target, 'platform'))

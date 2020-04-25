@@ -38,20 +38,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import io, json, os
+import io, json, logging
+
+log = logging.getLogger(__name__)
 
 class JsonStore:
 
-    def __init__(self, filename):
-        super(JsonStore, self).__init__()
-        self.filename = filename
+    def __init__(self, path):
         self.data = {}
-        if os.path.exists(filename):
+        if path.exists():
             try:
-                with io.open(filename, encoding='utf-8') as fd:
-                    self.data = json.load(fd)
+                with io.open(path, encoding = 'utf-8') as f:
+                    self.data = json.load(f)
             except ValueError:
-                print("Unable to read the state.db, content will be replaced.")
+                log.warning("Unable to read the state.db, content will be replaced.")
+        self.path = path
 
     def __getitem__(self, key):
         return self.data[key]
@@ -74,7 +75,5 @@ class JsonStore:
         return self.data.keys()
 
     def sync(self):
-        with open(self.filename, 'w') as f:
+        with self.path.open('w') as f:
             json.dump(self.data, f, ensure_ascii = False)
-
-__all__ = [JsonStore.__name__]
