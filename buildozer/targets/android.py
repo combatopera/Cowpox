@@ -685,7 +685,6 @@ class TargetAndroid(Target):
             raise BuildozerException()
 
     def install_platform(self):
-        self._install_p4a()
         self._install_apache_ant()
         self._install_android_sdk()
         self._install_android_ndk()
