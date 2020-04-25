@@ -41,8 +41,7 @@
 FROM ubuntu:18.04
 
 ENV USER="user"
-ENV HOME_DIR="/home/$USER"
-ENV WORK_DIR="$HOME_DIR/hostcwd"
+ENV WORK_DIR="/home/$USER/hostcwd"
 # configures locale
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
