@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from buildozer import Buildozer, BuildozerCommandException, BuildozerException
+from lagoon import soak
 from pathlib import Path
 import logging, sys
 
@@ -61,6 +62,7 @@ def disablegradledaemon():
 def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
     disablegradledaemon()
+    soak.print()
     try:
         Path('setup.py').unlink()
     except FileNotFoundError:

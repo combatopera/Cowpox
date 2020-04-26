@@ -2,3 +2,5 @@ pexpect
 Cython==0.28.6
 wheel
 pip
+lagoon
+soak
