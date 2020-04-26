@@ -2,4 +2,3 @@ pexpect
 Cython==0.28.6
 wheel
 pip
-python-for-android==2020.3.30
