@@ -4,7 +4,10 @@ WORKDIR /root/project
 FROM base
 RUN pip install pyflakes
 COPY . .
-RUN find -name '*.py' -not -wholename './testapps/*' -exec pyflakes '{}' +
+RUN find -name '*.py' \
+    -not -wholename './testapps/*' \
+    -not -wholename ./pythonforandroid/recipes/android/src/android/__init__.py \
+    -exec pyflakes '{}' +
 
 FROM base as dist
 COPY . .

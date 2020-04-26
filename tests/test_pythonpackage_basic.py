@@ -89,6 +89,7 @@ def fake_metadata_extract(dep_name, output_folder, debug=False):
 
 def test__extract_info_from_package():
     import pythonforandroid.pythonpackage  # noqa
+    assert pythonforandroid.pythonpackage
     with mock.patch("pythonforandroid.pythonpackage."
                     "extract_metainfo_files_from_package",
                     fake_metadata_extract):
