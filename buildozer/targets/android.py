@@ -50,8 +50,9 @@ from pkg_resources import resource_filename
 from platform import architecture, uname
 from shutil import copyfile
 from sys import platform
-import os, sys, traceback
+import logging, os, sys, traceback
 
+log = logging.getLogger(__name__)
 if sys.platform == 'win32':
     raise NotImplementedError('Windows platform not yet working for Android')
 WSL = 'Microsoft' in uname()[2]
@@ -1082,17 +1083,10 @@ class TargetAndroid(Target):
                 version=version,
                 mode=mode)
             apk_dir = join(dist_dir, "bin")
-
-        apk_dest = u'{packagename}-{version}-{arch}-{mode}.apk'.format(
-            packagename=packagename, mode=mode, version=version,
-            arch=self._arch)
-
-        # copy to our place
-        copyfile(join(apk_dir, apk), join(self.buildozer.bin_dir, apk_dest))
-
-        self.buildozer.info('Android packaging done!')
-        self.buildozer.info(
-            u'APK {0} available in the bin directory'.format(apk_dest))
+        apk_dest = f"{packagename}-{version}-{self._arch}-{mode}.apk"
+        copyfile(join(apk_dir, apk), self.buildozer.bin_dir / apk_dest)
+        log.info('Android packaging done!')
+        log.info("APK %s available in the bin directory", apk_dest)
         self.buildozer.state['android:latestapk'] = apk_dest
         self.buildozer.state['android:latestmode'] = self.build_mode
 

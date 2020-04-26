@@ -885,7 +885,7 @@ class Buildozer(object):
     def bin_dir(self):
         if self.user_bin_dir:
             return self.user_bin_dir
-        return join(self.root_dir, 'bin')
+        return Path(self.root_dir, 'bin')
 
     @property
     def platform_dir(self):
