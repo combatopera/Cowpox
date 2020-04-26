@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import io, json, logging
+import json, logging
 
 log = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class JsonStore:
         self.data = {}
         if path.exists():
             try:
-                with io.open(path, encoding = 'utf-8') as f:
+                with path.open(encoding = 'utf-8') as f:
                     self.data = json.load(f)
             except ValueError:
                 log.warning("Unable to read the state.db, content will be replaced.")
