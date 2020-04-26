@@ -41,37 +41,21 @@
 from .logger import logger, info, warning, debug, shprint, info_main
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
+from importlib.util import module_from_spec, spec_from_file_location
 from os import listdir, unlink, environ, mkdir, curdir, walk
 from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
 from pathlib import Path
 from re import match
 from shutil import rmtree
-from six import PY2, with_metaclass
+from six import with_metaclass
 from urllib.parse import urlparse
 import fnmatch, glob, hashlib, sh, shutil
 
 def import_recipe(module, filename):
-    if PY2:
-        import imp
-        import warnings
-        with warnings.catch_warnings():
-            # ignores warnings raised by hierarchical module names
-            # (names containing dots) on Python 2
-            warnings.simplefilter("ignore", RuntimeWarning)
-            return imp.load_source(module, filename)
-    else:
-        # Python 3.5+
-        import importlib.util
-        if hasattr(importlib.util, 'module_from_spec'):
-            spec = importlib.util.spec_from_file_location(module, filename)
-            mod = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(mod)
-            return mod
-        else:
-            # Python 3.3 and 3.4:
-            from importlib.machinery import SourceFileLoader
-            return SourceFileLoader(module, filename).load_module()
-
+    spec = spec_from_file_location(module, filename)
+    mod = module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
 
 class RecipeMeta(type):
     def __new__(cls, name, bases, dct):
