@@ -47,8 +47,9 @@ PREVIOUS = $(TAG):previous
 
 .PHONY: all
 all:
-	docker build .
-	image=$$(docker build -q .)
+	command=(docker build --build-arg UID=$$(id -u) --build-arg GID=$$(id -g) .)
+	"$${command[@]}"
+	image=$$("$${command[@]}" -q)
 	docker tag '$(TAG)' '$(PREVIOUS)' || true
 	docker tag $$image '$(TAG)'
 	docker rmi '$(PREVIOUS)' || true

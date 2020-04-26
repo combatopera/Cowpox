@@ -78,9 +78,12 @@ FROM base
 COPY . .
 RUN pip install . && rm -rv "$PWD" | tail -1
 ARG USER=bdoz
-RUN useradd --create-home --shell /bin/bash $USER
+ARG GROUP=bdgp
+ARG UID=7654
+ARG GID=3210
+RUN groupadd -g $GID $GROUP && useradd -g $GID -u $UID --create-home --shell /bin/bash $USER
 WORKDIR /project
-RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin . /mirror) && mkdir -pv "${volumes[@]}" && chown -v $USER:$USER "${volumes[@]}"'
+RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin . /mirror) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"'
 USER $USER
 ENTRYPOINT ["buildozer"]
 CMD ["android", "debug"]
