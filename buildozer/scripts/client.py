@@ -62,6 +62,10 @@ def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
     disablegradledaemon()
     try:
+        Path('setup.py').unlink()
+    except FileNotFoundError:
+        pass
+    try:
         Buildozer().run_command(sys.argv[1:])
     except BuildozerCommandException:
         # don't show the exception in the command line. The log already show
