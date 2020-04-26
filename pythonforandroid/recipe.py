@@ -47,7 +47,6 @@ from os.path import basename, dirname, exists, isdir, isfile, join, realpath, sp
 from pathlib import Path
 from re import match
 from shutil import rmtree
-from six import with_metaclass
 from urllib.parse import urlparse
 import fnmatch, glob, hashlib, sh, shutil
 
@@ -58,17 +57,17 @@ def import_recipe(module, filename):
     return mod
 
 class RecipeMeta(type):
+
     def __new__(cls, name, bases, dct):
         if name != 'Recipe':
             if 'url' in dct:
                 dct['_url'] = dct.pop('url')
             if 'version' in dct:
                 dct['_version'] = dct.pop('version')
-
         return super(RecipeMeta, cls).__new__(cls, name, bases, dct)
 
+class Recipe(metaclass = RecipeMeta):
 
-class Recipe(with_metaclass(RecipeMeta)):
     _url = None
     '''The address from which the recipe may be downloaded. This is not
     essential, it may be omitted if the source is available some other
