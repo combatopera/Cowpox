@@ -123,7 +123,7 @@ from functools import wraps
 
 import argparse
 import sh
-import imp
+import imp # FIXME: Retire.
 from appdirs import user_data_dir
 import logging
 from distutils.version import LooseVersion
