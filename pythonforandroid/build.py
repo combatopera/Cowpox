@@ -38,34 +38,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from __future__ import print_function
-
-from os.path import (
-    abspath, join, realpath, dirname, expanduser, exists,
-    split, isdir
-)
+from .archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
+from .logger import info, warning, info_notify, info_main, shprint
+from .pythonpackage import get_package_name
+from .recipe import CythonRecipe, Recipe
+from .recommendations import check_ndk_version, check_target_api, check_ndk_api, RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
+from .util import current_directory, ensure_dir, get_virtualenv_executable, BuildInterruptingException
 from os import environ
-import copy
-import os
-import glob
-import sys
-import re
-import sh
-import shutil
-import subprocess
-
-from pythonforandroid.util import (
-    current_directory, ensure_dir, get_virtualenv_executable,
-    BuildInterruptingException
-)
-from pythonforandroid.logger import (info, warning, info_notify, info_main, shprint)
-from pythonforandroid.archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
-from pythonforandroid.pythonpackage import get_package_name
-from pythonforandroid.recipe import CythonRecipe, Recipe
-from pythonforandroid.recommendations import (
-    check_ndk_version, check_target_api, check_ndk_api,
-    RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API)
-
+from os.path import abspath, join, realpath, dirname, expanduser, exists, split, isdir
+import copy, glob, os, re, sh, shutil, subprocess, sys
 
 def get_ndk_platform_dir(ndk_dir, ndk_api, arch):
     ndk_platform_dir_exists = True
