@@ -262,7 +262,7 @@ def make_tar(tfn, source_dirs, ignore_path=[], optimize_python=True):
         compile_dir(sd, optimize_python=optimize_python)
         files += [(x, relpath(realpath(x), sd)) for x in listfiles(sd)
                   if select(x)]
-
+    # XXX: Can we have usable permissions in the TAR?
     # create tar.gz of thoses files
     tf = tarfile.open(tfn, 'w:gz', format=tarfile.USTAR_FORMAT)
     dirs = []
