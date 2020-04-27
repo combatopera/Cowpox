@@ -1083,7 +1083,7 @@ class TargetAndroid(Target):
                 version=version,
                 mode=mode)
             apk_dir = join(dist_dir, "bin")
-        apk_dest = f"{packagename}-{version}-{self._arch}-{mode}.apk"
+        apk_dest = f"{packagename}-{version}-{self.buildozer.config['app']['commit']}-{self._arch}-{mode}.apk"
         copyfile(join(apk_dir, apk), self.buildozer.bin_dir / apk_dest)
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
