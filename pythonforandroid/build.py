@@ -857,7 +857,7 @@ def run_pymodules_install(ctx, modules, project_dir=None,
                  'and does not work without additional '
                  'changes / workarounds.')
             pip = Program.text(Path('venv', 'bin', 'pip'))
-            pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', env = env)
+            pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env)
         # Afterwards, run setup.py if present:
         if project_dir is not None and (
                 project_has_setup_py(project_dir) and not ignore_setup_py
