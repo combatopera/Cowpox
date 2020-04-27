@@ -44,8 +44,10 @@ from .pythonpackage import get_package_name
 from .recipe import CythonRecipe, Recipe
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api, RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
 from .util import current_directory, ensure_dir, get_virtualenv_executable, BuildInterruptingException
+from lagoon.program import Program
 from os import environ
 from os.path import abspath, join, realpath, dirname, expanduser, exists, split, isdir
+from pathlib import Path
 import copy, glob, os, re, sh, shutil, subprocess, sys
 
 def get_ndk_platform_dir(ndk_dir, ndk_api, arch):
@@ -854,13 +856,8 @@ def run_pymodules_install(ctx, modules, project_dir=None,
                  'native code that is unaware of Android cross-compilation '
                  'and does not work without additional '
                  'changes / workarounds.')
-
-            shprint(sh.bash, '-c', (
-                "venv/bin/pip " +
-                "install -v --target '{0}' --no-deps -r requirements.txt"
-            ).format(ctx.get_site_packages_dir().replace("'", "'\"'\"'")),
-                    _env=copy.copy(env))
-
+            pip = Program.text(Path('venv', 'bin', 'pip'))
+            pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', env = env)
         # Afterwards, run setup.py if present:
         if project_dir is not None and (
                 project_has_setup_py(project_dir) and not ignore_setup_py
