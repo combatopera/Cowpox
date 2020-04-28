@@ -809,16 +809,11 @@ def run_pymodules_install(ctx, modules, project_dir=None,
         base_env = os.environ.copy()
         base_env["PYTHONPATH"] = ctx.get_site_packages_dir()
         info('Upgrade pip to latest version')
-        shprint(sh.bash, '-c', (
-            "source venv/bin/activate && pip install -U pip"
-        ), _env=copy.copy(base_env))
-
+        pip = Program.text(Path('venv', 'bin', 'pip'))
+        pip.install._U.print('pip', env = base_env)
         # Install Cython in case modules need it to build:
         info('Install Cython in case one of the modules needs it to build')
-        shprint(sh.bash, '-c', (
-            "venv/bin/pip install Cython"
-        ), _env=copy.copy(base_env))
-
+        pip.install.print('Cython', env = base_env)
         # Get environment variables for build (with CC/compiler set):
         standard_recipe = CythonRecipe()
         standard_recipe.ctx = ctx
@@ -856,7 +851,6 @@ def run_pymodules_install(ctx, modules, project_dir=None,
                  'native code that is unaware of Android cross-compilation '
                  'and does not work without additional '
                  'changes / workarounds.')
-            pip = Program.text(Path('venv', 'bin', 'pip'))
             pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env)
         # Afterwards, run setup.py if present:
         if project_dir is not None and (
