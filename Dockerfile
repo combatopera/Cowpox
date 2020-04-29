@@ -67,7 +67,7 @@ WORKDIR /root/project
 COPY requirements.txt .
 RUN pip install --upgrade -r requirements.txt
 COPY --from=p4a /*.whl wheels/
-RUN pip install --upgrade -f wheels python-for-android==2020.3.30
+RUN pip install --upgrade -f wheels python-for-android==2020.3.30 pyven
 
 FROM base
 RUN pip install pyflakes
