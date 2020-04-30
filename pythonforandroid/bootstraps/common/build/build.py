@@ -207,8 +207,7 @@ def make_python_zip():
     if not exists('private'):
         print('No compiled python is present to zip, skipping.')
         return
-
-    global python_files
+    global python_files # FIXME: No!
     d = realpath(join('private', 'lib', 'python2.7'))
 
     def select(fn):
@@ -237,13 +236,7 @@ def make_python_zip():
         zf.write(fn, afn)
     zf.close()
 
-
-def make_tar(tfn, source_dirs, ignore_path=[], optimize_python=True):
-    '''
-    Make a zip file `fn` from the contents of source_dis.
-    '''
-
-    # selector function
+def make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
     def select(fn):
         rfn = realpath(fn)
         for p in ignore_path:
@@ -251,17 +244,12 @@ def make_tar(tfn, source_dirs, ignore_path=[], optimize_python=True):
                 p = p[:-1]
             if rfn.startswith(p):
                 return False
-        if rfn in python_files:
-            return False
-        return not is_blacklist(fn)
-
-    # get the files and relpath file of all the directory we asked for
+        return False if rfn in python_files else not is_blacklist(fn)
     files = []
     for sd in source_dirs:
         sd = realpath(sd)
-        compile_dir(sd, optimize_python=optimize_python)
-        files += [(x, relpath(realpath(x), sd)) for x in listfiles(sd)
-                  if select(x)]
+        compile_dir(sd, optimize_python = optimize_python)
+        files.extend([x, relpath(realpath(x), sd)] for x in listfiles(sd) if select(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = []
         for fn, afn in files:
