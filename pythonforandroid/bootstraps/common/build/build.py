@@ -251,7 +251,7 @@ def make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
         compile_dir(sd, optimize_python = optimize_python)
         files.extend([x, relpath(realpath(x), sd)] for x in listfiles(sd) if select(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
-        dirs = []
+        dirs = set()
         for fn, afn in files:
             dn = dirname(afn)
             if dn not in dirs:
@@ -263,7 +263,7 @@ def make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
                         d = d[1:]
                     if d == '' or d in dirs:
                         continue
-                    dirs.append(d)
+                    dirs.add(d)
                     tinfo = tarfile.TarInfo(d)
                     tinfo.type = tarfile.DIRTYPE
                     tf.addfile(tinfo) # TODO: Fix weird permissions on dirs.
