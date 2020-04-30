@@ -266,7 +266,8 @@ def make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
                     dirs.add(d)
                     tinfo = tarfile.TarInfo(d)
                     tinfo.type = tarfile.DIRTYPE
-                    tf.addfile(tinfo) # TODO: Fix weird permissions on dirs.
+                    tinfo.mode |= 0o111
+                    tf.addfile(tinfo)
             tf.add(fn, afn)
 
 def compile_dir(dfn, optimize_python=True):
