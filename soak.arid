@@ -1,0 +1,3 @@
+plugin buildozer.soak configure
+. project.arid
+soak buildozer.spec data = $processresource(buildozer.soak buildozer.spec.aridt)

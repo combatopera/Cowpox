@@ -70,7 +70,7 @@ setup(
     url='http://github.com/kivy/buildozer',
     license='MIT',
     packages = find_packages(exclude = ['tests*']),
-    package_data={'buildozer': ['default.spec']},
+    package_data={'buildozer': ['default.spec'], '': ['*.aridt']},
     include_package_data=True,
     install_requires=Path('requirements.txt').read_text().splitlines(),
     classifiers=[
