@@ -43,5 +43,5 @@ import os
 
 class RecipeImpl(CythonRecipe): pass
 
-os.environ['P4A_bdozlib_DIR'] = '/self'
+os.environ['P4A_bdozlib_DIR'] = '/project'
 recipe = RecipeImpl()
