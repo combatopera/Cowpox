@@ -88,3 +88,4 @@ USER $USER
 ENTRYPOINT ["buildozer"]
 CMD ["android", "debug"]
 COPY workspace .
+ENV P4A_bdozlib_DIR /project
