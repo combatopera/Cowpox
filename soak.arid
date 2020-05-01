@@ -1,3 +1,5 @@
 plugin buildozer.soak configure
 . project.arid
-soak buildozer.spec data = $processresource(buildozer.soak buildozer.spec.aridt)
+soak
+    buildozer.spec data = $processresource(buildozer.soak buildozer.spec.aridt)
+    main.py from = main.py.aridt

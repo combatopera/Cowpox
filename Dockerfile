@@ -87,5 +87,5 @@ RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.grad
 USER $USER
 ENTRYPOINT ["buildozer"]
 CMD ["android", "debug"]
-COPY soak.arid .
+COPY soak.arid main.py.aridt ./
 COPY local_recipes local_recipes

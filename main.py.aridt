@@ -1,0 +1,4 @@
+from $(android main module) import $(android main name)
+
+if '__main__' == __name__:
+    $(android main name)()
