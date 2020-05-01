@@ -40,4 +40,6 @@
 
 from pythonforandroid.recipe import CythonRecipe
 
-recipe = CythonRecipe()
+class RecipeImpl(CythonRecipe): pass
+
+recipe = RecipeImpl()
