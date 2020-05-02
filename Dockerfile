@@ -83,7 +83,7 @@ ARG UID=7654
 ARG GID=3210
 RUN groupadd -g $GID $GROUP && useradd -g $GID -u $UID --create-home --shell /bin/bash $USER
 WORKDIR /workspace
-RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin . /mirror /project) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"'
+RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin . /mirror /project) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"' && git init
 USER $USER
 ENTRYPOINT ["buildozer"]
 CMD ["android", "debug"]
