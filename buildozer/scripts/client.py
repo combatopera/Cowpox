@@ -41,7 +41,7 @@
 from buildozer import Buildozer, BuildozerCommandException, BuildozerException
 from lagoon import pipify, soak
 from pathlib import Path
-import logging, sys
+import logging, os, sys
 
 log = logging.getLogger(__name__)
 
@@ -62,6 +62,7 @@ def disablegradledaemon():
 def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
     disablegradledaemon()
+    os.chdir('/workspace')
     soak.print() # Must happen before project.arid hack.
     with open('/project/project.arid', 'a') as f:
         print('name = bdozlib', file = f)
