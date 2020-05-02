@@ -41,7 +41,7 @@
 from buildozer import Buildozer, BuildozerCommandException, BuildozerException
 from lagoon import pipify, soak
 from pathlib import Path
-import logging, os, sys
+import logging, os, shutil, sys
 
 log = logging.getLogger(__name__)
 
@@ -61,6 +61,7 @@ def disablegradledaemon():
 
 def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
+    shutil.copytree('/src', '/project', symlinks = True, dirs_exist_ok = True)
     disablegradledaemon()
     os.chdir('/workspace')
     soak.print()
