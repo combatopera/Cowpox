@@ -4,4 +4,4 @@ wheel
 pip
 lagoon
 soak
-pyven
+pyven>=36

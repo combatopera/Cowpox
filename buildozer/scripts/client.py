@@ -63,10 +63,8 @@ def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
     disablegradledaemon()
     os.chdir('/workspace')
-    soak.print() # Must happen before project.arid hack.
-    with open('/project/project.arid', 'a') as f:
-        print('name = bdozlib', file = f)
-    pipify.print(cwd = '/project')
+    soak.print()
+    pipify.print('-f', '/workspace/bdozlib.arid', cwd = '/project')
     try:
         Path('setup.py').unlink()
     except FileNotFoundError:
