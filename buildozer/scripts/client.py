@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from buildozer import Buildozer, BuildozerCommandException, BuildozerException
-from lagoon import soak
+from lagoon import pipify, soak
 from pathlib import Path
 import logging, sys
 
@@ -63,6 +63,9 @@ def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
     disablegradledaemon()
     soak.print()
+    with open('/project/project.arid', 'a') as f:
+        print('name = bdozlib', file = f)
+    pipify.print(cwd = '/project')
     try:
         Path('setup.py').unlink()
     except FileNotFoundError:
