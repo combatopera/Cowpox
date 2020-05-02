@@ -62,7 +62,7 @@ def disablegradledaemon():
 def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
     disablegradledaemon()
-    soak.print()
+    soak.print() # Must happen before project.arid hack.
     with open('/project/project.arid', 'a') as f:
         print('name = bdozlib', file = f)
     pipify.print(cwd = '/project')
