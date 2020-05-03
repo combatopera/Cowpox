@@ -86,22 +86,16 @@ setup(
     packages = find_packages(exclude = ['tests*']),
     package_data = package_data,
     include_package_data=True,
-    install_requires=Path('requirements.txt').read_text().splitlines(),
-    classifiers=[
-        'Development Status :: 4 - Beta', 'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.1',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5'
-    ],
+    install_requires = Path('requirements.txt').read_text().splitlines(),
     entry_points={
         'console_scripts': [
             'buildozer=buildozer.scripts.client:main',
-            'buildozer-remote=buildozer.scripts.remote:main'
-        ]
-    })
+            'buildozer-remote=buildozer.scripts.remote:main',
+            'python-for-android=pythonforandroid.entrypoints:main',
+            'p4a=pythonforandroid.entrypoints:main',
+        ],
+        'distutils.commands': [
+            'apk = pythonforandroid.bdistapk:BdistAPK',
+        ],
+    },
+)
