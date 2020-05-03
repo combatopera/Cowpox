@@ -76,9 +76,8 @@ def recursively_include(directory, patterns):
             package_data[directory].append(join(*filename.split(sep)[1:]))
 
 package_data = {'': ['*.tmpl', '*.patch']}
-recursively_include('pythonforandroid/recipes', ['*.patch', 'Setup*', '*.pyx', '*.py', '*.c', '*.h', '*.mk', '*.jam'])
-recursively_include('pythonforandroid/bootstraps', ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.aidl', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', "*.patch"])
-recursively_include('pythonforandroid/bootstraps', ['sdl-config'])
+recursively_include('pythonforandroid/recipes', ['*.patch', '*.pyx', '*.py', '*.c', '*.h', '*.mk', '*.jam'])
+recursively_include('pythonforandroid/bootstraps', ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', "*.patch"])
 recursively_include('pythonforandroid/bootstraps/webview', ['*.html'])
 recursively_include('pythonforandroid', ['liblink', 'biglink', 'liblink.sh'])
 
