@@ -42,7 +42,7 @@
 SHELL = /bin/bash
 export BASH_ENV = bash_env
 
-TAG = buildozer
+TAG = seizure
 PREVIOUS = $(TAG):previous
 
 .PHONY: all
