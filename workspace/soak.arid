@@ -1,4 +1,5 @@
 plugin buildozer.soak configure
+android main name = main
 . /project/project.arid
 soak
     buildozer.spec data = $processresource(buildozer.soak buildozer.spec.aridt)
