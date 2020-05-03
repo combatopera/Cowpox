@@ -70,12 +70,9 @@ def recursively_include(directory, patterns):
             if not any([glob.fnmatch.fnmatch(fn, pattern) for pattern in patterns]):
                 continue
             filename = join(root, fn)
-            directory = 'pythonforandroid'
-            if directory not in package_data:
-                package_data[directory] = []
-            package_data[directory].append(join(*filename.split(sep)[1:]))
+            package_data['pythonforandroid'].append(join(*filename.split(sep)[1:]))
 
-package_data = {'': ['*.tmpl', '*.patch']}
+package_data = {'': ['*.tmpl', '*.patch'], 'pythonforandroid': []}
 recursively_include('pythonforandroid/recipes', ['*.patch', '*.pyx', '*.py', '*.c', '*.h', '*.mk', '*.jam'])
 recursively_include('pythonforandroid/bootstraps', ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', "*.patch"])
 recursively_include('pythonforandroid/bootstraps/webview', ['*.html'])
