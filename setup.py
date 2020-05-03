@@ -39,8 +39,8 @@
 # THE SOFTWARE.
 
 from io import open  # for open(..,encoding=...) parameter in python 2
-from os import walk
-from os.path import join, dirname, sep
+from os.path import join, dirname
+from pathlib import Path
 from setuptools import setup, find_packages
 import glob, re
 
@@ -65,18 +65,16 @@ install_reqs = [
 # everything as a 'pythonforandroid' rule, using '' apparently doesn't
 # work.
 def recursively_include(directory, patterns):
-    for root, subfolders, files in walk(directory):
-        for fn in files:
-            if not any([glob.fnmatch.fnmatch(fn, pattern) for pattern in patterns]):
-                continue
-            filename = join(root, fn)
-            package_data['pythonforandroid'].append(join(*filename.split(sep)[1:]))
+    root = Path('pythonforandroid')
+    for path in Path(root, *directory).glob('**/*'):
+        if any(glob.fnmatch.fnmatch(path, pattern) for pattern in patterns):
+            package_data[str(root)].append(str(path.relative_to(root)))
 
 package_data = {'': ['*.tmpl', '*.patch'], 'pythonforandroid': []}
-recursively_include('pythonforandroid/recipes', ['*.patch', '*.pyx', '*.py', '*.c', '*.h', '*.mk', '*.jam'])
-recursively_include('pythonforandroid/bootstraps', ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', "*.patch"])
-recursively_include('pythonforandroid/bootstraps/webview', ['*.html'])
-recursively_include('pythonforandroid', ['liblink', 'biglink', 'liblink.sh'])
+recursively_include(['recipes'], ['*.patch', '*.pyx', '*.py', '*.c', '*.h', '*.mk', '*.jam'])
+recursively_include(['bootstraps'], ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', "*.patch"])
+recursively_include(['bootstraps', 'webview'], ['*.html'])
+recursively_include([], ['liblink', 'biglink', 'liblink.sh'])
 
 with open(join(dirname(__file__), 'README.md'),
           encoding="utf-8",
