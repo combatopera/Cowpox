@@ -40,7 +40,7 @@
 
 from pathlib import Path
 from setuptools import find_packages, setup
-import re
+import glob, re
 
 def find_version(*file_paths):
     here = Path(__file__).parent.resolve()

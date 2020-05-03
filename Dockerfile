@@ -38,8 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-FROM p4a
-
 FROM python AS base
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends apt-utils software-properties-common && \
@@ -66,13 +64,13 @@ RUN apt-get update && \
 WORKDIR /root/project
 COPY requirements.txt .
 RUN pip install --upgrade -r requirements.txt
-COPY --from=p4a /*.whl wheels/
-RUN pip install --upgrade -f wheels python-for-android==2020.3.30
 
 FROM base
 RUN pip install pyflakes
 COPY . .
-RUN pyflakes .
+RUN find -name '*.py' \
+    -not -wholename ./pythonforandroid/recipes/android/src/android/__init__.py \
+    -exec pyflakes '{}' +
 
 FROM base
 COPY . .
