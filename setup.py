@@ -67,14 +67,14 @@ install_reqs = [
 def recursively_include(directory, patterns):
     root = Path('pythonforandroid')
     for path in Path(root, *directory).rglob('*'):
-        if any(glob.fnmatch.fnmatch(str(path), pattern) for pattern in patterns):
+        if any(glob.fnmatch.fnmatch(path.name, pattern) for pattern in patterns):
             package_data[str(root)].append(str(path.relative_to(root)))
 
 package_data = {'': ['*.tmpl', '*.patch'], 'pythonforandroid': []}
 recursively_include(['recipes'], ['*.patch', '*.pyx', '*.py', '*.c', '*.h', '*.mk', '*.jam'])
 recursively_include(['bootstraps'], ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', '*.patch'])
 recursively_include(['bootstraps', 'webview'], ['*.html'])
-recursively_include([], ['liblink', 'biglink', 'liblink.sh'])
+recursively_include(['tools'], ['liblink', 'biglink', 'liblink.sh'])
 
 with open(join(dirname(__file__), 'README.md'),
           encoding="utf-8",
