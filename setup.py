@@ -47,10 +47,6 @@ import glob, re
 # NOTE: All package data should also be set in MANIFEST.in
 
 packages = find_packages()
-
-package_data = {'': ['*.tmpl',
-                     '*.patch', ], }
-
 data_files = []
 
 
@@ -68,30 +64,23 @@ install_reqs = [
 # include them in binary distributions. Note that we have to add
 # everything as a 'pythonforandroid' rule, using '' apparently doesn't
 # work.
-def recursively_include(results, directory, patterns):
+def recursively_include(directory, patterns):
     for root, subfolders, files in walk(directory):
         for fn in files:
             if not any([glob.fnmatch.fnmatch(fn, pattern) for pattern in patterns]):
                 continue
             filename = join(root, fn)
             directory = 'pythonforandroid'
-            if directory not in results:
-                results[directory] = []
-            results[directory].append(join(*filename.split(sep)[1:]))
+            if directory not in package_data:
+                package_data[directory] = []
+            package_data[directory].append(join(*filename.split(sep)[1:]))
 
-recursively_include(package_data, 'pythonforandroid/recipes',
-                    ['*.patch', 'Setup*', '*.pyx', '*.py', '*.c', '*.h',
-                     '*.mk', '*.jam', ])
-recursively_include(package_data, 'pythonforandroid/bootstraps',
-                    ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png',
-                     '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.aidl',
-                     '*.gradle', '.gitkeep', 'gradlew*', '*.jar', "*.patch", ])
-recursively_include(package_data, 'pythonforandroid/bootstraps',
-                    ['sdl-config', ])
-recursively_include(package_data, 'pythonforandroid/bootstraps/webview',
-                    ['*.html', ])
-recursively_include(package_data, 'pythonforandroid',
-                    ['liblink', 'biglink', 'liblink.sh'])
+package_data = {'': ['*.tmpl', '*.patch']}
+recursively_include('pythonforandroid/recipes', ['*.patch', 'Setup*', '*.pyx', '*.py', '*.c', '*.h', '*.mk', '*.jam'])
+recursively_include('pythonforandroid/bootstraps', ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.aidl', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', "*.patch"])
+recursively_include('pythonforandroid/bootstraps', ['sdl-config'])
+recursively_include('pythonforandroid/bootstraps/webview', ['*.html'])
+recursively_include('pythonforandroid', ['liblink', 'biglink', 'liblink.sh'])
 
 with open(join(dirname(__file__), 'README.md'),
           encoding="utf-8",
