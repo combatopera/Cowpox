@@ -5,3 +5,12 @@ pip
 lagoon
 soak
 pyven>=36
+appdirs
+colorama>=0.3.3
+jinja2
+six
+sh>=1.10
+pep517<0.7.0
+pytoml
+virtualenv<20
+diapyr
