@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = My Application
+title = $(name)
 
 # (str) Package name
-package.name = $(name)
+package.name = $(Seizure package name)
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.test
