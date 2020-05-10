@@ -111,18 +111,14 @@ class BuildozerCommandException(BuildozerException):
     '''
     pass
 
-
-class Buildozer(object):
+class Buildozer:
 
     ERROR = 0
     INFO = 1
     DEBUG = 2
+    standard_cmds = 'distclean', 'update', 'debug', 'release', 'deploy', 'run', 'serve'
 
-    standard_cmds = ('distclean', 'update', 'debug', 'release',
-                     'deploy', 'run', 'serve')
-
-    def __init__(self, filename='buildozer.spec', target=None):
-        super(Buildozer, self).__init__()
+    def __init__(self, filename = 'buildozer.spec', target = None):
         self.log_level = 2
         self.environ = {}
         self.specfilename = filename
@@ -136,25 +132,17 @@ class Buildozer(object):
         self.config.getdefault = self._get_config_default
         self.config.getbooldefault = self._get_config_bool
         self.config.getrawdefault = self._get_config_raw_default
-
         if exists(filename):
             self.config.read(filename, 'utf-8')
             self.check_configuration_tokens()
-
-        # Check all section/tokens for env vars, and replace the
-        # config value if a suitable env var exists.
         set_config_from_envs(self.config)
-
         try:
-            self.log_level = int(self.config.getdefault(
-                'buildozer', 'log_level', '2'))
+            self.log_level = int(self.config.getdefault('buildozer', 'log_level', '2'))
         except Exception:
             pass
-
         self.user_bin_dir = self.config.getdefault('buildozer', 'bin_dir', None)
         if self.user_bin_dir:
             self.user_bin_dir = realpath(join(self.root_dir, self.user_bin_dir))
-
         self.targetname = None
         self.target = None
         if target:
