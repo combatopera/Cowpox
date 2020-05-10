@@ -42,7 +42,7 @@ from .jsonstore import JsonStore
 from configparser import SafeConfigParser
 from copy import copy
 from fnmatch import fnmatch
-from os import environ, walk, sep, listdir, makedirs
+from os import environ, walk, listdir, makedirs
 from os.path import dirname, realpath, splitext, expanduser
 from pathlib import Path
 from pprint import pformat
@@ -720,7 +720,7 @@ class Buildozer:
 
         for root, dirs, files in walk(source_dir, followlinks=True):
             # avoid hidden directory
-            if True in [x.startswith('.') for x in root.split(sep)]:
+            if True in [x.startswith('.') for x in root.split(os.sep)]:
                 continue
 
             # need to have sort-of normalization. Let's say you want to exclude
