@@ -40,7 +40,6 @@
 
 from .jsonstore import JsonStore
 from configparser import SafeConfigParser
-from copy import copy
 from fnmatch import fnmatch
 from os import walk, listdir, makedirs
 from os.path import dirname, realpath, splitext, expanduser
@@ -257,7 +256,7 @@ class Buildozer:
 
     def cmd(self, command, **kwargs):
         # prepare the environ, based on the system + our own env
-        env = copy(os.environ)
+        env = os.environ.copy()
         env.update(self.environ)
 
         # prepare the process
@@ -352,7 +351,7 @@ class Buildozer:
         from pexpect import spawnu
 
         # prepare the environ, based on the system + our own env
-        env = copy(os.environ)
+        env = os.environ.copy()
         env.update(self.environ)
 
         # prepare the process
@@ -556,7 +555,7 @@ class Buildozer:
         output = self.cmd('bash -c "source venv/bin/activate && env"',
                 get_stdout=True,
                 cwd=self.buildozer_dir)
-        self.env_venv = copy(self.environ)
+        self.env_venv = self.environ.copy()
         for line in output[0].splitlines():
             args = line.split('=', 1)
             if len(args) != 2:
