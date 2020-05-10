@@ -68,7 +68,7 @@ RUN groupadd -g $GID $GROUP && useradd -g $GID -u $UID --create-home --shell /bi
 WORKDIR /workspace
 RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin . /mirror /project) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"' && git init
 USER $USER
-ENTRYPOINT ["buildozer"]
+ENTRYPOINT ["Seizure"]
 CMD ["android", "debug"]
 COPY workspace .
 ENV P4A_bdozlib_DIR /project
