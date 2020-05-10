@@ -63,7 +63,7 @@ def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
     shutil.copytree('/src', '/project', symlinks = True, dirs_exist_ok = True)
     disablegradledaemon()
-    os.chdir('/workspace')
+    os.chdir('/workspace') # FIXME: Only include main.py in artifact.
     soak.print()
     pipify.print('-f', '/workspace/bdozlib.arid', cwd = '/project')
     try:
