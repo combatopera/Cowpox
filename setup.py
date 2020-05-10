@@ -56,7 +56,6 @@ recursively_include(['recipes'], ['*.patch', '*.pyx', '*.py', '*.c', '*.h', '*.m
 recursively_include(['bootstraps'], ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', '*.patch'])
 recursively_include(['bootstraps', 'webview'], ['*.html'])
 recursively_include(['tools'], ['liblink', 'biglink', 'liblink.sh'])
-projectroot = Path(__file__).parent
 setup(
     name='buildozer',
     description='Generic Python packager for Android / iOS and Desktop',
