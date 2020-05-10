@@ -66,8 +66,4 @@ def main():
     os.chdir('/workspace') # FIXME: Only include main.py in artifact.
     soak.print()
     pipify.print('-f', '/workspace/bdozlib.arid', cwd = '/project')
-    try:
-        Path('setup.py').unlink()
-    except FileNotFoundError:
-        pass
     Buildozer().run_command(sys.argv[1:])
