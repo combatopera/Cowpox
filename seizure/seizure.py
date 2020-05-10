@@ -62,7 +62,7 @@ def disablegradledaemon():
 def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
     disablegradledaemon()
-    shutil.copytree('/src', '/project', symlinks = True, dirs_exist_ok = True)
+    shutil.copytree('.', '/project', symlinks = True, dirs_exist_ok = True)
     soak.print(cwd = '/workspace')
     pipify.print('-f', '/workspace/bdozlib.arid', cwd = '/project')
     os.chdir('/workspace') # FIXME: Only include main.py in artifact.
