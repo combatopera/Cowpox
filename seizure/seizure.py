@@ -71,6 +71,3 @@ def main():
     except FileNotFoundError:
         pass
     Buildozer().run_command(sys.argv[1:])
-
-if __name__ == '__main__':
-    main()
