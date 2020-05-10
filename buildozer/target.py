@@ -40,7 +40,6 @@
 
 from sys import exit
 import os
-from os.path import join
 
 def no_config(f):
     f.__no_config = True
@@ -287,7 +286,7 @@ class Target(object):
         cmd = self.buildozer.cmd
         install_dir = join(self.buildozer.platform_dir, repo)
         custom_dir, clone_url, clone_branch = self.path_or_git_url(repo, **kwargs)
-        if not self.buildozer.file_exists(install_dir):
+        if not Path(install_dir).exists():
             if custom_dir:
                 cmd('mkdir -p "{}"'.format(install_dir))
                 cmd('cp -a "{}"/* "{}"/'.format(custom_dir, install_dir))

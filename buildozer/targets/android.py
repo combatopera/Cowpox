@@ -45,6 +45,7 @@ from distutils.version import LooseVersion
 from glob import glob
 from os import environ
 from os.path import exists, join, realpath, expanduser, basename, relpath
+from pathlib import Path
 from pipes import quote
 from pkg_resources import resource_filename
 from platform import architecture, uname
@@ -250,12 +251,8 @@ class TargetAndroid(Target):
             _, _, returncode_dpkg = self.buildozer.cmd('dpkg --version',
                                                        break_on_error=False)
             is_debian_like = (returncode_dpkg == 0)
-            if is_debian_like and \
-                not self.buildozer.file_exists('/usr/include/zlib.h'):
-                raise BuildozerException(
-                    'zlib headers must be installed, '
-                    'run: sudo apt-get install zlib1g-dev')
-
+            if is_debian_like and not Path('/usr/include/zlib.h').exists():
+                raise BuildozerException('zlib headers must be installed, run: sudo apt-get install zlib1g-dev')
         # Need to add internally installed ant to path for external tools
         # like adb to use
         path = [join(self.apache_ant_dir, 'bin')]
@@ -349,7 +346,7 @@ class TargetAndroid(Target):
 
     def _install_apache_ant(self):
         ant_dir = self.apache_ant_dir
-        if self.buildozer.file_exists(ant_dir):
+        if Path(ant_dir).exists():
             self.buildozer.info('Apache ANT found at {0}'.format(ant_dir))
             return ant_dir
 
@@ -367,7 +364,7 @@ class TargetAndroid(Target):
 
     def _install_android_sdk(self):
         sdk_dir = self.android_sdk_dir
-        if self.buildozer.file_exists(sdk_dir):
+        if Path(sdk_dir).exists():
             self.buildozer.info('Android SDK found at {0}'.format(sdk_dir))
             return sdk_dir
 
@@ -396,7 +393,7 @@ class TargetAndroid(Target):
 
     def _install_android_ndk(self):
         ndk_dir = self.android_ndk_dir
-        if self.buildozer.file_exists(ndk_dir):
+        if Path(ndk_dir).exists():
             self.buildozer.info('Android NDK found at {0}'.format(ndk_dir))
             return ndk_dir
 
@@ -608,7 +605,7 @@ class TargetAndroid(Target):
         # 3. finally, install the android for the current api
         self.buildozer.info('Downloading platform api target if necessary')
         android_platform = join(self.android_sdk_dir, 'platforms', 'android-{}'.format(self.android_api))
-        if not self.buildozer.file_exists(android_platform):
+        if not Path(android_platform).exists():
             if not skip_upd:
                 self._sdkmanager('"platforms;android-{}"'.format(self.android_api))
             else:
@@ -1093,8 +1090,7 @@ class TargetAndroid(Target):
     def _update_libraries_references(self, dist_dir):
         # ensure the project.properties exist
         project_fn = join(dist_dir, 'project.properties')
-
-        if not self.buildozer.file_exists(project_fn):
+        if not Path(project_fn).exists():
             content = [
                 'target=android-{}\n'.format(self.android_api),
                 'APP_PLATFORM={}\n'.format(self.android_minapi)]
@@ -1117,10 +1113,8 @@ class TargetAndroid(Target):
         for cref in app_references:
             # get the full path of the current reference
             ref = realpath(join(source_dir, cref))
-            if not self.buildozer.file_exists(ref):
-                self.buildozer.error(
-                    'Invalid library reference (path not found): {}'.format(
-                        cref))
+            if not Path(ref).exists():
+                self.buildozer.error('Invalid library reference (path not found): {}'.format(cref))
                 exit(1)
             # get a relative path from the project file
             ref = relpath(ref, realpath(dist_dir))
@@ -1208,10 +1202,8 @@ class TargetAndroid(Target):
         # search the APK in the bin dir
         apk = state['android:latestapk']
         full_apk = join(self.buildozer.bin_dir, apk)
-        if not self.buildozer.file_exists(full_apk):
-            self.buildozer.error(
-                'Unable to found the latest APK. Please run "debug" again.')
-
+        if not Path(full_apk).exists():
+            self.buildozer.error('Unable to found the latest APK. Please run "debug" again.')
         # push on the device
         for serial in self.serials:
             self.buildozer.environ['ANDROID_SERIAL'] = serial

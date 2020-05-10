@@ -554,7 +554,7 @@ class Buildozer:
         if hasattr(self, 'venv'):
             return
         self.venv = join(self.buildozer_dir, 'venv')
-        if not self.file_exists(self.venv):
+        if not Path(self.venv).exists():
             self.cmd('virtualenv --python=python2.7 ./venv',
                     cwd=self.buildozer_dir)
 
@@ -596,9 +596,6 @@ class Buildozer:
             matches = glob(expanduser(pattern.strip()))
             result.extend(matches)
         return result
-
-    def file_exists(self, *args):
-        return exists(join(*args))
 
     def file_rename(self, source, target, cwd=None):
         if cwd:
@@ -665,7 +662,7 @@ class Buildozer:
     def download(self, url, filename, cwd):
         url = url + filename
         filename = join(cwd, filename)
-        if self.file_exists(filename):
+        if Path(filename).exists():
             unlink(filename)
         self.debug('Downloading {0}'.format(url))
         Path(filename).symlink_to(Mirror.download(url))
@@ -819,7 +816,7 @@ class Buildozer:
                 join(self.app_dir, 'sitecustomize.py'))
 
         main_py = join(self.app_dir, 'service', 'main.py')
-        if not self.file_exists(main_py):
+        if not Path(main_py).exists():
             #self.error('Unable to patch main_py to add applibs directory.')
             return
 
