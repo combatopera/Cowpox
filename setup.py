@@ -77,7 +77,7 @@ setup(
     author_email='mat@kivy.org',
     url='http://github.com/kivy/buildozer',
     license='MIT',
-    packages = find_packages(exclude = ['tests*']),
+    packages = find_packages(),
     package_data = package_data,
     include_package_data=True,
     install_requires = Path('requirements.txt').read_text().splitlines(),
