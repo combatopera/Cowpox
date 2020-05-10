@@ -43,7 +43,7 @@ from configparser import SafeConfigParser
 from copy import copy
 from fnmatch import fnmatch
 from os import environ, unlink, walk, sep, listdir, makedirs
-from os.path import join, dirname, realpath, splitext, expanduser
+from os.path import dirname, realpath, splitext, expanduser
 from pathlib import Path
 from pprint import pformat
 from pythonforandroid.mirror import Mirror
@@ -142,7 +142,7 @@ class Buildozer:
             pass
         self.user_bin_dir = self.config.getdefault('buildozer', 'bin_dir', None)
         if self.user_bin_dir:
-            self.user_bin_dir = realpath(join(self.root_dir, self.user_bin_dir))
+            self.user_bin_dir = realpath(Path(self.root_dir, self.user_bin_dir))
         self.targetname = None
         self.target = None
         if target:
@@ -249,7 +249,7 @@ class Buildozer:
         if Path(fn).exists():
             return realpath(fn)
         for dn in environ['PATH'].split(':'):
-            rfn = realpath(join(dn, fn))
+            rfn = realpath(Path(dn, fn))
             if Path(rfn).exists():
                 self.debug(' -> found at {0}'.format(rfn))
                 return rfn
@@ -456,9 +456,9 @@ class Buildozer:
         self.state = JsonStore(Path(self.buildozer_dir, 'state.db'))
         target = self.targetname
         if target:
-            self.mkdir(join(self.global_platform_dir, target, 'platform'))
-            self.mkdir(join(self.buildozer_dir, target, 'platform'))
-            self.mkdir(join(self.buildozer_dir, target, 'app'))
+            self.mkdir(Path(self.global_platform_dir, target, 'platform'))
+            self.mkdir(Path(self.buildozer_dir, target, 'platform'))
+            self.mkdir(Path(self.buildozer_dir, target, 'app'))
 
     def check_application_requirements(self):
         '''Ensure the application requirements are all available and ready to be
@@ -548,8 +548,8 @@ class Buildozer:
     def _ensure_virtualenv(self):
         if hasattr(self, 'venv'):
             return
-        self.venv = join(self.buildozer_dir, 'venv')
-        if not Path(self.venv).exists():
+        self.venv = Path(self.buildozer_dir, 'venv')
+        if not self.venv.exists():
             self.cmd('virtualenv --python=python2.7 ./venv',
                     cwd=self.buildozer_dir)
 
@@ -594,8 +594,8 @@ class Buildozer:
 
     def file_rename(self, source, target, cwd=None):
         if cwd:
-            source = join(cwd, source)
-            target = join(cwd, target)
+            source = Path(cwd, source)
+            target = Path(cwd, target)
         self.debug('Rename {0} to {1}'.format(source, target))
         if not os.path.isdir(os.path.dirname(target)):
             self.error(('Rename {0} to {1} fails because {2} is not a '
@@ -604,8 +604,8 @@ class Buildozer:
 
     def file_copy(self, source, target, cwd=None):
         if cwd:
-            source = join(cwd, source)
-            target = join(cwd, target)
+            source = Path(cwd, source)
+            target = Path(cwd, target)
         self.debug('Copy {0} to {1}'.format(source, target))
         copyfile(source, target)
 
@@ -630,7 +630,7 @@ class Buildozer:
             return
 
         if archive.endswith('.zip'):
-            self.cmd('unzip -q {}'.format(join(cwd, archive)), cwd=cwd)
+            self.cmd('unzip -q {}'.format(Path(cwd, archive)), cwd=cwd)
             return
 
         raise Exception('Unhandled extraction for type {0}'.format(archive))
@@ -642,9 +642,7 @@ class Buildozer:
                 os.makedirs(dest)
             files = os.listdir(src)
             for f in files:
-                self.file_copytree(
-                    os.path.join(src, f),
-                    os.path.join(dest, f))
+                self.file_copytree(Path(src, f), Path(dest, f))
         else:
             copyfile(src, dest)
 
@@ -656,9 +654,9 @@ class Buildozer:
 
     def download(self, url, filename, cwd):
         url = url + filename
-        filename = join(cwd, filename)
-        if Path(filename).exists():
-            unlink(filename)
+        filename = Path(cwd, filename)
+        if filename.exists():
+            filename.unlink()
         self.debug('Downloading {0}'.format(url))
         Path(filename).symlink_to(Mirror.download(url))
         return filename
@@ -765,7 +763,7 @@ class Buildozer:
                 is_excluded = False
                 dfn = fn.lower()
                 if filtered_root:
-                    dfn = join(filtered_root, fn)
+                    dfn = Path(filtered_root, fn)
                 for pattern in exclude_patterns:
                     if fnmatch(dfn, pattern):
                         is_excluded = True
@@ -786,10 +784,8 @@ class Buildozer:
                         continue
                     if exclude_exts and ext in exclude_exts:
                         continue
-
-                sfn = join(root, fn)
-                rfn = realpath(join(app_dir, root[len(source_dir) + 1:], fn))
-
+                sfn = Path(root, fn)
+                rfn = realpath(Path(app_dir, root[len(source_dir) + 1:], fn))
                 # ensure the directory exists
                 dfn = dirname(rfn)
                 self.mkdir(dfn)
@@ -800,17 +796,15 @@ class Buildozer:
 
     def _copy_application_libs(self):
         # copy also the libs
-        copytree(self.applibs_dir, join(self.app_dir, '_applibs'))
+        copytree(self.applibs_dir, Path(self.app_dir, '_applibs'))
 
     def _copy_garden_libs(self):
         if Path(self.gardenlibs_dir).exists():
-            copytree(self.gardenlibs_dir, join(self.app_dir, 'libs'))
+            copytree(self.gardenlibs_dir, Path(self.app_dir, 'libs'))
 
     def _add_sitecustomize(self):
-        copyfile(join(dirname(__file__), 'sitecustomize.py'),
-                join(self.app_dir, 'sitecustomize.py'))
-
-        main_py = join(self.app_dir, 'service', 'main.py')
+        copyfile(Path(dirname(__file__), 'sitecustomize.py'), Path(self.app_dir, 'sitecustomize.py'))
+        main_py = Path(self.app_dir, 'service', 'main.py')
         if not Path(main_py).exists():
             #self.error('Unable to patch main_py to add applibs directory.')
             return
@@ -843,12 +837,11 @@ class Buildozer:
         build_dir = self.config.getdefault('buildozer', 'builddir', None)
         if build_dir is not None:
             # for backwards compatibility, append .buildozer to builddir
-            build_dir = join(build_dir, '.buildozer')
+            build_dir = Path(build_dir, '.buildozer')
         build_dir = self.config.getdefault('buildozer', 'build_dir', build_dir)
 
         if build_dir is not None:
-            build_dir = realpath(join(self.root_dir, build_dir))
-
+            build_dir = realpath(Path(self.root_dir, build_dir))
         return build_dir
 
     @property
@@ -856,7 +849,7 @@ class Buildozer:
         '''The directory in which to run the app build.'''
         if self.user_build_dir is not None:
             return self.user_build_dir
-        return join(self.root_dir, '.buildozer')
+        return Path(self.root_dir, '.buildozer')
 
     @property
     def bin_dir(self):
@@ -866,35 +859,35 @@ class Buildozer:
 
     @property
     def platform_dir(self):
-        return join(self.buildozer_dir, self.targetname, 'platform')
+        return Path(self.buildozer_dir, self.targetname, 'platform')
 
     @property
     def app_dir(self):
-        return join(self.buildozer_dir, self.targetname, 'app')
+        return Path(self.buildozer_dir, self.targetname, 'app')
 
     @property
     def applibs_dir(self):
-        return join(self.buildozer_dir, 'applibs')
+        return Path(self.buildozer_dir, 'applibs')
 
     @property
     def gardenlibs_dir(self):
-        return join(self.buildozer_dir, 'libs')
+        return Path(self.buildozer_dir, 'libs')
 
     @property
     def global_buildozer_dir(self):
-        return join(expanduser('~'), '.buildozer')
+        return Path(expanduser('~'), '.buildozer')
 
     @property
     def global_platform_dir(self):
-        return join(self.global_buildozer_dir, self.targetname, 'platform')
+        return Path(self.global_buildozer_dir, self.targetname, 'platform')
 
     @property
     def global_packages_dir(self):
-        return join(self.global_buildozer_dir, self.targetname, 'packages')
+        return Path(self.global_buildozer_dir, self.targetname, 'packages')
 
     @property
     def global_cache_dir(self):
-        return join(self.global_buildozer_dir, 'cache')
+        return Path(self.global_buildozer_dir, 'cache')
 
     @property
     def package_full_name(self):
@@ -909,7 +902,7 @@ class Buildozer:
     #
 
     def targets(self):
-        for fn in listdir(join(dirname(__file__), 'targets')):
+        for fn in listdir(Path(dirname(__file__), 'targets')):
             if fn.startswith('.') or fn.startswith('__'):
                 continue
             if not fn.endswith('.py'):
@@ -1058,7 +1051,7 @@ class Buildozer:
         if Path('buildozer.spec').exists():
             print('ERROR: You already have a buildozer.spec file.')
             exit(1)
-        copyfile(join(dirname(__file__), 'default.spec'), 'buildozer.spec')
+        copyfile(Path(dirname(__file__), 'default.spec'), 'buildozer.spec')
         print('File buildozer.spec created, ready to customize!')
 
     def cmd_distclean(self, *args):
