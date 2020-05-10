@@ -69,16 +69,10 @@ recursively_include(['bootstraps'], ['*.properties', '*.xml', '*.java', '*.tmpl'
 recursively_include(['bootstraps', 'webview'], ['*.html'])
 recursively_include(['tools'], ['liblink', 'biglink', 'liblink.sh'])
 projectroot = Path(__file__).parent
-with (projectroot / 'README.md').open(encoding = 'utf-8') as f:
-    readme = f.read()
-with (projectroot / 'CHANGELOG.md').open(encoding = 'utf-8') as f:
-    changelog = f.read()
 setup(
     name='buildozer',
     version=find_version('buildozer', '__init__.py'),
     description='Generic Python packager for Android / iOS and Desktop',
-    long_description=readme + "\n\n" + changelog,
-    long_description_content_type='text/markdown',
     author='Mathieu Virbel',
     author_email='mat@kivy.org',
     url='http://github.com/kivy/buildozer',
