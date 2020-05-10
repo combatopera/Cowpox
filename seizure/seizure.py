@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from buildozer import Buildozer, BuildozerCommandException, BuildozerException
+from buildozer import Buildozer
 from lagoon import pipify, soak
 from pathlib import Path
 import logging, os, shutil, sys
@@ -70,15 +70,7 @@ def main():
         Path('setup.py').unlink()
     except FileNotFoundError:
         pass
-    try:
-        Buildozer().run_command(sys.argv[1:])
-    except BuildozerCommandException:
-        # don't show the exception in the command line. The log already show
-        # the command failed.
-        sys.exit(1)
-    except BuildozerException as error:
-        Buildozer().error('%s' % error)
-        sys.exit(1)
+    Buildozer().run_command(sys.argv[1:])
 
 if __name__ == '__main__':
     main()
