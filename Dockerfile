@@ -63,7 +63,6 @@ RUN apt-get update && \
     zlib1g-dev
 WORKDIR /root/project
 COPY requirements.txt .
-# FIXME: Building older Cython takes a long time.
 RUN pip install --upgrade -r requirements.txt
 
 FROM base
