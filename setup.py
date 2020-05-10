@@ -40,19 +40,7 @@
 
 from pathlib import Path
 from setuptools import find_packages, setup
-import glob, re
-
-def find_version(*file_paths):
-    here = Path(__file__).parent.resolve()
-    # Open in Latin-1 so that we avoid encoding errors.
-    with Path(here, *file_paths).open(encoding = 'utf-8') as f:
-        version_file = f.read()
-    # The version line must have the form
-    # __version__ = 'ver'
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M)
-    if version_match:
-        return version_match.group(1)
-    raise RuntimeError("Unable to find version string.")
+import glob
 
 def recursively_include(directory, patterns):
     root = Path('pythonforandroid')
@@ -71,7 +59,6 @@ recursively_include(['tools'], ['liblink', 'biglink', 'liblink.sh'])
 projectroot = Path(__file__).parent
 setup(
     name='buildozer',
-    version=find_version('buildozer', '__init__.py'),
     description='Generic Python packager for Android / iOS and Desktop',
     author='Mathieu Virbel',
     author_email='mat@kivy.org',
