@@ -45,22 +45,7 @@ RUN apt-get update && \
     add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-    autoconf \
-    automake \
-    build-essential \
-    ccache \
-    cmake \
-    gettext \
-    git \
-    libffi-dev \
-    libltdl-dev \
-    libtool \
-    adoptopenjdk-8-hotspot \
-    patch \
-    pkg-config \
-    unzip \
-    zip \
-    zlib1g-dev
+    autoconf automake build-essential ccache cmake gettext git libffi-dev libltdl-dev libtool adoptopenjdk-8-hotspot patch pkg-config unzip zip zlib1g-dev
 WORKDIR /root/project
 COPY requirements.txt .
 RUN pip install --upgrade -r requirements.txt
