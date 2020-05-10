@@ -43,7 +43,7 @@ from configparser import SafeConfigParser
 from copy import copy
 from fnmatch import fnmatch
 from os import environ, unlink, walk, sep, listdir, makedirs
-from os.path import join, exists, dirname, realpath, splitext, expanduser
+from os.path import join, dirname, realpath, splitext, expanduser
 from pathlib import Path
 from pprint import pformat
 from pythonforandroid.mirror import Mirror
@@ -132,7 +132,7 @@ class Buildozer:
         self.config.getdefault = self._get_config_default
         self.config.getbooldefault = self._get_config_bool
         self.config.getrawdefault = self._get_config_raw_default
-        if exists(filename):
+        if Path(filename).exists():
             self.config.read(filename, 'utf-8')
             self.check_configuration_tokens()
         set_config_from_envs(self.config)
@@ -246,11 +246,11 @@ class Buildozer:
 
     def checkbin(self, msg, fn):
         self.debug('Search for {0}'.format(msg))
-        if exists(fn):
+        if Path(fn).exists():
             return realpath(fn)
         for dn in environ['PATH'].split(':'):
             rfn = realpath(join(dn, fn))
-            if exists(rfn):
+            if Path(rfn).exists():
                 self.debug(' -> found at {0}'.format(rfn))
                 return rfn
         self.error('{} not found, please install it.'.format(msg))
@@ -438,8 +438,7 @@ class Buildozer:
         ready.
         '''
         self.info('Ensure build layout')
-
-        if not exists(self.specfilename):
+        if not Path(self.specfilename).exists():
             print('No {0} found in the current directory. Abandon.'.format(
                 self.specfilename))
             exit(1)
@@ -485,10 +484,7 @@ class Buildozer:
             exit(1)
 
         # did we already installed the libs ?
-        if (
-            exists(self.applibs_dir) and
-            self.state.get('cache.applibs', '') == requirements
-        ):
+        if Path(self.applibs_dir).exists() and self.state.get('cache.applibs', '') == requirements:
             self.debug('Application requirements already installed, pass')
             return
 
@@ -517,8 +513,7 @@ class Buildozer:
                 'garden_requirements', '')
 
         # have we installed the garden packages?
-        if exists(self.gardenlibs_dir) and \
-                self.state.get('cache.gardenlibs', '') == garden_requirements:
+        if Path(self.gardenlibs_dir).exists() and self.state.get('cache.gardenlibs', '') == garden_requirements:
             self.debug('Garden requirements already installed, pass')
             return
 
@@ -578,13 +573,13 @@ class Buildozer:
         self.env_venv['CXX'] = '/bin/false'
 
     def mkdir(self, dn):
-        if exists(dn):
+        if Path(dn).exists():
             return
         self.debug('Create directory {0}'.format(dn))
         makedirs(dn)
 
     def rmdir(self, dn):
-        if not exists(dn):
+        if not Path(dn).exists():
             return
         self.debug('Remove directory and subdirectory {}'.format(dn))
         rmtree(dn)
@@ -655,7 +650,7 @@ class Buildozer:
 
     def clean_platform(self):
         self.info('Clean the platform build directory')
-        if not exists(self.platform_dir):
+        if not Path(self.platform_dir).exists():
             return
         rmtree(self.platform_dir)
 
@@ -808,7 +803,7 @@ class Buildozer:
         copytree(self.applibs_dir, join(self.app_dir, '_applibs'))
 
     def _copy_garden_libs(self):
-        if exists(self.gardenlibs_dir):
+        if Path(self.gardenlibs_dir).exists():
             copytree(self.gardenlibs_dir, join(self.app_dir, 'libs'))
 
     def _add_sitecustomize(self):
@@ -1060,7 +1055,7 @@ class Buildozer:
     def cmd_init(self, *args):
         '''Create a initial buildozer.spec in the current directory
         '''
-        if exists('buildozer.spec'):
+        if Path('buildozer.spec').exists():
             print('ERROR: You already have a buildozer.spec file.')
             exit(1)
         copyfile(join(dirname(__file__), 'default.spec'), 'buildozer.spec')
@@ -1073,7 +1068,7 @@ class Buildozer:
               " removed. Continue? (y/n)")
         if sys.stdin.readline().lower()[0] == 'y':
             self.info('Clean the global build directory')
-            if not exists(self.global_buildozer_dir):
+            if not Path(self.global_buildozer_dir).exists():
                 return
             rmtree(self.global_buildozer_dir)
 
@@ -1088,7 +1083,7 @@ class Buildozer:
             self.error(
                 ('Failed: build_dir is specified as {} in the buildozer config. `appclean` will '
                  'not attempt to delete files in a user-specified build directory.').format(self.user_build_dir))
-        elif exists(self.buildozer_dir):
+        elif Path(self.buildozer_dir).exists():
             self.info('Deleting {}'.format(self.buildozer_dir))
             rmtree(self.buildozer_dir)
         else:
