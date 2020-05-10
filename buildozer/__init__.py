@@ -875,19 +875,19 @@ class Buildozer:
 
     @property
     def global_buildozer_dir(self):
-        return Path(expanduser('~'), '.buildozer')
+        return Path.home() / '.buildozer'
 
     @property
     def global_platform_dir(self):
-        return Path(self.global_buildozer_dir, self.targetname, 'platform')
+        return self.global_buildozer_dir / self.targetname / 'platform'
 
     @property
     def global_packages_dir(self):
-        return Path(self.global_buildozer_dir, self.targetname, 'packages')
+        return self.global_buildozer_dir / self.targetname / 'packages'
 
     @property
     def global_cache_dir(self):
-        return Path(self.global_buildozer_dir, 'cache')
+        return self.global_buildozer_dir / 'cache'
 
     @property
     def package_full_name(self):
@@ -1061,7 +1061,7 @@ class Buildozer:
               " removed. Continue? (y/n)")
         if sys.stdin.readline().lower()[0] == 'y':
             self.info('Clean the global build directory')
-            if not Path(self.global_buildozer_dir).exists():
+            if not self.global_buildozer_dir.exists():
                 return
             rmtree(self.global_buildozer_dir)
 
