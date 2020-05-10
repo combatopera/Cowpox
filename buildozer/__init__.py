@@ -42,7 +42,7 @@ from .jsonstore import JsonStore
 from configparser import SafeConfigParser
 from copy import copy
 from fnmatch import fnmatch
-from os import environ, unlink, walk, sep, listdir, makedirs
+from os import environ, walk, sep, listdir, makedirs
 from os.path import dirname, realpath, splitext, expanduser
 from pathlib import Path
 from pprint import pformat
