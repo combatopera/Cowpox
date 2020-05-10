@@ -42,7 +42,7 @@ from .jsonstore import JsonStore
 from configparser import SafeConfigParser
 from copy import copy
 from fnmatch import fnmatch
-from os import environ, walk, listdir, makedirs
+from os import walk, listdir, makedirs
 from os.path import dirname, realpath, splitext, expanduser
 from pathlib import Path
 from pprint import pformat
@@ -73,8 +73,7 @@ try:
         BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
     RED = colorama.Fore.RED
     BLUE = colorama.Fore.CYAN
-    USE_COLOR = 'NO_COLOR' not in environ
-
+    USE_COLOR = 'NO_COLOR' not in os.environ
 except ImportError:
     if sys.platform != 'win32':
         RESET_SEQ = "\033[0m"
@@ -83,7 +82,7 @@ except ImportError:
         BLACK = 0
         RED = 1
         BLUE = 4
-        USE_COLOR = 'NO_COLOR' not in environ
+        USE_COLOR = 'NO_COLOR' not in os.environ
     else:
         RESET_SEQ = ''
         COLOR_SEQ = ''
@@ -248,7 +247,7 @@ class Buildozer:
         self.debug('Search for {0}'.format(msg))
         if Path(fn).exists():
             return realpath(fn)
-        for dn in environ['PATH'].split(':'):
+        for dn in os.environ['PATH'].split(':'):
             rfn = realpath(Path(dn, fn))
             if Path(rfn).exists():
                 self.debug(' -> found at {0}'.format(rfn))
@@ -258,7 +257,7 @@ class Buildozer:
 
     def cmd(self, command, **kwargs):
         # prepare the environ, based on the system + our own env
-        env = copy(environ)
+        env = copy(os.environ)
         env.update(self.environ)
 
         # prepare the process
@@ -353,7 +352,7 @@ class Buildozer:
         from pexpect import spawnu
 
         # prepare the environ, based on the system + our own env
-        env = copy(environ)
+        env = copy(os.environ)
         env.update(self.environ)
 
         # prepare the process
