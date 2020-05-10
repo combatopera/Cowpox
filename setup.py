@@ -89,7 +89,7 @@ setup(
     install_requires = Path('requirements.txt').read_text().splitlines(),
     entry_points={
         'console_scripts': [
-            'Seizure=buildozer.scripts.client:main',
+            'Seizure=seizure.seizure:main',
             'python-for-android=pythonforandroid.entrypoints:main',
             'p4a=pythonforandroid.entrypoints:main',
         ],
