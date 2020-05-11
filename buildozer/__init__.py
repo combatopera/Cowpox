@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from .jsonstore import JsonStore
+from .targets.android import TargetAndroid
 from configparser import SafeConfigParser
 from fnmatch import fnmatch
 from lagoon import tar, unzip
@@ -812,7 +813,7 @@ class Buildozer:
     def android_debug(self):
         self._merge_config_profile()
         self.targetname = 'android'
-        self.target = __import__(f"buildozer.targets.{self.targetname}", fromlist = ['buildozer']).get_target(self)
+        self.target = TargetAndroid(self)
         self.check_build_layout()
         self.check_configuration_tokens()
         self.target.run_commands(['debug'])

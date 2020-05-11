@@ -1090,11 +1090,6 @@ class TargetAndroid(Target):
                            show_output=True)
         self.buildozer.environ.pop('ANDROID_SERIAL', None)
 
-
-def get_target(buildozer):
-    buildozer.targetname = "android"
-    return TargetAndroid(buildozer)
-
 def generate_dist_folder_name(base_dist_name, arch_names=None):
     """Generate the distribution folder name to use, based on a
     combination of the input arguments.
