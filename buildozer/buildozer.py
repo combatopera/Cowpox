@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import BuildozerException, USE_COLOR
 from .android import TargetAndroid
 from .jsonstore import JsonStore
 from configparser import SafeConfigParser
@@ -62,17 +63,9 @@ BOLD_SEQ = ''
 BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
 RED = colorama.Fore.RED
 BLUE = colorama.Fore.CYAN
-USE_COLOR = 'NO_COLOR' not in os.environ
 # error, info, debug
 LOG_LEVELS_C = RED, BLUE, BLACK
 LOG_LEVELS_T = 'EID'
-
-class BuildozerException(Exception):
-    '''
-    Exception raised for general situations buildozer cannot process.
-    '''
-    pass
-
 
 class BuildozerCommandException(BuildozerException):
     '''
