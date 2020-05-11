@@ -396,53 +396,10 @@ class TargetAndroid(Target):
         if Path(ndk_dir).exists():
             self.buildozer.info('Android NDK found at {0}'.format(ndk_dir))
             return ndk_dir
-
-        import re
-        _version = re.search('(.+?)[a-z]', self.android_ndk_version).group(1)
-
         self.buildozer.info('Android NDK is missing, downloading')
-        # Welcome to the NDK URL hell!
-        # a list of all NDK URLs up to level 14 can be found here:
-        #  https://gist.github.com/roscopecoltran/43861414fbf341adac3b6fa05e7fad08
-        # it seems that from level 11 on the naming schema is consistent
-        # from 10e on the URLs can be looked up at
-        # https://developer.android.com/ndk/downloads/older_releases
-
-        if platform in ('win32', 'cygwin'):
-            # Checking of 32/64 bits at Windows from: http://stackoverflow.com/a/1405971/798575
-            import struct
-            archive = 'android-ndk-r{0}-windows-{1}.zip'
-            is_64 = (8 * struct.calcsize("P") == 64)
-
-        elif platform in ('darwin', ):
-            if _version >= '10e':
-                archive = 'android-ndk-r{0}-darwin-{1}.zip'
-            elif _version >= '10c':
-                archive = 'android-ndk-r{0}-darwin-{1}.bin'
-            else:
-                archive = 'android-ndk-r{0}-darwin-{1}.tar.bz2'
-            is_64 = (os.uname()[4] == 'x86_64')
-
-        elif platform.startswith('linux'):
-            if _version >= '10e':
-                archive = 'android-ndk-r{0}-linux-{1}.zip'
-            elif _version >= '10c':
-                archive = 'android-ndk-r{0}-linux-{1}.bin'
-            else:
-                archive = 'android-ndk-r{0}-linux-{1}.tar.bz2'
-            is_64 = (os.uname()[4] == 'x86_64')
-        else:
-            raise SystemError('Unsupported platform: {}'.format(platform))
-
-        architecture = 'x86_64' if is_64 else 'x86'
-        unpacked = 'android-ndk-r{0}'
-        archive = archive.format(self.android_ndk_version, architecture)
-        unpacked = unpacked.format(self.android_ndk_version)
-
-        if _version >= '10e':
-            url = 'https://dl.google.com/android/repository/'
-        else:
-            url = 'http://dl.google.com/android/ndk/'
+        archive = f"android-ndk-r{self.android_ndk_version}-linux-x86_64.zip"
+        unpacked = f"android-ndk-r{self.android_ndk_version}"
+        url = 'https://dl.google.com/android/repository/'
         self.buildozer.download(url, archive, self.buildozer.global_platform_dir)
         self.buildozer.info('Unpacking Android NDK')
         self.buildozer.file_extract(archive,
