@@ -267,36 +267,3 @@ class Target(object):
             if branch != 'master':
                 url = "--branch {} {}".format(branch, url)
         return path, url, branch
-
-    def install_or_update_repo(self, repo, **kwargs):
-        """Install or update a git repository into the platform directory.
-
-        This will clone the contents of a git repository to
-        `buildozer.platform_dir`. The location of this repo can be
-        speficied via URL and branch name, or via a custom (local)
-        directory name.
-
-        :Parameters:
-            **kwargs:
-                Any valid arguments for :meth:`path_or_git_url`
-
-        :Returns:
-            fully qualified path to updated git repo
-        """
-        cmd = self.buildozer.cmd
-        install_dir = join(self.buildozer.platform_dir, repo)
-        custom_dir, clone_url, clone_branch = self.path_or_git_url(repo, **kwargs)
-        if not Path(install_dir).exists():
-            if custom_dir:
-                cmd('mkdir -p "{}"'.format(install_dir))
-                cmd('cp -a "{}"/* "{}"/'.format(custom_dir, install_dir))
-            else:
-                cmd('git clone {}'.format(clone_url),
-                        cwd=self.buildozer.platform_dir)
-        elif self.platform_update:
-            if custom_dir:
-                cmd('cp -a "{}"/* "{}"/'.format(custom_dir, install_dir))
-            else:
-                cmd('git clean -dxf', cwd=install_dir)
-                cmd('git pull origin {}'.format(clone_branch), cwd=install_dir)
-        return install_dir
