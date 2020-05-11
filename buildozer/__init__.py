@@ -907,11 +907,6 @@ class Buildozer:
         self.check_build_layout()
         self.state['buildozer:defaultcommand'] = args
 
-    def cmd_version(self, *args):
-        '''Show the Buildozer version
-        '''
-        print('Buildozer {0}'.format(__version__))
-
     def _merge_config_profile(self):
         profile = self.config_profile
         if not profile:
