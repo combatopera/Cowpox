@@ -45,10 +45,9 @@ def no_config(f):
     f.__no_config = True
     return f
 
+class Target:
 
-class Target(object):
     def __init__(self, buildozer):
-        super(Target, self).__init__()
         self.buildozer = buildozer
         self.build_mode = 'debug'
         self.platform_update = False
