@@ -54,7 +54,6 @@ from sys import stdout, stderr, exit
 import codecs, colorama, fcntl, logging, os, re, select, sys
 
 log = logging.getLogger(__name__)
-__version__ = '1.0.1-dev0'
 colorama.init()
 RESET_SEQ = colorama.Fore.RESET + colorama.Style.RESET_ALL
 COLOR_SEQ = lambda x: x
