@@ -49,7 +49,6 @@ def recursively_include(directory, patterns):
             package_data[str(root)].append(str(path.relative_to(root)))
 
 package_data = {
-        'buildozer': ['default.spec'],
         '': ['*.aridt', '*.tmpl', '*.patch'],
         'pythonforandroid': []}
 recursively_include(['recipes'], ['*.patch', '*.pyx', '*.py', '*.c', '*.h', '*.mk', '*.jam'])
