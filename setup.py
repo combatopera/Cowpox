@@ -56,15 +56,9 @@ recursively_include(['bootstraps'], ['*.properties', '*.xml', '*.java', '*.tmpl'
 recursively_include(['bootstraps', 'webview'], ['*.html'])
 recursively_include(['tools'], ['liblink', 'biglink', 'liblink.sh'])
 setup(
-    name='buildozer',
-    description='Generic Python packager for Android / iOS and Desktop',
-    author='Mathieu Virbel',
-    author_email='mat@kivy.org',
-    url='http://github.com/kivy/buildozer',
-    license='MIT',
+    name = 'Seizure',
     packages = find_packages(),
     package_data = package_data,
-    include_package_data=True,
     install_requires = Path('requirements.txt').read_text().splitlines(),
     entry_points={
         'console_scripts': [
