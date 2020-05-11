@@ -873,15 +873,6 @@ class Buildozer:
         self.set_target(command)
         self.target.run_commands(args)
 
-    def cmd_init(self, *args):
-        '''Create a initial buildozer.spec in the current directory
-        '''
-        if Path('buildozer.spec').exists():
-            print('ERROR: You already have a buildozer.spec file.')
-            exit(1)
-        copyfile(Path(dirname(__file__), 'default.spec'), 'buildozer.spec')
-        print('File buildozer.spec created, ready to customize!')
-
     def _merge_config_profile(self):
         profile = self.config_profile
         if not profile:
