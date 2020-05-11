@@ -87,7 +87,7 @@ class Buildozer:
     INFO = 1
     DEBUG = 2
 
-    def __init__(self, filename = 'buildozer.spec', target = None):
+    def __init__(self, filename = 'buildozer.spec'):
         self.log_level = 2
         self.environ = {}
         self.specfilename = filename
@@ -114,8 +114,6 @@ class Buildozer:
             self.user_bin_dir = realpath(Path(self.root_dir, self.user_bin_dir))
         self.targetname = None
         self.target = None
-        if target:
-            self.set_target(target)
 
     def set_target(self, target):
         '''Set the target to use (one of buildozer.targets, such as "android")
