@@ -795,9 +795,7 @@ class TargetAndroid(Target):
 
         cmd.append('--arch')
         cmd.append(self._arch)
-
-        cmd = " ".join(cmd)
-        self._p4a(cmd)
+        self._p4a(' '.join(map(str, cmd))) # FIXME: Use lagoon.
 
     def get_release_mode(self):
         if self.check_p4a_sign_env():
