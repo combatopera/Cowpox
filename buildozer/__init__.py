@@ -990,9 +990,6 @@ class Buildozer:
                 exit(0)
 
         self._merge_config_profile()
-
-        self.check_root()
-
         if not args:
             self.run_default()
             return
@@ -1013,25 +1010,6 @@ class Buildozer:
 
         self.set_target(command)
         self.target.run_commands(args)
-
-    def check_root(self):
-        '''If effective user id is 0, display a warning and require
-        user input to continue (or to cancel)'''
-        warn_on_root = self.config.getdefault('buildozer', 'warn_on_root', '1')
-        try:
-            euid = os.geteuid() == 0
-        except AttributeError:
-            if sys.platform == 'win32':
-                import ctypes
-            euid = ctypes.windll.shell32.IsUserAnAdmin() != 0
-        if warn_on_root == '1' and euid:
-            print('\033[91m\033[1mBuildozer is running as root!\033[0m')
-            print('\033[91mThis is \033[1mnot\033[0m \033[91mrecommended, and may lead to problems later.\033[0m')
-            cont = None
-            while cont not in ('y', 'n'):
-                cont = input('Are you sure you want to continue [y/n]? ')
-            if cont == 'n':
-                sys.exit()
 
     def cmd_init(self, *args):
         '''Create a initial buildozer.spec in the current directory
