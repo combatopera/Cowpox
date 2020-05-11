@@ -38,8 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .android import TargetAndroid
 from .jsonstore import JsonStore
-from .targets.android import TargetAndroid
 from configparser import SafeConfigParser
 from fnmatch import fnmatch
 from lagoon import tar, unzip
