@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from buildozer import Buildozer
+from buildozer.buildozer import Buildozer
 from lagoon import pipify, soak
 from pathlib import Path
 import logging, os, shutil
