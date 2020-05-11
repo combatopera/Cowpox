@@ -42,7 +42,7 @@ from .jsonstore import JsonStore
 from configparser import SafeConfigParser
 from fnmatch import fnmatch
 from lagoon import tar, unzip
-from os import walk, listdir, makedirs
+from os import walk, makedirs
 from os.path import dirname, realpath, splitext, expanduser
 from pathlib import Path
 from pprint import pformat
@@ -823,27 +823,6 @@ class Buildozer:
         if package_domain == '':
             return package_name
         return '{}.{}'.format(package_domain, package_name)
-
-    #
-    # command line invocation
-    #
-
-    def targets(self):
-        for fn in listdir(Path(dirname(__file__), 'targets')):
-            if fn.startswith('.') or fn.startswith('__'):
-                continue
-            if not fn.endswith('.py'):
-                continue
-            target = fn[:-3]
-            try:
-                m = __import__('buildozer.targets.{0}'.format(target),
-                        fromlist=['buildozer'])
-                yield target, m
-            except NotImplementedError:
-                pass
-            except:
-                raise
-                pass
 
     def run_command(self, args):
         self._merge_config_profile()
