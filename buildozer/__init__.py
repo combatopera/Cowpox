@@ -210,22 +210,6 @@ class Buildozer:
     def error(self, msg):
         self.log(self.ERROR, msg)
 
-    #
-    # Internal check methods
-    #
-
-    def checkbin(self, msg, fn):
-        self.debug('Search for {0}'.format(msg))
-        if Path(fn).exists():
-            return realpath(fn)
-        for dn in os.environ['PATH'].split(':'):
-            rfn = realpath(Path(dn, fn))
-            if Path(rfn).exists():
-                self.debug(' -> found at {0}'.format(rfn))
-                return rfn
-        self.error('{} not found, please install it.'.format(msg))
-        exit(1)
-
     def cmd(self, command, **kwargs):
         # prepare the environ, based on the system + our own env
         env = os.environ.copy()
