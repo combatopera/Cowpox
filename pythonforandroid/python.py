@@ -144,7 +144,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
 
     def __init__(self, *args, **kwargs):
         self._ctx = None
-        super(GuestPythonRecipe, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_recipe_env(self, arch=None, with_flags_in_cc=True):
         env = environ.copy()

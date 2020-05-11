@@ -38,17 +38,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .recipe import Recipe
+from .util import BuildInterruptingException, build_platform
 from distutils.spawn import find_executable
+from glob import glob
+from multiprocessing import cpu_count
 from os import environ
 from os.path import join, split
-from multiprocessing import cpu_count
-from glob import glob
 
-from pythonforandroid.recipe import Recipe
-from pythonforandroid.util import BuildInterruptingException, build_platform
-
-
-class Arch(object):
+class Arch:
 
     toolchain_prefix = None
     '''The prefix for the toolchain dir in the NDK.'''
@@ -86,7 +84,6 @@ class Arch(object):
     ]
 
     def __init__(self, ctx):
-        super(Arch, self).__init__()
         self.ctx = ctx
 
         # Allows injecting additional linker paths used by any recipe.

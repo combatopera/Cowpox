@@ -75,7 +75,7 @@ class TargetAndroid(Target):
     p4a_recommended_ndk_version = None
 
     def __init__(self, *args, **kwargs):
-        super(TargetAndroid, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._arch = self.buildozer.config.getdefault(
             'app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = join(
@@ -233,8 +233,7 @@ class TargetAndroid(Target):
                     errors.append(
                         '[app] "android.permission" contain an unknown'
                         ' permission {0}'.format(permission))
-
-        super(TargetAndroid, self).check_configuration_tokens(errors)
+        super().check_configuration_tokens(errors)
 
     def _get_available_permissions(self):
         key = 'android:available_permissions'
@@ -683,9 +682,7 @@ class TargetAndroid(Target):
             'app', 'android.entrypoint')
         if not entrypoint:
             self.buildozer.config.set('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
-
-        super(TargetAndroid, self).cmd_run(*args)
-
+        super().cmd_run(*args)
         entrypoint = self.buildozer.config.getdefault(
             'app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
 
@@ -1052,7 +1049,7 @@ class TargetAndroid(Target):
             self.buildozer.cmd(' '.join([self.adb_cmd] + args))
 
     def cmd_deploy(self, *args):
-        super(TargetAndroid, self).cmd_deploy(*args)
+        super().cmd_deploy(*args)
         state = self.buildozer.state
         if 'android:latestapk' not in state:
             self.buildozer.error('No APK built yet. Run "debug" first.')

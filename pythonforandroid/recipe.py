@@ -751,8 +751,7 @@ class BootstrapNDKRecipe(Recipe):
         return join(self.ctx.bootstrap.build_dir, 'jni')
 
     def get_recipe_env(self, arch=None, with_flags_in_cc=True, with_python=False):
-        env = super(BootstrapNDKRecipe, self).get_recipe_env(
-            arch, with_flags_in_cc)
+        env = super().get_recipe_env(arch, with_flags_in_cc)
         if not with_python:
             return env
 
@@ -786,8 +785,7 @@ class NDKRecipe(Recipe):
         return join(self.get_build_dir(arch.arch), 'jni')
 
     def build_arch(self, arch, *extra_args):
-        super(NDKRecipe, self).build_arch(arch)
-
+        super().build_arch(arch)
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
             shprint(
@@ -838,7 +836,7 @@ class PythonRecipe(Recipe):
     '''
 
     def __init__(self, *args, **kwargs):
-        super(PythonRecipe, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not any(
             [
                 d
@@ -856,7 +854,7 @@ class PythonRecipe(Recipe):
             self.depends = depends
 
     def clean_build(self, arch=None):
-        super(PythonRecipe, self).clean_build(arch=arch)
+        super().clean_build(arch = arch)
         name = self.folder_name
         python_install_dirs = glob.glob(join(self.ctx.python_installs_dir, '*'))
         for python_install in python_install_dirs:
@@ -893,8 +891,7 @@ class PythonRecipe(Recipe):
         return name
 
     def get_recipe_env(self, arch=None, with_flags_in_cc=True):
-        env = super(PythonRecipe, self).get_recipe_env(arch, with_flags_in_cc)
-
+        env = super().get_recipe_env(arch, with_flags_in_cc)
         env['PYTHONNOUSERSITE'] = '1'
 
         # Set the LANG, this isn't usually important but is a better default
@@ -938,7 +935,7 @@ class PythonRecipe(Recipe):
     def build_arch(self, arch):
         '''Install the Python module by calling setup.py install with
         the target Python dir.'''
-        super(PythonRecipe, self).build_arch(arch)
+        super().build_arch(arch)
         self.install_python_package(arch)
 
     def install_python_package(self, arch, name=None, env=None, is_dir=True):
@@ -1008,7 +1005,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     def install_hostpython_package(self, arch):
         env = self.get_hostrecipe_env(arch)
         self.rebuild_compiled_components(arch, env)
-        super(CompiledComponentsPythonRecipe, self).install_hostpython_package(arch)
+        super().install_hostpython_package(arch)
 
     def rebuild_compiled_components(self, arch, env):
         info('Rebuilding compiled components in {}'.format(self.name))
@@ -1110,7 +1107,7 @@ class CythonRecipe(PythonRecipe):
                 self.cythonize_file(env, build_dir, join(root, filename))
 
     def get_recipe_env(self, arch, with_flags_in_cc=True):
-        env = super(CythonRecipe, self).get_recipe_env(arch, with_flags_in_cc)
+        env = super().get_recipe_env(arch, with_flags_in_cc)
         env['LDFLAGS'] = env['LDFLAGS'] + ' -L{} '.format(
             self.ctx.get_libs_dir(arch.arch) +
             ' -L{} '.format(self.ctx.libs_dir) +
@@ -1140,10 +1137,10 @@ class TargetPythonRecipe(Recipe):
 
     def __init__(self, *args, **kwargs):
         self._ctx = None
-        super(TargetPythonRecipe, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def prebuild_arch(self, arch):
-        super(TargetPythonRecipe, self).prebuild_arch(arch)
+        super().prebuild_arch(arch)
         self.ctx.python_recipe = self
 
     def include_root(self, arch):

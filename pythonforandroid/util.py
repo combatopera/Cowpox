@@ -128,13 +128,12 @@ def walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
             else:
                 yield join(dirn, filen)
 
-
 class BuildInterruptingException(Exception):
-    def __init__(self, message, instructions=None):
-        super(BuildInterruptingException, self).__init__(message, instructions)
+
+    def __init__(self, message, instructions = None):
+        super().__init__(message, instructions)
         self.message = message
         self.instructions = instructions
-
 
 def handle_build_exception(exception):
     """

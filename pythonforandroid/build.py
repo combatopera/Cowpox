@@ -101,10 +101,7 @@ def get_available_apis(sdk_dir):
     apis = [int(s[0]) for s in apis if s]
     return apis
 
-
-class Context(object):
-    '''A build context. If anything will be built, an instance this class
-    will be instantiated and used to hold all the build state.'''
+class Context:
 
     env = environ.copy()
     # the filepath of toolchain.py
@@ -458,7 +455,6 @@ class Context(object):
                 'python-for-android cannot continue due to the missing executables above')
 
     def __init__(self):
-        super(Context, self).__init__()
         self.include_dirs = []
 
         self._build_env_prepared = False
