@@ -182,6 +182,3 @@ class Target:
 
     def cmd_run(self, *args):
         self.buildozer.prepare_for_build()
-
-    def cmd_serve(self, *args):
-        self.buildozer.cmd_serve()

@@ -87,7 +87,7 @@ class Buildozer:
     ERROR = 0
     INFO = 1
     DEBUG = 2
-    standard_cmds = 'distclean', 'update', 'debug', 'release', 'deploy', 'run', 'serve'
+    standard_cmds = 'distclean', 'update', 'debug', 'release', 'deploy', 'run'
 
     def __init__(self, filename = 'buildozer.spec', target = None):
         self.log_level = 2
@@ -916,8 +916,6 @@ class Buildozer:
         print('  release    Build the application in release mode')
         print('  deploy     Deploy the application on the device')
         print('  run        Run the application on the device')
-        print('  serve      Serve the bin directory via SimpleHTTPServer')
-
         for target, m in targets:
             mt = m.get_target(self)
             commands = mt.get_custom_commands()
@@ -1038,27 +1036,6 @@ class Buildozer:
         '''Show the Buildozer version
         '''
         print('Buildozer {0}'.format(__version__))
-
-    def cmd_serve(self, *args):
-        '''Serve the bin directory via SimpleHTTPServer
-        '''
-        try:
-            from http.server import SimpleHTTPRequestHandler
-            from socketserver import TCPServer
-        except ImportError:
-            from SimpleHTTPServer import SimpleHTTPRequestHandler
-            from SocketServer import TCPServer
-
-        os.chdir(self.bin_dir)
-        handler = SimpleHTTPRequestHandler
-        httpd = TCPServer(("", SIMPLE_HTTP_SERVER_PORT), handler)
-        print("Serving via HTTP at port {}".format(SIMPLE_HTTP_SERVER_PORT))
-        print("Press Ctrl+c to quit serving.")
-        httpd.serve_forever()
-
-    #
-    # Private
-    #
 
     def _merge_config_profile(self):
         profile = self.config_profile
