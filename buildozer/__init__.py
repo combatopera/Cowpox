@@ -901,23 +901,6 @@ class Buildozer:
         copyfile(Path(dirname(__file__), 'default.spec'), 'buildozer.spec')
         print('File buildozer.spec created, ready to customize!')
 
-    def cmd_appclean(self, *args):
-        '''Clean the .buildozer folder in the app directory.
-
-        This command specifically refuses to delete files in a
-        user-specified build directory, to avoid accidentally deleting
-        more than the user intends.
-        '''
-        if self.user_build_dir is not None:
-            self.error(
-                ('Failed: build_dir is specified as {} in the buildozer config. `appclean` will '
-                 'not attempt to delete files in a user-specified build directory.').format(self.user_build_dir))
-        elif Path(self.buildozer_dir).exists():
-            self.info('Deleting {}'.format(self.buildozer_dir))
-            rmtree(self.buildozer_dir)
-        else:
-            self.error('{} already deleted, skipping.'.format(self.buildozer_dir))
-
     def cmd_setdefault(self, *args):
         '''Set the default command to run when no arguments are given
         '''
