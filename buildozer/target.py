@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from os.path import join
 from sys import exit
 import os
 
@@ -187,84 +186,3 @@ class Target(object):
 
     def cmd_serve(self, *args):
         self.buildozer.cmd_serve()
-
-    def path_or_git_url(self, repo, owner='kivy', branch='master',
-                        url_format='https://github.com/{owner}/{repo}.git',
-                        platform=None,
-                        squash_hyphen=True):
-        """Get source location for a git checkout
-
-        This method will check the `buildozer.spec` for the keys:
-            {repo}_dir
-            {repo}_url
-            {repo}_branch
-
-        and use them to determine the source location for a git checkout.
-
-        If a `platform` is specified, {platform}.{repo} will be used
-        as the base for the buildozer key
-
-        `{repo}_dir` specifies a custom checkout location
-        (relative to `buildozer.root_dir`). If present, `path` will be
-        set to this value and `url`, `branch` will be set to None,
-        None. Otherwise, `{repo}_url` and `{repo}_branch` will be
-        examined.
-
-        If no keys are present, the kwargs will be used to create
-        a sensible default URL and branch.
-
-        :Parameters:
-            `repo`: str (required)
-                name of repository to fetch. Used both for buildozer
-                keys ({platform}.{repo}_dir|_url|_branch) and in building
-                default git URL
-            `branch`: str (default 'master')
-                Specific branch to retrieve if none specified in
-                buildozer.spec.
-            `owner`: str
-                owner of repo.
-            `platform`: str or None
-                platform prefix to use when retrieving `buildozer.spec`
-                keys. If specified, key names will be {platform}.{repo}
-                instead of just {repo}
-            `squash_hyphen`: boolean
-                if True, change '-' to '_' when looking for
-                keys in buildozer.spec. This lets us keep backwards
-                compatibility with old buildozer.spec files
-            `url_format`: format string
-                Used to construct default git URL.
-                can use {repo} {owner} and {branch} if needed.
-
-        :Returns:
-            A Tuple (path, url, branch) where
-                `path`
-                    Path to a custom git checkout. If specified,
-                    both `url` and `branch` will be None
-                `url`
-                    URL of git repository from where code should be
-                    checked-out
-                `branch`
-                    branch name (or tag) that should be used for the
-                    check-out.
-
-        """
-        if squash_hyphen:
-            key = repo.replace('-', '_')
-        else:
-            key = repo
-        if platform:
-            key = "{}.{}".format(platform, key)
-        config = self.buildozer.config
-        path = config.getdefault('app', '{}_dir'.format(key), None)
-
-        if path is not None:
-            path = join(self.buildozer.root_dir, path)
-            url = None
-            branch = None
-        else:
-            branch = config.getdefault('app', '{}_branch'.format(key), branch)
-            default_url = url_format.format(owner=owner, repo=repo, branch=branch)
-            url = config.getdefault('app', '{}_url'.format(key), default_url)
-            if branch != 'master':
-                url = "--branch {} {}".format(branch, url)
-        return path, url, branch
