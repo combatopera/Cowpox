@@ -115,20 +115,8 @@ class Buildozer:
         self.targetname = None
         self.target = None
 
-    def set_target(self, target):
-        '''Set the target to use (one of buildozer.targets, such as "android")
-        '''
-        self.targetname = target
-        m = __import__('buildozer.targets.{0}'.format(target),
-                       fromlist=['buildozer'])
-        self.target = m.get_target(self)
-        self.check_build_layout()
-        self.check_configuration_tokens()
-
     def prepare_for_build(self):
-        '''Prepare the build.
-        '''
-        assert(self.target is not None)
+        assert self.target is not None
         if hasattr(self.target, '_build_prepared'):
             return
 
@@ -824,8 +812,10 @@ class Buildozer:
 
     def run_command(self, args):
         self._merge_config_profile()
-        command, *args = args
-        self.set_target(command)
+        self.targetname, *args = args
+        self.target = __import__(f"buildozer.targets.{self.targetname}", fromlist = ['buildozer']).get_target(self)
+        self.check_build_layout()
+        self.check_configuration_tokens()
         self.target.run_commands(args)
 
     def _merge_config_profile(self):
