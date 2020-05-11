@@ -66,7 +66,6 @@ USE_COLOR = 'NO_COLOR' not in os.environ
 # error, info, debug
 LOG_LEVELS_C = RED, BLUE, BLACK
 LOG_LEVELS_T = 'EID'
-SIMPLE_HTTP_SERVER_PORT = 8000
 
 class BuildozerException(Exception):
     '''
