@@ -848,14 +848,6 @@ class Buildozer:
     def run_command(self, args):
         self._merge_config_profile()
         command, *args = args
-        cmd = 'cmd_{0}'.format(command)
-
-        # internal commands ?
-        if hasattr(self, cmd):
-            getattr(self, cmd)(*args)
-            return
-
-        # maybe it's a target?
         targets = [x[0] for x in self.targets()]
         if command not in targets:
             print('Unknown command/target {}'.format(command))
