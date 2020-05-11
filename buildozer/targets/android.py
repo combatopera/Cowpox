@@ -38,17 +38,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from buildozer import BuildozerException, USE_COLOR
-from buildozer.libs.version import parse
-from buildozer.target import Target
+from .. import BuildozerException, USE_COLOR
+from ..libs.version import parse
+from ..target import Target
 from distutils.version import LooseVersion
 from glob import glob
 from os import environ
 from os.path import exists, join, realpath, expanduser, basename, relpath
 from pathlib import Path
 from pipes import quote
-from pkg_resources import resource_filename
 from platform import architecture, uname
+from pythonforandroid.recommendations import RECOMMENDED_NDK_VERSION
 from shutil import copyfile
 from sys import platform
 import logging, os, sys, traceback
@@ -60,11 +60,6 @@ WSL = 'Microsoft' in uname()[2]
 ANDROID_API = '27'
 ANDROID_MINAPI = '21'
 APACHE_ANT_VERSION = '1.9.4'
-# This constant should *not* be updated, it is used only in the case
-# that python-for-android cannot provide a recommendation, which in
-# turn only happens if the python-for-android is old and probably
-# doesn't support any newer NDK.
-DEFAULT_ANDROID_NDK_VERSION = '17c'
 # buildozer.spec tokens that used to exist but are now ignored
 DEPRECATED_TOKENS = (('app', 'android.sdk'), )
 # Default SDK tag to download. This is not a configurable option
@@ -73,11 +68,6 @@ DEPRECATED_TOKENS = (('app', 'android.sdk'), )
 # does.
 DEFAULT_SDK_TAG = '4333796'
 DEFAULT_ARCH = 'armeabi-v7a'
-MSG_P4A_RECOMMENDED_NDK_ERROR = (
-    "WARNING: Unable to find recommended Android NDK for current "
-    "installation of python-for-android, defaulting to the default "
-    "version r{android_ndk}".format(android_ndk=DEFAULT_ANDROID_NDK_VERSION)
-)
 
 class TargetAndroid(Target):
     targetname = 'android'
@@ -124,42 +114,6 @@ class TargetAndroid(Target):
     def _p4a(self, cmd, **kwargs):
         return self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args, **kwargs)
 
-    @property
-    def p4a_recommended_android_ndk(self):
-        """
-        Return the p4a's recommended android's NDK version, depending on the
-        p4a version used for our buildozer build. In case that we don't find
-        it, we will return the buildozer's recommended one, defined by global
-        variable `DEFAULT_ANDROID_NDK_VERSION`.
-        """
-        # make sure to read p4a version only the first time
-        if self.p4a_recommended_ndk_version is not None:
-            return self.p4a_recommended_ndk_version
-
-        # check p4a's recommendation file, and in case that exists find the
-        # recommended android's NDK version, otherwise return buildozer's one
-        ndk_version = DEFAULT_ANDROID_NDK_VERSION
-        rec_file = resource_filename('pythonforandroid', 'recommendations.py')
-        if not os.path.isfile(rec_file):
-            self.buildozer.error(MSG_P4A_RECOMMENDED_NDK_ERROR)
-            return ndk_version
-
-        for line in open(rec_file, "r"):
-            if line.startswith("RECOMMENDED_NDK_VERSION ="):
-                ndk_version = line.replace(
-                    "RECOMMENDED_NDK_VERSION =", "")
-                # clean version of unwanted characters
-                for i in {"'", '"', "\n", " "}:
-                    ndk_version = ndk_version.replace(i, "")
-                self.buildozer.info(
-                    "Recommended android's NDK version by p4a is: {}".format(
-                        ndk_version
-                    )
-                )
-                self.p4a_recommended_ndk_version = ndk_version
-                break
-        return ndk_version
-
     def _sdkmanager(self, *args, **kwargs):
         """Call the sdkmanager in our Android SDK with the given arguments."""
         # Use the android-sdk dir as cwd by default
@@ -174,8 +128,7 @@ class TargetAndroid(Target):
 
     @property
     def android_ndk_version(self):
-        return self.buildozer.config.getdefault('app', 'android.ndk',
-                                                self.p4a_recommended_android_ndk)
+        return self.buildozer.config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
 
     @property
     def android_api(self):
