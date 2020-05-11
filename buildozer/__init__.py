@@ -846,15 +846,6 @@ class Buildozer:
                 raise
                 pass
 
-    def run_default(self):
-        self.check_build_layout()
-        if 'buildozer:defaultcommand' not in self.state:
-            print('No default command set.')
-            print('Use "buildozer setdefault <command args...>"')
-            exit(1)
-        cmd = self.state['buildozer:defaultcommand']
-        self.run_command(cmd)
-
     def run_command(self, args):
         while args:
             if not args[0].startswith('-'):
@@ -871,10 +862,6 @@ class Buildozer:
                 exit(0)
 
         self._merge_config_profile()
-        if not args:
-            self.run_default()
-            return
-
         command, args = args[0], args[1:]
         cmd = 'cmd_{0}'.format(command)
 
@@ -900,12 +887,6 @@ class Buildozer:
             exit(1)
         copyfile(Path(dirname(__file__), 'default.spec'), 'buildozer.spec')
         print('File buildozer.spec created, ready to customize!')
-
-    def cmd_setdefault(self, *args):
-        '''Set the default command to run when no arguments are given
-        '''
-        self.check_build_layout()
-        self.state['buildozer:defaultcommand'] = args
 
     def _merge_config_profile(self):
         profile = self.config_profile
