@@ -38,9 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .. import BuildozerException, USE_COLOR
-from ..libs.version import parse
-from ..target import Target
+from . import BuildozerException, USE_COLOR
+from .libs.version import parse
+from .target import Target
 from distutils.version import LooseVersion
 from glob import glob
 from os import environ
