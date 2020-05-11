@@ -856,11 +856,6 @@ class Buildozer:
                 self.log_level = 2
             elif arg in ('-p', '--profile'):
                 self.config_profile = args.pop(0)
-
-            elif arg == '--version':
-                print('Buildozer {0}'.format(__version__))
-                exit(0)
-
         self._merge_config_profile()
         command, args = args[0], args[1:]
         cmd = 'cmd_{0}'.format(command)
