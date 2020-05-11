@@ -41,6 +41,7 @@
 from .jsonstore import JsonStore
 from configparser import SafeConfigParser
 from fnmatch import fnmatch
+from lagoon import tar, unzip
 from os import walk, listdir, makedirs
 from os.path import dirname, realpath, splitext, expanduser
 from pathlib import Path
@@ -572,30 +573,12 @@ class Buildozer:
         copyfile(source, target)
 
     def file_extract(self, archive, cwd):
-        if archive.endswith('.tgz') or archive.endswith('.tar.gz'):
-            # xxx tarfile doesn't work for NDK-r8c :(
-            #tf = tarfile.open(archive, 'r:*')
-            #tf.extractall(path=cwd)
-            #tf.close()
-            self.cmd('tar xzf {0}'.format(archive), cwd=cwd)
-            return
-
-        if archive.endswith('.tbz2') or archive.endswith('.tar.bz2'):
-            # xxx same as before
-            self.cmd('tar xjf {0}'.format(archive), cwd=cwd)
-            return
-
-        if archive.endswith('.bin'):
-            # To process the bin files for linux and darwin systems
-            self.cmd('chmod a+x {0}'.format(archive),cwd=cwd)
-            self.cmd('./{0}'.format(archive),cwd=cwd)
-            return
-
-        if archive.endswith('.zip'):
-            self.cmd('unzip -q {}'.format(Path(cwd, archive)), cwd=cwd)
-            return
-
-        raise Exception('Unhandled extraction for type {0}'.format(archive))
+        if archive.endswith('.tar.gz'):
+            tar.xzf.print(archive, cwd = cwd)
+        elif archive.endswith('.zip'):
+            unzip._q.print(archive, cwd = cwd)
+        else:
+            raise Exception(f"Unhandled extraction for type {archive}")
 
     def file_copytree(self, src, dest):
         print('copy {} to {}'.format(src, dest))
