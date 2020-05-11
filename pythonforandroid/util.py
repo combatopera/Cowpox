@@ -38,30 +38,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import contextlib
-from os.path import exists, join
-from os import getcwd, chdir, makedirs, walk, uname
-import sh
-import shutil
+from .logger import logger, Err_Fore, error, info
 from fnmatch import fnmatch
+from os import getcwd, chdir, makedirs, walk, uname
+from os.path import exists, join
 from tempfile import mkdtemp
-
-# This Python version workaround left for compatibility during initial version check
-try:  # Python 3
-    from urllib.request import FancyURLopener
-except ImportError:  # Python 2
-    from urllib import FancyURLopener
-
-from pythonforandroid.logger import (logger, Err_Fore, error, info)
-
+from urllib.request import FancyURLopener
+import contextlib, sh, shutil
 
 class WgetDownloader(FancyURLopener):
-    version = ('Wget/1.17.1')
 
+    version = 'Wget/1.17.1'
 
 urlretrieve = WgetDownloader().retrieve
-
-
 build_platform = '{system}-{machine}'.format(
     system=uname()[0], machine=uname()[-1]).lower()
 """the build platform in the format `system-machine`. We use

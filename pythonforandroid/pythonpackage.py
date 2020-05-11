@@ -38,46 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-""" This module offers highlevel functions to get package metadata
-    like the METADATA file, the name, or a list of dependencies.
-
-    Usage examples:
-
-       # Getting package name from pip reference:
-       from pytonforandroid.pythonpackage import get_package_name
-       print(get_package_name("pillow"))
-       # Outputs: "Pillow" (note the spelling!)
-
-       # Getting package dependencies:
-       from pytonforandroid.pythonpackage import get_package_dependencies
-       print(get_package_dependencies("pep517"))
-       # Outputs: "['pytoml']"
-
-       # Get package name from arbitrary package source:
-       from pytonforandroid.pythonpackage import get_package_name
-       print(get_package_name("/some/local/project/folder/"))
-       # Outputs package name
-
-    NOTE:
-
-    Yes, this module doesn't fit well into python-for-android, but this
-    functionality isn't available ANYWHERE ELSE, and upstream (pip, ...)
-    currently has no interest in taking this over, so it has no other place
-    to go.
-    (Unless someone reading this puts it into yet another packaging lib)
-
-    Reference discussion/upstream inclusion attempt:
-
-    https://github.com/pypa/packaging-problems/issues/247
-
-"""
-
-
-from io import open  # needed for python 2
-import functools
-import os
 from pep517.envbuild import BuildEnvironment
 from pep517.wrappers import Pep517HookCaller
+from urllib.parse import urlparse, unquote as urlunquote
+import functools
+import os
 import pytoml
 import shutil
 import subprocess
@@ -86,14 +51,7 @@ import tarfile
 import tempfile
 import textwrap
 import time
-try:
-    from urllib.parse import urlparse
-    from urllib.parse import unquote as urlunquote
-except ImportError:  # Python 2...
-    from urlparse import urlparse
-    from urlparse import unquote as urlunquote
 import zipfile
-
 
 def transform_dep_for_pip(dependency):
     if dependency.find("@") > 0 and (
