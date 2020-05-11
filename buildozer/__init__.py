@@ -62,29 +62,18 @@ try:
     RESET_SEQ = colorama.Fore.RESET + colorama.Style.RESET_ALL
     COLOR_SEQ = lambda x: x  # noqa: E731
     BOLD_SEQ = ''
-    if sys.platform == 'win32':
-        BLACK = colorama.Fore.BLACK + colorama.Style.DIM
-    else:
-        BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
+    BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
     RED = colorama.Fore.RED
     BLUE = colorama.Fore.CYAN
     USE_COLOR = 'NO_COLOR' not in os.environ
 except ImportError:
-    if sys.platform != 'win32':
-        RESET_SEQ = "\033[0m"
-        COLOR_SEQ = lambda x: "\033[1;{}m".format(30 + x)  # noqa: E731
-        BOLD_SEQ = "\033[1m"
-        BLACK = 0
-        RED = 1
-        BLUE = 4
-        USE_COLOR = 'NO_COLOR' not in os.environ
-    else:
-        RESET_SEQ = ''
-        COLOR_SEQ = ''
-        BOLD_SEQ = ''
-        RED = BLUE = BLACK = 0
-        USE_COLOR = False
-
+    RESET_SEQ = "\033[0m"
+    COLOR_SEQ = lambda x: "\033[1;{}m".format(30 + x)  # noqa: E731
+    BOLD_SEQ = "\033[1m"
+    BLACK = 0
+    RED = 1
+    BLUE = 4
+    USE_COLOR = 'NO_COLOR' not in os.environ
 # error, info, debug
 LOG_LEVELS_C = (RED, BLUE, BLACK)
 LOG_LEVELS_T = 'EID'
@@ -279,8 +268,6 @@ class Buildozer:
         self.debug('Cwd {}'.format(kwargs.get('cwd')))
 
         # open the process
-        if sys.platform == 'win32':
-            kwargs.pop('close_fds', None)
         process = Popen(command, **kwargs)
 
         # prepare fds
