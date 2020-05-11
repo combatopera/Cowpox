@@ -50,7 +50,7 @@ from re import search
 from shutil import copyfile, rmtree, copytree, move
 from subprocess import Popen, PIPE
 from sys import stdout, stderr, exit
-import codecs, colorama, fcntl, logging, os, re, select, sys, textwrap
+import codecs, colorama, fcntl, logging, os, re, select, sys
 
 log = logging.getLogger(__name__)
 __version__ = '1.0.1-dev0'
@@ -87,7 +87,6 @@ class Buildozer:
     ERROR = 0
     INFO = 1
     DEBUG = 2
-    standard_cmds = 'distclean', 'update', 'debug', 'release', 'deploy', 'run'
 
     def __init__(self, filename = 'buildozer.spec', target = None):
         self.log_level = 2
@@ -881,63 +880,11 @@ class Buildozer:
                 raise
                 pass
 
-    def usage(self):
-        print('Usage:')
-        print('    buildozer [--profile <name>] [--verbose] [target] <command>...')
-        print('    buildozer --version')
-        print('')
-        print('Available targets:')
-        targets = list(self.targets())
-        for target, m in targets:
-            try:
-                doc = m.__doc__.strip().splitlines()[0].strip()
-            except Exception:
-                doc = '<no description>'
-            print('  {0:<18} {1}'.format(target, doc))
-
-        print('')
-        print('Global commands (without target):')
-        cmds = [x for x in dir(self) if x.startswith('cmd_')]
-        for cmd in cmds:
-            name = cmd[4:]
-            meth = getattr(self, cmd)
-
-            if not meth.__doc__:
-                continue
-            doc = [x for x in
-                    meth.__doc__.strip().splitlines()][0].strip()
-            print('  {0:<18} {1}'.format(name, doc))
-
-        print('')
-        print('Target commands:')
-        print('  clean      Clean the target environment')
-        print('  update     Update the target dependencies')
-        print('  debug      Build the application in debug mode')
-        print('  release    Build the application in release mode')
-        print('  deploy     Deploy the application on the device')
-        print('  run        Run the application on the device')
-        for target, m in targets:
-            mt = m.get_target(self)
-            commands = mt.get_custom_commands()
-            if not commands:
-                continue
-            print('')
-            print('Target "{0}" commands:'.format(target))
-            for command, doc in commands:
-                if not doc:
-                    continue
-                doc = textwrap.fill(textwrap.dedent(doc).strip(), 59,
-                                    subsequent_indent=' ' * 21)
-                print('  {0:<18} {1}'.format(command, doc))
-
-        print('')
-
     def run_default(self):
         self.check_build_layout()
         if 'buildozer:defaultcommand' not in self.state:
             print('No default command set.')
             print('Use "buildozer setdefault <command args...>"')
-            print('Use "buildozer help" for a list of all commands"')
             exit(1)
         cmd = self.state['buildozer:defaultcommand']
         self.run_command(cmd)
@@ -950,11 +897,6 @@ class Buildozer:
 
             if arg in ('-v', '--verbose'):
                 self.log_level = 2
-
-            elif arg in ('-h', '--help'):
-                self.usage()
-                exit(0)
-
             elif arg in ('-p', '--profile'):
                 self.config_profile = args.pop(0)
 
@@ -1020,11 +962,6 @@ class Buildozer:
             rmtree(self.buildozer_dir)
         else:
             self.error('{} already deleted, skipping.'.format(self.buildozer_dir))
-
-    def cmd_help(self, *args):
-        '''Show the Buildozer help.
-        '''
-        self.usage()
 
     def cmd_setdefault(self, *args):
         '''Set the default command to run when no arguments are given
