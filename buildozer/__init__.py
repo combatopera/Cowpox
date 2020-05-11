@@ -846,17 +846,8 @@ class Buildozer:
                 pass
 
     def run_command(self, args):
-        while args:
-            if not args[0].startswith('-'):
-                break
-            arg = args.pop(0)
-
-            if arg in ('-v', '--verbose'):
-                self.log_level = 2
-            elif arg in ('-p', '--profile'):
-                self.config_profile = args.pop(0)
         self._merge_config_profile()
-        command, args = args[0], args[1:]
+        command, *args = args
         cmd = 'cmd_{0}'.format(command)
 
         # internal commands ?
