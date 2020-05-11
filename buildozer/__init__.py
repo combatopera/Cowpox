@@ -50,32 +50,20 @@ from re import search
 from shutil import copyfile, rmtree, copytree, move
 from subprocess import Popen, PIPE
 from sys import stdout, stderr, exit
-import codecs, fcntl, logging, os, re, select, sys, textwrap
+import codecs, colorama, fcntl, logging, os, re, select, sys, textwrap
 
 log = logging.getLogger(__name__)
 __version__ = '1.0.1-dev0'
-try:
-    # if installed, it can give color to windows as well
-    import colorama
-    colorama.init()
-
-    RESET_SEQ = colorama.Fore.RESET + colorama.Style.RESET_ALL
-    COLOR_SEQ = lambda x: x  # noqa: E731
-    BOLD_SEQ = ''
-    BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
-    RED = colorama.Fore.RED
-    BLUE = colorama.Fore.CYAN
-    USE_COLOR = 'NO_COLOR' not in os.environ
-except ImportError:
-    RESET_SEQ = "\033[0m"
-    COLOR_SEQ = lambda x: "\033[1;{}m".format(30 + x)  # noqa: E731
-    BOLD_SEQ = "\033[1m"
-    BLACK = 0
-    RED = 1
-    BLUE = 4
-    USE_COLOR = 'NO_COLOR' not in os.environ
+colorama.init()
+RESET_SEQ = colorama.Fore.RESET + colorama.Style.RESET_ALL
+COLOR_SEQ = lambda x: x
+BOLD_SEQ = ''
+BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
+RED = colorama.Fore.RED
+BLUE = colorama.Fore.CYAN
+USE_COLOR = 'NO_COLOR' not in os.environ
 # error, info, debug
-LOG_LEVELS_C = (RED, BLUE, BLACK)
+LOG_LEVELS_C = RED, BLUE, BLACK
 LOG_LEVELS_T = 'EID'
 SIMPLE_HTTP_SERVER_PORT = 8000
 
