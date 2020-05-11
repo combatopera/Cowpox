@@ -354,7 +354,7 @@ class TargetAndroid(Target):
             os.makedirs(ant_dir)
 
         self.buildozer.info('Android ANT is missing, downloading')
-        archive = 'apache-ant-{0}-bin.tar.gz'.format(APACHE_ANT_VERSION)
+        archive = f"apache-ant-{APACHE_ANT_VERSION}-bin.tar.gz"
         url = 'http://archive.apache.org/dist/ant/binaries/'
         self.buildozer.download(url, archive, ant_dir)
         self.buildozer.file_extract(archive, ant_dir)
@@ -368,15 +368,7 @@ class TargetAndroid(Target):
             return sdk_dir
 
         self.buildozer.info('Android SDK is missing, downloading')
-        if platform in ('win32', 'cygwin'):
-            archive = 'sdk-tools-windows-{}.zip'.format(DEFAULT_SDK_TAG)
-        elif platform in ('darwin', ):
-            archive = 'sdk-tools-darwin-{}.zip'.format(DEFAULT_SDK_TAG)
-        elif platform.startswith('linux'):
-            archive = 'sdk-tools-linux-{}.zip'.format(DEFAULT_SDK_TAG)
-        else:
-            raise SystemError('Unsupported platform: {0}'.format(platform))
-
+        archive = f"sdk-tools-linux-{DEFAULT_SDK_TAG}.zip"
         if not os.path.exists(sdk_dir):
             os.makedirs(sdk_dir)
 
