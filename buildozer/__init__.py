@@ -901,17 +901,6 @@ class Buildozer:
         copyfile(Path(dirname(__file__), 'default.spec'), 'buildozer.spec')
         print('File buildozer.spec created, ready to customize!')
 
-    def cmd_distclean(self, *args):
-        '''Clean the whole Buildozer environment.
-        '''
-        print("Warning: Your ndk, sdk and all other cached packages will be"
-              " removed. Continue? (y/n)")
-        if sys.stdin.readline().lower()[0] == 'y':
-            self.info('Clean the global build directory')
-            if not self.global_buildozer_dir.exists():
-                return
-            rmtree(self.global_buildozer_dir)
-
     def cmd_appclean(self, *args):
         '''Clean the .buildozer folder in the app directory.
 
