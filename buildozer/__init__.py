@@ -87,10 +87,10 @@ class Buildozer:
     INFO = 1
     DEBUG = 2
 
-    def __init__(self, filename = 'buildozer.spec'):
+    def __init__(self):
         self.log_level = 2
         self.environ = {}
-        self.specfilename = filename
+        self.specfilename = 'buildozer.spec'
         self.state = None
         self.build_id = None
         self.config_profile = ''
@@ -101,9 +101,8 @@ class Buildozer:
         self.config.getdefault = self._get_config_default
         self.config.getbooldefault = self._get_config_bool
         self.config.getrawdefault = self._get_config_raw_default
-        if Path(filename).exists():
-            self.config.read(filename, 'utf-8')
-            self.check_configuration_tokens()
+        self.config.read(self.specfilename, 'utf-8')
+        self.check_configuration_tokens()
         set_config_from_envs(self.config)
         try:
             self.log_level = int(self.config.getdefault('buildozer', 'log_level', '2'))
