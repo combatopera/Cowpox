@@ -571,7 +571,7 @@ class Buildozer:
         self.debug('Copy {0} to {1}'.format(source, target))
         copyfile(source, target)
 
-    def file_extract(self, archive, cwd=None):
+    def file_extract(self, archive, cwd):
         if archive.endswith('.tgz') or archive.endswith('.tar.gz'):
             # xxx tarfile doesn't work for NDK-r8c :(
             #tf = tarfile.open(archive, 'r:*')

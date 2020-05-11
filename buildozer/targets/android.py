@@ -357,8 +357,7 @@ class TargetAndroid(Target):
         archive = 'apache-ant-{0}-bin.tar.gz'.format(APACHE_ANT_VERSION)
         url = 'http://archive.apache.org/dist/ant/binaries/'
         self.buildozer.download(url, archive, ant_dir)
-        self.buildozer.file_extract(archive,
-                                    cwd=ant_dir)
+        self.buildozer.file_extract(archive, ant_dir)
         self.buildozer.info('Apache ANT installation done.')
         return ant_dir
 
@@ -384,9 +383,7 @@ class TargetAndroid(Target):
         url = 'http://dl.google.com/android/repository/'
         self.buildozer.download(url, archive, sdk_dir)
         self.buildozer.info('Unpacking Android SDK')
-        self.buildozer.file_extract(archive,
-                                    cwd=sdk_dir)
-
+        self.buildozer.file_extract(archive, sdk_dir)
         self.buildozer.info('Android SDK tools base installation done.')
 
         return sdk_dir
@@ -402,8 +399,7 @@ class TargetAndroid(Target):
         url = 'https://dl.google.com/android/repository/'
         self.buildozer.download(url, archive, self.buildozer.global_platform_dir)
         self.buildozer.info('Unpacking Android NDK')
-        self.buildozer.file_extract(archive,
-                                    cwd=self.buildozer.global_platform_dir)
+        self.buildozer.file_extract(archive, self.buildozer.global_platform_dir)
         self.buildozer.file_rename(unpacked,
                                    ndk_dir,
                                    cwd=self.buildozer.global_platform_dir)
