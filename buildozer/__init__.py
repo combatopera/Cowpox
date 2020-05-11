@@ -809,13 +809,13 @@ class Buildozer:
             return package_name
         return '{}.{}'.format(package_domain, package_name)
 
-    def run_command(self, args):
+    def android_debug(self):
         self._merge_config_profile()
-        self.targetname, *args = args
+        self.targetname = 'android'
         self.target = __import__(f"buildozer.targets.{self.targetname}", fromlist = ['buildozer']).get_target(self)
         self.check_build_layout()
         self.check_configuration_tokens()
-        self.target.run_commands(args)
+        self.target.run_commands(['debug'])
 
     def _merge_config_profile(self):
         profile = self.config_profile

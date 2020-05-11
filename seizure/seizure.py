@@ -41,7 +41,7 @@
 from buildozer import Buildozer
 from lagoon import pipify, soak
 from pathlib import Path
-import logging, os, shutil, sys
+import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
@@ -66,4 +66,4 @@ def main():
     soak.print(cwd = '/workspace')
     pipify.print('-f', '/workspace/bdozlib.arid', cwd = '/project')
     os.chdir('/workspace') # FIXME: Only include main.py in artifact.
-    Buildozer().run_command(sys.argv[1:])
+    Buildozer().android_debug()
