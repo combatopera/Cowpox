@@ -47,11 +47,9 @@ from os import environ
 from os.path import exists, join, realpath, expanduser, basename, relpath
 from pathlib import Path
 from pipes import quote
-from platform import uname
 from pythonforandroid.recommendations import RECOMMENDED_NDK_VERSION
 from shutil import copyfile
-from sys import platform
-import logging, os, sys, traceback
+import logging, os, sys
 
 log = logging.getLogger(__name__)
 ANDROID_API = '27'
