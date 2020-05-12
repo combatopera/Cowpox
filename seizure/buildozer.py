@@ -357,31 +357,15 @@ class Buildozer:
                     entry_old, entry_new))
 
     def check_build_layout(self):
-        '''Ensure the build (local and global) directory layout and files are
-        ready.
-        '''
-        self.info('Ensure build layout')
-        if not Path(self.specfilename).exists():
-            print('No {0} found in the current directory. Abandon.'.format(
-                self.specfilename))
-            exit(1)
-
-        # create global dir
         self.mkdir(self.global_buildozer_dir)
         self.mkdir(self.global_cache_dir)
-
-        # create local .buildozer/ dir
         self.mkdir(self.buildozer_dir)
-        # create local bin/ dir
         self.mkdir(self.bin_dir)
-
         self.mkdir(self.applibs_dir)
         self.state = JsonStore(Path(self.buildozer_dir, 'state.db'))
-        target = self.targetname
-        if target:
-            self.mkdir(Path(self.global_platform_dir, target, 'platform'))
-            self.mkdir(Path(self.buildozer_dir, target, 'platform'))
-            self.mkdir(Path(self.buildozer_dir, target, 'app'))
+        self.mkdir(Path(self.global_platform_dir, self.targetname, 'platform'))
+        self.mkdir(Path(self.buildozer_dir, self.targetname, 'platform'))
+        self.mkdir(Path(self.buildozer_dir, self.targetname, 'app'))
 
     def check_application_requirements(self):
         '''Ensure the application requirements are all available and ready to be
