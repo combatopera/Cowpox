@@ -38,9 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from os import uname
 from distutils.version import LooseVersion
-
+from os import uname
 
 def check_all(*callables):
     def check(**kwargs):
