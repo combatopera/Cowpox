@@ -38,28 +38,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-This module is kind of special because it contains the base classes used to
-build our python3 and python2 recipes and his corresponding hostpython recipes.
-'''
-
-from os.path import dirname, exists, join, isfile
+from .logger import info, warning, shprint
+from .recipe import Recipe, TargetPythonRecipe
+from .util import current_directory, ensure_dir, walk_valid_filens, BuildInterruptingException
 from multiprocessing import cpu_count
-from shutil import copy2
 from os import environ
-import subprocess
-import glob
-import sh
-
-from pythonforandroid.recipe import Recipe, TargetPythonRecipe
-from pythonforandroid.logger import info, warning, shprint
-from pythonforandroid.util import (
-    current_directory,
-    ensure_dir,
-    walk_valid_filens,
-    BuildInterruptingException,
-)
-
+from os.path import dirname, exists, join, isfile
+from shutil import copy2
+import glob, sh, subprocess
 
 class GuestPythonRecipe(TargetPythonRecipe):
     '''
