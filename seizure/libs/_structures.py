@@ -51,10 +51,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __future__ import absolute_import, division, print_function
 
-
-class Infinity(object):
+class Infinity:
 
     def __repr__(self):
         return "Infinity"
@@ -85,8 +83,7 @@ class Infinity(object):
 
 Infinity = Infinity()
 
-
-class NegativeInfinity(object):
+class NegativeInfinity:
 
     def __repr__(self):
         return "-Infinity"

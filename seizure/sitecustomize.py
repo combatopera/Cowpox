@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from os.path import join, dirname
+from pathlib import Path
 import sys
-sys.path.append(join(dirname(__file__), '_applibs'))
+
+sys.path.append(str(Path(__file__).parent / '_applibs'))
