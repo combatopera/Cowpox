@@ -87,7 +87,6 @@ class Buildozer:
         self.specfilename = 'buildozer.spec'
         self.state = None
         self.build_id = None
-        self.config_profile = ''
         self.config = SafeConfigParser(allow_no_value=True)
         self.config.optionxform = lambda value: value
         self.config.getlist = self._get_config_list
@@ -804,40 +803,11 @@ class Buildozer:
         return '{}.{}'.format(package_domain, package_name)
 
     def android_debug(self):
-        self._merge_config_profile()
         self.targetname = 'android'
         self.target = TargetAndroid(self)
         self.check_build_layout()
         self.check_configuration_tokens()
         self.target.run_commands(['debug'])
-
-    def _merge_config_profile(self):
-        profile = self.config_profile
-        if not profile:
-            return
-        for section in self.config.sections():
-
-            # extract the profile part from the section name
-            # example: [app@default,hd]
-            parts = section.split('@', 1)
-            if len(parts) < 2:
-                continue
-
-            # create a list that contain all the profiles of the current section
-            # ['default', 'hd']
-            section_base, section_profiles = parts
-            section_profiles = section_profiles.split(',')
-            if profile not in section_profiles:
-                continue
-
-            # the current profile is one available in the section
-            # merge with the general section, or make it one.
-            if not self.config.has_section(section_base):
-                self.config.add_section(section_base)
-            for name, value in self.config.items(section):
-                print('merged ({}, {}) into {} (profile is {})'.format(name,
-                        value, section_base, profile))
-                self.config.set(section_base, name, value)
 
     def _get_config_list_values(self, *args, **kwargs):
         kwargs['with_values'] = True
