@@ -81,11 +81,15 @@ class Buildozer:
     INFO = 1
     DEBUG = 2
     targetname = 'android'
+    specfilename = 'buildozer.spec'
+    global_buildozer_dir = Path.home() / '.buildozer'
+    global_platform_dir = global_buildozer_dir / targetname / 'platform'
+    global_packages_dir = global_buildozer_dir / targetname / 'packages'
+    global_cache_dir = global_buildozer_dir / 'cache'
 
     def __init__(self):
         self.log_level = 2
         self.environ = {}
-        self.specfilename = 'buildozer.spec'
         self.state = None
         self.build_id = None
         self.config = SafeConfigParser(allow_no_value=True)
@@ -699,22 +703,6 @@ class Buildozer:
     @property
     def gardenlibs_dir(self):
         return Path(self.buildozer_dir, 'libs')
-
-    @property
-    def global_buildozer_dir(self):
-        return Path.home() / '.buildozer'
-
-    @property
-    def global_platform_dir(self):
-        return self.global_buildozer_dir / self.targetname / 'platform'
-
-    @property
-    def global_packages_dir(self):
-        return self.global_buildozer_dir / self.targetname / 'packages'
-
-    @property
-    def global_cache_dir(self):
-        return self.global_buildozer_dir / 'cache'
 
     @property
     def package_full_name(self):
