@@ -38,14 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import logging
-import os
-import re
-import sh
-from sys import stdout, stderr
-from math import log10
 from collections import defaultdict
 from colorama import Style as Colo_Style, Fore as Colo_Fore
+from math import log10
+from sys import stdout, stderr
+import logging, os, re, sh
 
 # monkey patch to show full output
 sh.ErrorReturnCode.truncate_cap = 999999
