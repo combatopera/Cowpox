@@ -186,59 +186,6 @@ class TargetAndroid(Target):
             path.append(os.environ['PATH'])
         self.buildozer.environ['PATH'] = ':'.join(path)
 
-    def check_configuration_tokens(self):
-        errors = []
-
-        # check the permission
-        available_permissions = self._get_available_permissions()
-        if available_permissions:
-            permissions = self.buildozer.config.getlist(
-                'app', 'android.permissions', [])
-            for permission in permissions:
-                # no check on full named permission
-                # like com.google.android.providers.gsf.permission.READ_GSERVICES
-                if '.' in permission:
-                    continue
-                permission = permission.upper()
-                if permission not in available_permissions:
-                    errors.append(
-                        '[app] "android.permission" contain an unknown'
-                        ' permission {0}'.format(permission))
-        super().check_configuration_tokens(errors)
-
-    def _get_available_permissions(self):
-        key = 'android:available_permissions'
-        key_sdk = 'android:available_permissions_sdk'
-
-        current_platform_tools = self._android_get_installed_platform_tools_version()
-
-        refresh_permissions = False
-        sdk = self.buildozer.state.get(key_sdk, None)
-        if not sdk or sdk != current_platform_tools:
-            refresh_permissions = True
-        if key not in self.buildozer.state:
-            refresh_permissions = True
-        if not refresh_permissions:
-            return self.buildozer.state[key]
-
-        try:
-            self.buildozer.debug(
-                'Read available permissions from api-versions.xml')
-            import xml.etree.ElementTree as ET
-            fn = join(self.android_sdk_dir, 'platform-tools', 'api',
-                      'api-versions.xml')
-            with open(fn, encoding = 'utf-8') as fd:
-                doc = ET.fromstring(fd.read())
-            fields = doc.findall(
-                './/class[@name="android/Manifest$permission"]/field[@name]')
-            available_permissions = [x.attrib['name'] for x in fields]
-
-            self.buildozer.state[key] = available_permissions
-            self.buildozer.state[key_sdk] = current_platform_tools
-            return available_permissions
-        except:
-            return None
-
     def _install_apache_ant(self):
         ant_dir = self.apache_ant_dir
         if Path(ant_dir).exists():
@@ -457,11 +404,6 @@ class TargetAndroid(Target):
         self._install_android_sdk()
         self._install_android_ndk()
         self._install_android_packages()
-
-        # ultimate configuration check.
-        # some of our configuration cannot be check without platform.
-        self.check_configuration_tokens()
-
         self.buildozer.environ.update({
             'PACKAGES_PATH': self.buildozer.global_packages_dir,
             'ANDROIDSDK': self.android_sdk_dir,

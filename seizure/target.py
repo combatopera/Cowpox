@@ -51,16 +51,6 @@ class Target:
     def check_requirements(self):
         pass
 
-    def check_configuration_tokens(self, errors=None):
-        if errors:
-            self.buildozer.info('Check target configuration tokens')
-            self.buildozer.error(
-                '{0} error(s) found in the buildozer.spec'.format(
-                len(errors)))
-            for error in errors:
-                print(error)
-            exit(1)
-
     def compile_platform(self):
         pass
 
@@ -95,17 +85,9 @@ class Target:
                 last_command.append(arg)
         if last_command:
             result.append(last_command)
-
-        config_check = False
-
         for item in result:
             command, args = item[0], item[1:]
-            func = getattr(self, f"cmd_{command}")
-            if not config_check:
-                config_check = True
-                self.check_configuration_tokens()
-
-            func(args)
+            getattr(self, f"cmd_{command}")(args)
 
     def cmd_clean(self, *args):
         self.buildozer.clean_platform()
