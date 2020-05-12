@@ -988,23 +988,6 @@ class TargetAndroid(Target):
         self._serials = serials
         return serials
 
-    def cmd_adb(self, *args):
-        '''
-        Run adb from the Android SDK.
-        Args must come after --, or use
-        --alias to make an alias
-        '''
-        self.check_requirements()
-        self.install_platform()
-        args = args[0]
-        if args and args[0] == '--alias':
-            print('To set up ADB in this shell session, execute:')
-            print('    alias adb=$(buildozer {} adb --alias 2>&1 >/dev/null)'
-                  .format(self.targetname))
-            sys.stderr.write(self.adb_cmd + '\n')
-        else:
-            self.buildozer.cmd(' '.join([self.adb_cmd] + args))
-
     def cmd_deploy(self, *args):
         super().cmd_deploy(*args)
         state = self.buildozer.state
@@ -1029,23 +1012,6 @@ class TargetAndroid(Target):
         self.buildozer.environ.pop('ANDROID_SERIAL', None)
 
         self.buildozer.info('Application pushed.')
-
-    def cmd_logcat(self, *args):
-        '''Show the log from the device
-        '''
-        self.check_requirements()
-        serial = self.serials[0:]
-        if not serial:
-            return
-        filters = self.buildozer.config.getrawdefault(
-            "app", "android.logcat_filters", "", section_sep=":", split_char=" ")
-        filters = " ".join(filters)
-        self.buildozer.environ['ANDROID_SERIAL'] = serial[0]
-        self.buildozer.cmd('{adb} logcat {filters}'.format(adb=self.adb_cmd,
-                                                           filters=filters),
-                           cwd=self.buildozer.global_platform_dir,
-                           show_output=True)
-        self.buildozer.environ.pop('ANDROID_SERIAL', None)
 
 def generate_dist_folder_name(base_dist_name, arch_names=None):
     """Generate the distribution folder name to use, based on a
