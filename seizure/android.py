@@ -54,9 +54,6 @@ from sys import platform
 import logging, os, sys, traceback
 
 log = logging.getLogger(__name__)
-if sys.platform == 'win32':
-    raise NotImplementedError('Windows platform not yet working for Android')
-WSL = 'Microsoft' in uname()[2]
 ANDROID_API = '27'
 ANDROID_MINAPI = '21'
 APACHE_ANT_VERSION = '1.9.4'
@@ -182,30 +179,14 @@ class TargetAndroid(Target):
         return sdkmanager_path
 
     def check_requirements(self):
-        if platform in ('win32', 'cygwin'):
-            try:
-                self._set_win32_java_home()
-            except:
-                traceback.print_exc()
-            self.adb_cmd = join(self.android_sdk_dir, 'platform-tools',
-                                'adb.exe')
-            self.javac_cmd = self._locate_java('javac.exe')
-            self.keytool_cmd = self._locate_java('keytool.exe')
-        elif platform in ('darwin', ):
-            self.adb_cmd = join(self.android_sdk_dir, 'platform-tools', 'adb')
-            self.javac_cmd = self._locate_java('javac')
-            self.keytool_cmd = self._locate_java('keytool')
-        else:
-            self.adb_cmd = join(self.android_sdk_dir, 'platform-tools', 'adb')
-            self.javac_cmd = self._locate_java('javac')
-            self.keytool_cmd = self._locate_java('keytool')
-
-            # Check for C header <zlib.h>.
-            _, _, returncode_dpkg = self.buildozer.cmd('dpkg --version',
-                                                       break_on_error=False)
-            is_debian_like = (returncode_dpkg == 0)
-            if is_debian_like and not Path('/usr/include/zlib.h').exists():
-                raise BuildozerException('zlib headers must be installed, run: sudo apt-get install zlib1g-dev')
+        self.adb_cmd = join(self.android_sdk_dir, 'platform-tools', 'adb')
+        self.javac_cmd = self._locate_java('javac')
+        self.keytool_cmd = self._locate_java('keytool')
+        # Check for C header <zlib.h>.
+        _, _, returncode_dpkg = self.buildozer.cmd('dpkg --version', break_on_error = False)
+        is_debian_like = (returncode_dpkg == 0)
+        if is_debian_like and not Path('/usr/include/zlib.h').exists():
+            raise BuildozerException('zlib headers must be installed, run: sudo apt-get install zlib1g-dev')
         # Need to add internally installed ant to path for external tools
         # like adb to use
         path = [join(self.apache_ant_dir, 'bin')]
@@ -267,20 +248,6 @@ class TargetAndroid(Target):
             return available_permissions
         except:
             return None
-
-    def _set_win32_java_home(self):
-        if 'JAVA_HOME' in self.buildozer.environ:
-            return
-        import _winreg
-        with _winreg.OpenKey(
-                _winreg.HKEY_LOCAL_MACHINE,
-                r"SOFTWARE\JavaSoft\Java Development Kit") as jdk:  # @UndefinedVariable
-            current_version, _type = _winreg.QueryValueEx(
-                jdk, "CurrentVersion")  # @UndefinedVariable
-            with _winreg.OpenKey(jdk, current_version) as cv:  # @UndefinedVariable
-                java_home, _type = _winreg.QueryValueEx(
-                    cv, "JavaHome")  # @UndefinedVariable
-            self.buildozer.environ['JAVA_HOME'] = java_home
 
     def _locate_java(self, s):
         '''If JAVA_HOME is in the environ, return $JAVA_HOME/bin/s. Otherwise,
