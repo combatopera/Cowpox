@@ -397,7 +397,7 @@ class TargetAndroid(Target):
         cache_key = 'android:sdk_installation'
         cache_value = [
             self.android_api, self.android_minapi, self.android_ndk_version,
-            self.android_sdk_dir, self.android_ndk_dir
+            str(self.android_sdk_dir), str(self.android_ndk_dir)
         ]
         if self.buildozer.state.get(cache_key, None) == cache_value:
             return True
