@@ -80,6 +80,7 @@ class Buildozer:
     ERROR = 0
     INFO = 1
     DEBUG = 2
+    targetname = 'android'
 
     def __init__(self):
         self.log_level = 2
@@ -104,7 +105,6 @@ class Buildozer:
         self.user_bin_dir = self.config.getdefault('buildozer', 'bin_dir', None)
         if self.user_bin_dir:
             self.user_bin_dir = realpath(Path(self.root_dir, self.user_bin_dir))
-        self.targetname = None
         self.target = None
 
     def prepare_for_build(self):
@@ -803,7 +803,6 @@ class Buildozer:
         return '{}.{}'.format(package_domain, package_name)
 
     def android_debug(self):
-        self.targetname = 'android'
         self.target = TargetAndroid(self)
         self.check_build_layout()
         self.check_configuration_tokens()
