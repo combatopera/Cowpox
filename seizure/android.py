@@ -634,31 +634,6 @@ class TargetAndroid(Target):
                 check = False
         return check
 
-    def cmd_run(self, *args):
-        entrypoint = self.buildozer.config.getdefault(
-            'app', 'android.entrypoint')
-        if not entrypoint:
-            self.buildozer.config.set('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
-        super().cmd_run(*args)
-        entrypoint = self.buildozer.config.getdefault(
-            'app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
-
-        package = self._get_package()
-
-        # push on the device
-        for serial in self.serials:
-            self.buildozer.environ['ANDROID_SERIAL'] = serial
-            self.buildozer.info('Run on {}'.format(serial))
-            self.buildozer.cmd(
-                '{adb} shell am start -n {package}/{entry} -a {entry}'.format(
-                    adb=self.adb_cmd,
-                    package=package,
-                    entry=entrypoint),
-                cwd=self.buildozer.global_platform_dir)
-        self.buildozer.environ.pop('ANDROID_SERIAL', None)
-
-        self.buildozer.info('Application started.')
-
     def cmd_clean(self, *args):
         '''
         Clean the build and distribution
