@@ -45,7 +45,7 @@ from configparser import SafeConfigParser
 from fnmatch import fnmatch
 from lagoon import tar, unzip
 from os import walk, makedirs
-from os.path import dirname, realpath, splitext, expanduser
+from os.path import dirname, splitext, expanduser
 from pathlib import Path
 from pprint import pformat
 from pythonforandroid.mirror import Mirror
@@ -539,7 +539,7 @@ class Buildozer:
 
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.
-        source_dir = realpath(self.config.getdefault('app', 'source.dir', '.'))
+        source_dir = Path(self.config.getdefault('app', 'source.dir', '.')).resolve()
         include_exts = self.config.getlist('app', 'source.include_exts', '')
         exclude_exts = self.config.getlist('app', 'source.exclude_exts', '')
         exclude_dirs = self.config.getlist('app', 'source.exclude_dirs', '')
@@ -561,7 +561,7 @@ class Buildozer:
             # need to have sort-of normalization. Let's say you want to exclude
             # image directory but not images, the filtered_root must have a / at
             # the end, same for the exclude_dir. And then we can safely compare
-            filtered_root = root[len(source_dir) + 1:].lower()
+            filtered_root = root[len(str(source_dir)) + 1:].lower()
             if filtered_root:
                 filtered_root += '/'
 
@@ -620,12 +620,8 @@ class Buildozer:
                     if exclude_exts and ext in exclude_exts:
                         continue
                 sfn = Path(root, fn)
-                rfn = realpath(Path(app_dir, root[len(source_dir) + 1:], fn))
-                # ensure the directory exists
-                dfn = dirname(rfn)
-                self.mkdir(dfn)
-
-                # copy!
+                rfn = Path(app_dir, root[len(str(source_dir)) + 1:], fn).resolve()
+                self.mkdir(rfn.parent)
                 self.debug('Copy {0}'.format(sfn))
                 copyfile(sfn, rfn)
 
