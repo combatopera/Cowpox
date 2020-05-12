@@ -67,7 +67,7 @@ setup(
             'p4a=pythonforandroid.entrypoints:main',
         ],
         'distutils.commands': [
-            'apk = pythonforandroid.bdistapk:BdistAPK',
+            'apk=pythonforandroid.bdistapk:BdistAPK',
         ],
     },
 )
