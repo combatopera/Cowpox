@@ -96,7 +96,6 @@ class Buildozer:
         self.config.getbooldefault = self._get_config_bool
         self.config.getrawdefault = self._get_config_raw_default
         self.config.read(self.specfilename, 'utf-8')
-        self.check_configuration_tokens()
         set_config_from_envs(self.config)
         try:
             self.log_level = int(self.config.getdefault('buildozer', 'log_level', '2'))
@@ -294,46 +293,6 @@ class Buildozer:
 
         self.debug('Cwd {}'.format(kwargs.get('cwd')))
         return spawnu(command, **kwargs)
-
-    def check_configuration_tokens(self):
-        '''Ensure the spec file is 'correct'.
-        '''
-        self.info('Check configuration tokens')
-        get = self.config.getdefault
-        errors = []
-        adderror = errors.append
-        if not get('app', 'title', ''):
-            adderror('[app] "title" is missing')
-        if not get('app', 'source.dir', ''):
-            adderror('[app] "source.dir" is missing')
-
-        package_name = get('app', 'package.name', '')
-        if not package_name:
-            adderror('[app] "package.name" is missing')
-        elif package_name[0] in map(str, range(10)):
-            adderror('[app] "package.name" may not start with a number.')
-
-        version = get('app', 'version', '')
-        version_regex = get('app', 'version.regex', '')
-        if not version and not version_regex:
-            adderror('[app] One of "version" or "version.regex" must be set')
-        if version and version_regex:
-            adderror('[app] Conflict between "version" and "version.regex"'
-                     ', only one can be used.')
-        if version_regex and not get('app', 'version.filename', ''):
-            adderror('[app] "version.filename" is missing'
-                     ', required by "version.regex"')
-
-        orientation = get('app', 'orientation', 'landscape')
-        if orientation not in ('landscape', 'portrait', 'all', 'sensorLandscape'):
-            adderror('[app] "orientation" have an invalid value')
-
-        if errors:
-            self.error('{0} error(s) found in the buildozer.spec'.format(
-                len(errors)))
-            for error in errors:
-                print(error)
-            exit(1)
 
     def check_build_layout(self):
         self.mkdir(self.global_buildozer_dir)
@@ -768,7 +727,6 @@ class Buildozer:
     def android_debug(self):
         self.target = TargetAndroid(self)
         self.check_build_layout()
-        self.check_configuration_tokens()
         self.target.run_commands(['debug'])
 
     def _get_config_list_values(self, *args, **kwargs):
