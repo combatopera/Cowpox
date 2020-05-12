@@ -86,6 +86,13 @@ class Buildozer:
     global_platform_dir = global_buildozer_dir / targetname / 'platform'
     global_packages_dir = global_buildozer_dir / targetname / 'packages'
     global_cache_dir = global_buildozer_dir / 'cache'
+    root_dir = Path(specfilename).parent.resolve()
+    buildozer_dir = root_dir / '.buildozer'
+    bin_dir = root_dir / 'bin'
+    platform_dir = buildozer_dir / targetname / 'platform'
+    app_dir = buildozer_dir / targetname / 'app'
+    applibs_dir = buildozer_dir / 'applibs'
+    gardenlibs_dir = buildozer_dir / 'libs'
 
     def __init__(self):
         self.log_level = 2
@@ -105,9 +112,6 @@ class Buildozer:
             self.log_level = int(self.config.getdefault('buildozer', 'log_level', '2'))
         except Exception:
             pass
-        self.user_bin_dir = self.config.getdefault('buildozer', 'bin_dir', None)
-        if self.user_bin_dir:
-            self.user_bin_dir = realpath(Path(self.root_dir, self.user_bin_dir))
         self.target = None
 
     def prepare_for_build(self):
@@ -655,54 +659,6 @@ class Buildozer:
         (allowed characters: a-z, A-Z, 0-9, -, _)
         '''
         return re.sub('[^a-zA-Z0-9_\-]', '_', name)
-
-    @property
-    def root_dir(self):
-        return realpath(dirname(self.specfilename))
-
-    @property
-    def user_build_dir(self):
-        """The user-provided build dir, if any."""
-        # Check for a user-provided build dir
-        # Check the (deprecated) builddir token, for backwards compatibility
-        build_dir = self.config.getdefault('buildozer', 'builddir', None)
-        if build_dir is not None:
-            # for backwards compatibility, append .buildozer to builddir
-            build_dir = Path(build_dir, '.buildozer')
-        build_dir = self.config.getdefault('buildozer', 'build_dir', build_dir)
-
-        if build_dir is not None:
-            build_dir = realpath(Path(self.root_dir, build_dir))
-        return build_dir
-
-    @property
-    def buildozer_dir(self):
-        '''The directory in which to run the app build.'''
-        if self.user_build_dir is not None:
-            return self.user_build_dir
-        return Path(self.root_dir, '.buildozer')
-
-    @property
-    def bin_dir(self):
-        if self.user_bin_dir:
-            return self.user_bin_dir
-        return Path(self.root_dir, 'bin')
-
-    @property
-    def platform_dir(self):
-        return Path(self.buildozer_dir, self.targetname, 'platform')
-
-    @property
-    def app_dir(self):
-        return Path(self.buildozer_dir, self.targetname, 'app')
-
-    @property
-    def applibs_dir(self):
-        return Path(self.buildozer_dir, 'applibs')
-
-    @property
-    def gardenlibs_dir(self):
-        return Path(self.buildozer_dir, 'libs')
 
     @property
     def package_full_name(self):
