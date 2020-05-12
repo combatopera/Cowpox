@@ -41,17 +41,7 @@
 from pep517.envbuild import BuildEnvironment
 from pep517.wrappers import Pep517HookCaller
 from urllib.parse import urlparse, unquote as urlunquote
-import functools
-import os
-import pytoml
-import shutil
-import subprocess
-import sys
-import tarfile
-import tempfile
-import textwrap
-import time
-import zipfile
+import functools, os, pytoml, shutil, subprocess, sys, tarfile, tempfile, textwrap, time, zipfile
 
 def transform_dep_for_pip(dependency):
     if dependency.find("@") > 0 and (
