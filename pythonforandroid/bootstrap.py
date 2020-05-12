@@ -38,21 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import functools
-import glob
-import importlib
-import os
-from os.path import (join, dirname, isdir, normpath, splitext, basename)
+from .logger import shprint, info, logger, debug
+from .recipe import Recipe
+from .util import current_directory, ensure_dir, temp_directory, BuildInterruptingException
 from os import listdir, walk, sep
-import sh
-import shlex
-import shutil
-
-from pythonforandroid.logger import (shprint, info, logger, debug)
-from pythonforandroid.util import (
-    current_directory, ensure_dir, temp_directory, BuildInterruptingException)
-from pythonforandroid.recipe import Recipe
-
+from os.path import join, dirname, isdir, normpath, splitext, basename
+import functools, glob, importlib, os, sh, shlex, shutil
 
 def copy_files(src_root, dest_root, override=True):
     for root, dirnames, filenames in walk(src_root):
