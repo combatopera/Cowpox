@@ -66,7 +66,6 @@ DEFAULT_ARCH = 'armeabi-v7a'
 
 class TargetAndroid(Target):
 
-    targetname = 'android'
     p4a_apk_cmd = "apk --debug --bootstrap="
     p4a_recommended_ndk_version = None
     javac_cmd = 'javac'
