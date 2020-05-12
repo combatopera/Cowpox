@@ -45,7 +45,7 @@ from configparser import SafeConfigParser
 from fnmatch import fnmatch
 from lagoon import tar, unzip
 from os import walk, makedirs
-from os.path import dirname, splitext, expanduser
+from os.path import splitext, expanduser
 from pathlib import Path
 from pprint import pformat
 from pythonforandroid.mirror import Mirror
@@ -450,7 +450,7 @@ class Buildozer:
             source = Path(cwd, source)
             target = Path(cwd, target)
         self.debug('Rename {0} to {1}'.format(source, target))
-        if not os.path.isdir(os.path.dirname(target)):
+        if not target.parent.is_dir():
             self.error(('Rename {0} to {1} fails because {2} is not a '
                         'directory').format(source, target, target))
         move(source, target)
@@ -634,9 +634,9 @@ class Buildozer:
             copytree(self.gardenlibs_dir, Path(self.app_dir, 'libs'))
 
     def _add_sitecustomize(self):
-        copyfile(Path(dirname(__file__), 'sitecustomize.py'), Path(self.app_dir, 'sitecustomize.py'))
-        main_py = Path(self.app_dir, 'service', 'main.py')
-        if not Path(main_py).exists():
+        copyfile(Path(__file__).parent / 'sitecustomize.py', self.app_dir / 'sitecustomize.py')
+        main_py = self.app_dir / 'service' / 'main.py'
+        if not main_py.exists():
             #self.error('Unable to patch main_py to add applibs directory.')
             return
 
