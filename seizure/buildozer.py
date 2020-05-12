@@ -308,10 +308,10 @@ class Buildozer:
         self.mkdir(self.buildozer_dir)
         self.mkdir(self.bin_dir)
         self.mkdir(self.applibs_dir)
-        self.state = JsonStore(Path(self.buildozer_dir, 'state.db'))
-        self.mkdir(Path(self.global_platform_dir, self.targetname, 'platform'))
-        self.mkdir(Path(self.buildozer_dir, self.targetname, 'platform'))
-        self.mkdir(Path(self.buildozer_dir, self.targetname, 'app'))
+        self.state = JsonStore(self.buildozer_dir / 'state.db')
+        self.mkdir(self.global_platform_dir / self.targetname / 'platform')
+        self.mkdir(self.buildozer_dir / self.targetname / 'platform')
+        self.mkdir(self.buildozer_dir / self.targetname / 'app')
 
     def check_application_requirements(self):
         '''Ensure the application requirements are all available and ready to be
