@@ -40,54 +40,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""
-Tool for packaging Python apps for Android
-==========================================
-
-This module defines the entry point for command line and programmatic use.
-"""
-
-from __future__ import print_function
-from os import environ
-from pythonforandroid import __version__
-from pythonforandroid.pythonpackage import get_dep_names_of_package
-from pythonforandroid.recommendations import (
-    RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API, print_recommendations)
-from pythonforandroid.util import BuildInterruptingException
-from pythonforandroid.entrypoints import main
-import sys
-from sys import platform
-from os.path import (join, dirname, realpath, exists, expanduser, basename)
-import os
-import glob
-import shutil
-import re
-import shlex
-from functools import wraps
-
-import argparse
-import sh
-import imp # FIXME: Retire.
+from . import __version__
+from .bootstrap import Bootstrap
+from .build import Context, build_recipes
+from .distribution import Distribution, pretty_log_dists
+from .entrypoints import main
+from .graph import get_recipe_order_and_bootstrap
+from .logger import logger, info, warning, setup_color, Out_Style, Out_Fore, info_notify, info_main, shprint
+from .pythonpackage import get_dep_names_of_package
+from .recipe import Recipe
+from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API, print_recommendations
+from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
-import logging
 from distutils.version import LooseVersion
-
-from pythonforandroid.recipe import Recipe
-from pythonforandroid.logger import (logger, info, warning, setup_color,
-                                     Out_Style, Out_Fore,
-                                     info_notify, info_main, shprint)
-from pythonforandroid.util import current_directory
-from pythonforandroid.bootstrap import Bootstrap
-from pythonforandroid.distribution import Distribution, pretty_log_dists
-from pythonforandroid.graph import get_recipe_order_and_bootstrap
-from pythonforandroid.build import Context, build_recipes
+from functools import wraps
+from os import environ
+from os.path import join, dirname, realpath, exists, expanduser, basename
+from sys import platform
+import argparse, glob, imp, logging, os, re, sh, shlex, shutil, sys # FIXME: Retire imp.
 
 user_dir = dirname(realpath(os.path.curdir))
 toolchain_dir = dirname(__file__)
 sys.path.insert(0, join(toolchain_dir, "tools", "external"))
-
 APK_SUFFIX = '.apk'
-
 
 def add_boolean_option(parser, names, no_names=None,
                        default=True, dest=None, description=None):
@@ -1179,6 +1154,5 @@ class ToolchainCL(object):
                 recipe_str += '{Style.RESET_ALL}'.format(Style=Out_Style)
                 print(recipe_str)
 
-
-if __name__ == "__main__":
+if __name__ == "__main__": # TODO: Retire.
     main()
