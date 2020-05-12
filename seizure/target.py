@@ -46,7 +46,6 @@ class Target:
     def __init__(self, buildozer):
         self.buildozer = buildozer
         self.build_mode = 'debug'
-        self.platform_update = False
 
     def check_requirements(self):
         pass
@@ -60,48 +59,12 @@ class Target:
     def get_available_packages(self):
         return ['kivy']
 
-    def run_commands(self, args):
-        if not args:
-            self.buildozer.error('Missing target command')
-            exit(1)
-
-        result = []
-        last_command = []
-        while args:
-            arg = args.pop(0)
-            if arg == '--':
-                if last_command:
-                    last_command += args
-                    break
-            elif not arg.startswith('--'):
-                if last_command:
-                    result.append(last_command)
-                    last_command = []
-                last_command.append(arg)
-            else:
-                if not last_command:
-                    self.buildozer.error('Argument passed without a command')
-                    exit(1)
-                last_command.append(arg)
-        if last_command:
-            result.append(last_command)
-        for item in result:
-            command, args = item[0], item[1:]
-            getattr(self, f"cmd_{command}")(args)
-
-    def cmd_clean(self, *args):
-        self.buildozer.clean_platform()
-
-    def cmd_update(self, *args):
-        self.platform_update = True
-        self.buildozer.prepare_for_build()
-
-    def cmd_debug(self, *args):
+    def cmd_debug(self):
         self.buildozer.prepare_for_build()
         self.build_mode = 'debug'
         self.buildozer.build()
 
-    def cmd_release(self, *args):
+    def cmd_release(self):
         error = self.buildozer.error
         self.buildozer.prepare_for_build()
         if self.buildozer.config.get("app", "package.domain") == "org.test":

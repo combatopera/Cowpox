@@ -565,13 +565,6 @@ class TargetAndroid(Target):
                 check = False
         return check
 
-    def cmd_clean(self, *args):
-        '''
-        Clean the build and distribution
-        '''
-        self._p4a("clean_builds")
-        self._p4a("clean_dists")
-
     def _get_package(self):
         config = self.buildozer.config
         package_domain = config.getdefault('app', 'package.domain', '')
