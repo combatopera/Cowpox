@@ -194,11 +194,9 @@ class NoAbbrevParser(argparse.ArgumentParser):
     def _get_option_tuples(self, option_string):
         return []
 
-
-class ToolchainCL(object):
+class ToolchainCL:
 
     def __init__(self):
-
         argv = sys.argv
         self.warn_on_carriage_return_args(argv)
         # Buildozer used to pass these arguments in a now-invalid order
@@ -341,21 +339,10 @@ class ToolchainCL(object):
             default=False,
             description='Copy libraries instead of using biglink (Android 4.3+)'
         )
-
         self._read_configuration()
-
-        subparsers = parser.add_subparsers(dest='subparser_name',
-                                           help='The command to run')
-
+        subparsers = parser.add_subparsers(dest = 'subparser_name', help = 'The command to run')
         def add_parser(subparsers, *args, **kwargs):
-            """
-            argparse in python2 doesn't support the aliases option,
-            so we just don't provide the aliases there.
-            """
-            if 'aliases' in kwargs and sys.version_info.major < 3:
-                kwargs.pop('aliases')
             return subparsers.add_parser(*args, **kwargs)
-
         add_parser(
             subparsers,
             'recommendations',
