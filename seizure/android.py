@@ -65,9 +65,12 @@ DEFAULT_SDK_TAG = '4333796'
 DEFAULT_ARCH = 'armeabi-v7a'
 
 class TargetAndroid(Target):
+
     targetname = 'android'
     p4a_apk_cmd = "apk --debug --bootstrap="
     p4a_recommended_ndk_version = None
+    javac_cmd = 'javac'
+    keytool_cmd = 'keytool'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -178,8 +181,6 @@ class TargetAndroid(Target):
 
     def check_requirements(self):
         self.adb_cmd = join(self.android_sdk_dir, 'platform-tools', 'adb')
-        self.javac_cmd = self._locate_java('javac')
-        self.keytool_cmd = self._locate_java('keytool')
         # Check for C header <zlib.h>.
         _, _, returncode_dpkg = self.buildozer.cmd('dpkg --version', break_on_error = False)
         is_debian_like = (returncode_dpkg == 0)
@@ -246,15 +247,6 @@ class TargetAndroid(Target):
             return available_permissions
         except:
             return None
-
-    def _locate_java(self, s):
-        '''If JAVA_HOME is in the environ, return $JAVA_HOME/bin/s. Otherwise,
-        return s.
-        '''
-        if 'JAVA_HOME' in self.buildozer.environ:
-            return join(self.buildozer.environ['JAVA_HOME'], 'bin', s)
-        else:
-            return s
 
     def _install_apache_ant(self):
         ant_dir = self.apache_ant_dir
