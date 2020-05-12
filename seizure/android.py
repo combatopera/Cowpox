@@ -139,34 +139,26 @@ class TargetAndroid(Target):
 
     @property
     def android_sdk_dir(self):
-        directory = expanduser(self.buildozer.config.getdefault(
-            'app', 'android.sdk_path', ''))
+        directory = expanduser(self.buildozer.config.getdefault('app', 'android.sdk_path', ''))
         if directory:
             return realpath(directory)
-        return join(self.buildozer.global_platform_dir,
-                    'android-sdk')
+        return self.buildozer.global_platform_dir / 'android-sdk'
 
     @property
     def android_ndk_dir(self):
-        directory = expanduser(self.buildozer.config.getdefault(
-            'app', 'android.ndk_path', ''))
+        directory = expanduser(self.buildozer.config.getdefault('app', 'android.ndk_path', ''))
         if directory:
             return realpath(directory)
-        version = self.buildozer.config.getdefault('app', 'android.ndk',
-                                                   self.android_ndk_version)
-        return join(self.buildozer.global_platform_dir,
-                    'android-ndk-r{0}'.format(version))
+        version = self.buildozer.config.getdefault('app', 'android.ndk', self.android_ndk_version)
+        return self.buildozer.global_platform_dir / f"android-ndk-r{version}"
 
     @property
     def apache_ant_dir(self):
-        directory = expanduser(self.buildozer.config.getdefault(
-            'app', 'android.ant_path', ''))
+        directory = expanduser(self.buildozer.config.getdefault('app', 'android.ant_path', ''))
         if directory:
             return realpath(directory)
-        version = self.buildozer.config.getdefault('app', 'android.ant',
-                                                   APACHE_ANT_VERSION)
-        return join(self.buildozer.global_platform_dir,
-                    'apache-ant-{0}'.format(version))
+        version = self.buildozer.config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)
+        return self.buildozer.global_platform_dir / f"apache-ant-{version}"
 
     @property
     def sdkmanager_path(self):
@@ -295,9 +287,7 @@ class TargetAndroid(Target):
         self.buildozer.download(url, archive, self.buildozer.global_platform_dir)
         self.buildozer.info('Unpacking Android NDK')
         self.buildozer.file_extract(archive, self.buildozer.global_platform_dir)
-        self.buildozer.file_rename(unpacked,
-                                   ndk_dir,
-                                   cwd=self.buildozer.global_platform_dir)
+        self.buildozer.file_rename(unpacked, ndk_dir, cwd = self.buildozer.global_platform_dir)
         self.buildozer.info('Android NDK installation done.')
         return ndk_dir
 
