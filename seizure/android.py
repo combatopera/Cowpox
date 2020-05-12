@@ -988,31 +988,6 @@ class TargetAndroid(Target):
         self._serials = serials
         return serials
 
-    def cmd_deploy(self, *args):
-        super().cmd_deploy(*args)
-        state = self.buildozer.state
-        if 'android:latestapk' not in state:
-            self.buildozer.error('No APK built yet. Run "debug" first.')
-
-        if state.get('android:latestmode', '') != 'debug':
-            self.buildozer.error('Only debug APK are supported for deploy')
-
-        # search the APK in the bin dir
-        apk = state['android:latestapk']
-        full_apk = join(self.buildozer.bin_dir, apk)
-        if not Path(full_apk).exists():
-            self.buildozer.error('Unable to found the latest APK. Please run "debug" again.')
-        # push on the device
-        for serial in self.serials:
-            self.buildozer.environ['ANDROID_SERIAL'] = serial
-            self.buildozer.info('Deploy on {}'.format(serial))
-            self.buildozer.cmd('{0} install -r "{1}"'.format(
-                               self.adb_cmd, full_apk),
-                               cwd=self.buildozer.global_platform_dir)
-        self.buildozer.environ.pop('ANDROID_SERIAL', None)
-
-        self.buildozer.info('Application pushed.')
-
 def generate_dist_folder_name(base_dist_name, arch_names=None):
     """Generate the distribution folder name to use, based on a
     combination of the input arguments.

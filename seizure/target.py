@@ -165,8 +165,5 @@ class Target:
         self.build_mode = 'release'
         self.buildozer.build()
 
-    def cmd_deploy(self, *args):
-        self.buildozer.prepare_for_build()
-
     def cmd_run(self, *args):
         self.buildozer.prepare_for_build()
