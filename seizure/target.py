@@ -104,12 +104,7 @@ class Target:
 
         for item in result:
             command, args = item[0], item[1:]
-            if not hasattr(self, 'cmd_{0}'.format(command)):
-                self.buildozer.error('Unknown command {0}'.format(command))
-                exit(1)
-
-            func = getattr(self, 'cmd_{0}'.format(command))
-
+            func = getattr(self, f"cmd_{command}")
             need_config_check = not hasattr(func, '__no_config')
             if need_config_check and not config_check:
                 config_check = True
