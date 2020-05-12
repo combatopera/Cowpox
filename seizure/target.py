@@ -41,10 +41,6 @@
 from sys import exit
 import os
 
-def no_config(f):
-    f.__no_config = True
-    return f
-
 class Target:
 
     def __init__(self, buildozer):
