@@ -38,16 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .logger import info, info_notify, warning, Err_Style, Err_Fore
+from .util import current_directory, BuildInterruptingException
 from os.path import exists, join
-import glob
-import json
-
-from pythonforandroid.logger import (info, info_notify, warning, Err_Style, Err_Fore)
-from pythonforandroid.util import current_directory, BuildInterruptingException
 from shutil import rmtree
+import glob, json
 
-
-class Distribution(object):
+class Distribution:
     '''State container for information about a distribution (i.e. an
     Android project).
 
