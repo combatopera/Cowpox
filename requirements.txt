@@ -1,17 +1,17 @@
-pexpect
-# TODO: Use recent Cython for prebuilt wheel.
-Cython==0.28.6
-wheel
-pip
-lagoon
-soak
-pyven>=37
 appdirs
 colorama>=0.3.3
-jinja2
-six
-sh>=1.10
-pep517<0.7.0
-pytoml
-virtualenv<20
+# TODO: Use recent Cython for prebuilt wheel.
+Cython==0.28.6
 diapyr
+jinja2
+lagoon
+pep517<0.7.0
+pexpect
+pip
+pytoml
+pyven>=37
+sh>=1.10
+six
+soak
+virtualenv<20
+wheel
