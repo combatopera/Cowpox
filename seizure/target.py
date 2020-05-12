@@ -43,18 +43,6 @@ class Target:
     def __init__(self, buildozer):
         self.buildozer = buildozer
 
-    def check_requirements(self):
-        pass
-
-    def compile_platform(self):
-        pass
-
-    def install_platform(self):
-        pass
-
-    def get_available_packages(self):
-        return ['kivy']
-
     def cmd_debug(self):
         self.buildozer.prepare_for_build()
         self.build_mode = 'debug'
