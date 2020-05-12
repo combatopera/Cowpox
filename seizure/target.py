@@ -42,7 +42,6 @@ class Target:
 
     def __init__(self, buildozer):
         self.buildozer = buildozer
-        self.build_mode = 'debug'
 
     def check_requirements(self):
         pass
