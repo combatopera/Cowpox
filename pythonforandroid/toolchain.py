@@ -55,62 +55,6 @@ from pythonforandroid.recommendations import (
     RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API, print_recommendations)
 from pythonforandroid.util import BuildInterruptingException
 from pythonforandroid.entrypoints import main
-
-
-def check_python_dependencies():
-    # Check if the Python requirements are installed. This appears
-    # before the imports because otherwise they're imported elsewhere.
-
-    # Using the ok check instead of failing immediately so that all
-    # errors are printed at once
-
-    from distutils.version import LooseVersion
-    from importlib import import_module
-    import sys
-
-    ok = True
-
-    modules = [('colorama', '0.3.3'), 'appdirs', ('sh', '1.10'), 'jinja2',
-               'six']
-
-    for module in modules:
-        if isinstance(module, tuple):
-            module, version = module
-        else:
-            version = None
-
-        try:
-            import_module(module)
-        except ImportError:
-            if version is None:
-                print('ERROR: The {} Python module could not be found, please '
-                      'install it.'.format(module))
-                ok = False
-            else:
-                print('ERROR: The {} Python module could not be found, '
-                      'please install version {} or higher'.format(
-                          module, version))
-                ok = False
-        else:
-            if version is None:
-                continue
-            try:
-                cur_ver = sys.modules[module].__version__
-            except AttributeError:  # this is sometimes not available
-                continue
-            if LooseVersion(cur_ver) < LooseVersion(version):
-                print('ERROR: {} version is {}, but python-for-android needs '
-                      'at least {}.'.format(module, cur_ver, version))
-                ok = False
-
-    if not ok:
-        print('python-for-android is exiting due to the errors logged above')
-        exit(1)
-
-
-check_python_dependencies()
-
-
 import sys
 from sys import platform
 from os.path import (join, dirname, realpath, exists, expanduser, basename)
