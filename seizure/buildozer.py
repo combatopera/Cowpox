@@ -302,17 +302,6 @@ class Buildozer:
         self.debug('Cwd {}'.format(kwargs.get('cwd')))
         return spawnu(command, **kwargs)
 
-    def check_build_layout(self):
-        self.mkdir(self.global_buildozer_dir)
-        self.mkdir(self.global_cache_dir)
-        self.mkdir(self.buildozer_dir)
-        self.mkdir(self.bin_dir)
-        self.mkdir(self.applibs_dir)
-        self.state = JsonStore(self.buildozer_dir / 'state.db')
-        self.mkdir(self.global_platform_dir / self.targetname / 'platform')
-        self.mkdir(self.buildozer_dir / self.targetname / 'platform')
-        self.mkdir(self.buildozer_dir / self.targetname / 'app')
-
     def check_application_requirements(self):
         '''Ensure the application requirements are all available and ready to be
         packaged as well.
@@ -666,7 +655,9 @@ class Buildozer:
 
     def android_debug(self):
         self.target = TargetAndroid(self)
-        self.check_build_layout()
+        for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'app':
+            path.mkdir(parents = True, exist_ok = True)
+        self.state = JsonStore(self.buildozer_dir / 'state.db')
         self.target.run_commands(['debug'])
 
     def _get_config_list_values(self, *args, **kwargs):
