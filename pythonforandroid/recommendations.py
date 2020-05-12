@@ -38,14 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""Simple functions for checking dependency versions."""
-
-import sys
+from .logger import info, warning
+from .util import BuildInterruptingException
 from distutils.version import LooseVersion
 from os.path import join
-
-from pythonforandroid.logger import info, warning
-from pythonforandroid.util import BuildInterruptingException
+import sys
 
 # We only check the NDK major version
 MIN_NDK_VERSION = 19
