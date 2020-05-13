@@ -72,21 +72,21 @@ class TargetAndroid:
 
     def __init__(self, buildozer):
         self.buildozer = buildozer
-        self._arch = self.buildozer.config.getdefault('app', 'android.arch', DEFAULT_ARCH)
-        self._build_dir = join(self.buildozer.platform_dir, 'build-{}'.format(self._arch))
+        self._arch = buildozer.config.getdefault('app', 'android.arch', DEFAULT_ARCH)
+        self._build_dir = join(buildozer.platform_dir, 'build-{}'.format(self._arch))
         self._p4a_cmd = '{} -m pythonforandroid.toolchain '.format(sys.executable)
-        self._p4a_bootstrap = self.buildozer.config.getdefault('app', 'p4a.bootstrap', 'sdl2')
+        self._p4a_bootstrap = buildozer.config.getdefault('app', 'p4a.bootstrap', 'sdl2')
         self.p4a_apk_cmd += self._p4a_bootstrap
         color = 'always' if USE_COLOR else 'never'
         self.extra_p4a_args = ' --color={} --storage-dir="{}"'.format(color, self._build_dir)
         # minapi should match ndk-api, so can use the same default if
         # nothing is specified
-        ndk_api = self.buildozer.config.getdefault('app', 'android.ndk_api', self.android_minapi)
+        ndk_api = buildozer.config.getdefault('app', 'android.ndk_api', self.android_minapi)
         self.extra_p4a_args += ' --ndk-api={}'.format(ndk_api)
-        hook = self.buildozer.config.getdefault("app", "p4a.hook", None)
+        hook = buildozer.config.getdefault("app", "p4a.hook", None)
         if hook is not None:
             self.extra_p4a_args += ' --hook={}'.format(realpath(hook))
-        port = self.buildozer.config.getdefault('app', 'p4a.port', None)
+        port = buildozer.config.getdefault('app', 'p4a.port', None)
         if port is not None:
             self.extra_p4a_args += ' --port={}'.format(port)
         self.warn_on_deprecated_tokens()
