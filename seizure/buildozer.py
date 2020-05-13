@@ -50,8 +50,8 @@ from pythonforandroid.mirror import Mirror
 from re import search
 from shutil import copyfile, rmtree, copytree, move
 from subprocess import Popen, PIPE
-from sys import stdout, stderr, exit
-import codecs, colorama, fcntl, logging, os, select, sys
+from sys import stdout, stderr
+import codecs, colorama, fcntl, logging, os, select
 
 log = logging.getLogger(__name__)
 colorama.init()
@@ -238,15 +238,6 @@ class Buildozer:
         onlyname = lambda x: x.split('==')[0]  # noqa: E731
         requirements = [x for x in requirements if onlyname(x) not in
                         target_available_packages]
-
-        if requirements and hasattr(sys, 'real_prefix'):
-            e = self.error
-            e('virtualenv is needed to install pure-Python modules, but')
-            e('virtualenv does not support nesting, and you are running')
-            e('buildozer in one. Please run buildozer outside of a')
-            e('virtualenv instead.')
-            exit(1)
-
         # did we already installed the libs ?
         if Path(self.applibs_dir).exists() and self.state.get('cache.applibs', '') == requirements:
             self.debug('Application requirements already installed, pass')
