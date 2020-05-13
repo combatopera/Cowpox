@@ -461,15 +461,9 @@ class Buildozer:
         exclude_exts = self.config.getlist('app', 'source.exclude_exts', '')
         exclude_dirs = self.config.getlist('app', 'source.exclude_dirs', '')
         exclude_patterns = self.config.getlist('app', 'source.exclude_patterns', '')
-        include_patterns = self.config.getlist('app',
-                                               'source.include_patterns',
-                                               '')
-        app_dir = self.app_dir
-
+        include_patterns = self.config.getlist('app', 'source.include_patterns', '')
         self.debug('Copy application source from {}'.format(source_dir))
-
         rmtree(self.app_dir)
-
         for root, dirs, files in walk(source_dir, followlinks=True):
             # avoid hidden directory
             if True in [x.startswith('.') for x in root.split(os.sep)]:
@@ -537,18 +531,18 @@ class Buildozer:
                     if exclude_exts and ext in exclude_exts:
                         continue
                 sfn = Path(root, fn)
-                rfn = Path(app_dir, root[len(str(source_dir)) + 1:], fn).resolve()
+                rfn = (self.app_dir / root[len(str(source_dir)) + 1:] / fn).resolve()
                 self.mkdir(rfn.parent)
                 self.debug('Copy {0}'.format(sfn))
                 copyfile(sfn, rfn)
 
     def _copy_application_libs(self):
         # copy also the libs
-        copytree(self.applibs_dir, Path(self.app_dir, '_applibs'))
+        copytree(self.applibs_dir, self.app_dir / '_applibs')
 
     def _copy_garden_libs(self):
-        if Path(self.gardenlibs_dir).exists():
-            copytree(self.gardenlibs_dir, Path(self.app_dir, 'libs'))
+        if self.gardenlibs_dir.exists():
+            copytree(self.gardenlibs_dir, self.app_dir / 'libs')
 
     def _add_sitecustomize(self):
         copyfile(Path(__file__).parent / 'sitecustomize.py', self.app_dir / 'sitecustomize.py')
