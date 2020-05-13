@@ -572,7 +572,7 @@ class Buildozer:
         return '{}.{}'.format(package_domain, package_name)
 
     def android_debug(self):
-        target = TargetAndroid(self.config, self)
+        target = TargetAndroid(self.config, self, 'debug')
         for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'app':
             path.mkdir(parents = True, exist_ok = True)
         self.state = JsonStore(self.buildozer_dir / 'state.db')
@@ -587,7 +587,6 @@ class Buildozer:
         self.check_garden_requirements()
         self.info('Compile platform')
         target.compile_platform()
-        target.build_mode = 'debug'
         self.build_id = int(self.state.get('cache.build_id', '0')) + 1
         self.state['cache.build_id'] = str(self.build_id)
         self.info('Build the application #{}'.format(self.build_id))

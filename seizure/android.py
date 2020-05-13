@@ -69,7 +69,7 @@ class TargetAndroid:
     javac_cmd = 'javac'
     keytool_cmd = 'keytool'
 
-    def __init__(self, config, buildozer):
+    def __init__(self, config, buildozer, build_mode):
         self.config = config
         self.buildozer = buildozer
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
@@ -89,6 +89,7 @@ class TargetAndroid:
         port = config.getdefault('app', 'p4a.port', None)
         if port is not None:
             self.extra_p4a_args += ' --port={}'.format(port)
+        self.build_mode = build_mode
 
     def _p4a(self, cmd, **kwargs):
         return self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args, **kwargs)
