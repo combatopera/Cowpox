@@ -424,10 +424,6 @@ class Buildozer:
         # copy also the libs
         copytree(self.applibs_dir, self.app_dir / '_applibs')
 
-    def _copy_garden_libs(self):
-        if self.gardenlibs_dir.exists():
-            copytree(self.gardenlibs_dir, self.app_dir / 'libs')
-
     def _add_sitecustomize(self):
         copyfile(Path(__file__).parent / 'sitecustomize.py', self.app_dir / 'sitecustomize.py')
         main_py = self.app_dir / 'service' / 'main.py'
@@ -472,7 +468,6 @@ class Buildozer:
         self.info('Build the application #{}'.format(self.build_id))
         self._copy_application_sources()
         self._copy_application_libs()
-        self._copy_garden_libs()
         self._add_sitecustomize()
         self.info('Package the application')
         target.build_package()
