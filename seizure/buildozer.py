@@ -44,7 +44,7 @@ from .jsonstore import JsonStore
 from fnmatch import fnmatch
 from lagoon import tar, unzip
 from os import walk, makedirs
-from os.path import splitext, expanduser
+from os.path import splitext
 from pathlib import Path
 from pprint import pformat
 from pythonforandroid.mirror import Mirror
@@ -52,7 +52,7 @@ from re import search
 from shutil import copyfile, rmtree, copytree, move
 from subprocess import Popen, PIPE
 from sys import stdout, stderr, exit
-import codecs, colorama, fcntl, logging, os, re, select, sys
+import codecs, colorama, fcntl, logging, os, select, sys
 
 log = logging.getLogger(__name__)
 colorama.init()
