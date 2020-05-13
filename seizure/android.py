@@ -73,7 +73,7 @@ class TargetAndroid:
     def __init__(self, buildozer):
         self.buildozer = buildozer
         self._arch = buildozer.config.getdefault('app', 'android.arch', DEFAULT_ARCH)
-        self._build_dir = join(buildozer.platform_dir, 'build-{}'.format(self._arch))
+        self._build_dir = buildozer.platform_dir / f"build-{self._arch}"
         self._p4a_cmd = '{} -m pythonforandroid.toolchain '.format(sys.executable)
         self._p4a_bootstrap = buildozer.config.getdefault('app', 'p4a.bootstrap', 'sdl2')
         self.p4a_apk_cmd += self._p4a_bootstrap
@@ -153,8 +153,7 @@ class TargetAndroid:
 
     @property
     def sdkmanager_path(self):
-        sdkmanager_path = join(
-            self.android_sdk_dir, 'tools', 'bin', 'sdkmanager')
+        sdkmanager_path = self.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
         if not os.path.isfile(sdkmanager_path):
             raise BuildozerException(
                 ('sdkmanager path "{}" does not exist, sdkmanager is not'
@@ -162,7 +161,7 @@ class TargetAndroid:
         return sdkmanager_path
 
     def check_requirements(self):
-        self.adb_cmd = join(self.android_sdk_dir, 'platform-tools', 'adb')
+        self.adb_cmd = self.android_sdk_dir / 'platform-tools' / 'adb'
         # Check for C header <zlib.h>.
         _, _, returncode_dpkg = self.buildozer.cmd('dpkg --version', break_on_error = False)
         is_debian_like = (returncode_dpkg == 0)
@@ -170,12 +169,12 @@ class TargetAndroid:
             raise BuildozerException('zlib headers must be installed, run: sudo apt-get install zlib1g-dev')
         # Need to add internally installed ant to path for external tools
         # like adb to use
-        path = [join(self.apache_ant_dir, 'bin')]
+        path = [str(self.apache_ant_dir / 'bin')]
         if 'PATH' in self.buildozer.environ:
             path.append(self.buildozer.environ['PATH'])
         else:
             path.append(os.environ['PATH'])
-        self.buildozer.environ['PATH'] = ':'.join(path)
+        self.buildozer.environ['PATH'] = os.pathsep.join(path)
 
     def _install_apache_ant(self):
         ant_dir = self.apache_ant_dir
@@ -196,7 +195,7 @@ class TargetAndroid:
 
     def _install_android_sdk(self):
         sdk_dir = self.android_sdk_dir
-        if Path(sdk_dir).exists():
+        if sdk_dir.exists():
             self.buildozer.info('Android SDK found at {0}'.format(sdk_dir))
             return sdk_dir
 
@@ -249,36 +248,20 @@ class TargetAndroid:
         return build_tools_versions
 
     def _android_get_installed_platform_tools_version(self):
-        """
-        Crudely parse out the installed platform-tools version
-        """
-
-        platform_tools_dir = os.path.join(
-            self.android_sdk_dir,
-            'platform-tools')
-
-        if not os.path.exists(platform_tools_dir):
+        platform_tools_dir = self.android_sdk_dir / 'platform-tools'
+        if not platform_tools_dir.exists():
             return None
-
-        data_file = os.path.join(platform_tools_dir, 'source.properties')
-        if not os.path.exists(data_file):
+        data_file = platform_tools_dir / 'source.properties'
+        if not data_file.exists():
             return None
-
-        with open(data_file, 'r') as fileh:
+        with data_file.open() as fileh:
             lines = fileh.readlines()
-
         for line in lines:
             if line.startswith('Pkg.Revision='):
-                break
-        else:
-            self.buildozer.error('Read {} but found no Pkg.Revision'.format(data_file))
-            # Don't actually exit, in case the build env is
-            # okay. Something else will fault if it's important.
-            return None
-
-        revision = line.split('=')[1].strip()
-
-        return revision
+                return line.split('=')[1].strip()
+        self.buildozer.error('Read {} but found no Pkg.Revision'.format(data_file))
+        # Don't actually exit, in case the build env is
+        # okay. Something else will fault if it's important.
 
     def _android_update_sdk(self, *sdkmanager_commands):
         """Update the tools and package-tools if possible"""
@@ -376,8 +359,8 @@ class TargetAndroid:
                         latest_v_build_tools))
         # 3. finally, install the android for the current api
         self.buildozer.info('Downloading platform api target if necessary')
-        android_platform = join(self.android_sdk_dir, 'platforms', 'android-{}'.format(self.android_api))
-        if not Path(android_platform).exists():
+        android_platform = self.android_sdk_dir / 'platforms' / f"android-{self.android_api}"
+        if not android_platform.exists():
             if not skip_upd:
                 self._sdkmanager('"platforms;android-{}"'.format(self.android_api))
             else:
@@ -445,16 +428,14 @@ class TargetAndroid:
         expected_dist_name = generate_dist_folder_name(dist_name, arch_names=[arch])
 
         # If the expected dist name does exist, simply use that
-        expected_dist_dir = join(self._build_dir, 'dists', expected_dist_name)
-        if exists(expected_dist_dir):
+        expected_dist_dir = self._build_dir / 'dists' / expected_dist_name
+        if expected_dist_dir.exists():
             return expected_dist_dir
-
         # For backwards compatibility, check if a directory without
         # the arch exists. If so, this is probably the target dist.
-        old_dist_dir = join(self._build_dir, 'dists', dist_name)
-        if exists(old_dist_dir):
+        old_dist_dir = self._build_dir / 'dists' / dist_name
+        if old_dist_dir.exists():
             return old_dist_dir
-
         # If no directory has been found yet, our dist probably
         # doesn't exist yet, so use the expected name
         return expected_dist_dir
