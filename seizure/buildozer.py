@@ -654,7 +654,7 @@ class Buildozer:
         return '{}.{}'.format(package_domain, package_name)
 
     def android_debug(self):
-        self.target = TargetAndroid(self)
+        self.target = TargetAndroid(self.config, self)
         for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'app':
             path.mkdir(parents = True, exist_ok = True)
         self.state = JsonStore(self.buildozer_dir / 'state.db')
