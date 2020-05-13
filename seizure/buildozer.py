@@ -89,7 +89,6 @@ class Buildozer:
     platform_dir = buildozer_dir / targetname / 'platform'
     app_dir = buildozer_dir / targetname / 'app'
     applibs_dir = buildozer_dir / 'applibs'
-    gardenlibs_dir = buildozer_dir / 'libs'
 
     def __init__(self, config):
         self.log_level = 2
@@ -226,25 +225,6 @@ class Buildozer:
 
         self.debug('Cwd {}'.format(kwargs.get('cwd')))
         return spawnu(command, **kwargs)
-
-    def check_garden_requirements(self):
-        '''Ensure required garden packages are available to be included.
-        '''
-        garden_requirements = self.config.getlist('app',
-                'garden_requirements', '')
-
-        # have we installed the garden packages?
-        if Path(self.gardenlibs_dir).exists() and self.state.get('cache.gardenlibs', '') == garden_requirements:
-            self.debug('Garden requirements already installed, pass')
-            return
-
-        # we're going to reinstall all the garden libs.
-        self.rmdir(self.gardenlibs_dir)
-
-        # but if we don't have requirements, or if the user removed everything,
-        # don't do anything.
-        if not garden_requirements:
-            self.state['cache.gardenlibs'] = garden_requirements
 
     def mkdir(self, dn):
         if Path(dn).exists():
@@ -459,8 +439,6 @@ class Buildozer:
         target.check_requirements()
         self.info('Install platform')
         target.install_platform()
-        self.info('Check garden requirements')
-        self.check_garden_requirements()
         self.info('Compile platform')
         target.compile_platform()
         self.build_id = int(self.state.get('cache.build_id', '0')) + 1
