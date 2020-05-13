@@ -557,12 +557,6 @@ class Buildozer:
             fd.write(data)
         self.info('Patched service/main.py to include applibs')
 
-    def namify(self, name):
-        '''Return a "valid" name from a name with lot of invalid chars
-        (allowed characters: a-z, A-Z, 0-9, -, _)
-        '''
-        return re.sub('[^a-zA-Z0-9_\-]', '_', name)
-
     @property
     def package_full_name(self):
         package_name = self.config.getdefault('app', 'package.name', '')
