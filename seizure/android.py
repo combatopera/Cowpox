@@ -42,7 +42,6 @@ from . import BuildozerException, USE_COLOR
 from .libs.version import parse
 from distutils.version import LooseVersion
 from glob import glob
-from os import environ
 from os.path import exists, join, realpath, expanduser, basename, relpath
 from pathlib import Path
 from pipes import quote
@@ -91,6 +90,11 @@ class TargetAndroid:
         self.android_ndk_version = config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
         self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
         self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
+        self.android_sdk_dir = buildozer.global_platform_dir / 'android-sdk'
+        self.android_ndk_dir = buildozer.global_platform_dir / f"android-ndk-r{config.getdefault('app', 'android.ndk', self.android_ndk_version)}"
+        self.apache_ant_dir = buildozer.global_platform_dir / f"apache-ant-{config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)}"
+        self.sdkmanager_path = self.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
+        assert self.sdkmanager_path.is_file()
         self.config = config
         self.state = state
         self.buildozer = buildozer
@@ -125,29 +129,6 @@ class TargetAndroid:
         else:
             kwargs['get_stdout'] = kwargs.get('get_stdout', True)
             return self.buildozer.cmd(command, **kwargs)
-
-    @property
-    def android_sdk_dir(self):
-        return self.buildozer.global_platform_dir / 'android-sdk'
-
-    @property
-    def android_ndk_dir(self):
-        version = self.config.getdefault('app', 'android.ndk', self.android_ndk_version)
-        return self.buildozer.global_platform_dir / f"android-ndk-r{version}"
-
-    @property
-    def apache_ant_dir(self):
-        version = self.config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)
-        return self.buildozer.global_platform_dir / f"apache-ant-{version}"
-
-    @property
-    def sdkmanager_path(self):
-        sdkmanager_path = self.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
-        if not os.path.isfile(sdkmanager_path):
-            raise BuildozerException(
-                ('sdkmanager path "{}" does not exist, sdkmanager is not'
-                 'installed'.format(sdkmanager_path)))
-        return sdkmanager_path
 
     def check_requirements(self):
         self.adb_cmd = self.android_sdk_dir / 'platform-tools' / 'adb'
@@ -824,22 +805,3 @@ class TargetAndroid:
             for fn in glob(expanduser(pattern.strip())):
                 last_component = basename(fn)
                 _file_copytree(fn, join(src_dir, last_component))
-
-    @property
-    def serials(self):
-        if hasattr(self, '_serials'):
-            return self._serials
-        serial = environ.get('ANDROID_SERIAL')
-        if serial:
-            return serial.split(',')
-        lines = self.buildozer.cmd('{} devices'.format(self.adb_cmd),
-                               get_stdout=True)[0].splitlines()
-        serials = []
-        for serial in lines:
-            if not serial:
-                continue
-            if serial.startswith('*') or serial.startswith('List '):
-                continue
-            serials.append(serial.split()[0])
-        self._serials = serials
-        return serials
