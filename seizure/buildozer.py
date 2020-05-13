@@ -580,7 +580,6 @@ class Buildozer:
         for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'app':
             path.mkdir(parents = True, exist_ok = True)
         self.state = JsonStore(self.buildozer_dir / 'state.db')
-        assert self.target is not None
         self.info('Preparing build')
         self.info('Check requirements for {0}'.format(self.targetname))
         self.target.check_requirements()
@@ -593,7 +592,6 @@ class Buildozer:
         self.info('Compile platform')
         self.target.compile_platform()
         self.target.build_mode = 'debug'
-        assert(self.target is not None)
         self.build_id = int(self.state.get('cache.build_id', '0')) + 1
         self.state['cache.build_id'] = str(self.build_id)
         self.info('Build the application #{}'.format(self.build_id))
