@@ -102,7 +102,6 @@ class Buildozer:
             self.log_level = int(config.getdefault('buildozer', 'log_level', '2'))
         except Exception:
             pass
-        self.target = None
 
     def log(self, level, msg):
         if level > self.log_level:
@@ -236,12 +235,9 @@ class Buildozer:
         self.debug('Cwd {}'.format(kwargs.get('cwd')))
         return spawnu(command, **kwargs)
 
-    def check_application_requirements(self):
-        '''Ensure the application requirements are all available and ready to be
-        packaged as well.
-        '''
+    def check_application_requirements(self, target):
         requirements = self.config.getlist('app', 'requirements', '')
-        target_available_packages = self.target.get_available_packages()
+        target_available_packages = target.get_available_packages()
         if target_available_packages is True:
             # target handles all packages!
             return
@@ -576,22 +572,22 @@ class Buildozer:
         return '{}.{}'.format(package_domain, package_name)
 
     def android_debug(self):
-        self.target = TargetAndroid(self.config, self)
+        target = TargetAndroid(self.config, self)
         for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'app':
             path.mkdir(parents = True, exist_ok = True)
         self.state = JsonStore(self.buildozer_dir / 'state.db')
         self.info('Preparing build')
         self.info('Check requirements for {0}'.format(self.targetname))
-        self.target.check_requirements()
+        target.check_requirements()
         self.info('Install platform')
-        self.target.install_platform()
+        target.install_platform()
         self.info('Check application requirements')
-        self.check_application_requirements()
+        self.check_application_requirements(target)
         self.info('Check garden requirements')
         self.check_garden_requirements()
         self.info('Compile platform')
-        self.target.compile_platform()
-        self.target.build_mode = 'debug'
+        target.compile_platform()
+        target.build_mode = 'debug'
         self.build_id = int(self.state.get('cache.build_id', '0')) + 1
         self.state['cache.build_id'] = str(self.build_id)
         self.info('Build the application #{}'.format(self.build_id))
@@ -600,4 +596,4 @@ class Buildozer:
         self._copy_garden_libs()
         self._add_sitecustomize()
         self.info('Package the application')
-        self.target.build_package()
+        target.build_package()
