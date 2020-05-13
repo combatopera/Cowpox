@@ -104,31 +104,6 @@ class Buildozer:
             pass
         self.target = None
 
-    def prepare_for_build(self):
-        assert self.target is not None
-        if hasattr(self.target, '_build_prepared'):
-            return
-
-        self.info('Preparing build')
-
-        self.info('Check requirements for {0}'.format(self.targetname))
-        self.target.check_requirements()
-
-        self.info('Install platform')
-        self.target.install_platform()
-
-        self.info('Check application requirements')
-        self.check_application_requirements()
-
-        self.info('Check garden requirements')
-        self.check_garden_requirements()
-
-        self.info('Compile platform')
-        self.target.compile_platform()
-
-        # flag to prevent multiple build
-        self.target._build_prepared = True
-
     def log(self, level, msg):
         if level > self.log_level:
             return
@@ -611,7 +586,21 @@ class Buildozer:
         for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'app':
             path.mkdir(parents = True, exist_ok = True)
         self.state = JsonStore(self.buildozer_dir / 'state.db')
-        self.prepare_for_build()
+        assert self.target is not None
+        if hasattr(self.target, '_build_prepared'):
+            return
+        self.info('Preparing build')
+        self.info('Check requirements for {0}'.format(self.targetname))
+        self.target.check_requirements()
+        self.info('Install platform')
+        self.target.install_platform()
+        self.info('Check application requirements')
+        self.check_application_requirements()
+        self.info('Check garden requirements')
+        self.check_garden_requirements()
+        self.info('Compile platform')
+        self.target.compile_platform()
+        self.target._build_prepared = True
         self.target.build_mode = 'debug'
         assert(self.target is not None)
         assert(hasattr(self.target, '_build_prepared'))
