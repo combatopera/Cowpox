@@ -67,4 +67,4 @@ def main():
     pipify.print('-f', '/workspace/bdozlib.arid', cwd = '/project')
     os.chdir('/workspace') # FIXME: Only include main.py in artifact.
     from .buildozer import Buildozer # FIXME: Do not resolve paths so eagerly.
-    Buildozer(Config('buildozer.spec')).android_debug()
+    Buildozer(Config()).android_debug()

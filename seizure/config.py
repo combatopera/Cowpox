@@ -42,7 +42,7 @@ from configparser import SafeConfigParser
 
 class Config(SafeConfigParser):
 
-    def __init__(self, specfilename):
+    def __init__(self):
         super().__init__(allow_no_value = True)
         self.optionxform = lambda value: value
         self.getlist = self._get_config_list
@@ -50,7 +50,7 @@ class Config(SafeConfigParser):
         self.getdefault = self._get_config_default
         self.getbooldefault = self._get_config_bool
         self.getrawdefault = self._get_config_raw_default
-        self.read(specfilename, 'utf-8')
+        self.read('buildozer.spec', 'utf-8')
 
     def _get_config_list_values(self, *args, **kwargs):
         kwargs['with_values'] = True
