@@ -62,6 +62,13 @@ APACHE_ANT_VERSION = '1.9.4'
 DEFAULT_SDK_TAG = '4333796'
 DEFAULT_ARCH = 'armeabi-v7a'
 
+def _file_matches(patterns):
+    result = []
+    for pattern in patterns:
+        matches = glob(expanduser(pattern.strip()))
+        result.extend(matches)
+    return result
+
 class TargetAndroid:
 
     p4a_apk_cmd = "apk --debug --bootstrap="
@@ -567,7 +574,7 @@ class TargetAndroid:
                 continue
 
             self.buildozer.debug('Search and copy libs for {}'.format(lib_dir))
-            for fn in self.buildozer.file_matches(patterns):
+            for fn in _file_matches(patterns):
                 self.buildozer.file_copy(
                     join(self.buildozer.root_dir, fn),
                     join(dist_dir, 'libs', lib_dir, basename(fn)))

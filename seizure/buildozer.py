@@ -356,14 +356,6 @@ class Buildozer:
         self.debug('Remove directory and subdirectory {}'.format(dn))
         rmtree(dn)
 
-    def file_matches(self, patterns):
-        from glob import glob
-        result = []
-        for pattern in patterns:
-            matches = glob(expanduser(pattern.strip()))
-            result.extend(matches)
-        return result
-
     def file_rename(self, source, target, cwd=None):
         if cwd:
             source = Path(cwd, source)
