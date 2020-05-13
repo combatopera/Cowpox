@@ -72,6 +72,7 @@ class TargetAndroid:
     keytool_cmd = 'keytool'
 
     def __init__(self, config, buildozer):
+        self.config = config
         self.buildozer = buildozer
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = buildozer.platform_dir / f"build-{self._arch}"
@@ -94,7 +95,7 @@ class TargetAndroid:
 
     def warn_on_deprecated_tokens(self):
         for section, token in DEPRECATED_TOKENS:
-            value = self.buildozer.config.getdefault(section, token, None)
+            value = self.config.getdefault(section, token, None)
             if value is not None:
                 error = ('WARNING: Config token {} {} is deprecated and ignored, '
                          'but you set value {}').format(section, token, value)
@@ -115,39 +116,39 @@ class TargetAndroid:
 
     @property
     def android_ndk_version(self):
-        return self.buildozer.config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
+        return self.config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
 
     @property
     def android_api(self):
-        return self.buildozer.config.getdefault('app', 'android.api',
+        return self.config.getdefault('app', 'android.api',
                                                 ANDROID_API)
 
     @property
     def android_minapi(self):
-        return self.buildozer.config.getdefault('app', 'android.minapi',
+        return self.config.getdefault('app', 'android.minapi',
                                                 ANDROID_MINAPI)
 
     @property
     def android_sdk_dir(self):
-        directory = expanduser(self.buildozer.config.getdefault('app', 'android.sdk_path', ''))
+        directory = expanduser(self.config.getdefault('app', 'android.sdk_path', ''))
         if directory:
             return realpath(directory)
         return self.buildozer.global_platform_dir / 'android-sdk'
 
     @property
     def android_ndk_dir(self):
-        directory = expanduser(self.buildozer.config.getdefault('app', 'android.ndk_path', ''))
+        directory = expanduser(self.config.getdefault('app', 'android.ndk_path', ''))
         if directory:
             return realpath(directory)
-        version = self.buildozer.config.getdefault('app', 'android.ndk', self.android_ndk_version)
+        version = self.config.getdefault('app', 'android.ndk', self.android_ndk_version)
         return self.buildozer.global_platform_dir / f"android-ndk-r{version}"
 
     @property
     def apache_ant_dir(self):
-        directory = expanduser(self.buildozer.config.getdefault('app', 'android.ant_path', ''))
+        directory = expanduser(self.config.getdefault('app', 'android.ant_path', ''))
         if directory:
             return realpath(directory)
-        version = self.buildozer.config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)
+        version = self.config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)
         return self.buildozer.global_platform_dir / f"apache-ant-{version}"
 
     @property
@@ -264,7 +265,7 @@ class TargetAndroid:
 
     def _android_update_sdk(self, *sdkmanager_commands):
         """Update the tools and package-tools if possible"""
-        auto_accept_license = self.buildozer.config.getbooldefault(
+        auto_accept_license = self.config.getbooldefault(
             'app', 'android.accept_sdk_license', False)
 
         kwargs = {}
@@ -324,7 +325,7 @@ class TargetAndroid:
 
         # 1. update the tool and platform-tools if needed
 
-        skip_upd = self.buildozer.config.getbooldefault(
+        skip_upd = self.config.getbooldefault(
             'app', 'android.skip_update', False)
 
         if not skip_upd:
@@ -386,16 +387,16 @@ class TargetAndroid:
         })
 
     def compile_platform(self):
-        app_requirements = self.buildozer.config.getlist(
+        app_requirements = self.config.getlist(
             'app', 'requirements', '')
-        dist_name = self.buildozer.config.get('app', 'package.name')
+        dist_name = self.config.get('app', 'package.name')
         local_recipes = self.get_local_recipes_dir()
         requirements = ','.join(app_requirements)
         options = []
 
         source_dirs = {
             'P4A_{}_DIR'.format(name[20:]): realpath(expanduser(value))
-            for name, value in self.buildozer.config.items('app')
+            for name, value in self.config.items('app')
             if name.startswith('requirements.source.')
             }
         if source_dirs:
@@ -404,7 +405,7 @@ class TargetAndroid:
                 '\n    '.join(['{} = {}'.format(k, v)
                                for k, v in source_dirs.items()])))
 
-        if self.buildozer.config.getbooldefault('app', 'android.copy_libs', True):
+        if self.config.getbooldefault('app', 'android.copy_libs', True):
             options.append("--copy-libs")
         # support for recipes in a local directory within the project
         if local_recipes:
@@ -440,12 +441,12 @@ class TargetAndroid:
         return expected_dist_dir
 
     def get_local_recipes_dir(self):
-        local_recipes = self.buildozer.config.getdefault('app', 'p4a.local_recipes')
+        local_recipes = self.config.getdefault('app', 'p4a.local_recipes')
         return realpath(expanduser(local_recipes)) if local_recipes else None
 
     def execute_build_package(self, build_cmd):
         # wrapper from previous old_toolchain to new toolchain
-        dist_name = self.buildozer.config.get('app', 'package.name')
+        dist_name = self.config.get('app', 'package.name')
         local_recipes = self.get_local_recipes_dir()
         cmd = [self.p4a_apk_cmd, "--dist_name", dist_name]
         for args in build_cmd:
@@ -466,19 +467,19 @@ class TargetAndroid:
                 cmd.extend(args)
 
         # support for presplash background color
-        presplash_color = self.buildozer.config.getdefault('app', 'android.presplash_color', None)
+        presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
         if presplash_color:
             cmd.append('--presplash-color')
             cmd.append("'{}'".format(presplash_color))
 
         # support for services
-        services = self.buildozer.config.getlist('app', 'services', [])
+        services = self.config.getlist('app', 'services', [])
         for service in services:
             cmd.append("--service")
             cmd.append(service)
 
         # support for copy-libs
-        if self.buildozer.config.getbooldefault('app', 'android.copy_libs', True):
+        if self.config.getbooldefault('app', 'android.copy_libs', True):
             cmd.append("--copy-libs")
 
         # support for recipes in a local directory within the project
@@ -487,8 +488,8 @@ class TargetAndroid:
             cmd.append(local_recipes)
 
         # support for blacklist/whitelist filename
-        whitelist_src = self.buildozer.config.getdefault('app', 'android.whitelist_src', None)
-        blacklist_src = self.buildozer.config.getdefault('app', 'android.blacklist_src', None)
+        whitelist_src = self.config.getdefault('app', 'android.whitelist_src', None)
+        blacklist_src = self.config.getdefault('app', 'android.blacklist_src', None)
         if whitelist_src:
             cmd.append('--whitelist')
             cmd.append(realpath(whitelist_src))
@@ -497,19 +498,19 @@ class TargetAndroid:
             cmd.append(realpath(blacklist_src))
 
         # support for aars
-        aars = self.buildozer.config.getlist('app', 'android.add_aars', [])
+        aars = self.config.getlist('app', 'android.add_aars', [])
         for aar in aars:
             cmd.append('--add-aar')
             cmd.append(realpath(aar))
 
         # support for uses-lib
-        uses_library = self.buildozer.config.getlist(
+        uses_library = self.config.getlist(
             'app', 'android.uses_library', '')
         for lib in uses_library:
             cmd.append('--uses-library={}'.format(lib))
 
         # support for gradle dependencies
-        gradle_dependencies = self.buildozer.config.getlist('app', 'android.gradle_dependencies', [])
+        gradle_dependencies = self.config.getlist('app', 'android.gradle_dependencies', [])
         for gradle_dependency in gradle_dependencies:
             cmd.append('--depend')
             cmd.append(gradle_dependency)
@@ -537,7 +538,7 @@ class TargetAndroid:
         return check
 
     def _get_package(self):
-        config = self.buildozer.config
+        config = self.config
         package_domain = config.getdefault('app', 'package.domain', '')
         package = config.get('app', 'package.name')
         if package_domain:
@@ -545,7 +546,7 @@ class TargetAndroid:
         return package.lower()
 
     def _generate_whitelist(self, dist_dir):
-        p4a_whitelist = self.buildozer.config.getlist(
+        p4a_whitelist = self.config.getlist(
             'app', 'android.whitelist') or []
         whitelist_fn = join(dist_dir, 'whitelist.txt')
         with open(whitelist_fn, 'w') as fd:
@@ -553,10 +554,10 @@ class TargetAndroid:
                 fd.write(wl + '\n')
 
     def build_package(self):
-        dist_name = self.buildozer.config.get('app', 'package.name')
-        arch = self.buildozer.config.getdefault('app', 'android.arch', DEFAULT_ARCH)
+        dist_name = self.config.get('app', 'package.name')
+        arch = self.config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         dist_dir = self.get_dist_dir(dist_name, arch)
-        config = self.buildozer.config
+        config = self.config
         package = self._get_package()
         version = self.buildozer.get_version()
 
@@ -765,7 +766,7 @@ class TargetAndroid:
                 version=version,
                 mode=mode)
             apk_dir = join(dist_dir, "bin")
-        apk_dest = f"{packagename}-{version}-{self.buildozer.config['app']['commit']}-{self._arch}-{mode}.apk"
+        apk_dest = f"{packagename}-{version}-{self.config['app']['commit']}-{self._arch}-{mode}.apk"
         copyfile(join(apk_dir, apk), self.buildozer.bin_dir / apk_dest)
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
@@ -791,9 +792,9 @@ class TargetAndroid:
             content.remove(line)
 
         # convert our references to relative path
-        app_references = self.buildozer.config.getlist(
+        app_references = self.config.getlist(
             'app', 'android.library_references', [])
-        source_dir = realpath(self.buildozer.config.getdefault(
+        source_dir = realpath(self.config.getdefault(
             'app', 'source.dir', '.'))
         for cref in app_references:
             # get the full path of the current reference
@@ -820,7 +821,7 @@ class TargetAndroid:
         self.buildozer.debug('project.properties updated')
 
     def _add_java_src(self, dist_dir):
-        java_src = self.buildozer.config.getlist('app', 'android.add_src', [])
+        java_src = self.config.getlist('app', 'android.add_src', [])
 
         gradle_files = ["build.gradle", "gradle", "gradlew"]
         is_gradle_build = any((
