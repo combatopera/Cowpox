@@ -263,17 +263,6 @@ class Buildozer:
         else:
             raise Exception(f"Unhandled extraction for type {archive}")
 
-    def file_copytree(self, src, dest):
-        print('copy {} to {}'.format(src, dest))
-        if os.path.isdir(src):
-            if not os.path.isdir(dest):
-                os.makedirs(dest)
-            files = os.listdir(src)
-            for f in files:
-                self.file_copytree(Path(src, f), Path(dest, f))
-        else:
-            copyfile(src, dest)
-
     def download(self, url, filename, cwd):
         url = url + filename
         filename = Path(cwd, filename)

@@ -69,6 +69,17 @@ def _file_matches(patterns):
         result.extend(matches)
     return result
 
+def _file_copytree(src, dest):
+    print('copy {} to {}'.format(src, dest))
+    if os.path.isdir(src):
+        if not os.path.isdir(dest):
+            os.makedirs(dest)
+        files = os.listdir(src)
+        for f in files:
+            _file_copytree(Path(src, f), Path(dest, f))
+    else:
+        copyfile(src, dest)
+
 class TargetAndroid:
 
     p4a_apk_cmd = "apk --debug --bootstrap="
@@ -832,7 +843,7 @@ class TargetAndroid:
         for pattern in java_src:
             for fn in glob(expanduser(pattern.strip())):
                 last_component = basename(fn)
-                self.buildozer.file_copytree(fn, join(src_dir, last_component))
+                _file_copytree(fn, join(src_dir, last_component))
 
     @property
     def serials(self):
