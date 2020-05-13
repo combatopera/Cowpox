@@ -104,10 +104,8 @@ class TargetAndroid:
         return self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args, **kwargs)
 
     def _sdkmanager(self, *args, **kwargs):
-        """Call the sdkmanager in our Android SDK with the given arguments."""
-        # Use the android-sdk dir as cwd by default
         kwargs['cwd'] = kwargs.get('cwd', self.android_sdk_dir)
-        command = self.sdkmanager_path + ' ' + ' '.join(args)
+        command = f"{self.sdkmanager_path} {' '.join(args)}"
         return_child = kwargs.pop('return_child', False)
         if return_child:
             return self.buildozer.cmd_expect(command, **kwargs)
