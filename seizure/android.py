@@ -55,8 +55,6 @@ log = logging.getLogger(__name__)
 ANDROID_API = '27'
 ANDROID_MINAPI = '21'
 APACHE_ANT_VERSION = '1.9.4'
-# buildozer.spec tokens that used to exist but are now ignored
-DEPRECATED_TOKENS = (('app', 'android.sdk'), )
 # Default SDK tag to download. This is not a configurable option
 # because it doesn't seem to matter much, it is normally correct to
 # download once then update all the components as buildozer already
@@ -91,15 +89,6 @@ class TargetAndroid:
         port = config.getdefault('app', 'p4a.port', None)
         if port is not None:
             self.extra_p4a_args += ' --port={}'.format(port)
-        self.warn_on_deprecated_tokens()
-
-    def warn_on_deprecated_tokens(self):
-        for section, token in DEPRECATED_TOKENS:
-            value = self.config.getdefault(section, token, None)
-            if value is not None:
-                error = ('WARNING: Config token {} {} is deprecated and ignored, '
-                         'but you set value {}').format(section, token, value)
-                self.buildozer.error(error)
 
     def _p4a(self, cmd, **kwargs):
         return self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args, **kwargs)
