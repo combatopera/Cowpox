@@ -129,39 +129,6 @@ class Buildozer:
         # flag to prevent multiple build
         self.target._build_prepared = True
 
-    def build(self):
-        '''Do the build.
-
-        The target can set build_mode to 'release' or 'debug' before calling
-        this method.
-
-        (:meth:`prepare_for_build` must have been call before.)
-        '''
-        assert(self.target is not None)
-        assert(hasattr(self.target, '_build_prepared'))
-
-        if hasattr(self.target, '_build_done'):
-            return
-
-        # increment the build number
-        self.build_id = int(self.state.get('cache.build_id', '0')) + 1
-        self.state['cache.build_id'] = str(self.build_id)
-
-        self.info('Build the application #{}'.format(self.build_id))
-        self._copy_application_sources()
-        self._copy_application_libs()
-        self._copy_garden_libs()
-        self._add_sitecustomize()
-        self.info('Package the application')
-        self.target.build_package()
-
-        # flag to prevent multiple build
-        self.target._build_done = True
-
-    #
-    # Log functions
-    #
-
     def log(self, level, msg):
         if level > self.log_level:
             return
@@ -646,4 +613,17 @@ class Buildozer:
         self.state = JsonStore(self.buildozer_dir / 'state.db')
         self.prepare_for_build()
         self.target.build_mode = 'debug'
-        self.build()
+        assert(self.target is not None)
+        assert(hasattr(self.target, '_build_prepared'))
+        if hasattr(self.target, '_build_done'):
+            return
+        self.build_id = int(self.state.get('cache.build_id', '0')) + 1
+        self.state['cache.build_id'] = str(self.build_id)
+        self.info('Build the application #{}'.format(self.build_id))
+        self._copy_application_sources()
+        self._copy_application_libs()
+        self._copy_garden_libs()
+        self._add_sitecustomize()
+        self.info('Package the application')
+        self.target.build_package()
+        self.target._build_done = True
