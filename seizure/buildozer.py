@@ -46,7 +46,6 @@ from lagoon import tar, unzip
 from os import walk, makedirs
 from os.path import splitext
 from pathlib import Path
-from pprint import pformat
 from pythonforandroid.mirror import Mirror
 from re import search
 from shutil import copyfile, rmtree, copytree, move
