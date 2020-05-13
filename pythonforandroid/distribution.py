@@ -303,22 +303,5 @@ def pretty_log_dists(dists, log_func=info):
     for line in infos:
         log_func('\t' + line)
 
-
-def generate_dist_folder_name(base_dist_name, arch_names=None):
-    """Generate the distribution folder name to use, based on a
-    combination of the input arguments.
-
-    Parameters
-    ----------
-    base_dist_name : str
-        The core distribution identifier string
-    arch_names : list of str
-        The architecture compile targets
-    """
-    if arch_names is None:
-        arch_names = ["no_arch_specified"]
-
-    return '{}__{}'.format(
-        base_dist_name,
-        '_'.join(arch_names)
-    )
+def generate_dist_folder_name(base_dist_name, arch_names = None):
+    return f"{base_dist_name}__{'no_arch_specified' if arch_names is None else '_'.join(arch_names)}"

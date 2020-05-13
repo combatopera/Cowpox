@@ -46,6 +46,7 @@ from os import environ
 from os.path import exists, join, realpath, expanduser, basename, relpath
 from pathlib import Path
 from pipes import quote
+from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.recommendations import RECOMMENDED_NDK_VERSION
 from shutil import copyfile
 import logging, os, sys
@@ -858,27 +859,3 @@ class TargetAndroid:
             serials.append(serial.split()[0])
         self._serials = serials
         return serials
-
-def generate_dist_folder_name(base_dist_name, arch_names=None):
-    """Generate the distribution folder name to use, based on a
-    combination of the input arguments.
-
-    WARNING: This function is copied from python-for-android. It would
-    be preferable to have a proper interface, either importing the p4a
-    code or having a p4a dist dir query option.
-
-    Parameters
-    ----------
-    base_dist_name : str
-        The core distribution identifier string
-    arch_names : list of str
-        The architecture compile targets
-
-    """
-    if arch_names is None:
-        arch_names = ["no_arch_specified"]
-
-    return '{}__{}'.format(
-        base_dist_name,
-        '_'.join(arch_names)
-    )
