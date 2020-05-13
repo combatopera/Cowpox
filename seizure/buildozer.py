@@ -93,7 +93,6 @@ class Buildozer:
     def __init__(self, config):
         self.log_level = 2
         self.environ = {}
-        self.build_id = None
         self.config = config
         try:
             self.log_level = int(config.getdefault('buildozer', 'log_level', '2'))
@@ -429,9 +428,6 @@ class Buildozer:
         target.install_platform()
         self.info('Compile platform')
         target.compile_platform()
-        self.build_id = int(state.get('cache.build_id', '0')) + 1
-        state['cache.build_id'] = str(self.build_id)
-        self.info('Build the application #{}'.format(self.build_id))
         self._copy_application_sources()
         self._copy_application_libs()
         self._add_sitecustomize()
