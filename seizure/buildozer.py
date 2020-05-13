@@ -148,8 +148,10 @@ class Buildozer:
         self.state['cache.build_id'] = str(self.build_id)
 
         self.info('Build the application #{}'.format(self.build_id))
-        self.build_application()
-
+        self._copy_application_sources()
+        self._copy_application_libs()
+        self._copy_garden_libs()
+        self._add_sitecustomize()
         self.info('Package the application')
         self.target.build_package()
 
@@ -509,12 +511,6 @@ class Buildozer:
                 return version
 
         raise Exception('Missing version or version.regex + version.filename')
-
-    def build_application(self):
-        self._copy_application_sources()
-        self._copy_application_libs()
-        self._copy_garden_libs()
-        self._add_sitecustomize()
 
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.
