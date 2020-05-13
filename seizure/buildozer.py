@@ -581,8 +581,6 @@ class Buildozer:
             path.mkdir(parents = True, exist_ok = True)
         self.state = JsonStore(self.buildozer_dir / 'state.db')
         assert self.target is not None
-        if hasattr(self.target, '_build_prepared'):
-            return
         self.info('Preparing build')
         self.info('Check requirements for {0}'.format(self.targetname))
         self.target.check_requirements()
@@ -594,10 +592,8 @@ class Buildozer:
         self.check_garden_requirements()
         self.info('Compile platform')
         self.target.compile_platform()
-        self.target._build_prepared = True
         self.target.build_mode = 'debug'
         assert(self.target is not None)
-        assert(hasattr(self.target, '_build_prepared'))
         self.build_id = int(self.state.get('cache.build_id', '0')) + 1
         self.state['cache.build_id'] = str(self.build_id)
         self.info('Build the application #{}'.format(self.build_id))
