@@ -91,16 +91,6 @@ class TargetAndroid:
             self.extra_p4a_args += ' --port={}'.format(port)
         self.warn_on_deprecated_tokens()
 
-    def cmd_debug(self):
-        self.buildozer.prepare_for_build()
-        self.build_mode = 'debug'
-        self.buildozer.build()
-
-    def cmd_release(self):
-        self.buildozer.prepare_for_build()
-        self.build_mode = 'release'
-        self.buildozer.build()
-
     def warn_on_deprecated_tokens(self):
         for section, token in DEPRECATED_TOKENS:
             value = self.buildozer.config.getdefault(section, token, None)

@@ -658,7 +658,9 @@ class Buildozer:
         for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'app':
             path.mkdir(parents = True, exist_ok = True)
         self.state = JsonStore(self.buildozer_dir / 'state.db')
-        self.target.cmd_debug()
+        self.prepare_for_build()
+        self.target.build_mode = 'debug'
+        self.build()
 
     def _get_config_list_values(self, *args, **kwargs):
         kwargs['with_values'] = True
