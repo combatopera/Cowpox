@@ -238,7 +238,7 @@ class Buildozer:
         self.debug('Remove directory and subdirectory {}'.format(dn))
         rmtree(dn)
 
-    def file_rename(self, source, target, cwd=None):
+    def file_rename(self, source, target, cwd):
         if cwd:
             source = Path(cwd, source)
             target = Path(cwd, target)
