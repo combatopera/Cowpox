@@ -341,12 +341,6 @@ class Buildozer:
         else:
             copyfile(src, dest)
 
-    def clean_platform(self):
-        self.info('Clean the platform build directory')
-        if not Path(self.platform_dir).exists():
-            return
-        rmtree(self.platform_dir)
-
     def download(self, url, filename, cwd):
         url = url + filename
         filename = Path(cwd, filename)
