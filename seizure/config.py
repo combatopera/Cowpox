@@ -57,9 +57,6 @@ class Config(SafeConfigParser):
         return self._get_config_list(*args, **kwargs)
 
     def _get_config_list(self, section, token, default=None, with_values=False):
-        # monkey-patch method for ConfigParser
-        # get a key as a list of string, separated from the comma
-        # if a section:token is defined, let's use the content as a list.
         l_section = '{}:{}'.format(section, token)
         if self.has_section(l_section):
             values = self.options(l_section)
@@ -78,9 +75,6 @@ class Config(SafeConfigParser):
         return [x.strip() for x in values]
 
     def _get_config_default(self, section, token, default=None):
-        # monkey-patch method for ConfigParser
-        # get an appropriate env var if it exists, else
-        # get a key in a section, or the default
         if not self.has_section(section):
             return default
         if not self.has_option(section, token):
@@ -88,8 +82,6 @@ class Config(SafeConfigParser):
         return self.get(section, token)
 
     def _get_config_bool(self, section, token, default=False):
-        # monkey-patch method for ConfigParser
-        # get a key in a section, or the default
         if not self.has_section(section):
             return default
         if not self.has_option(section, token):
