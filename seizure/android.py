@@ -128,24 +128,15 @@ class TargetAndroid:
 
     @property
     def android_sdk_dir(self):
-        directory = expanduser(self.config.getdefault('app', 'android.sdk_path', ''))
-        if directory:
-            return realpath(directory)
         return self.buildozer.global_platform_dir / 'android-sdk'
 
     @property
     def android_ndk_dir(self):
-        directory = expanduser(self.config.getdefault('app', 'android.ndk_path', ''))
-        if directory:
-            return realpath(directory)
         version = self.config.getdefault('app', 'android.ndk', self.android_ndk_version)
         return self.buildozer.global_platform_dir / f"android-ndk-r{version}"
 
     @property
     def apache_ant_dir(self):
-        directory = expanduser(self.config.getdefault('app', 'android.ant_path', ''))
-        if directory:
-            return realpath(directory)
         version = self.config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)
         return self.buildozer.global_platform_dir / f"apache-ant-{version}"
 
