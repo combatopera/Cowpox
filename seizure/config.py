@@ -61,15 +61,15 @@ class Config(SafeConfigParser):
         # get a key as a list of string, separated from the comma
         # if a section:token is defined, let's use the content as a list.
         l_section = '{}:{}'.format(section, token)
-        if self.config.has_section(l_section):
-            values = self.config.options(l_section)
+        if self.has_section(l_section):
+            values = self.options(l_section)
             if with_values:
-                return ['{}={}'.format(key, self.config.get(l_section, key)) for
+                return ['{}={}'.format(key, self.get(l_section, key)) for
                         key in values]
             else:
                 return [x.strip() for x in values]
 
-        values = self.config.getdefault(section, token, '')
+        values = self.getdefault(section, token, '')
         if not values:
             return default
         values = values.split(',')
@@ -81,25 +81,25 @@ class Config(SafeConfigParser):
         # monkey-patch method for ConfigParser
         # get an appropriate env var if it exists, else
         # get a key in a section, or the default
-        if not self.config.has_section(section):
+        if not self.has_section(section):
             return default
-        if not self.config.has_option(section, token):
+        if not self.has_option(section, token):
             return default
-        return self.config.get(section, token)
+        return self.get(section, token)
 
     def _get_config_bool(self, section, token, default=False):
         # monkey-patch method for ConfigParser
         # get a key in a section, or the default
-        if not self.config.has_section(section):
+        if not self.has_section(section):
             return default
-        if not self.config.has_option(section, token):
+        if not self.has_option(section, token):
             return default
-        return self.config.getboolean(section, token)
+        return self.getboolean(section, token)
 
     def _get_config_raw_default(self, section, token, default=None, section_sep="=", split_char=" "):
         l_section = '{}:{}'.format(section, token)
-        if self.config.has_section(l_section):
-            return [section_sep.join(item) for item in self.config.items(l_section)]
-        if not self.config.has_option(section, token):
+        if self.has_section(l_section):
+            return [section_sep.join(item) for item in self.items(l_section)]
+        if not self.has_option(section, token):
             return default.split(split_char)
-        return self.config.get(section, token).split(split_char)
+        return self.get(section, token).split(split_char)
