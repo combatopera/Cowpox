@@ -93,7 +93,6 @@ class Buildozer:
     def __init__(self, config):
         self.log_level = 2
         self.environ = {}
-        self.state = None
         self.build_id = None
         self.config = config
         try:
@@ -419,10 +418,10 @@ class Buildozer:
         return '{}.{}'.format(package_domain, package_name)
 
     def android_debug(self):
-        target = TargetAndroid(self.config, self, 'debug')
         for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'app':
             path.mkdir(parents = True, exist_ok = True)
-        self.state = JsonStore(self.buildozer_dir / 'state.db')
+        state = JsonStore(self.buildozer_dir / 'state.db')
+        target = TargetAndroid(self.config, state, self, 'debug')
         self.info('Preparing build')
         self.info('Check requirements for {0}'.format(self.targetname))
         target.check_requirements()
@@ -430,8 +429,8 @@ class Buildozer:
         target.install_platform()
         self.info('Compile platform')
         target.compile_platform()
-        self.build_id = int(self.state.get('cache.build_id', '0')) + 1
-        self.state['cache.build_id'] = str(self.build_id)
+        self.build_id = int(state.get('cache.build_id', '0')) + 1
+        state['cache.build_id'] = str(self.build_id)
         self.info('Build the application #{}'.format(self.build_id))
         self._copy_application_sources()
         self._copy_application_libs()

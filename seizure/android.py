@@ -87,8 +87,9 @@ class TargetAndroid:
     javac_cmd = 'javac'
     keytool_cmd = 'keytool'
 
-    def __init__(self, config, buildozer, build_mode):
+    def __init__(self, config, state, buildozer, build_mode):
         self.config = config
+        self.state = state
         self.buildozer = buildozer
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = buildozer.platform_dir / f"build-{self._arch}"
@@ -328,7 +329,7 @@ class TargetAndroid:
             self.android_api, self.android_minapi, self.android_ndk_version,
             str(self.android_sdk_dir), str(self.android_ndk_dir)
         ]
-        if self.buildozer.state.get(cache_key, None) == cache_value:
+        if self.state.get(cache_key, None) == cache_value:
             return True
 
         # 1. update the tool and platform-tools if needed
@@ -377,9 +378,8 @@ class TargetAndroid:
                         self.android_api))
 
         self.buildozer.info('Android packages installation done.')
-
-        self.buildozer.state[cache_key] = cache_value
-        self.buildozer.state.sync()
+        self.state[cache_key] = cache_value
+        self.state.sync()
 
     def install_platform(self):
         self._install_apache_ant()
@@ -775,8 +775,8 @@ class TargetAndroid:
         copyfile(join(apk_dir, apk), self.buildozer.bin_dir / apk_dest)
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
-        self.buildozer.state['android:latestapk'] = apk_dest
-        self.buildozer.state['android:latestmode'] = self.build_mode
+        self.state['android:latestapk'] = apk_dest
+        self.state['android:latestmode'] = self.build_mode
 
     def _update_libraries_references(self, dist_dir):
         # ensure the project.properties exist
