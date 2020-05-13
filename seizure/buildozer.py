@@ -227,40 +227,6 @@ class Buildozer:
         self.debug('Cwd {}'.format(kwargs.get('cwd')))
         return spawnu(command, **kwargs)
 
-    def check_application_requirements(self, target):
-        requirements = self.config.getlist('app', 'requirements', '')
-        target_available_packages = target.get_available_packages()
-        if target_available_packages is True:
-            # target handles all packages!
-            return
-
-        # remove all the requirements that the target can compile
-        onlyname = lambda x: x.split('==')[0]  # noqa: E731
-        requirements = [x for x in requirements if onlyname(x) not in
-                        target_available_packages]
-        # did we already installed the libs ?
-        if Path(self.applibs_dir).exists() and self.state.get('cache.applibs', '') == requirements:
-            self.debug('Application requirements already installed, pass')
-            return
-
-        # recreate applibs
-        self.rmdir(self.applibs_dir)
-        self.mkdir(self.applibs_dir)
-
-        # ok now check the availability of all requirements
-        for requirement in requirements:
-            self._install_application_requirement(requirement)
-
-        # everything goes as expected, save this state!
-        self.state['cache.applibs'] = requirements
-
-    def _install_application_requirement(self, module):
-        self._ensure_virtualenv()
-        self.debug('Install requirement {} in virtualenv'.format(module))
-        self.cmd('pip install --target={} {}'.format(self.applibs_dir, module),
-                 env=self.env_venv,
-                 cwd=self.buildozer_dir)
-
     def check_garden_requirements(self):
         '''Ensure required garden packages are available to be included.
         '''
@@ -550,8 +516,6 @@ class Buildozer:
         target.check_requirements()
         self.info('Install platform')
         target.install_platform()
-        self.info('Check application requirements')
-        self.check_application_requirements(target)
         self.info('Check garden requirements')
         self.check_garden_requirements()
         self.info('Compile platform')

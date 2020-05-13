@@ -415,9 +415,6 @@ class TargetAndroid:
                  self._arch, " ".join(options)),
             get_stdout=True)[0]
 
-    def get_available_packages(self):
-        return True
-
     def get_dist_dir(self, dist_name, arch):
         """Find the dist dir with the given name and target arch, if one
         already exists, otherwise return a new dist_dir name.
