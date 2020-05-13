@@ -88,6 +88,9 @@ class TargetAndroid:
     keytool_cmd = 'keytool'
 
     def __init__(self, config, state, buildozer, build_mode):
+        self.android_ndk_version = config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
+        self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
+        self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
         self.config = config
         self.state = state
         self.buildozer = buildozer
@@ -122,20 +125,6 @@ class TargetAndroid:
         else:
             kwargs['get_stdout'] = kwargs.get('get_stdout', True)
             return self.buildozer.cmd(command, **kwargs)
-
-    @property
-    def android_ndk_version(self):
-        return self.config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
-
-    @property
-    def android_api(self):
-        return self.config.getdefault('app', 'android.api',
-                                                ANDROID_API)
-
-    @property
-    def android_minapi(self):
-        return self.config.getdefault('app', 'android.minapi',
-                                                ANDROID_MINAPI)
 
     @property
     def android_sdk_dir(self):
