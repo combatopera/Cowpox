@@ -245,53 +245,6 @@ class Buildozer:
         # don't do anything.
         if not garden_requirements:
             self.state['cache.gardenlibs'] = garden_requirements
-            return
-
-        self._ensure_virtualenv()
-        self.cmd('pip install Kivy-Garden==0.1.1', env=self.env_venv)
-
-        # recreate gardenlibs
-        self.mkdir(self.gardenlibs_dir)
-
-        for requirement in garden_requirements:
-            self._install_garden_package(requirement)
-
-        # save gardenlibs state
-        self.state['cache.gardenlibs'] = garden_requirements
-
-    def _install_garden_package(self, package):
-        self._ensure_virtualenv()
-        self.debug('Install garden package {} in buildozer_dir'.format(package))
-        self.cmd('garden install --app {}'.format(package),
-                env=self.env_venv,
-                cwd=self.buildozer_dir)
-
-    def _ensure_virtualenv(self):
-        if hasattr(self, 'venv'):
-            return
-        self.venv = Path(self.buildozer_dir, 'venv')
-        if not self.venv.exists():
-            self.cmd('virtualenv --python=python2.7 ./venv',
-                    cwd=self.buildozer_dir)
-
-        # read virtualenv output and parse it
-        output = self.cmd('bash -c "source venv/bin/activate && env"',
-                get_stdout=True,
-                cwd=self.buildozer_dir)
-        self.env_venv = self.environ.copy()
-        for line in output[0].splitlines():
-            args = line.split('=', 1)
-            if len(args) != 2:
-                continue
-            key, value = args
-            if key in ('VIRTUAL_ENV', 'PATH'):
-                self.env_venv[key] = value
-        if 'PYTHONHOME' in self.env_venv:
-            del self.env_venv['PYTHONHOME']
-
-        # ensure any sort of compilation will fail
-        self.env_venv['CC'] = '/bin/false'
-        self.env_venv['CXX'] = '/bin/false'
 
     def mkdir(self, dn):
         if Path(dn).exists():
