@@ -598,8 +598,6 @@ class Buildozer:
         self.target.build_mode = 'debug'
         assert(self.target is not None)
         assert(hasattr(self.target, '_build_prepared'))
-        if hasattr(self.target, '_build_done'):
-            return
         self.build_id = int(self.state.get('cache.build_id', '0')) + 1
         self.state['cache.build_id'] = str(self.build_id)
         self.info('Build the application #{}'.format(self.build_id))
@@ -609,4 +607,3 @@ class Buildozer:
         self._add_sitecustomize()
         self.info('Package the application')
         self.target.build_package()
-        self.target._build_done = True
