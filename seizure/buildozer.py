@@ -419,8 +419,7 @@ class Buildozer:
     def android_debug(self):
         for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'app':
             path.mkdir(parents = True, exist_ok = True)
-        state = JsonStore(self.buildozer_dir / 'state.db')
-        target = TargetAndroid(self.config, state, self, 'debug')
+        target = TargetAndroid(self.config, JsonStore(self.buildozer_dir / 'state.db'), self, 'debug')
         self.info('Preparing build')
         self.info('Check requirements for {0}'.format(self.targetname))
         target.check_requirements()
