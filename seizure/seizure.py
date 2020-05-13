@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .config import Config
 from lagoon import pipify, soak
 from pathlib import Path
 import logging, os, shutil
@@ -66,4 +67,4 @@ def main():
     pipify.print('-f', '/workspace/bdozlib.arid', cwd = '/project')
     os.chdir('/workspace') # FIXME: Only include main.py in artifact.
     from .buildozer import Buildozer # FIXME: Do not resolve paths so eagerly.
-    Buildozer().android_debug()
+    Buildozer(Config('buildozer.spec')).android_debug()

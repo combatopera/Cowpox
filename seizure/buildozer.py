@@ -40,7 +40,6 @@
 
 from . import BuildozerException, USE_COLOR
 from .android import TargetAndroid
-from .config import Config
 from .jsonstore import JsonStore
 from fnmatch import fnmatch
 from lagoon import tar, unzip
@@ -81,12 +80,11 @@ class Buildozer:
     INFO = 1
     DEBUG = 2
     targetname = 'android'
-    specfilename = 'buildozer.spec'
     global_buildozer_dir = Path.home() / '.buildozer'
     global_platform_dir = global_buildozer_dir / targetname / 'platform'
     global_packages_dir = global_buildozer_dir / targetname / 'packages'
     global_cache_dir = global_buildozer_dir / 'cache'
-    root_dir = Path(specfilename).parent.resolve()
+    root_dir = Path.cwd()
     buildozer_dir = root_dir / '.buildozer'
     bin_dir = root_dir / 'bin'
     platform_dir = buildozer_dir / targetname / 'platform'
@@ -94,14 +92,14 @@ class Buildozer:
     applibs_dir = buildozer_dir / 'applibs'
     gardenlibs_dir = buildozer_dir / 'libs'
 
-    def __init__(self):
+    def __init__(self, config):
         self.log_level = 2
         self.environ = {}
         self.state = None
         self.build_id = None
-        self.config = Config(self.specfilename)
+        self.config = config
         try:
-            self.log_level = int(self.config.getdefault('buildozer', 'log_level', '2'))
+            self.log_level = int(config.getdefault('buildozer', 'log_level', '2'))
         except Exception:
             pass
         self.target = None
