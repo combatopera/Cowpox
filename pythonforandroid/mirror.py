@@ -43,7 +43,9 @@ from .util import urlretrieve
 from diapyr.util import singleton
 from hashlib import md5
 from pathlib import Path
-import os, sys, time
+import logging, os, sys, time
+
+log = logging.getLogger(__name__)
 
 @singleton
 class Mirror:
@@ -79,3 +81,12 @@ class Mirror:
                 time.sleep(1)
             partialpath.rename(mirrorpath)
         return mirrorpath
+
+def download(url, filename, cwd):
+    url = url + filename
+    filename = Path(cwd, filename)
+    if filename.exists():
+        filename.unlink()
+    log.debug('Downloading %s', url)
+    Path(filename).symlink_to(Mirror.download(url))
+    return filename

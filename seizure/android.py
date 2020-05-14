@@ -45,6 +45,7 @@ from os.path import exists, join, realpath, expanduser, basename, relpath
 from pathlib import Path
 from pipes import quote
 from pythonforandroid.distribution import generate_dist_folder_name
+from pythonforandroid.mirror import download
 from pythonforandroid.recommendations import RECOMMENDED_NDK_VERSION
 from shutil import copyfile
 import logging, os, sys
@@ -156,7 +157,7 @@ class TargetAndroid:
         log.info('Android ANT is missing, downloading')
         archive = f"apache-ant-{APACHE_ANT_VERSION}-bin.tar.gz"
         url = 'http://archive.apache.org/dist/ant/binaries/'
-        self.buildozer.download(url, archive, ant_dir)
+        download(url, archive, ant_dir)
         self.buildozer.file_extract(archive, ant_dir)
         log.info('Apache ANT installation done.')
         return ant_dir
@@ -172,7 +173,7 @@ class TargetAndroid:
             os.makedirs(sdk_dir)
 
         url = 'http://dl.google.com/android/repository/'
-        self.buildozer.download(url, archive, sdk_dir)
+        download(url, archive, sdk_dir)
         log.info('Unpacking Android SDK')
         self.buildozer.file_extract(archive, sdk_dir)
         log.info('Android SDK tools base installation done.')
@@ -187,7 +188,7 @@ class TargetAndroid:
         archive = f"android-ndk-r{self.android_ndk_version}-linux-x86_64.zip"
         unpacked = f"android-ndk-r{self.android_ndk_version}"
         url = 'https://dl.google.com/android/repository/'
-        self.buildozer.download(url, archive, self.buildozer.global_platform_dir)
+        download(url, archive, self.buildozer.global_platform_dir)
         log.info('Unpacking Android NDK')
         self.buildozer.file_extract(archive, self.buildozer.global_platform_dir)
         self.buildozer.file_rename(unpacked, ndk_dir, cwd = self.buildozer.global_platform_dir)

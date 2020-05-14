@@ -45,7 +45,6 @@ from lagoon import tar, unzip
 from os import walk, makedirs
 from os.path import splitext
 from pathlib import Path
-from pythonforandroid.mirror import Mirror
 from shutil import copyfile, rmtree, copytree, move
 from subprocess import Popen, PIPE
 from sys import stdout, stderr
@@ -225,15 +224,6 @@ class Buildozer:
             unzip._q.print(archive, cwd = cwd)
         else:
             raise Exception(f"Unhandled extraction for type {archive}")
-
-    def download(self, url, filename, cwd):
-        url = url + filename
-        filename = Path(cwd, filename)
-        if filename.exists():
-            filename.unlink()
-        log.debug('Downloading %s', url)
-        Path(filename).symlink_to(Mirror.download(url))
-        return filename
 
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.
