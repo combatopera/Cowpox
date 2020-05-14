@@ -274,7 +274,8 @@ class TargetAndroid:
 
         self._sdkmanager(*sdkmanager_commands, **kwargs)
 
-    def _read_version_subdir(self, *args):
+    @staticmethod
+    def _read_version_subdir(*args):
         versions = []
         if not os.path.exists(join(*args)):
             log.debug("build-tools folder not found %s", join(*args))
@@ -289,7 +290,8 @@ class TargetAndroid:
             return parse("0")
         return max(versions)
 
-    def _find_latest_package(self, packages, key):
+    @staticmethod
+    def _find_latest_package(packages, key):
         package_versions = []
         for p in packages:
             if not p.startswith(key):
@@ -498,7 +500,8 @@ class TargetAndroid:
             return "release"
         return "release-unsigned"
 
-    def check_p4a_sign_env(self, error=False):
+    @staticmethod
+    def check_p4a_sign_env(error=False):
         keys = ["KEYALIAS", "KEYSTORE_PASSWD", "KEYSTORE", "KEYALIAS_PASSWD"]
         check = True
         for key in keys:
