@@ -93,7 +93,6 @@ class Buildozer:
         kwargs.setdefault('stderr', PIPE)
         kwargs.setdefault('close_fds', True)
         kwargs.setdefault('shell', True)
-        show_output = kwargs.pop('show_output', True)
         get_stdout = kwargs.pop('get_stdout', False)
         break_on_error = kwargs.pop('break_on_error', True)
         log.debug('Run %r', command)
@@ -119,14 +118,12 @@ class Buildozer:
                     break
                 if get_stdout:
                     ret_stdout.append(chunk)
-                if show_output:
-                    stdout.write(chunk.decode('utf-8', 'replace'))
+                stdout.write(chunk.decode('utf-8', 'replace'))
             if fd_stderr in readx:
                 chunk = process.stderr.read()
                 if not chunk:
                     break
-                if show_output:
-                    stderr.write(chunk.decode('utf-8', 'replace'))
+                stderr.write(chunk.decode('utf-8', 'replace'))
             stdout.flush()
             stderr.flush()
 
