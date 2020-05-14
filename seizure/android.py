@@ -141,6 +141,7 @@ class TargetAndroid:
         if port is not None:
             self.extra_p4a_args += ' --port={}'.format(port)
         self.build_mode = build_mode
+        self.dirs = dirs
 
     def _p4a(self, cmd, **kwargs):
         return self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args, **kwargs)
