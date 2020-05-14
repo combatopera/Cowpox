@@ -47,7 +47,7 @@ from pathlib import Path
 from shutil import copyfile, rmtree, copytree
 from subprocess import Popen, PIPE
 from sys import stdout, stderr
-import codecs, colorama, fcntl, logging, os, select
+import colorama, fcntl, logging, os, select
 
 log = logging.getLogger(__name__)
 colorama.init()
@@ -173,28 +173,6 @@ class Buildozer:
         return (ret_stdout.decode('utf-8', 'ignore') if ret_stdout else None,
                 ret_stderr.decode('utf-8') if ret_stderr else None,
                 process.returncode)
-
-    def cmd_expect(self, command, **kwargs):
-        from pexpect import spawnu
-
-        # prepare the environ, based on the system + our own env
-        env = os.environ.copy()
-        env.update(self.environ)
-
-        # prepare the process
-        kwargs.setdefault('env', env)
-        kwargs.setdefault('show_output', self.log_level > 1)
-        sensible = kwargs.pop('sensible', False)
-        show_output = kwargs.pop('show_output')
-
-        if show_output:
-            kwargs['logfile'] = codecs.getwriter('utf8')(stdout.buffer)
-        if not sensible:
-            log.debug('Run (expect) %r', command)
-        else:
-            log.debug('Run (expect) %r ...', command.split()[0])
-        log.debug('Cwd %s', kwargs.get('cwd'))
-        return spawnu(command, **kwargs)
 
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.
