@@ -41,6 +41,7 @@
 from .libs.version import parse
 from distutils.version import LooseVersion
 from glob import glob
+from lagoon import tar, unzip
 from os.path import exists, join, realpath, expanduser, basename, relpath
 from pathlib import Path
 from pipes import quote
@@ -79,6 +80,14 @@ def _file_copytree(src, dest):
             _file_copytree(Path(src, f), Path(dest, f))
     else:
         copyfile(src, dest)
+
+def _file_extract(archive, cwd):
+    if archive.endswith('.tar.gz'):
+        tar.xzf.print(archive, cwd = cwd)
+    elif archive.endswith('.zip'):
+        unzip._q.print(archive, cwd = cwd)
+    else:
+        raise Exception(f"Unhandled extraction for type {archive}")
 
 class TargetAndroid:
 
@@ -158,7 +167,7 @@ class TargetAndroid:
         archive = f"apache-ant-{APACHE_ANT_VERSION}-bin.tar.gz"
         url = 'http://archive.apache.org/dist/ant/binaries/'
         download(url, archive, ant_dir)
-        self.buildozer.file_extract(archive, ant_dir)
+        _file_extract(archive, ant_dir)
         log.info('Apache ANT installation done.')
         return ant_dir
 
@@ -175,7 +184,7 @@ class TargetAndroid:
         url = 'http://dl.google.com/android/repository/'
         download(url, archive, sdk_dir)
         log.info('Unpacking Android SDK')
-        self.buildozer.file_extract(archive, sdk_dir)
+        _file_extract(archive, sdk_dir)
         log.info('Android SDK tools base installation done.')
         return sdk_dir
 
@@ -190,7 +199,7 @@ class TargetAndroid:
         url = 'https://dl.google.com/android/repository/'
         download(url, archive, self.buildozer.global_platform_dir)
         log.info('Unpacking Android NDK')
-        self.buildozer.file_extract(archive, self.buildozer.global_platform_dir)
+        _file_extract(archive, self.buildozer.global_platform_dir)
         self.buildozer.file_rename(unpacked, ndk_dir, cwd = self.buildozer.global_platform_dir)
         log.info('Android NDK installation done.')
         return ndk_dir

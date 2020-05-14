@@ -41,7 +41,6 @@
 from .android import TargetAndroid
 from .jsonstore import JsonStore
 from fnmatch import fnmatch
-from lagoon import tar, unzip
 from os import walk, makedirs
 from os.path import splitext
 from pathlib import Path
@@ -216,14 +215,6 @@ class Buildozer:
             target = Path(cwd, target)
         log.debug('Copy %s to %s', source, target)
         copyfile(source, target)
-
-    def file_extract(self, archive, cwd):
-        if archive.endswith('.tar.gz'):
-            tar.xzf.print(archive, cwd = cwd)
-        elif archive.endswith('.zip'):
-            unzip._q.print(archive, cwd = cwd)
-        else:
-            raise Exception(f"Unhandled extraction for type {archive}")
 
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.
