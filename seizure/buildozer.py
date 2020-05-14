@@ -45,9 +45,7 @@ from os import walk
 from os.path import splitext
 from pathlib import Path
 from shutil import copyfile, rmtree, copytree
-from subprocess import Popen, PIPE
-from sys import stdout, stderr
-import colorama, fcntl, logging, os, select
+import colorama, logging, os, subprocess
 
 log = logging.getLogger(__name__)
 colorama.init()
