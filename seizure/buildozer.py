@@ -55,15 +55,11 @@ import codecs, colorama, fcntl, logging, os, select
 
 log = logging.getLogger(__name__)
 colorama.init()
-RESET_SEQ = colorama.Fore.RESET + colorama.Style.RESET_ALL
 COLOR_SEQ = lambda x: x
 BOLD_SEQ = ''
 BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
 RED = colorama.Fore.RED
 BLUE = colorama.Fore.CYAN
-# error, info, debug
-LOG_LEVELS_C = RED, BLUE, BLACK
-LOG_LEVELS_T = 'EID'
 
 class BuildozerCommandException(BuildozerException):
     '''
