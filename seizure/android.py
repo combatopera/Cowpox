@@ -148,53 +148,50 @@ class TargetAndroid:
     def _install_apache_ant(self):
         ant_dir = self.apache_ant_dir
         if Path(ant_dir).exists():
-            self.buildozer.info('Apache ANT found at {0}'.format(ant_dir))
+            log.info('Apache ANT found at %s', ant_dir)
             return ant_dir
 
         if not os.path.exists(ant_dir):
             os.makedirs(ant_dir)
-
-        self.buildozer.info('Android ANT is missing, downloading')
+        log.info('Android ANT is missing, downloading')
         archive = f"apache-ant-{APACHE_ANT_VERSION}-bin.tar.gz"
         url = 'http://archive.apache.org/dist/ant/binaries/'
         self.buildozer.download(url, archive, ant_dir)
         self.buildozer.file_extract(archive, ant_dir)
-        self.buildozer.info('Apache ANT installation done.')
+        log.info('Apache ANT installation done.')
         return ant_dir
 
     def _install_android_sdk(self):
         sdk_dir = self.android_sdk_dir
         if sdk_dir.exists():
-            self.buildozer.info('Android SDK found at {0}'.format(sdk_dir))
+            log.info('Android SDK found at %s', sdk_dir)
             return sdk_dir
-
-        self.buildozer.info('Android SDK is missing, downloading')
+        log.info('Android SDK is missing, downloading')
         archive = f"sdk-tools-linux-{DEFAULT_SDK_TAG}.zip"
         if not os.path.exists(sdk_dir):
             os.makedirs(sdk_dir)
 
         url = 'http://dl.google.com/android/repository/'
         self.buildozer.download(url, archive, sdk_dir)
-        self.buildozer.info('Unpacking Android SDK')
+        log.info('Unpacking Android SDK')
         self.buildozer.file_extract(archive, sdk_dir)
-        self.buildozer.info('Android SDK tools base installation done.')
-
+        log.info('Android SDK tools base installation done.')
         return sdk_dir
 
     def _install_android_ndk(self):
         ndk_dir = self.android_ndk_dir
         if Path(ndk_dir).exists():
-            self.buildozer.info('Android NDK found at {0}'.format(ndk_dir))
+            log.info('Android NDK found at %s', ndk_dir)
             return ndk_dir
-        self.buildozer.info('Android NDK is missing, downloading')
+        log.info('Android NDK is missing, downloading')
         archive = f"android-ndk-r{self.android_ndk_version}-linux-x86_64.zip"
         unpacked = f"android-ndk-r{self.android_ndk_version}"
         url = 'https://dl.google.com/android/repository/'
         self.buildozer.download(url, archive, self.buildozer.global_platform_dir)
-        self.buildozer.info('Unpacking Android NDK')
+        log.info('Unpacking Android NDK')
         self.buildozer.file_extract(archive, self.buildozer.global_platform_dir)
         self.buildozer.file_rename(unpacked, ndk_dir, cwd = self.buildozer.global_platform_dir)
-        self.buildozer.info('Android NDK installation done.')
+        log.info('Android NDK installation done.')
         return ndk_dir
 
     def _android_list_build_tools_versions(self):
@@ -297,18 +294,15 @@ class TargetAndroid:
             'app', 'android.skip_update', False)
 
         if not skip_upd:
-            self.buildozer.info('Installing/updating SDK platform tools if necessary')
-
+            log.info('Installing/updating SDK platform tools if necessary')
             # just calling sdkmanager with the items will install them if necessary
             self._android_update_sdk('tools', 'platform-tools')
             self._android_update_sdk('--update')
         else:
-            self.buildozer.info('Skipping Android SDK update due to spec file setting')
-            self.buildozer.info('Note: this also prevents installing missing '
-                                'SDK components')
-
+            log.info('Skipping Android SDK update due to spec file setting')
+            log.info('Note: this also prevents installing missing SDK components')
         # 2. install the latest build tool
-        self.buildozer.info('Updating SDK build tools if necessary')
+        log.info('Updating SDK build tools if necessary')
         installed_v_build_tools = self._read_version_subdir(self.android_sdk_dir,
                                                   'build-tools')
         available_v_build_tools = self._android_list_build_tools_versions()
@@ -322,21 +316,16 @@ class TargetAndroid:
                     '"build-tools;{}"'.format(latest_v_build_tools))
                 installed_v_build_tools = latest_v_build_tools
             else:
-                self.buildozer.info(
-                    'Skipping update to build tools {} due to spec setting'.format(
-                        latest_v_build_tools))
+                log.info('Skipping update to build tools %s due to spec setting', latest_v_build_tools)
         # 3. finally, install the android for the current api
-        self.buildozer.info('Downloading platform api target if necessary')
+        log.info('Downloading platform api target if necessary')
         android_platform = self.android_sdk_dir / 'platforms' / f"android-{self.android_api}"
         if not android_platform.exists():
             if not skip_upd:
                 self._sdkmanager('"platforms;android-{}"'.format(self.android_api))
             else:
-                self.buildozer.info(
-                    'Skipping install API {} platform tools due to spec setting'.format(
-                        self.android_api))
-
-        self.buildozer.info('Android packages installation done.')
+                log.info('Skipping install API %s platform tools due to spec setting', self.android_api)
+        log.info('Android packages installation done.')
         self.state[cache_key] = cache_value
         self.state.sync()
 
@@ -368,10 +357,7 @@ class TargetAndroid:
             }
         if source_dirs:
             self.buildozer.environ.update(source_dirs)
-            self.buildozer.info('Using custom source dirs:\n    {}'.format(
-                '\n    '.join(['{} = {}'.format(k, v)
-                               for k, v in source_dirs.items()])))
-
+            log.info('Using custom source dirs:\n    %s', '\n    '.join(f'{k} = {v}' for k, v in source_dirs.items()))
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             options.append("--copy-libs")
         # support for recipes in a local directory within the project
@@ -790,13 +776,10 @@ class TargetAndroid:
             exists(join(dist_dir, x)) for x in gradle_files))
         if is_gradle_build:
             src_dir = join(dist_dir, "src", "main", "java")
-            self.buildozer.info(
-                "Gradle project detected, copy files {}".format(src_dir))
+            log.info("Gradle project detected, copy files %s", src_dir)
         else:
             src_dir = join(dist_dir, 'src')
-            self.buildozer.info(
-                "Ant project detected, copy files in {}".format(src_dir))
-
+            log.info("Ant project detected, copy files in %s", src_dir)
         for pattern in java_src:
             for fn in glob(expanduser(pattern.strip())):
                 last_component = basename(fn)
