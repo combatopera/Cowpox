@@ -61,14 +61,6 @@ BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
 RED = colorama.Fore.RED
 BLUE = colorama.Fore.CYAN
 
-class BuildozerCommandException(BuildozerException):
-    '''
-    Exception raised when an external command failed.
-
-    See: `Buildozer.cmd()`.
-    '''
-    pass
-
 class Buildozer:
 
     ERROR = 0
@@ -169,7 +161,7 @@ class Buildozer:
                 log.error('Please read the full log, and search for it before')
                 log.error('raising an issue with buildozer itself.')
             log.error('In case of a bug report, please add a full log with log_level = 2')
-            raise BuildozerCommandException()
+            raise Exception()
         if ret_stdout:
             ret_stdout = b''.join(ret_stdout)
         if ret_stderr:
