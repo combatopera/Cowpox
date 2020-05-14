@@ -254,8 +254,7 @@ class TargetAndroid:
     def _read_version_subdir(self, *args):
         versions = []
         if not os.path.exists(join(*args)):
-            self.buildozer.debug('build-tools folder not found {}'.format(join(
-                *args)))
+            log.debug("build-tools folder not found %s", join(*args))
             return parse("0")
         for v in os.listdir(join(*args)):
             try:
@@ -540,8 +539,7 @@ class TargetAndroid:
                 continue
             if self._arch != lib_dir:
                 continue
-
-            self.buildozer.debug('Search and copy libs for {}'.format(lib_dir))
+            log.debug("Search and copy libs for %s", lib_dir)
             for fn in _file_matches(patterns):
                 self.buildozer.file_copy(
                     join(self.buildozer.root_dir, fn),
@@ -782,8 +780,7 @@ class TargetAndroid:
                 fd.write(u'\n')
             for index, ref in enumerate(references):
                 fd.write(u'android.library.reference.{}={}\n'.format(index + 1, ref))
-
-        self.buildozer.debug('project.properties updated')
+        log.debug('project.properties updated')
 
     def _add_java_src(self, dist_dir):
         java_src = self.config.getlist('app', 'android.add_src', [])
