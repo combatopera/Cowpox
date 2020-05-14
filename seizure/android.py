@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import BuildozerException
 from .libs.version import parse
 from distutils.version import LooseVersion
 from glob import glob
@@ -136,7 +135,7 @@ class TargetAndroid:
         _, _, returncode_dpkg = self.buildozer.cmd('dpkg --version', break_on_error = False)
         is_debian_like = (returncode_dpkg == 0)
         if is_debian_like and not Path('/usr/include/zlib.h').exists():
-            raise BuildozerException('zlib headers must be installed, run: sudo apt-get install zlib1g-dev')
+            raise Exception('zlib headers must be installed, run: sudo apt-get install zlib1g-dev')
         # Need to add internally installed ant to path for external tools
         # like adb to use
         path = [str(self.apache_ant_dir / 'bin')]

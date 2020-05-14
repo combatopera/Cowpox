@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import BuildozerException
 from .android import TargetAndroid
 from .jsonstore import JsonStore
 from fnmatch import fnmatch
