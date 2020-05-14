@@ -41,7 +41,7 @@
 from .android import TargetAndroid
 from .jsonstore import JsonStore
 from fnmatch import fnmatch
-from os import walk, makedirs
+from os import walk
 from os.path import splitext
 from pathlib import Path
 from shutil import copyfile, rmtree, copytree
@@ -187,12 +187,6 @@ class Buildozer:
         log.debug('Cwd %s', kwargs.get('cwd'))
         return spawnu(command, **kwargs)
 
-    def mkdir(self, dn):
-        if Path(dn).exists():
-            return
-        log.debug('Create directory %s', dn)
-        makedirs(dn)
-
     def rmdir(self, dn):
         if not Path(dn).exists():
             return
@@ -277,7 +271,7 @@ class Buildozer:
                         continue
                 sfn = Path(root, fn)
                 rfn = (self.app_dir / root[len(str(source_dir)) + 1:] / fn).resolve()
-                self.mkdir(rfn.parent)
+                rfn.parent.mkdir(parents = True, exist_ok = True)
                 log.debug('Copy %s', sfn)
                 copyfile(sfn, rfn)
 
