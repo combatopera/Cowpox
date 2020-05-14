@@ -57,13 +57,10 @@ BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
 RED = colorama.Fore.RED
 BLUE = colorama.Fore.CYAN
 
-class Buildozer:
+class Dirs:
 
-    ERROR = 0
-    INFO = 1
-    DEBUG = 2
     global_buildozer_dir = Path.home() / '.buildozer'
-    global_cache_dir = global_buildozer_dir / 'cache'
+    global_cache_dir = global_buildozer_dir / 'cache' # XXX: Used?
     root_dir = Path.cwd()
     buildozer_dir = root_dir / '.buildozer'
     bin_dir = root_dir / 'bin'
@@ -73,13 +70,26 @@ class Buildozer:
         self.global_platform_dir = self.global_buildozer_dir / config.targetname / 'platform'
         self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
         self.app_dir = self.buildozer_dir / config.targetname / 'app'
+
+    def install(self):
+        for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
+            path.mkdir(parents = True, exist_ok = True)
+
+class Buildozer:
+
+    ERROR = 0
+    INFO = 1
+    DEBUG = 2
+
+    def __init__(self, config, dirs):
         self.log_level = 2
         self.environ = {}
-        self.config = config
         try:
             self.log_level = int(config.getdefault('buildozer', 'log_level', '2'))
         except Exception:
             pass
+        self.config = config
+        self.dirs = dirs
 
     def cmd(self, command, **kwargs):
         # prepare the environ, based on the system + our own env
@@ -195,7 +205,7 @@ class Buildozer:
         exclude_patterns = self.config.getlist('app', 'source.exclude_patterns', '')
         include_patterns = self.config.getlist('app', 'source.include_patterns', '')
         log.debug('Copy application source from %s', source_dir)
-        rmtree(self.app_dir)
+        rmtree(self.dirs.app_dir)
         for root, dirs, files in walk(source_dir, followlinks=True):
             # avoid hidden directory
             if True in [x.startswith('.') for x in root.split(os.sep)]:
@@ -263,14 +273,14 @@ class Buildozer:
                     if exclude_exts and ext in exclude_exts:
                         continue
                 sfn = Path(root, fn)
-                rfn = (self.app_dir / root[len(str(source_dir)) + 1:] / fn).resolve()
+                rfn = (self.dirs.app_dir / root[len(str(source_dir)) + 1:] / fn).resolve()
                 rfn.parent.mkdir(parents = True, exist_ok = True)
                 log.debug('Copy %s', sfn)
                 copyfile(sfn, rfn)
 
     def _add_sitecustomize(self):
-        copyfile(Path(__file__).parent / 'sitecustomize.py', self.app_dir / 'sitecustomize.py')
-        main_py = self.app_dir / 'service' / 'main.py'
+        copyfile(Path(__file__).parent / 'sitecustomize.py', self.dirs.app_dir / 'sitecustomize.py')
+        main_py = self.dirs.app_dir / 'service' / 'main.py'
         if not main_py.exists():
             return
         header = (b'import sys, os; '
@@ -284,9 +294,8 @@ class Buildozer:
         log.info('Patched service/main.py to include applibs')
 
     def android_debug(self):
-        for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
-            path.mkdir(parents = True, exist_ok = True)
-        target = TargetAndroid(self.config, JsonStore(self.buildozer_dir / 'state.db'), self, 'debug')
+        self.dirs.install()
+        target = TargetAndroid(self.config, JsonStore(self.dirs.buildozer_dir / 'state.db'), self, self.dirs, 'debug')
         log.info('Preparing build')
         log.info('Check requirements for %s', self.config.targetname)
         target.check_requirements()
@@ -295,7 +304,7 @@ class Buildozer:
         log.info('Compile platform')
         target.compile_platform()
         self._copy_application_sources()
-        copytree(self.applibs_dir, self.app_dir / '_applibs')
+        copytree(self.dirs.applibs_dir, self.dirs.app_dir / '_applibs')
         self._add_sitecustomize()
         log.info('Package the application')
         target.build_package()

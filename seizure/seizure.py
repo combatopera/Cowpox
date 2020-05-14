@@ -66,5 +66,6 @@ def main():
     soak.print(cwd = '/workspace')
     pipify.print('-f', '/workspace/bdozlib.arid', cwd = '/project')
     os.chdir('/workspace') # FIXME: Only include main.py in artifact.
-    from .buildozer import Buildozer # FIXME: Do not resolve paths so eagerly.
-    Buildozer(Config()).android_debug()
+    from .buildozer import Buildozer, Dirs # FIXME: Do not resolve paths so eagerly.
+    config = Config()
+    Buildozer(config, Dirs(config)).android_debug()

@@ -112,19 +112,19 @@ class TargetAndroid:
     javac_cmd = 'javac'
     keytool_cmd = 'keytool'
 
-    def __init__(self, config, state, buildozer, build_mode):
+    def __init__(self, config, state, buildozer, dirs, build_mode):
         self.android_ndk_version = config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
         self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
         self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
-        self.android_sdk_dir = buildozer.global_platform_dir / 'android-sdk'
-        self.android_ndk_dir = buildozer.global_platform_dir / f"android-ndk-r{config.getdefault('app', 'android.ndk', self.android_ndk_version)}"
-        self.apache_ant_dir = buildozer.global_platform_dir / f"apache-ant-{config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)}"
+        self.android_sdk_dir = dirs.global_platform_dir / 'android-sdk'
+        self.android_ndk_dir = dirs.global_platform_dir / f"android-ndk-r{config.getdefault('app', 'android.ndk', self.android_ndk_version)}"
+        self.apache_ant_dir = dirs.global_platform_dir / f"apache-ant-{config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)}"
         self.sdkmanager_path = self.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
         self.config = config
         self.state = state
         self.buildozer = buildozer
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
-        self._build_dir = buildozer.platform_dir / f"build-{self._arch}"
+        self._build_dir = dirs.platform_dir / f"build-{self._arch}"
         self._p4a_cmd = '{} -m pythonforandroid.toolchain '.format(sys.executable)
         self._p4a_bootstrap = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
         self.p4a_apk_cmd += self._p4a_bootstrap
@@ -213,10 +213,10 @@ class TargetAndroid:
         archive = f"android-ndk-r{self.android_ndk_version}-linux-x86_64.zip"
         unpacked = f"android-ndk-r{self.android_ndk_version}"
         url = 'https://dl.google.com/android/repository/'
-        download(url, archive, self.buildozer.global_platform_dir)
+        download(url, archive, self.dirs.global_platform_dir)
         log.info('Unpacking Android NDK')
-        _file_extract(archive, self.buildozer.global_platform_dir)
-        _file_rename(unpacked, ndk_dir, cwd = self.buildozer.global_platform_dir)
+        _file_extract(archive, self.dirs.global_platform_dir)
+        _file_rename(unpacked, ndk_dir, cwd = self.dirs.global_platform_dir)
         log.info('Android NDK installation done.')
         return ndk_dir
 
@@ -361,7 +361,7 @@ class TargetAndroid:
         self._install_android_ndk()
         self._install_android_packages()
         self.buildozer.environ.update({
-            'PACKAGES_PATH': self.buildozer.global_buildozer_dir / self.config.targetname / 'packages',
+            'PACKAGES_PATH': self.dirs.global_buildozer_dir / self.config.targetname / 'packages',
             'ANDROIDSDK': self.android_sdk_dir,
             'ANDROIDNDK': self.android_ndk_dir,
             'ANDROIDAPI': self.android_api,
@@ -552,7 +552,7 @@ class TargetAndroid:
             log.debug("Search and copy libs for %s", lib_dir)
             for fn in _file_matches(patterns):
                 _file_copy(
-                    join(self.buildozer.root_dir, fn),
+                    join(self.dirs.root_dir, fn),
                     join(dist_dir, 'libs', lib_dir, basename(fn)))
 
         # update the project.properties libraries references
@@ -577,10 +577,9 @@ class TargetAndroid:
         is_private_storage = config.getbooldefault(
             'app', 'android.private_storage', True)
         if is_private_storage:
-            build_cmd += [("--private", self.buildozer.app_dir)]
+            build_cmd += [("--private", self.dirs.app_dir)]
         else:
-            build_cmd += [("--dir", self.buildozer.app_dir)]
-
+            build_cmd += [("--dir", self.dirs.app_dir)]
         # add permissions
         permissions = config.getlist('app', 'android.permissions', [])
         for permission in permissions:
@@ -623,7 +622,7 @@ class TargetAndroid:
         # add extra Java jar files
         add_jars = config.getlist('app', 'android.add_jars', [])
         for pattern in add_jars:
-            pattern = join(self.buildozer.root_dir, pattern)
+            pattern = join(self.dirs.root_dir, pattern)
             matches = glob(expanduser(pattern.strip()))
             if matches:
                 for jar in matches:
@@ -640,13 +639,13 @@ class TargetAndroid:
         # add presplash
         presplash = config.getdefault('app', 'presplash.filename', '')
         if presplash:
-            build_cmd += [("--presplash", join(self.buildozer.root_dir,
+            build_cmd += [("--presplash", join(self.dirs.root_dir,
                                                presplash))]
 
         # add icon
         icon = config.getdefault('app', 'icon.filename', '')
         if icon:
-            build_cmd += [("--icon", join(self.buildozer.root_dir, icon))]
+            build_cmd += [("--icon", join(self.dirs.root_dir, icon))]
 
         # OUYA Console support
         ouya_category = config.getdefault('app', 'android.ouya.category',
@@ -660,7 +659,7 @@ class TargetAndroid:
             ouya_icon = config.getdefault('app', 'android.ouya.icon.filename',
                                           '')
             build_cmd += [("--ouya-category", ouya_category)]
-            build_cmd += [("--ouya-icon", join(self.buildozer.root_dir,
+            build_cmd += [("--ouya-icon", join(self.dirs.root_dir,
                                                ouya_icon))]
 
         if config.getdefault('app','p4a.bootstrap','sdl2') != 'service_only':
@@ -684,7 +683,7 @@ class TargetAndroid:
         intent_filters = config.getdefault(
             'app', 'android.manifest.intent_filters', '')
         if intent_filters:
-            build_cmd += [("--intent-filters", join(self.buildozer.root_dir,
+            build_cmd += [("--intent-filters", join(self.dirs.root_dir,
                                                     intent_filters))]
 
         # activity launch mode
@@ -731,7 +730,7 @@ class TargetAndroid:
                 mode=mode)
             apk_dir = join(dist_dir, "bin")
         apk_dest = f"{packagename}-{version}-{self.config['app']['commit']}-{self._arch}-{mode}.apk"
-        copyfile(join(apk_dir, apk), self.buildozer.bin_dir / apk_dest)
+        copyfile(join(apk_dir, apk), self.dirs.bin_dir / apk_dest)
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
         self.state['android:latestapk'] = apk_dest
