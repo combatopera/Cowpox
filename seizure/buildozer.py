@@ -73,17 +73,21 @@ class Dirs:
         for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
             path.mkdir(parents = True, exist_ok = True)
 
-class Buildozer:
+class Cmd:
 
-    def __init__(self, config, dirs):
+    def __init__(self):
         self.environ = {}
-        self.config = config
-        self.dirs = dirs
 
-    def cmd(self, command, stdout = None, check = True, cwd = None):
+    def __call__(self, command, stdout = None, check = True, cwd = None):
         log.debug('Run %r', command)
         log.debug('Cwd %s', cwd)
         return subprocess.run(command, shell = True, cwd = cwd, env = {**os.environ, **self.environ}, stdout = stdout, check = check, text = True)
+
+class Buildozer:
+
+    def __init__(self, config, dirs):
+        self.config = config
+        self.dirs = dirs
 
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.
@@ -184,7 +188,7 @@ class Buildozer:
 
     def android_debug(self):
         self.dirs.install()
-        target = TargetAndroid(self.config, JsonStore(self.dirs.buildozer_dir / 'state.db'), self, self.dirs, 'debug')
+        target = TargetAndroid(self.config, JsonStore(self.dirs.buildozer_dir / 'state.db'), self, self.dirs, Cmd(), 'debug')
         log.info('Preparing build')
         log.info('Check requirements for %s', self.config.targetname)
         target.check_requirements()

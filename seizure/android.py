@@ -112,7 +112,7 @@ class TargetAndroid:
     javac_cmd = 'javac'
     keytool_cmd = 'keytool'
 
-    def __init__(self, config, state, buildozer, dirs, build_mode):
+    def __init__(self, config, state, buildozer, dirs, cmd, build_mode):
         self.android_ndk_version = config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
         self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
         self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
@@ -144,26 +144,26 @@ class TargetAndroid:
         self.dirs = dirs
 
     def _p4a(self, cmd):
-        self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
+        self.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
 
     def _sdkmanager(self, shellcommand):
-        return self.buildozer.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, stdout = subprocess.PIPE).stdout
+        return self.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, stdout = subprocess.PIPE).stdout
 
     def check_requirements(self):
         self.adb_cmd = self.android_sdk_dir / 'platform-tools' / 'adb'
         # Check for C header <zlib.h>.
-        returncode_dpkg = self.buildozer.cmd('dpkg --version', check = False).returncode
+        returncode_dpkg = self.cmd('dpkg --version', check = False).returncode
         is_debian_like = (returncode_dpkg == 0)
         if is_debian_like and not Path('/usr/include/zlib.h').exists():
             raise Exception('zlib headers must be installed, run: sudo apt-get install zlib1g-dev')
         # Need to add internally installed ant to path for external tools
         # like adb to use
         path = [str(self.apache_ant_dir / 'bin')]
-        if 'PATH' in self.buildozer.environ:
-            path.append(self.buildozer.environ['PATH'])
+        if 'PATH' in self.cmd.environ:
+            path.append(self.cmd.environ['PATH'])
         else:
             path.append(os.environ['PATH'])
-        self.buildozer.environ['PATH'] = os.pathsep.join(path)
+        self.cmd.environ['PATH'] = os.pathsep.join(path)
 
     def _install_apache_ant(self):
         ant_dir = self.apache_ant_dir
@@ -248,7 +248,7 @@ class TargetAndroid:
 
     def _android_update_sdk(self, shellcommand):
         if self.config.getbooldefault('app', 'android.accept_sdk_license', False):
-            self.buildozer.cmd(f'yes 2>/dev/null | {self.sdkmanager_path} --licenses', cwd = self.android_sdk_dir)
+            self.cmd(f'yes 2>/dev/null | {self.sdkmanager_path} --licenses', cwd = self.android_sdk_dir)
         self._sdkmanager(shellcommand)
 
     @staticmethod
@@ -336,7 +336,7 @@ class TargetAndroid:
         self._install_android_sdk()
         self._install_android_ndk()
         self._install_android_packages()
-        self.buildozer.environ.update({
+        self.cmd.environ.update({
             'PACKAGES_PATH': self.dirs.global_buildozer_dir / self.config.targetname / 'packages',
             'ANDROIDSDK': self.android_sdk_dir,
             'ANDROIDNDK': self.android_ndk_dir,
@@ -358,7 +358,7 @@ class TargetAndroid:
             if name.startswith('requirements.source.')
             }
         if source_dirs:
-            self.buildozer.environ.update(source_dirs)
+            self.cmd.environ.update(source_dirs)
             log.info('Using custom source dirs:\n    %s', '\n    '.join(f'{k} = {v}' for k, v in source_dirs.items()))
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             options.append("--copy-libs")
