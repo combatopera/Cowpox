@@ -91,7 +91,6 @@ class Buildozer:
         fcntl.fcntl(fd_stdout, fcntl.F_SETFL, fcntl.fcntl(fd_stdout, fcntl.F_GETFL) | os.O_NONBLOCK)
         fcntl.fcntl(fd_stderr, fcntl.F_SETFL, fcntl.fcntl(fd_stderr, fcntl.F_GETFL) | os.O_NONBLOCK)
         ret_stdout = [] if get_stdout else None
-        ret_stderr = None
         while True:
             try:
                 readx = select.select([fd_stdout, fd_stderr], [], [])[0]
@@ -111,7 +110,6 @@ class Buildozer:
                 stderr.write(chunk.decode('utf-8', 'replace'))
             stdout.flush()
             stderr.flush()
-
         process.communicate()
         if process.returncode != 0 and break_on_error:
             log.error('Command failed: %s', command)
@@ -124,11 +122,7 @@ class Buildozer:
             raise Exception()
         if ret_stdout:
             ret_stdout = b''.join(ret_stdout)
-        if ret_stderr:
-            ret_stderr = b''.join(ret_stderr)
-        return (ret_stdout.decode('utf-8', 'ignore') if ret_stdout else None,
-                ret_stderr.decode('utf-8') if ret_stderr else None,
-                process.returncode)
+        return ret_stdout.decode('utf-8', 'ignore') if ret_stdout else None, None, process.returncode
 
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.
