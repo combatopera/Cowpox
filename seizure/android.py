@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import BuildozerException, USE_COLOR
+from . import BuildozerException
 from .libs.version import parse
 from distutils.version import LooseVersion
 from glob import glob
@@ -60,6 +60,7 @@ APACHE_ANT_VERSION = '1.9.4'
 # does.
 DEFAULT_SDK_TAG = '4333796'
 DEFAULT_ARCH = 'armeabi-v7a'
+USE_COLOR = 'NO_COLOR' not in os.environ
 
 def _file_matches(patterns):
     result = []

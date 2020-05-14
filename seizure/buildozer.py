@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import BuildozerException, USE_COLOR
+from . import BuildozerException
 from .android import TargetAndroid
 from .jsonstore import JsonStore
 from fnmatch import fnmatch
@@ -98,24 +98,6 @@ class Buildozer:
             self.log_level = int(config.getdefault('buildozer', 'log_level', '2'))
         except Exception:
             pass
-
-    def log(self, level, msg):
-        if level > self.log_level:
-            return
-        if USE_COLOR:
-            color = COLOR_SEQ(LOG_LEVELS_C[level])
-            print(''.join((RESET_SEQ, color, '# ', msg, RESET_SEQ)))
-        else:
-            print('{} {}'.format(LOG_LEVELS_T[level], msg))
-
-    def debug(self, msg):
-        self.log(self.DEBUG, msg)
-
-    def info(self, msg):
-        self.log(self.INFO, msg)
-
-    def error(self, msg):
-        self.log(self.ERROR, msg)
 
     def cmd(self, command, **kwargs):
         # prepare the environ, based on the system + our own env
