@@ -199,13 +199,6 @@ class Buildozer:
         log.debug('Remove directory and subdirectory %s', dn)
         rmtree(dn)
 
-    def file_copy(self, source, target, cwd=None):
-        if cwd:
-            source = Path(cwd, source)
-            target = Path(cwd, target)
-        log.debug('Copy %s to %s', source, target)
-        copyfile(source, target)
-
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.
         source_dir = Path(self.config.getdefault('app', 'source.dir', '.')).resolve()

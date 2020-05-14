@@ -98,6 +98,13 @@ def _file_rename(source, target, cwd):
         log.error('Rename %s to %s fails because %s is not a directory', source, target, target)
     shutil.move(source, target)
 
+def _file_copy(self, source, target, cwd=None):
+    if cwd:
+        source = Path(cwd, source)
+        target = Path(cwd, target)
+    log.debug('Copy %s to %s', source, target)
+    copyfile(source, target)
+
 class TargetAndroid:
 
     p4a_apk_cmd = "apk --debug --bootstrap="
@@ -541,7 +548,7 @@ class TargetAndroid:
                 continue
             log.debug("Search and copy libs for %s", lib_dir)
             for fn in _file_matches(patterns):
-                self.buildozer.file_copy(
+                _file_copy(
                     join(self.buildozer.root_dir, fn),
                     join(dist_dir, 'libs', lib_dir, basename(fn)))
 
