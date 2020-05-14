@@ -82,12 +82,8 @@ class Buildozer:
     DEBUG = 2
 
     def __init__(self, config, dirs):
-        self.log_level = 2
         self.environ = {}
-        try:
-            self.log_level = int(config.getdefault('buildozer', 'log_level', '2'))
-        except Exception:
-            pass
+        self.log_level = int(config.getdefault('buildozer', 'log_level', '2'))
         self.config = config
         self.dirs = dirs
 
