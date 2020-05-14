@@ -225,7 +225,7 @@ class TargetAndroid:
         for line in lines:
             if line.startswith('Pkg.Revision='):
                 return line.split('=')[1].strip()
-        self.buildozer.error('Read {} but found no Pkg.Revision'.format(data_file))
+        log.error('Read %s but found no Pkg.Revision', data_file)
         # Don't actually exit, in case the build env is
         # okay. Something else will fault if it's important.
 
@@ -259,8 +259,7 @@ class TargetAndroid:
             except:
                 pass
         if not versions:
-            self.buildozer.error(
-                'Unable to find the latest version for {}'.format(join(*args)))
+            log.error('Unable to find the latest version for %s', join(*args))
             return parse("0")
         return max(versions)
 
@@ -307,8 +306,7 @@ class TargetAndroid:
                                                   'build-tools')
         available_v_build_tools = self._android_list_build_tools_versions()
         if not available_v_build_tools:
-            self.buildozer.error('Did not find any build tools available to download')
-
+            log.error('Did not find any build tools available to download')
         latest_v_build_tools = sorted(available_v_build_tools)[-1]
         if latest_v_build_tools > installed_v_build_tools:
             if not skip_upd:
@@ -481,9 +479,7 @@ class TargetAndroid:
             key = "P4A_RELEASE_{}".format(key)
             if key not in os.environ:
                 if error:
-                    self.buildozer.error(
-                        ("Asking for release but {} is missing"
-                         "--sign will not be passed").format(key))
+                    log.error("Asking for release but %s is missing--sign will not be passed", key)
                 check = False
         return check
 
@@ -749,7 +745,7 @@ class TargetAndroid:
             # get the full path of the current reference
             ref = realpath(join(source_dir, cref))
             if not Path(ref).exists():
-                self.buildozer.error('Invalid library reference (path not found): {}'.format(cref))
+                log.error('Invalid library reference (path not found): %s', cref)
                 exit(1)
             # get a relative path from the project file
             ref = relpath(ref, realpath(dist_dir))
