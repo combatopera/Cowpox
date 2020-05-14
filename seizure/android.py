@@ -142,6 +142,7 @@ class TargetAndroid:
             self.extra_p4a_args += ' --port={}'.format(port)
         self.build_mode = build_mode
         self.dirs = dirs
+        self.cmd = cmd
 
     def _p4a(self, cmd):
         self.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
