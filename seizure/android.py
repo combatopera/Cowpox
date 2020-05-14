@@ -366,7 +366,7 @@ class TargetAndroid:
         if local_recipes:
             options.append('--local-recipes')
             options.append(local_recipes)
-        self._p4a(f"create --dist_name={dist_name} --bootstrap={self._p4a_bootstrap} --requirements={requirements} --arch {self._arch} {" ".join(options)}")
+        self._p4a(f"create --dist_name={dist_name} --bootstrap={self._p4a_bootstrap} --requirements={requirements} --arch {self._arch} {' '.join(options)}")
 
     def get_dist_dir(self, dist_name, arch):
         """Find the dist dir with the given name and target arch, if one
