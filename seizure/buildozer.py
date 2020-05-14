@@ -44,7 +44,7 @@ from fnmatch import fnmatch
 from os import walk, makedirs
 from os.path import splitext
 from pathlib import Path
-from shutil import copyfile, rmtree, copytree, move
+from shutil import copyfile, rmtree, copytree
 from subprocess import Popen, PIPE
 from sys import stdout, stderr
 import codecs, colorama, fcntl, logging, os, select
@@ -199,15 +199,6 @@ class Buildozer:
             return
         log.debug('Remove directory and subdirectory %s', dn)
         rmtree(dn)
-
-    def file_rename(self, source, target, cwd):
-        if cwd:
-            source = Path(cwd, source)
-            target = Path(cwd, target)
-        log.debug('Rename %s to %s', source, target)
-        if not target.parent.is_dir():
-            log.error('Rename %s to %s fails because %s is not a directory', source, target, target)
-        move(source, target)
 
     def file_copy(self, source, target, cwd=None):
         if cwd:

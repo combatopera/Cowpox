@@ -49,7 +49,7 @@ from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
 from pythonforandroid.recommendations import RECOMMENDED_NDK_VERSION
 from shutil import copyfile
-import logging, os, sys
+import logging, os, shutil, sys
 
 log = logging.getLogger(__name__)
 ANDROID_API = '27'
@@ -88,6 +88,15 @@ def _file_extract(archive, cwd):
         unzip._q.print(archive, cwd = cwd)
     else:
         raise Exception(f"Unhandled extraction for type {archive}")
+
+def _file_rename(source, target, cwd):
+    if cwd:
+        source = Path(cwd, source)
+        target = Path(cwd, target)
+    log.debug('Rename %s to %s', source, target)
+    if not target.parent.is_dir():
+        log.error('Rename %s to %s fails because %s is not a directory', source, target, target)
+    shutil.move(source, target)
 
 class TargetAndroid:
 
@@ -200,7 +209,7 @@ class TargetAndroid:
         download(url, archive, self.buildozer.global_platform_dir)
         log.info('Unpacking Android NDK')
         _file_extract(archive, self.buildozer.global_platform_dir)
-        self.buildozer.file_rename(unpacked, ndk_dir, cwd = self.buildozer.global_platform_dir)
+        _file_rename(unpacked, ndk_dir, cwd = self.buildozer.global_platform_dir)
         log.info('Android NDK installation done.')
         return ndk_dir
 
