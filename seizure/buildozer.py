@@ -62,18 +62,17 @@ class Buildozer:
     ERROR = 0
     INFO = 1
     DEBUG = 2
-    targetname = 'android'
     global_buildozer_dir = Path.home() / '.buildozer'
-    global_platform_dir = global_buildozer_dir / targetname / 'platform'
     global_cache_dir = global_buildozer_dir / 'cache'
     root_dir = Path.cwd()
     buildozer_dir = root_dir / '.buildozer'
     bin_dir = root_dir / 'bin'
-    platform_dir = buildozer_dir / targetname / 'platform'
-    app_dir = buildozer_dir / targetname / 'app'
     applibs_dir = buildozer_dir / 'applibs'
 
     def __init__(self, config):
+        self.global_platform_dir = self.global_buildozer_dir / config.targetname / 'platform'
+        self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
+        self.app_dir = self.buildozer_dir / config.targetname / 'app'
         self.log_level = 2
         self.environ = {}
         self.config = config
@@ -289,7 +288,7 @@ class Buildozer:
             path.mkdir(parents = True, exist_ok = True)
         target = TargetAndroid(self.config, JsonStore(self.buildozer_dir / 'state.db'), self, 'debug')
         log.info('Preparing build')
-        log.info('Check requirements for %s', self.targetname)
+        log.info('Check requirements for %s', self.config.targetname)
         target.check_requirements()
         log.info('Install platform')
         target.install_platform()

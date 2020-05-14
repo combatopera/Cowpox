@@ -361,7 +361,7 @@ class TargetAndroid:
         self._install_android_ndk()
         self._install_android_packages()
         self.buildozer.environ.update({
-            'PACKAGES_PATH': self.buildozer.global_buildozer_dir / self.buildozer.targetname / 'packages',
+            'PACKAGES_PATH': self.buildozer.global_buildozer_dir / self.config.targetname / 'packages',
             'ANDROIDSDK': self.android_sdk_dir,
             'ANDROIDNDK': self.android_ndk_dir,
             'ANDROIDAPI': self.android_api,

@@ -45,6 +45,8 @@ log = logging.getLogger(__name__)
 
 class Config(SafeConfigParser):
 
+    targetname = 'android'
+
     def __init__(self):
         super().__init__(allow_no_value = True)
         self.optionxform = lambda value: value
