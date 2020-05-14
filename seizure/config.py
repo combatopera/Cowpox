@@ -39,6 +39,9 @@
 # THE SOFTWARE.
 
 from configparser import SafeConfigParser
+import logging, re
+
+log = logging.getLogger(__name__)
 
 class Config(SafeConfigParser):
 
@@ -95,3 +98,30 @@ class Config(SafeConfigParser):
         if not self.has_option(section, token):
             return default.split(split_char)
         return self.get(section, token).split(split_char)
+
+    def get_version(self):
+        has_version = self.has_option('app', 'version')
+        has_regex = self.has_option('app', 'version.regex')
+        has_filename = self.has_option('app', 'version.filename')
+        # version number specified
+        if has_version:
+            if has_regex or has_filename:
+                raise Exception('version.regex and version.filename conflict with version')
+            return self.get('app', 'version')
+        # search by regex
+        if has_regex or has_filename:
+            if has_regex and not has_filename:
+                raise Exception('version.filename is missing')
+            if has_filename and not has_regex:
+                raise Exception('version.regex is missing')
+            fn = self.get('app', 'version.filename')
+            with open(fn) as fd:
+                data = fd.read()
+                regex = self.get('app', 'version.regex')
+                match = re.search(regex, data)
+                if not match:
+                    raise Exception(f'Unable to find capture version in {fn}\n (looking for `{regex}`)')
+                version = match.groups()[0]
+                log.debug('Captured version: %s', version)
+                return version
+        raise Exception('Missing version or version.regex + version.filename')

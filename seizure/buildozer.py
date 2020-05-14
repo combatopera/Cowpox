@@ -46,7 +46,6 @@ from os import walk, makedirs
 from os.path import splitext
 from pathlib import Path
 from pythonforandroid.mirror import Mirror
-from re import search
 from shutil import copyfile, rmtree, copytree, move
 from subprocess import Popen, PIPE
 from sys import stdout, stderr
@@ -235,41 +234,6 @@ class Buildozer:
         log.debug('Downloading %s', url)
         Path(filename).symlink_to(Mirror.download(url))
         return filename
-
-    def get_version(self):
-        c = self.config
-        has_version = c.has_option('app', 'version')
-        has_regex = c.has_option('app', 'version.regex')
-        has_filename = c.has_option('app', 'version.filename')
-
-        # version number specified
-        if has_version:
-            if has_regex or has_filename:
-                raise Exception(
-                    'version.regex and version.filename conflict with version')
-            return c.get('app', 'version')
-
-        # search by regex
-        if has_regex or has_filename:
-            if has_regex and not has_filename:
-                raise Exception('version.filename is missing')
-            if has_filename and not has_regex:
-                raise Exception('version.regex is missing')
-
-            fn = c.get('app', 'version.filename')
-            with open(fn) as fd:
-                data = fd.read()
-                regex = c.get('app', 'version.regex')
-                match = search(regex, data)
-                if not match:
-                    raise Exception(
-                        'Unable to find capture version in {0}\n'
-                        ' (looking for `{1}`)'.format(fn, regex))
-                version = match.groups()[0]
-                log.debug('Captured version: %s', version)
-                return version
-
-        raise Exception('Missing version or version.regex + version.filename')
 
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.

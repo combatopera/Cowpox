@@ -505,8 +505,7 @@ class TargetAndroid:
         dist_dir = self.get_dist_dir(dist_name, arch)
         config = self.config
         package = self._get_package()
-        version = self.buildozer.get_version()
-
+        version = self.config.get_version()
         # add extra libs/armeabi files in dist/default/libs/armeabi
         # (same for armeabi-v7a, arm64-v8a, x86, mips)
         for config_key, lib_dir in (
