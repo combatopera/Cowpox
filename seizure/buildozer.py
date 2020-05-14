@@ -372,14 +372,6 @@ class Buildozer:
             fd.write(data)
         log.info('Patched service/main.py to include applibs')
 
-    @property
-    def package_full_name(self):
-        package_name = self.config.getdefault('app', 'package.name', '')
-        package_domain = self.config.getdefault('app', 'package.domain', '')
-        if package_domain == '':
-            return package_name
-        return '{}.{}'.format(package_domain, package_name)
-
     def android_debug(self):
         for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'app':
             path.mkdir(parents = True, exist_ok = True)
