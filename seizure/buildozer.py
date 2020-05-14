@@ -80,10 +80,10 @@ class Buildozer:
         self.config = config
         self.dirs = dirs
 
-    def cmd(self, command, get_stdout = False, check = True, cwd = None):
+    def cmd(self, command, stdout = None, check = True, cwd = None):
         log.debug('Run %r', command)
         log.debug('Cwd %s', cwd)
-        return subprocess.run(command, shell = True, cwd = cwd, env = {**os.environ, **self.environ}, stdout = subprocess.PIPE if get_stdout else None, check = check, text = True)
+        return subprocess.run(command, shell = True, cwd = cwd, env = {**os.environ, **self.environ}, stdout = stdout, check = check, text = True)
 
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.

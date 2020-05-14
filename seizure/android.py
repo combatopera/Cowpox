@@ -147,7 +147,7 @@ class TargetAndroid:
         self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
 
     def _sdkmanager(self, shellcommand):
-        return self.buildozer.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, get_stdout = True).stdout
+        return self.buildozer.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, stdout = subprocess.PIPE).stdout
 
     def check_requirements(self):
         self.adb_cmd = self.android_sdk_dir / 'platform-tools' / 'adb'
