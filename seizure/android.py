@@ -94,7 +94,6 @@ class TargetAndroid:
         self.android_ndk_dir = buildozer.global_platform_dir / f"android-ndk-r{config.getdefault('app', 'android.ndk', self.android_ndk_version)}"
         self.apache_ant_dir = buildozer.global_platform_dir / f"apache-ant-{config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)}"
         self.sdkmanager_path = self.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
-        assert self.sdkmanager_path.is_file()
         self.config = config
         self.state = state
         self.buildozer = buildozer
