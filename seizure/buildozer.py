@@ -85,7 +85,7 @@ class Buildozer:
     def cmd(self, command, get_stdout = False, break_on_error = True, cwd = None):
         log.debug('Run %r', command)
         log.debug('Cwd %s', cwd)
-        process = Popen(command, env = {**os.environ, **self.environ}, stdout = PIPE, stderr = PIPE, close_fds = True, shell = True, cwd = cwd)
+        process = Popen(command, env = {**os.environ, **self.environ}, stdout = PIPE, stderr = PIPE, shell = True, cwd = cwd)
         fd_stdout = process.stdout.fileno()
         fd_stderr = process.stderr.fileno()
         fcntl.fcntl(fd_stdout, fcntl.F_SETFL, fcntl.fcntl(fd_stdout, fcntl.F_GETFL) | os.O_NONBLOCK)
