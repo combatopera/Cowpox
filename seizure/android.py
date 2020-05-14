@@ -147,7 +147,7 @@ class TargetAndroid:
         self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
 
     def _sdkmanager(self, shellcommand):
-        return self.buildozer.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, get_stdout = True)
+        return self.buildozer.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, get_stdout = True)[0]
 
     def check_requirements(self):
         self.adb_cmd = self.android_sdk_dir / 'platform-tools' / 'adb'
@@ -215,7 +215,7 @@ class TargetAndroid:
         return ndk_dir
 
     def _android_list_build_tools_versions(self):
-        lines = self._sdkmanager('--list')[0].split('\n')
+        lines = self._sdkmanager('--list').split('\n')
         build_tools_versions = []
 
         for line in lines:
