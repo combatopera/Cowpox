@@ -85,44 +85,8 @@ class Buildozer:
     def cmd(self, command, get_stdout = False, break_on_error = True, cwd = None):
         log.debug('Run %r', command)
         log.debug('Cwd %s', cwd)
-        process = Popen(command, env = {**os.environ, **self.environ}, stdout = PIPE, stderr = PIPE, shell = True, cwd = cwd)
-        fd_stdout = process.stdout.fileno()
-        fd_stderr = process.stderr.fileno()
-        fcntl.fcntl(fd_stdout, fcntl.F_SETFL, fcntl.fcntl(fd_stdout, fcntl.F_GETFL) | os.O_NONBLOCK)
-        fcntl.fcntl(fd_stderr, fcntl.F_SETFL, fcntl.fcntl(fd_stderr, fcntl.F_GETFL) | os.O_NONBLOCK)
-        ret_stdout = [] if get_stdout else None
-        while True:
-            try:
-                readx = select.select([fd_stdout, fd_stderr], [], [])[0]
-            except select.error:
-                break
-            if fd_stdout in readx:
-                chunk = process.stdout.read()
-                if not chunk:
-                    break
-                if get_stdout:
-                    ret_stdout.append(chunk)
-                stdout.write(chunk.decode('utf-8', 'replace'))
-            if fd_stderr in readx:
-                chunk = process.stderr.read()
-                if not chunk:
-                    break
-                stderr.write(chunk.decode('utf-8', 'replace'))
-            stdout.flush()
-            stderr.flush()
-        process.communicate()
-        if process.returncode != 0 and break_on_error:
-            log.error('Command failed: %s', command)
-            log.error('')
-            log.error('Buildozer failed to execute the last command')
-            log.error('The error might be hidden in the log above this error')
-            log.error('Please read the full log, and search for it before')
-            log.error('raising an issue with buildozer itself.')
-            log.error('In case of a bug report, please add a full log with log_level = 2')
-            raise Exception()
-        if ret_stdout:
-            ret_stdout = b''.join(ret_stdout)
-        return ret_stdout.decode('utf-8', 'ignore') if ret_stdout else None, None, process.returncode
+        completed = subprocess.run(command, shell = True, cwd = cwd, env = {**os.environ, **self.environ}, stdout = subprocess.PIPE if get_stdout else None, check = break_on_error, text = True)
+        return completed.stdout, None, completed.returncode
 
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.
