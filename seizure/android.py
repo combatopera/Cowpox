@@ -675,15 +675,6 @@ class TargetAndroid:
             mode = self.get_release_mode()
 
         self.execute_build_package(build_cmd)
-
-        try:
-            self.buildozer.hook("android_pre_build_apk")
-            self.execute_build_package(build_cmd)
-            self.buildozer.hook("android_post_build_apk")
-        except:
-            # maybe the hook fail because the apk is not
-            pass
-
         build_tools_versions = os.listdir(join(self.android_sdk_dir, "build-tools"))
         build_tools_versions = sorted(build_tools_versions, key=LooseVersion)
         build_tools_version = build_tools_versions[-1]
