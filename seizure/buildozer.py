@@ -404,7 +404,7 @@ class Buildozer:
         data = header + data
         with open(main_py, 'wb') as fd:
             fd.write(data)
-        self.info('Patched service/main.py to include applibs')
+        log.info('Patched service/main.py to include applibs')
 
     @property
     def package_full_name(self):
@@ -418,15 +418,15 @@ class Buildozer:
         for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'platform', self.buildozer_dir / self.targetname / 'app':
             path.mkdir(parents = True, exist_ok = True)
         target = TargetAndroid(self.config, JsonStore(self.buildozer_dir / 'state.db'), self, 'debug')
-        self.info('Preparing build')
-        self.info('Check requirements for {0}'.format(self.targetname))
+        log.info('Preparing build')
+        log.info('Check requirements for %s', self.targetname)
         target.check_requirements()
-        self.info('Install platform')
+        log.info('Install platform')
         target.install_platform()
-        self.info('Compile platform')
+        log.info('Compile platform')
         target.compile_platform()
         self._copy_application_sources()
         self._copy_application_libs()
         self._add_sitecustomize()
-        self.info('Package the application')
+        log.info('Package the application')
         target.build_package()
