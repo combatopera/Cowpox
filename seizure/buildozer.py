@@ -353,10 +353,6 @@ class Buildozer:
                 log.debug('Copy %s', sfn)
                 copyfile(sfn, rfn)
 
-    def _copy_application_libs(self):
-        # copy also the libs
-        copytree(self.applibs_dir, self.app_dir / '_applibs')
-
     def _add_sitecustomize(self):
         copyfile(Path(__file__).parent / 'sitecustomize.py', self.app_dir / 'sitecustomize.py')
         main_py = self.app_dir / 'service' / 'main.py'
@@ -384,7 +380,7 @@ class Buildozer:
         log.info('Compile platform')
         target.compile_platform()
         self._copy_application_sources()
-        self._copy_application_libs()
+        copytree(self.applibs_dir, self.app_dir / '_applibs')
         self._add_sitecustomize()
         log.info('Package the application')
         target.build_package()
