@@ -82,15 +82,13 @@ class Buildozer:
         self.config = config
         self.dirs = dirs
 
-    def cmd(self, command, **kwargs):
+    def cmd(self, command, get_stdout = False, break_on_error = True, cwd = None):
         # prepare the environ, based on the system + our own env
         env = os.environ.copy()
         env.update(self.environ)
-        get_stdout = kwargs.pop('get_stdout', False)
-        break_on_error = kwargs.pop('break_on_error', True)
         log.debug('Run %r', command)
-        log.debug('Cwd %s', kwargs.get('cwd'))
-        process = Popen(command, env = env, stdout = PIPE, stderr = PIPE, close_fds = True, shell = True, **kwargs)
+        log.debug('Cwd %s', cwd)
+        process = Popen(command, env = env, stdout = PIPE, stderr = PIPE, close_fds = True, shell = True, cwd = cwd)
         fd_stdout = process.stdout.fileno()
         fd_stderr = process.stderr.fileno()
         fcntl.fcntl(fd_stdout, fcntl.F_SETFL, fcntl.fcntl(fd_stdout, fcntl.F_GETFL) | os.O_NONBLOCK)
