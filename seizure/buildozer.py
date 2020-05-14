@@ -137,14 +137,13 @@ class Buildozer:
         sensible = kwargs.pop('sensible', False)
 
         if not sensible:
-            self.debug('Run {0!r}'.format(command))
+            log.debug('Run %r', command)
         else:
             if type(command) in (list, tuple):
-                self.debug('Run {0!r} ...'.format(command[0]))
+                log.debug('Run %r ...', command[0])
             else:
-                self.debug('Run {0!r} ...'.format(command.split()[0]))
-        self.debug('Cwd {}'.format(kwargs.get('cwd')))
-
+                log.debug('Run %r ...', command.split()[0])
+        log.debug('Cwd %s', kwargs.get('cwd'))
         # open the process
         process = Popen(command, **kwargs)
 
@@ -217,30 +216,29 @@ class Buildozer:
         if show_output:
             kwargs['logfile'] = codecs.getwriter('utf8')(stdout.buffer)
         if not sensible:
-            self.debug('Run (expect) {0!r}'.format(command))
+            log.debug('Run (expect) %r', command)
         else:
-            self.debug('Run (expect) {0!r} ...'.format(command.split()[0]))
-
-        self.debug('Cwd {}'.format(kwargs.get('cwd')))
+            log.debug('Run (expect) %r ...', command.split()[0])
+        log.debug('Cwd %s', kwargs.get('cwd'))
         return spawnu(command, **kwargs)
 
     def mkdir(self, dn):
         if Path(dn).exists():
             return
-        self.debug('Create directory {0}'.format(dn))
+        log.debug('Create directory %s', dn)
         makedirs(dn)
 
     def rmdir(self, dn):
         if not Path(dn).exists():
             return
-        self.debug('Remove directory and subdirectory {}'.format(dn))
+        log.debug('Remove directory and subdirectory %s', dn)
         rmtree(dn)
 
     def file_rename(self, source, target, cwd):
         if cwd:
             source = Path(cwd, source)
             target = Path(cwd, target)
-        self.debug('Rename {0} to {1}'.format(source, target))
+        log.debug('Rename %s to %s', source, target)
         if not target.parent.is_dir():
             self.error(('Rename {0} to {1} fails because {2} is not a '
                         'directory').format(source, target, target))
@@ -250,7 +248,7 @@ class Buildozer:
         if cwd:
             source = Path(cwd, source)
             target = Path(cwd, target)
-        self.debug('Copy {0} to {1}'.format(source, target))
+        log.debug('Copy %s to %s', source, target)
         copyfile(source, target)
 
     def file_extract(self, archive, cwd):
@@ -266,7 +264,7 @@ class Buildozer:
         filename = Path(cwd, filename)
         if filename.exists():
             filename.unlink()
-        self.debug('Downloading {0}'.format(url))
+        log.debug('Downloading %s', url)
         Path(filename).symlink_to(Mirror.download(url))
         return filename
 
@@ -300,7 +298,7 @@ class Buildozer:
                         'Unable to find capture version in {0}\n'
                         ' (looking for `{1}`)'.format(fn, regex))
                 version = match.groups()[0]
-                self.debug('Captured version: {0}'.format(version))
+                log.debug('Captured version: %s', version)
                 return version
 
         raise Exception('Missing version or version.regex + version.filename')
@@ -313,7 +311,7 @@ class Buildozer:
         exclude_dirs = self.config.getlist('app', 'source.exclude_dirs', '')
         exclude_patterns = self.config.getlist('app', 'source.exclude_patterns', '')
         include_patterns = self.config.getlist('app', 'source.include_patterns', '')
-        self.debug('Copy application source from {}'.format(source_dir))
+        log.debug('Copy application source from %s', source_dir)
         rmtree(self.app_dir)
         for root, dirs, files in walk(source_dir, followlinks=True):
             # avoid hidden directory
@@ -384,7 +382,7 @@ class Buildozer:
                 sfn = Path(root, fn)
                 rfn = (self.app_dir / root[len(str(source_dir)) + 1:] / fn).resolve()
                 self.mkdir(rfn.parent)
-                self.debug('Copy {0}'.format(sfn))
+                log.debug('Copy %s', sfn)
                 copyfile(sfn, rfn)
 
     def _copy_application_libs(self):
