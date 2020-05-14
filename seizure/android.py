@@ -147,12 +147,12 @@ class TargetAndroid:
         self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
 
     def _sdkmanager(self, shellcommand):
-        return self.buildozer.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, get_stdout = True)[0]
+        return self.buildozer.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, get_stdout = True).stdout
 
     def check_requirements(self):
         self.adb_cmd = self.android_sdk_dir / 'platform-tools' / 'adb'
         # Check for C header <zlib.h>.
-        _, _, returncode_dpkg = self.buildozer.cmd('dpkg --version', break_on_error = False)
+        returncode_dpkg = self.buildozer.cmd('dpkg --version', break_on_error = False).returncode
         is_debian_like = (returncode_dpkg == 0)
         if is_debian_like and not Path('/usr/include/zlib.h').exists():
             raise Exception('zlib headers must be installed, run: sudo apt-get install zlib1g-dev')
