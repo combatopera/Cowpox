@@ -187,12 +187,6 @@ class Buildozer:
         log.debug('Cwd %s', kwargs.get('cwd'))
         return spawnu(command, **kwargs)
 
-    def rmdir(self, dn):
-        if not Path(dn).exists():
-            return
-        log.debug('Remove directory and subdirectory %s', dn)
-        rmtree(dn)
-
     def _copy_application_sources(self):
         # xxx clean the inclusion/exclusion algo.
         source_dir = Path(self.config.getdefault('app', 'source.dir', '.')).resolve()
