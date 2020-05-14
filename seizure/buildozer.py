@@ -180,17 +180,17 @@ class Buildozer:
 
         process.communicate()
         if process.returncode != 0 and break_on_error:
-            self.error('Command failed: {0}'.format(command))
-            self.error('')
-            self.error('Buildozer failed to execute the last command')
+            log.error('Command failed: %s', command)
+            log.error('')
+            log.error('Buildozer failed to execute the last command')
             if self.log_level <= self.INFO:
-                self.error('If the error is not obvious, please raise the log_level to 2')
-                self.error('and retry the latest command.')
+                log.error('If the error is not obvious, please raise the log_level to 2')
+                log.error('and retry the latest command.')
             else:
-                self.error('The error might be hidden in the log above this error')
-                self.error('Please read the full log, and search for it before')
-                self.error('raising an issue with buildozer itself.')
-            self.error('In case of a bug report, please add a full log with log_level = 2')
+                log.error('The error might be hidden in the log above this error')
+                log.error('Please read the full log, and search for it before')
+                log.error('raising an issue with buildozer itself.')
+            log.error('In case of a bug report, please add a full log with log_level = 2')
             raise BuildozerCommandException()
         if ret_stdout:
             ret_stdout = b''.join(ret_stdout)
@@ -240,8 +240,7 @@ class Buildozer:
             target = Path(cwd, target)
         log.debug('Rename %s to %s', source, target)
         if not target.parent.is_dir():
-            self.error(('Rename {0} to {1} fails because {2} is not a '
-                        'directory').format(source, target, target))
+            log.error('Rename %s to %s fails because %s is not a directory', source, target, target)
         move(source, target)
 
     def file_copy(self, source, target, cwd=None):
@@ -393,9 +392,7 @@ class Buildozer:
         copyfile(Path(__file__).parent / 'sitecustomize.py', self.app_dir / 'sitecustomize.py')
         main_py = self.app_dir / 'service' / 'main.py'
         if not main_py.exists():
-            #self.error('Unable to patch main_py to add applibs directory.')
             return
-
         header = (b'import sys, os; '
                    b'sys.path = [os.path.join(os.getcwd(),'
                    b'"..", "_applibs")] + sys.path\n')
