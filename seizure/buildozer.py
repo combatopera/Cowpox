@@ -65,7 +65,6 @@ class Buildozer:
     targetname = 'android'
     global_buildozer_dir = Path.home() / '.buildozer'
     global_platform_dir = global_buildozer_dir / targetname / 'platform'
-    global_packages_dir = global_buildozer_dir / targetname / 'packages'
     global_cache_dir = global_buildozer_dir / 'cache'
     root_dir = Path.cwd()
     buildozer_dir = root_dir / '.buildozer'
