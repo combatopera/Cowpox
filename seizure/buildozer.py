@@ -108,15 +108,7 @@ class Buildozer:
         get_stdout = kwargs.pop('get_stdout', False)
         get_stderr = kwargs.pop('get_stderr', False)
         break_on_error = kwargs.pop('break_on_error', True)
-        sensible = kwargs.pop('sensible', False)
-
-        if not sensible:
-            log.debug('Run %r', command)
-        else:
-            if type(command) in (list, tuple):
-                log.debug('Run %r ...', command[0])
-            else:
-                log.debug('Run %r ...', command.split()[0])
+        log.debug('Run %r', command)
         log.debug('Cwd %s', kwargs.get('cwd'))
         # open the process
         process = Popen(command, **kwargs)
