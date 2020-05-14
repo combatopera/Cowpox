@@ -6,7 +6,6 @@ diapyr
 jinja2
 lagoon
 pep517<0.7.0
-pexpect
 pip
 pytoml
 pyven>=37
