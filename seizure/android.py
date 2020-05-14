@@ -148,9 +148,8 @@ class TargetAndroid:
 
     def _sdkmanager(self, *args, **kwargs):
         kwargs['cwd'] = kwargs.get('cwd', self.android_sdk_dir)
-        command = f"{self.sdkmanager_path} {' '.join(args)}"
         kwargs['get_stdout'] = kwargs.get('get_stdout', True)
-        return self.buildozer.cmd(command, **kwargs)
+        return self.buildozer.cmd(f"{self.sdkmanager_path} {' '.join(args)}", **kwargs)
 
     def check_requirements(self):
         self.adb_cmd = self.android_sdk_dir / 'platform-tools' / 'adb'
