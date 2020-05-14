@@ -264,7 +264,7 @@ class TargetAndroid:
             yes_command = 'yes 2>/dev/null'
             command = '{} | {} --licenses'.format(
                 yes_command, self.sdkmanager_path)
-            self.buildozer.cmd(command, cwd=self.android_sdk_dir)
+            self.buildozer.cmd(command, cwd = self.android_sdk_dir)
         else:
             kwargs['show_output'] = True
 
@@ -344,7 +344,7 @@ class TargetAndroid:
         android_platform = self.android_sdk_dir / 'platforms' / f"android-{self.android_api}"
         if not android_platform.exists():
             if not skip_upd:
-                self._sdkmanager('"platforms;android-{}"'.format(self.android_api))
+                self._sdkmanager(f'"platforms;android-{self.android_api}"')
             else:
                 log.info('Skipping install API %s platform tools due to spec setting', self.android_api)
         log.info('Android packages installation done.')
