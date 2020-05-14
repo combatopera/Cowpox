@@ -143,8 +143,8 @@ class TargetAndroid:
         self.build_mode = build_mode
         self.dirs = dirs
 
-    def _p4a(self, cmd, get_stdout):
-        return self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args, get_stdout = get_stdout)
+    def _p4a(self, cmd):
+        self.buildozer.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
 
     def _sdkmanager(self, shellcommand):
         return self.buildozer.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, get_stdout = True)
@@ -369,7 +369,7 @@ class TargetAndroid:
         if local_recipes:
             options.append('--local-recipes')
             options.append(local_recipes)
-        self._p4a(f"create --dist_name={dist_name} --bootstrap={self._p4a_bootstrap} --requirements={requirements} --arch {self._arch} {" ".join(options)}", True)[0]
+        self._p4a(f"create --dist_name={dist_name} --bootstrap={self._p4a_bootstrap} --requirements={requirements} --arch {self._arch} {" ".join(options)}")
 
     def get_dist_dir(self, dist_name, arch):
         """Find the dist dir with the given name and target arch, if one
@@ -467,7 +467,7 @@ class TargetAndroid:
 
         cmd.append('--arch')
         cmd.append(self._arch)
-        self._p4a(' '.join(map(str, cmd)), False) # FIXME: Use lagoon.
+        self._p4a(' '.join(map(str, cmd))) # FIXME: Use lagoon.
 
     def get_release_mode(self):
         if self.check_p4a_sign_env():
