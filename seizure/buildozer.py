@@ -83,7 +83,6 @@ class Buildozer:
 
     def __init__(self, config, dirs):
         self.environ = {}
-        self.log_level = int(config.getdefault('buildozer', 'log_level', '2'))
         self.config = config
         self.dirs = dirs
 
@@ -98,8 +97,7 @@ class Buildozer:
         kwargs.setdefault('stderr', PIPE)
         kwargs.setdefault('close_fds', True)
         kwargs.setdefault('shell', True)
-        kwargs.setdefault('show_output', self.log_level > 1)
-
+        kwargs.setdefault('show_output', True)
         show_output = kwargs.pop('show_output')
         get_stdout = kwargs.pop('get_stdout', False)
         break_on_error = kwargs.pop('break_on_error', True)
@@ -142,13 +140,9 @@ class Buildozer:
             log.error('Command failed: %s', command)
             log.error('')
             log.error('Buildozer failed to execute the last command')
-            if self.log_level <= self.INFO:
-                log.error('If the error is not obvious, please raise the log_level to 2')
-                log.error('and retry the latest command.')
-            else:
-                log.error('The error might be hidden in the log above this error')
-                log.error('Please read the full log, and search for it before')
-                log.error('raising an issue with buildozer itself.')
+            log.error('The error might be hidden in the log above this error')
+            log.error('Please read the full log, and search for it before')
+            log.error('raising an issue with buildozer itself.')
             log.error('In case of a bug report, please add a full log with log_level = 2')
             raise Exception()
         if ret_stdout:
