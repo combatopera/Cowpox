@@ -49,7 +49,7 @@ from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
 from pythonforandroid.recommendations import RECOMMENDED_NDK_VERSION
 from shutil import copyfile
-import logging, os, shutil, sys
+import logging, os, shutil, subprocess, sys
 
 log = logging.getLogger(__name__)
 ANDROID_API = '27'
