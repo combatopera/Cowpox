@@ -106,7 +106,6 @@ class Buildozer:
 
         show_output = kwargs.pop('show_output')
         get_stdout = kwargs.pop('get_stdout', False)
-        get_stderr = kwargs.pop('get_stderr', False)
         break_on_error = kwargs.pop('break_on_error', True)
         log.debug('Run %r', command)
         log.debug('Cwd %s', kwargs.get('cwd'))
@@ -119,7 +118,7 @@ class Buildozer:
         fcntl.fcntl(fd_stdout, fcntl.F_SETFL, fcntl.fcntl(fd_stdout, fcntl.F_GETFL) | os.O_NONBLOCK)
         fcntl.fcntl(fd_stderr, fcntl.F_SETFL, fcntl.fcntl(fd_stderr, fcntl.F_GETFL) | os.O_NONBLOCK)
         ret_stdout = [] if get_stdout else None
-        ret_stderr = [] if get_stderr else None
+        ret_stderr = None
         while True:
             try:
                 readx = select.select([fd_stdout, fd_stderr], [], [])[0]
@@ -137,8 +136,6 @@ class Buildozer:
                 chunk = process.stderr.read()
                 if not chunk:
                     break
-                if get_stderr:
-                    ret_stderr.append(chunk)
                 if show_output:
                     stderr.write(chunk.decode('utf-8', 'replace'))
             stdout.flush()
