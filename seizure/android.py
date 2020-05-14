@@ -215,10 +215,7 @@ class TargetAndroid:
         return ndk_dir
 
     def _android_list_build_tools_versions(self):
-        available_packages = self._sdkmanager('--list')
-
-        lines = available_packages[0].split('\n')
-
+        lines = self._sdkmanager('--list')[0].split('\n')
         build_tools_versions = []
 
         for line in lines:
