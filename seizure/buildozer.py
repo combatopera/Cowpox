@@ -305,7 +305,7 @@ class Buildozer:
         log.info('Patched service/main.py to include applibs')
 
     def android_debug(self):
-        for path in self.global_buildozer_dir, self.global_cache_dir, self.buildozer_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
+        for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
             path.mkdir(parents = True, exist_ok = True)
         target = TargetAndroid(self.config, JsonStore(self.buildozer_dir / 'state.db'), self, 'debug')
         log.info('Preparing build')
