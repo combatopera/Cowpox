@@ -77,10 +77,6 @@ class Dirs:
 
 class Buildozer:
 
-    ERROR = 0
-    INFO = 1
-    DEBUG = 2
-
     def __init__(self, config, dirs):
         self.environ = {}
         self.config = config
