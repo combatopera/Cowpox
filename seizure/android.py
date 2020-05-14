@@ -252,22 +252,15 @@ class TargetAndroid:
         # okay. Something else will fault if it's important.
 
     def _android_update_sdk(self, *sdkmanager_commands):
-        """Update the tools and package-tools if possible"""
-        auto_accept_license = self.config.getbooldefault(
-            'app', 'android.accept_sdk_license', False)
-
+        auto_accept_license = self.config.getbooldefault('app', 'android.accept_sdk_license', False)
         kwargs = {}
         if auto_accept_license:
             # `SIGPIPE` is not being reported somehow, but `EPIPE` is.
             # This leads to a stderr "Broken pipe" message which is harmless,
             # but doesn't look good on terminal, hence redirecting to /dev/null
-            yes_command = 'yes 2>/dev/null'
-            command = '{} | {} --licenses'.format(
-                yes_command, self.sdkmanager_path)
-            self.buildozer.cmd(command, cwd = self.android_sdk_dir)
+            self.buildozer.cmd(f'yes 2>/dev/null | {self.sdkmanager_path} --licenses', cwd = self.android_sdk_dir)
         else:
             kwargs['show_output'] = True
-
         self._sdkmanager(*sdkmanager_commands, **kwargs)
 
     @staticmethod
