@@ -46,7 +46,8 @@ from .libs.version import parse
 from diapyr import types
 from distutils.version import LooseVersion
 from glob import glob
-from lagoon import tar, unzip
+from lagoon import tar, unzip, yes
+from lagoon.program import Program
 from os.path import exists, join, realpath, expanduser, basename, relpath
 from pathlib import Path
 from pipes import quote
@@ -208,7 +209,8 @@ class TargetAndroid:
 
     def _android_update_sdk(self, shellcommand):
         if self.config.getbooldefault('app', 'android.accept_sdk_license', False):
-            self.cmd(f'yes 2>/dev/null | {self.sdkmanager_path} --licenses', cwd = self.dirs.android_sdk_dir)
+            with yes.bg(stderr = subprocess.DEVNULL) as stream:
+                Program.text(self.sdkmanager_path).__licenses(stdin = stream, cwd = self.dirs.android_sdk_dir)
         self._sdkmanager(shellcommand)
 
     @staticmethod
