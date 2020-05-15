@@ -144,8 +144,7 @@ class TargetAndroid:
         ant_dir = self.dirs.apache_ant_dir
         if Path(ant_dir).exists():
             log.info('Apache ANT found at %s', ant_dir)
-            return ant_dir
-
+            return
         if not os.path.exists(ant_dir):
             os.makedirs(ant_dir)
         log.info('Android ANT is missing, downloading')
@@ -154,13 +153,12 @@ class TargetAndroid:
         download(url, archive, ant_dir)
         _file_extract(archive, ant_dir)
         log.info('Apache ANT installation done.')
-        return ant_dir
 
     def _install_android_sdk(self):
         sdk_dir = self.android_sdk_dir
         if sdk_dir.exists():
             log.info('Android SDK found at %s', sdk_dir)
-            return sdk_dir
+            return
         log.info('Android SDK is missing, downloading')
         archive = f"sdk-tools-linux-{DEFAULT_SDK_TAG}.zip"
         if not os.path.exists(sdk_dir):
@@ -171,13 +169,12 @@ class TargetAndroid:
         log.info('Unpacking Android SDK')
         _file_extract(archive, sdk_dir)
         log.info('Android SDK tools base installation done.')
-        return sdk_dir
 
     def _install_android_ndk(self):
         ndk_dir = self.android_ndk_dir
         if Path(ndk_dir).exists():
             log.info('Android NDK found at %s', ndk_dir)
-            return ndk_dir
+            return
         log.info('Android NDK is missing, downloading')
         archive = f"android-ndk-r{self.android_ndk_version}-linux-x86_64.zip"
         unpacked = f"android-ndk-r{self.android_ndk_version}"
@@ -187,7 +184,6 @@ class TargetAndroid:
         _file_extract(archive, self.dirs.global_platform_dir)
         _file_rename(unpacked, ndk_dir, cwd = self.dirs.global_platform_dir)
         log.info('Android NDK installation done.')
-        return ndk_dir
 
     def _android_list_build_tools_versions(self):
         lines = self._sdkmanager('--list').split('\n')
@@ -265,10 +261,7 @@ class TargetAndroid:
             str(self.android_sdk_dir), str(self.android_ndk_dir)
         ]
         if self.state.get(cache_key, None) == cache_value:
-            return True
-
-        # 1. update the tool and platform-tools if needed
-
+            return
         skip_upd = self.config.getbooldefault(
             'app', 'android.skip_update', False)
 
