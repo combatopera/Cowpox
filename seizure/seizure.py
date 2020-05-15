@@ -38,10 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .android import TargetAndroid
 from .buildozer import Buildozer
 from .config import Config
 from .dirs import Dirs
-from diapyr import DI
+from diapyr import DI, types
 from lagoon import pipify, soak
 from pathlib import Path
 import logging, os, shutil
@@ -74,4 +75,24 @@ def main():
     di.add(config)
     di.add(Dirs)
     di.add(Buildozer)
-    di(Buildozer).run()
+    di.add(TargetAndroid)
+    di.add(run)
+    di(Result)
+
+class Result: pass
+
+@types(Config, Dirs, TargetAndroid, Buildozer, this = Result)
+def run(config, dirs, target, buildozer):
+    dirs.install()
+    log.info('Preparing build')
+    log.info('Check requirements for %s', config.targetname)
+    target.check_requirements()
+    log.info('Install platform')
+    target.install_platform()
+    log.info('Compile platform')
+    target.compile_platform()
+    buildozer._copy_application_sources()
+    shutil.copytree(dirs.applibs_dir, dirs.app_dir / '_applibs')
+    buildozer._add_sitecustomize()
+    log.info('Package the application')
+    target.build_package()

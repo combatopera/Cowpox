@@ -38,17 +38,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .android import TargetAndroid
-from .cmd import Cmd
 from .config import Config
 from .dirs import Dirs
-from .jsonstore import JsonStore
 from diapyr import types
 from fnmatch import fnmatch
 from os import walk
 from os.path import splitext
 from pathlib import Path
-from shutil import copyfile, rmtree, copytree
+from shutil import copyfile, rmtree
 import colorama, logging, os
 
 log = logging.getLogger(__name__)
@@ -162,19 +159,3 @@ class Buildozer:
         with open(main_py, 'wb') as fd:
             fd.write(data)
         log.info('Patched service/main.py to include applibs')
-
-    def run(self):
-        self.dirs.install()
-        target = TargetAndroid(self.config, JsonStore(self.dirs), self.dirs, Cmd())
-        log.info('Preparing build')
-        log.info('Check requirements for %s', self.config.targetname)
-        target.check_requirements()
-        log.info('Install platform')
-        target.install_platform()
-        log.info('Compile platform')
-        target.compile_platform()
-        self._copy_application_sources()
-        copytree(self.dirs.applibs_dir, self.dirs.app_dir / '_applibs')
-        self._add_sitecustomize()
-        log.info('Package the application')
-        target.build_package()
