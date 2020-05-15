@@ -353,31 +353,20 @@ class TargetAndroid:
         config = self.config
         package = self._get_package()
         version = self.config.get_version()
-        # add extra libs/armeabi files in dist/default/libs/armeabi
-        # (same for armeabi-v7a, arm64-v8a, x86, mips)
         for config_key, lib_dir in (
                 ('android.add_libs_armeabi', 'armeabi'),
                 ('android.add_libs_armeabi_v7a', 'armeabi-v7a'),
                 ('android.add_libs_arm64_v8a', 'arm64-v8a'),
                 ('android.add_libs_x86', 'x86'),
                 ('android.add_libs_mips', 'mips')):
-
             patterns = config.getlist('app', config_key, [])
-            if not patterns:
-                continue
-            if self._arch != lib_dir:
+            if not patterns or self._arch != lib_dir:
                 continue
             log.debug("Search and copy libs for %s", lib_dir)
             for fn in _file_matches(patterns):
                 _file_copy(self.config.workspace / fn, join(dist_dir, 'libs', lib_dir, basename(fn)))
-
-        # update the project.properties libraries references
         self._update_libraries_references(dist_dir)
-
-        # add src files
         self._add_java_src(dist_dir)
-
-        # generate the whitelist if needed
         self._generate_whitelist(dist_dir)
         build_cmd = [
             "--name", config.get('app', 'title'),
@@ -419,11 +408,10 @@ class TargetAndroid:
         for pattern in add_jars:
             pattern = str(self.config.workspace / pattern)
             matches = glob(expanduser(pattern.strip()))
-            if matches:
-                for jar in matches:
-                    build_cmd += ["--add-jar", jar]
-            else:
-                raise SystemError('Failed to find jar file: {}'.format(pattern))
+            if not matches:
+                raise SystemError(f'Failed to find jar file: {pattern}')
+            for jar in matches:
+                build_cmd += ["--add-jar", jar]
         add_activities = config.getlist('app', 'android.add_activities', [])
         for activity in add_activities:
             build_cmd += ["--add-activity", activity]
@@ -435,12 +423,10 @@ class TargetAndroid:
             build_cmd += ["--icon", self.config.workspace / icon]
         ouya_category = config.getdefault('app', 'android.ouya.category', '').upper()
         if ouya_category:
-            if ouya_category not in ('GAME', 'APP'):
-                raise SystemError(
-                    'Invalid android.ouya.category: "{}" must be one of GAME or APP'.format(ouya_category))
+            if ouya_category not in {'GAME', 'APP'}:
+                raise SystemError(f'Invalid android.ouya.category: "{ouya_category}" must be one of GAME or APP')
             ouya_icon = config.getdefault('app', 'android.ouya.icon.filename', '')
-            build_cmd += ["--ouya-category", ouya_category]
-            build_cmd += ["--ouya-icon", self.config.workspace / ouya_icon]
+            build_cmd += ["--ouya-category", ouya_category, "--ouya-icon", self.config.workspace / ouya_icon]
         if config.getdefault('app','p4a.bootstrap','sdl2') != 'service_only':
             orientation = config.getdefault('app', 'orientation', 'landscape')
             if orientation == 'all':
@@ -452,12 +438,10 @@ class TargetAndroid:
         wakelock = config.getbooldefault('app', 'android.wakelock', False)
         if wakelock:
             build_cmd += ["--wakelock"]
-        intent_filters = config.getdefault(
-            'app', 'android.manifest.intent_filters', '')
+        intent_filters = config.getdefault('app', 'android.manifest.intent_filters', '')
         if intent_filters:
             build_cmd += ["--intent-filters", self.config.workspace / intent_filters]
-        launch_mode = config.getdefault(
-            'app', 'android.manifest.launch_mode', '')
+        launch_mode = config.getdefault('app', 'android.manifest.launch_mode', '')
         if launch_mode:
             build_cmd += ["--activity-launch-mode", launch_mode]
         if self.config.build_mode == 'debug':
@@ -470,14 +454,12 @@ class TargetAndroid:
             mode_sign = "release"
             mode = self._get_release_mode()
         self._execute_build_package(build_cmd)
-        build_tools_versions = os.listdir(join(self.dirs.android_sdk_dir, "build-tools"))
-        build_tools_versions = sorted(build_tools_versions, key=LooseVersion)
+        build_tools_versions = os.listdir(self.dirs.android_sdk_dir / "build-tools")
+        build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
         build_tools_version = build_tools_versions[-1]
         gradle_files = ["build.gradle", "gradle", "gradlew"]
-        is_gradle_build = build_tools_version >= "25.0" and any(
-            (exists(join(dist_dir, x)) for x in gradle_files))
+        is_gradle_build = build_tools_version >= "25.0" and any(exists(join(dist_dir, x)) for x in gradle_files)
         packagename = config.get('app', 'package.name')
-
         if is_gradle_build:
             # on gradle build, the apk use the package name, and have no version
             packagename_src = basename(dist_dir)  # gradle specifically uses the folder name
