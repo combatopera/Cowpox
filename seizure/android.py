@@ -295,7 +295,7 @@ class TargetAndroid:
             option, *values = args
             if option == "debug":
                 continue
-            elif option == "release":
+            if option == "release":
                 cmd.append('--release')
                 if self.check_p4a_sign_env(True):
                     cmd.append('--sign')
