@@ -40,6 +40,7 @@
 
 from configparser import SafeConfigParser
 from diapyr import types
+from pathlib import Path
 import logging, re
 
 log = logging.getLogger(__name__)
@@ -48,6 +49,7 @@ class Config(SafeConfigParser):
 
     targetname = 'android'
     build_mode = 'debug'
+    workspace = Path('/workspace')
 
     @types()
     def __init__(self):

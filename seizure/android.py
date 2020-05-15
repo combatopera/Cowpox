@@ -516,9 +516,7 @@ class TargetAndroid:
                 continue
             log.debug("Search and copy libs for %s", lib_dir)
             for fn in _file_matches(patterns):
-                _file_copy(
-                    join(self.dirs.root_dir, fn),
-                    join(dist_dir, 'libs', lib_dir, basename(fn)))
+                _file_copy(self.config.workspace / fn, join(dist_dir, 'libs', lib_dir, basename(fn)))
 
         # update the project.properties libraries references
         self._update_libraries_references(dist_dir)
@@ -587,7 +585,7 @@ class TargetAndroid:
         # add extra Java jar files
         add_jars = config.getlist('app', 'android.add_jars', [])
         for pattern in add_jars:
-            pattern = join(self.dirs.root_dir, pattern)
+            pattern = str(self.config.workspace / pattern)
             matches = glob(expanduser(pattern.strip()))
             if matches:
                 for jar in matches:
@@ -604,14 +602,11 @@ class TargetAndroid:
         # add presplash
         presplash = config.getdefault('app', 'presplash.filename', '')
         if presplash:
-            build_cmd += [("--presplash", join(self.dirs.root_dir,
-                                               presplash))]
-
+            build_cmd += [("--presplash", self.config.workspace / presplash)]
         # add icon
         icon = config.getdefault('app', 'icon.filename', '')
         if icon:
-            build_cmd += [("--icon", join(self.dirs.root_dir, icon))]
-
+            build_cmd += [("--icon", self.config.workspace / icon)]
         # OUYA Console support
         ouya_category = config.getdefault('app', 'android.ouya.category',
                                           '').upper()
@@ -624,9 +619,7 @@ class TargetAndroid:
             ouya_icon = config.getdefault('app', 'android.ouya.icon.filename',
                                           '')
             build_cmd += [("--ouya-category", ouya_category)]
-            build_cmd += [("--ouya-icon", join(self.dirs.root_dir,
-                                               ouya_icon))]
-
+            build_cmd += [("--ouya-icon", self.config.workspace / ouya_icon)]
         if config.getdefault('app','p4a.bootstrap','sdl2') != 'service_only':
             # add orientation
             orientation = config.getdefault('app', 'orientation', 'landscape')
@@ -648,9 +641,7 @@ class TargetAndroid:
         intent_filters = config.getdefault(
             'app', 'android.manifest.intent_filters', '')
         if intent_filters:
-            build_cmd += [("--intent-filters", join(self.dirs.root_dir,
-                                                    intent_filters))]
-
+            build_cmd += [("--intent-filters", self.config.workspace / intent_filters)]
         # activity launch mode
         launch_mode = config.getdefault(
             'app', 'android.manifest.launch_mode', '')
