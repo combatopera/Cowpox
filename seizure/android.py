@@ -142,7 +142,7 @@ class TargetAndroid:
 
     def _install_apache_ant(self):
         ant_dir = self.dirs.apache_ant_dir
-        if Path(ant_dir).exists():
+        if ant_dir.exists():
             log.info('Apache ANT found at %s', ant_dir)
             return
         if not os.path.exists(ant_dir):
@@ -172,7 +172,7 @@ class TargetAndroid:
 
     def _install_android_ndk(self):
         ndk_dir = self.android_ndk_dir
-        if Path(ndk_dir).exists():
+        if ndk_dir.exists():
             log.info('Android NDK found at %s', ndk_dir)
             return
         log.info('Android NDK is missing, downloading')
