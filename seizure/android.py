@@ -261,10 +261,6 @@ class TargetAndroid:
         local_recipes = self.get_local_recipes_dir()
         requirements = ','.join(app_requirements)
         options = []
-        source_dirs = {f'P4A_{name[20:]}_DIR': realpath(expanduser(value)) for name, value in self.config.items('app') if name.startswith('requirements.source.')}
-        if source_dirs:
-            self.cmd.environ.update(source_dirs)
-            log.info('Using custom source dirs:\n    %s', '\n    '.join(f'{k} = {v}' for k, v in source_dirs.items()))
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             options.append("--copy-libs")
         if local_recipes:
