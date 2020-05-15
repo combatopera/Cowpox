@@ -125,13 +125,9 @@ class TargetAndroid:
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
         self._p4a_bootstrap = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
         self.p4a_apk_cmd += self._p4a_bootstrap
-        self.extra_p4a_args = f''' --color={'always' if USE_COLOR else 'never'} --storage-dir="{self._build_dir}"'''
+        self.extra_p4a_args = f''' --color={'always' if USE_COLOR else 'never'} --storage-dir="{self._build_dir}" --ndk-api={config.getdefault('app', 'android.ndk_api', self.android_minapi)}'''
         self.config = config
         self.state = state
-        # minapi should match ndk-api, so can use the same default if
-        # nothing is specified
-        ndk_api = config.getdefault('app', 'android.ndk_api', self.android_minapi)
-        self.extra_p4a_args += ' --ndk-api={}'.format(ndk_api)
         hook = config.getdefault("app", "p4a.hook", None)
         if hook is not None:
             self.extra_p4a_args += ' --hook={}'.format(realpath(hook))
