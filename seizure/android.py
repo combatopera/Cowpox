@@ -128,12 +128,6 @@ class TargetAndroid:
         self.extra_p4a_args = f''' --color={'always' if USE_COLOR else 'never'} --storage-dir="{self._build_dir}" --ndk-api={config.getdefault('app', 'android.ndk_api', self.android_minapi)}'''
         self.config = config
         self.state = state
-        hook = config.getdefault("app", "p4a.hook", None)
-        if hook is not None:
-            self.extra_p4a_args += ' --hook={}'.format(realpath(hook))
-        port = config.getdefault('app', 'p4a.port', None)
-        if port is not None:
-            self.extra_p4a_args += ' --port={}'.format(port)
         self.dirs = dirs
         self.cmd = cmd
 
