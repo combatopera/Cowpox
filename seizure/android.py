@@ -226,19 +226,6 @@ class TargetAndroid:
             return parse("0")
         return max(versions)
 
-    @staticmethod
-    def _find_latest_package(packages, key):
-        package_versions = []
-        for p in packages:
-            if not p.startswith(key):
-                continue
-            version_string = p.split(key)[-1]
-            version = parse(version_string)
-            package_versions.append(version)
-        if not package_versions:
-            return
-        return max(package_versions)
-
     def _install_android_packages(self):
         cache_key = 'android:sdk_installation'
         cache_value = [
