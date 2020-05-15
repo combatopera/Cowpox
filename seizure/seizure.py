@@ -66,11 +66,12 @@ def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
     disablegradledaemon()
     shutil.copytree('.', '/project', symlinks = True, dirs_exist_ok = True)
-    soak.print(cwd = '/workspace')
-    pipify.print('-f', '/workspace/bdozlib.arid', cwd = '/project')
-    os.chdir('/workspace') # FIXME: Only include main.py in artifact.
+    config = Config()
+    soak.print(cwd = config.workspace)
+    pipify.print('-f', config.workspace / 'bdozlib.arid', cwd = '/project')
+    os.chdir(config.workspace) # FIXME: Only include main.py in artifact.
     di = DI()
-    di.add(Config)
+    di.add(config)
     di.add(Dirs)
     di.add(Buildozer)
     di(Buildozer).run()
