@@ -120,7 +120,7 @@ class TargetAndroid:
     def __init__(self, config, state, dirs, cmd):
         self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
         self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
-        self.sdkmanager_path = dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
+        self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
         self._p4a_bootstrap = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
@@ -135,7 +135,7 @@ class TargetAndroid:
         self.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
 
     def _sdkmanager(self, *args):
-        return Program.text(self.sdkmanager_path)(*args, cwd = self.dirs.android_sdk_dir)
+        return self.sdkmanager(*args)
 
     def _install_apache_ant(self):
         ant_dir = self.dirs.apache_ant_dir
@@ -209,8 +209,8 @@ class TargetAndroid:
 
     def _android_update_sdk(self, *args):
         if self.config.getbooldefault('app', 'android.accept_sdk_license', False):
-            with yes.bg(check = False) as proc:
-                Program.text(self.sdkmanager_path).__licenses(stdin = proc.stdout, cwd = self.dirs.android_sdk_dir)
+            with yes.bg(check = False) as yesproc:
+                self.sdkmanager.__licenses.print(stdin = yesproc.stdout)
         self._sdkmanager(*args)
 
     @staticmethod
