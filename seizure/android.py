@@ -134,9 +134,6 @@ class TargetAndroid:
     def _p4a(self, cmd):
         self.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
 
-    def _sdkmanager(self, *args):
-        return self.sdkmanager(*args)
-
     def _install_apache_ant(self):
         ant_dir = self.dirs.apache_ant_dir
         if ant_dir.exists():
@@ -176,7 +173,7 @@ class TargetAndroid:
         log.info('Android NDK installation done.')
 
     def _android_list_build_tools_versions(self):
-        lines = self._sdkmanager('--list').split('\n')
+        lines = self.sdkmanager.__list().split('\n')
         build_tools_versions = []
 
         for line in lines:
@@ -211,7 +208,7 @@ class TargetAndroid:
         if self.config.getbooldefault('app', 'android.accept_sdk_license', False):
             with yes.bg(check = False) as yesproc:
                 self.sdkmanager.__licenses.print(stdin = yesproc.stdout)
-        self._sdkmanager(*args)
+        self.sdkmanager.print(*args)
 
     @staticmethod
     def _read_version_subdir(*args):
@@ -276,7 +273,7 @@ class TargetAndroid:
         android_platform = self.dirs.android_sdk_dir / 'platforms' / f"android-{self.android_api}"
         if not android_platform.exists():
             if not skip_upd:
-                self._sdkmanager(f"platforms;android-{self.android_api}")
+                self.sdkmanager.print(f"platforms;android-{self.android_api}")
             else:
                 log.info('Skipping install API %s platform tools due to spec setting', self.android_api)
         log.info('Android packages installation done.')
