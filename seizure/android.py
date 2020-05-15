@@ -401,63 +401,42 @@ class TargetAndroid:
 
         # generate the whitelist if needed
         self._generate_whitelist(dist_dir)
-
-        # build the app
         build_cmd = [
             ("--name", quote(config.get('app', 'title'))),
             ("--version", version),
             ("--package", package),
-            ("--minsdk", config.getdefault('app', 'android.minapi',
-                                           self.android_minapi)),
-            ("--ndk-api", config.getdefault('app', 'android.minapi',
-                                            self.android_minapi)),
+            ("--minsdk", config.getdefault('app', 'android.minapi', self.android_minapi)),
+            ("--ndk-api", config.getdefault('app', 'android.minapi', self.android_minapi)),
         ]
-        is_private_storage = config.getbooldefault(
-            'app', 'android.private_storage', True)
+        is_private_storage = config.getbooldefault('app', 'android.private_storage', True)
         if is_private_storage:
             build_cmd += [("--private", self.dirs.app_dir)]
         else:
             build_cmd += [("--dir", self.dirs.app_dir)]
-        # add permissions
         permissions = config.getlist('app', 'android.permissions', [])
         for permission in permissions:
-            # force the latest component to be uppercase
             permission = permission.split('.')
             permission[-1] = permission[-1].upper()
             permission = '.'.join(permission)
             build_cmd += [("--permission", permission)]
-
-        # android.entrypoint
         entrypoint = config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
         build_cmd += [('--android-entrypoint', entrypoint)]
-
-        # android.apptheme
         apptheme = config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar')
         build_cmd += [('--android-apptheme', apptheme)]
-
-        # android.compile_options
         compile_options = config.getlist('app', 'android.add_compile_options', [])
         for option in compile_options:
             build_cmd += [('--add-compile-option', option)]
-
-        # android.add_gradle_repositories
         repos = config.getlist('app','android.add_gradle_repositories', [])
         for repo in repos:
             build_cmd += [('--add-gradle-repository', repo)]
-
-        # android packaging options
         pkgoptions = config.getlist('app','android.add_packaging_options', [])
         for pkgoption in pkgoptions:
             build_cmd += [('--add-packaging-option', pkgoption)]
-
-        # meta-data
         meta_datas = config.getlistvalues('app', 'android.meta_data', [])
         for meta in meta_datas:
             key, value = meta.split('=', 1)
             meta = '{}={}'.format(key.strip(), value.strip())
             build_cmd += [("--meta-data", meta)]
-
-        # add extra Java jar files
         add_jars = config.getlist('app', 'android.add_jars', [])
         for pattern in add_jars:
             pattern = str(self.config.workspace / pattern)
@@ -466,64 +445,43 @@ class TargetAndroid:
                 for jar in matches:
                     build_cmd += [("--add-jar", jar)]
             else:
-                raise SystemError('Failed to find jar file: {}'.format(
-                    pattern))
-
-        # add Java activity
+                raise SystemError('Failed to find jar file: {}'.format(pattern))
         add_activities = config.getlist('app', 'android.add_activities', [])
         for activity in add_activities:
             build_cmd += [("--add-activity", activity)]
-
-        # add presplash
         presplash = config.getdefault('app', 'presplash.filename', '')
         if presplash:
             build_cmd += [("--presplash", self.config.workspace / presplash)]
-        # add icon
         icon = config.getdefault('app', 'icon.filename', '')
         if icon:
             build_cmd += [("--icon", self.config.workspace / icon)]
-        # OUYA Console support
-        ouya_category = config.getdefault('app', 'android.ouya.category',
-                                          '').upper()
+        ouya_category = config.getdefault('app', 'android.ouya.category', '').upper()
         if ouya_category:
             if ouya_category not in ('GAME', 'APP'):
                 raise SystemError(
-                    'Invalid android.ouya.category: "{}" must be one of GAME or APP'.format(
-                        ouya_category))
-            # add icon
-            ouya_icon = config.getdefault('app', 'android.ouya.icon.filename',
-                                          '')
+                    'Invalid android.ouya.category: "{}" must be one of GAME or APP'.format(ouya_category))
+            ouya_icon = config.getdefault('app', 'android.ouya.icon.filename', '')
             build_cmd += [("--ouya-category", ouya_category)]
             build_cmd += [("--ouya-icon", self.config.workspace / ouya_icon)]
         if config.getdefault('app','p4a.bootstrap','sdl2') != 'service_only':
-            # add orientation
             orientation = config.getdefault('app', 'orientation', 'landscape')
             if orientation == 'all':
                 orientation = 'sensor'
             build_cmd += [("--orientation", orientation)]
-
-            # fullscreen ?
             fullscreen = config.getbooldefault('app', 'fullscreen', True)
             if not fullscreen:
                 build_cmd += [("--window", )]
-
-        # wakelock ?
         wakelock = config.getbooldefault('app', 'android.wakelock', False)
         if wakelock:
             build_cmd += [("--wakelock", )]
-
-        # intent filters
         intent_filters = config.getdefault(
             'app', 'android.manifest.intent_filters', '')
         if intent_filters:
             build_cmd += [("--intent-filters", self.config.workspace / intent_filters)]
-        # activity launch mode
         launch_mode = config.getdefault(
             'app', 'android.manifest.launch_mode', '')
         if launch_mode:
             build_cmd += [("--activity-launch-mode", launch_mode)]
-
-        # build only in debug right now.
         if self.config.build_mode == 'debug':
             build_cmd += [("debug", )]
             mode = 'debug'
