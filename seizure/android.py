@@ -184,22 +184,6 @@ class TargetAndroid:
             build_tools_versions.append(parse(version))
         return build_tools_versions
 
-    def _android_get_installed_platform_tools_version(self):
-        platform_tools_dir = self.dirs.android_sdk_dir / 'platform-tools'
-        if not platform_tools_dir.exists():
-            return None
-        data_file = platform_tools_dir / 'source.properties'
-        if not data_file.exists():
-            return None
-        with data_file.open() as fileh:
-            lines = fileh.readlines()
-        for line in lines:
-            if line.startswith('Pkg.Revision='):
-                return line.split('=')[1].strip()
-        log.error('Read %s but found no Pkg.Revision', data_file)
-        # Don't actually exit, in case the build env is
-        # okay. Something else will fault if it's important.
-
     def _android_update_sdk(self, *args):
         if self.config.getbooldefault('app', 'android.accept_sdk_license', False):
             with yes.bg(check = False) as yesproc:
