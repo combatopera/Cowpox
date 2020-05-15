@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .cmd import Cmd
 from .config import Config
 from .dirs import APACHE_ANT_VERSION, Dirs
 from .jsonstore import JsonStore
@@ -50,7 +49,6 @@ from lagoon import tar, unzip, yes
 from lagoon.program import Program
 from os.path import exists, join, realpath, expanduser, basename, relpath
 from pathlib import Path
-from pipes import quote
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
 from shutil import copyfile
@@ -113,25 +111,28 @@ class TargetAndroid:
     p4a_recommended_ndk_version = None
     javac_cmd = 'javac'
     keytool_cmd = 'keytool'
-    _p4a_cmd = f'{sys.executable} -m pythonforandroid.toolchain '
 
-    @types(Config, JsonStore, Dirs, Cmd)
-    def __init__(self, config, state, dirs, cmd):
+    @types(Config, JsonStore, Dirs)
+    def __init__(self, config, state, dirs):
         self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
         self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
+        self.p4a = Program.text(sys.executable).partial('-m', 'pythonforandroid.toolchain', env = dict(
+            ANDROIDSDK = dirs.android_sdk_dir,
+            ANDROIDNDK = dirs.android_ndk_dir,
+            ANDROIDAPI = self.android_api,
+        ))
         self._p4a_bootstrap = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
         self.p4a_apk_cmd = 'apk', '--debug', f"--bootstrap={self._p4a_bootstrap}"
-        self.extra_p4a_args = f''' --color=always --storage-dir="{self._build_dir}" --ndk-api={config.getdefault('app', 'android.ndk_api', self.android_minapi)}'''
+        self.extra_p4a_args = '--color=always', f"--storage-dir={self._build_dir}", f"--ndk-api={config.getdefault('app', 'android.ndk_api', self.android_minapi)}"
         self.config = config
         self.state = state
         self.dirs = dirs
-        self.cmd = cmd
 
-    def _p4a(self, cmd):
-        self.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
+    def _p4a(self, *args):
+        self.p4a.print(*args, *self.extra_p4a_args)
 
     def _install_apache_ant(self):
         ant_dir = self.dirs.apache_ant_dir
@@ -246,11 +247,6 @@ class TargetAndroid:
         self._install_android_sdk()
         self._install_android_ndk()
         self._install_android_packages()
-        self.cmd.environ.update({
-            'ANDROIDSDK': self.dirs.android_sdk_dir,
-            'ANDROIDNDK': self.dirs.android_ndk_dir,
-            'ANDROIDAPI': self.android_api,
-        })
 
     def compile_platform(self):
         app_requirements = self.config.getlist('app', 'requirements', '')
@@ -262,7 +258,7 @@ class TargetAndroid:
             options.append("--copy-libs")
         if local_recipes:
             options.extend(['--local-recipes', local_recipes])
-        self._p4a(f"create --dist_name={dist_name} --bootstrap={self._p4a_bootstrap} --requirements={requirements} --arch {self._arch} {' '.join(options)}")
+        self._p4a('create', f"--dist_name={dist_name}", f"--bootstrap={self._p4a_bootstrap}", f"--requirements={requirements}", '--arch', self._arch, *options)
 
     def get_dist_dir(self, dist_name, arch):
         """Find the dist dir with the given name and target arch, if one
@@ -293,7 +289,7 @@ class TargetAndroid:
         cmd = [*self.p4a_apk_cmd, '--dist_name', dist_name, *build_cmd]
         presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
         if presplash_color:
-            cmd.extend(['--presplash-color', f"'{presplash_color}'"])
+            cmd.extend(['--presplash-color', f"{presplash_color}"])
         services = self.config.getlist('app', 'services', [])
         for service in services:
             cmd.extend(["--service", service])
@@ -317,7 +313,7 @@ class TargetAndroid:
         for gradle_dependency in gradle_dependencies:
             cmd.extend(['--depend', gradle_dependency])
         cmd.extend(['--arch', self._arch])
-        self._p4a(' '.join(map(str, cmd))) # FIXME: Use lagoon.
+        self._p4a(*cmd)
 
     def get_release_mode(self):
         if self.check_p4a_sign_env():
@@ -386,7 +382,7 @@ class TargetAndroid:
         # generate the whitelist if needed
         self._generate_whitelist(dist_dir)
         build_cmd = [
-            "--name", quote(config.get('app', 'title')),
+            "--name", config.get('app', 'title'),
             "--version", version,
             "--package", package,
             "--minsdk", config.getdefault('app', 'android.minapi', self.android_minapi),
