@@ -110,7 +110,6 @@ def _file_copy(self, source, target, cwd=None):
 
 class TargetAndroid:
 
-    p4a_apk_cmd = "apk --debug --bootstrap="
     p4a_recommended_ndk_version = None
     javac_cmd = 'javac'
     keytool_cmd = 'keytool'
@@ -124,7 +123,7 @@ class TargetAndroid:
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
         self._p4a_bootstrap = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
-        self.p4a_apk_cmd += self._p4a_bootstrap
+        self.p4a_apk_cmd = 'apk', '--debug', f"--bootstrap={self._p4a_bootstrap}"
         self.extra_p4a_args = f''' --color=always --storage-dir="{self._build_dir}" --ndk-api={config.getdefault('app', 'android.ndk_api', self.android_minapi)}'''
         self.config = config
         self.state = state
@@ -292,7 +291,7 @@ class TargetAndroid:
         # wrapper from previous old_toolchain to new toolchain
         dist_name = self.config.get('app', 'package.name')
         local_recipes = self.get_local_recipes_dir()
-        cmd = [self.p4a_apk_cmd, '--dist_name', dist_name]
+        cmd = [*self.p4a_apk_cmd, '--dist_name', dist_name]
         for args in build_cmd:
             option, values = args[0], args[1:]
             if option == "debug":
