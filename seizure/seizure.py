@@ -38,7 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .buildozer import Buildozer
 from .config import Config
+from .dirs import Dirs
 from diapyr import DI
 from lagoon import pipify, soak
 from pathlib import Path
@@ -67,7 +69,6 @@ def main():
     soak.print(cwd = '/workspace')
     pipify.print('-f', '/workspace/bdozlib.arid', cwd = '/project')
     os.chdir('/workspace') # FIXME: Only include main.py in artifact.
-    from .buildozer import Buildozer, Dirs # FIXME: Do not resolve paths so eagerly.
     di = DI()
     di.add(Config)
     di.add(Dirs)
