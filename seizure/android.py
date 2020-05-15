@@ -316,12 +316,10 @@ class TargetAndroid:
         self._p4a(*cmd)
 
     def get_release_mode(self):
-        if self.check_p4a_sign_env():
-            return "release"
-        return "release-unsigned"
+        return 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'
 
     @staticmethod
-    def check_p4a_sign_env(error=False):
+    def _check_p4a_sign_env(error):
         keys = ["KEYALIAS", "KEYSTORE_PASSWD", "KEYSTORE", "KEYALIAS_PASSWD"]
         check = True
         for key in keys:
@@ -467,7 +465,7 @@ class TargetAndroid:
             mode_sign = mode
         else:
             build_cmd += ['--release']
-            if self.check_p4a_sign_env(True):
+            if self._check_p4a_sign_env(True):
                 build_cmd += ['--sign']
             mode_sign = "release"
             mode = self.get_release_mode()
