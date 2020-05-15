@@ -38,9 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from argparse import Namespace
 from configparser import SafeConfigParser
 from diapyr import types
-from pathlib import Path
 import logging, re
 
 log = logging.getLogger(__name__)
@@ -49,11 +49,11 @@ class Config(SafeConfigParser):
 
     targetname = 'android'
     build_mode = 'debug'
-    workspace = Path('/workspace')
 
-    @types()
-    def __init__(self):
+    @types(Namespace)
+    def __init__(self, config):
         super().__init__(allow_no_value = True)
+        self.workspace = config.workspace
         self.optionxform = lambda value: value
         self.getlist = self._get_config_list
         self.getlistvalues = self._get_config_list_values

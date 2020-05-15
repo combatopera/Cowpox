@@ -44,6 +44,7 @@ from .cmd import Cmd
 from .config import Config
 from .jsonstore import JsonStore
 from .dirs import Dirs
+from argparse import ArgumentParser
 from diapyr import DI, types
 from lagoon import pipify, soak
 from pathlib import Path
@@ -67,12 +68,16 @@ def disablegradledaemon():
 
 def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
+    parser = ArgumentParser()
+    parser.add_argument('workspace', type = Path)
+    config = parser.parse_args()
     disablegradledaemon()
     shutil.copytree('.', '/project', symlinks = True, dirs_exist_ok = True)
-    soak.print(cwd = Config.workspace)
-    pipify.print('-f', Config.workspace / 'bdozlib.arid', cwd = '/project')
-    os.chdir(Config.workspace) # FIXME: Only include main.py in artifact.
+    soak.print(cwd = config.workspace)
+    pipify.print('-f', config.workspace / 'bdozlib.arid', cwd = '/project')
+    os.chdir(config.workspace) # FIXME: Only include main.py in artifact.
     di = DI()
+    di.add(config)
     di.add(Buildozer)
     di.add(Cmd)
     di.add(Config)
