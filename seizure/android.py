@@ -251,7 +251,7 @@ class TargetAndroid:
     def compile_platform(self):
         app_requirements = self.config.getlist('app', 'requirements', '')
         dist_name = self.config.get('app', 'package.name')
-        local_recipes = self.get_local_recipes_dir()
+        local_recipes = self._get_local_recipes_dir()
         requirements = ','.join(app_requirements)
         options = []
         if self.config.getbooldefault('app', 'android.copy_libs', True):
@@ -279,13 +279,13 @@ class TargetAndroid:
         # doesn't exist yet, so use the expected name
         return expected_dist_dir
 
-    def get_local_recipes_dir(self):
+    def _get_local_recipes_dir(self):
         local_recipes = self.config.getdefault('app', 'p4a.local_recipes')
         return realpath(expanduser(local_recipes)) if local_recipes else None
 
     def _execute_build_package(self, build_cmd):
         dist_name = self.config.get('app', 'package.name')
-        local_recipes = self.get_local_recipes_dir()
+        local_recipes = self._get_local_recipes_dir()
         cmd = [*self.p4a_apk_cmd, '--dist_name', dist_name, *build_cmd]
         presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
         if presplash_color:
