@@ -72,4 +72,4 @@ def main():
     di.add(Config)
     di.add(Dirs)
     di.add(Buildozer)
-    di(Buildozer).android_debug()
+    di(Buildozer).run()

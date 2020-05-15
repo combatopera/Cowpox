@@ -189,7 +189,7 @@ class Buildozer:
             fd.write(data)
         log.info('Patched service/main.py to include applibs')
 
-    def android_debug(self):
+    def run(self):
         self.dirs.install()
         target = TargetAndroid(self.config, JsonStore(self.dirs.buildozer_dir / 'state.db'), self, self.dirs, Cmd(), 'debug')
         log.info('Preparing build')
