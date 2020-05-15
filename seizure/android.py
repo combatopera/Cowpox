@@ -144,10 +144,6 @@ class TargetAndroid:
         return self.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, stdout = subprocess.PIPE).stdout
 
     def check_requirements(self):
-        returncode_dpkg = self.cmd('dpkg --version', check = False).returncode
-        is_debian_like = (returncode_dpkg == 0)
-        if is_debian_like and not Path('/usr/include/zlib.h').exists():
-            raise Exception('zlib headers must be installed, run: sudo apt-get install zlib1g-dev')
         path = [str(self.apache_ant_dir / 'bin')]
         if 'PATH' in self.cmd.environ:
             path.append(self.cmd.environ['PATH'])
