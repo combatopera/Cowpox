@@ -39,11 +39,11 @@
 # THE SOFTWARE.
 
 from .android import TargetAndroid
-from .buildozer import Buildozer
 from .cmd import Cmd
 from .config import Config
 from .jsonstore import JsonStore
 from .dirs import Dirs
+from .src import Src
 from argparse import ArgumentParser
 from diapyr import DI, types
 from lagoon import pipify, soak
@@ -79,19 +79,19 @@ def main():
     os.chdir(config.workspace) # FIXME: Only include main.py in artifact.
     di = DI()
     di.add(config)
-    di.add(Buildozer)
     di.add(Cmd)
     di.add(Config)
     di.add(Dirs)
     di.add(JsonStore)
+    di.add(Src)
     di.add(TargetAndroid)
     di.add(run)
     di(Result)
 
 class Result: pass
 
-@types(Config, Dirs, TargetAndroid, Buildozer, this = Result)
-def run(config, dirs, target, buildozer):
+@types(Config, Dirs, TargetAndroid, Src, this = Result)
+def run(config, dirs, target, src):
     dirs.install()
     log.info('Preparing build')
     log.info('Check requirements for %s', config.targetname)
@@ -100,8 +100,8 @@ def run(config, dirs, target, buildozer):
     target.install_platform()
     log.info('Compile platform')
     target.compile_platform()
-    buildozer._copy_application_sources()
+    src._copy_application_sources()
     shutil.copytree(dirs.applibs_dir, dirs.app_dir / '_applibs')
-    buildozer._add_sitecustomize()
+    src._add_sitecustomize()
     log.info('Package the application')
     target.build_package()

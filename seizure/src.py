@@ -49,7 +49,7 @@ import logging, os
 
 log = logging.getLogger(__name__)
 
-class Buildozer:
+class Src:
 
     @types(Config, Dirs)
     def __init__(self, config, dirs):
