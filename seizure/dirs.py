@@ -42,6 +42,8 @@ from .config import Config
 from diapyr import types
 from pathlib import Path
 
+APACHE_ANT_VERSION = '1.9.4'
+
 class Dirs:
 
     global_buildozer_dir = Path.home() / '.buildozer'
@@ -55,6 +57,7 @@ class Dirs:
         self.app_dir = self.buildozer_dir / config.targetname / 'app'
         self.bin_dir = config.workspace / 'bin'
         self.applibs_dir = self.buildozer_dir / 'applibs'
+        self.apache_ant_dir = self.global_platform_dir / f"apache-ant-{config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)}"
 
     def install(self):
         for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:

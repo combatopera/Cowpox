@@ -40,7 +40,7 @@
 
 from .cmd import Cmd
 from .config import Config
-from .dirs import Dirs
+from .dirs import APACHE_ANT_VERSION, Dirs
 from .jsonstore import JsonStore
 from .libs.version import parse
 from diapyr import types
@@ -59,7 +59,6 @@ import logging, os, shutil, subprocess, sys
 log = logging.getLogger(__name__)
 ANDROID_API = '27'
 ANDROID_MINAPI = '21'
-APACHE_ANT_VERSION = '1.9.4'
 # Default SDK tag to download. This is not a configurable option
 # because it doesn't seem to matter much, it is normally correct to
 # download once then update all the components as buildozer already
@@ -124,7 +123,6 @@ class TargetAndroid:
         self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
         self.android_sdk_dir = dirs.global_platform_dir / 'android-sdk'
         self.android_ndk_dir = dirs.global_platform_dir / f"android-ndk-r{config.getdefault('app', 'android.ndk', self.android_ndk_version)}"
-        self.apache_ant_dir = dirs.global_platform_dir / f"apache-ant-{config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)}"
         self.sdkmanager_path = self.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
@@ -143,7 +141,7 @@ class TargetAndroid:
         return self.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, stdout = subprocess.PIPE).stdout
 
     def check_requirements(self):
-        path = [str(self.apache_ant_dir / 'bin')]
+        path = [str(self.dirs.apache_ant_dir / 'bin')]
         if 'PATH' in self.cmd.environ:
             path.append(self.cmd.environ['PATH'])
         else:
@@ -151,7 +149,7 @@ class TargetAndroid:
         self.cmd.environ['PATH'] = os.pathsep.join(path)
 
     def _install_apache_ant(self):
-        ant_dir = self.apache_ant_dir
+        ant_dir = self.dirs.apache_ant_dir
         if Path(ant_dir).exists():
             log.info('Apache ANT found at %s', ant_dir)
             return ant_dir
