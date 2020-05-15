@@ -46,15 +46,9 @@ from os import walk
 from os.path import splitext
 from pathlib import Path
 from shutil import copyfile, rmtree
-import colorama, logging, os
+import logging, os
 
 log = logging.getLogger(__name__)
-colorama.init()
-COLOR_SEQ = lambda x: x
-BOLD_SEQ = ''
-BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
-RED = colorama.Fore.RED
-BLUE = colorama.Fore.CYAN
 
 class Buildozer:
 
