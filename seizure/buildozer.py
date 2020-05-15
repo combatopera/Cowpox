@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from .android import TargetAndroid
+from .cmd import Cmd
 from .config import Config
 from .dirs import Dirs
 from .jsonstore import JsonStore
@@ -48,7 +49,7 @@ from os import walk
 from os.path import splitext
 from pathlib import Path
 from shutil import copyfile, rmtree, copytree
-import colorama, logging, os, subprocess
+import colorama, logging, os
 
 log = logging.getLogger(__name__)
 colorama.init()
@@ -57,16 +58,6 @@ BOLD_SEQ = ''
 BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
 RED = colorama.Fore.RED
 BLUE = colorama.Fore.CYAN
-
-class Cmd:
-
-    def __init__(self):
-        self.environ = {}
-
-    def __call__(self, command, stdout = None, check = True, cwd = None):
-        log.debug('Run %r', command)
-        log.debug('Cwd %s', cwd)
-        return subprocess.run(command, shell = True, cwd = cwd, env = {**os.environ, **self.environ}, stdout = stdout, check = check, text = True)
 
 class Buildozer:
 
