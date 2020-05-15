@@ -145,12 +145,10 @@ class TargetAndroid:
         if ant_dir.exists():
             log.info('Apache ANT found at %s', ant_dir)
             return
-        if not os.path.exists(ant_dir):
-            os.makedirs(ant_dir)
+        ant_dir.mkdir(parents = True)
         log.info('Android ANT is missing, downloading')
         archive = f"apache-ant-{APACHE_ANT_VERSION}-bin.tar.gz"
-        url = 'http://archive.apache.org/dist/ant/binaries/'
-        download(url, archive, ant_dir)
+        download('http://archive.apache.org/dist/ant/binaries/', archive, ant_dir)
         _file_extract(archive, ant_dir)
         log.info('Apache ANT installation done.')
 
@@ -161,11 +159,8 @@ class TargetAndroid:
             return
         log.info('Android SDK is missing, downloading')
         archive = f"sdk-tools-linux-{DEFAULT_SDK_TAG}.zip"
-        if not os.path.exists(sdk_dir):
-            os.makedirs(sdk_dir)
-
-        url = 'http://dl.google.com/android/repository/'
-        download(url, archive, sdk_dir)
+        sdk_dir.mkdir(parents = True)
+        download('http://dl.google.com/android/repository/', archive, sdk_dir)
         log.info('Unpacking Android SDK')
         _file_extract(archive, sdk_dir)
         log.info('Android SDK tools base installation done.')
@@ -177,12 +172,10 @@ class TargetAndroid:
             return
         log.info('Android NDK is missing, downloading')
         archive = f"android-ndk-r{self.android_ndk_version}-linux-x86_64.zip"
-        unpacked = f"android-ndk-r{self.android_ndk_version}"
-        url = 'https://dl.google.com/android/repository/'
-        download(url, archive, self.dirs.global_platform_dir)
+        download('https://dl.google.com/android/repository/', archive, self.dirs.global_platform_dir)
         log.info('Unpacking Android NDK')
         _file_extract(archive, self.dirs.global_platform_dir)
-        _file_rename(unpacked, ndk_dir, cwd = self.dirs.global_platform_dir)
+        _file_rename(f"android-ndk-r{self.android_ndk_version}", ndk_dir, cwd = self.dirs.global_platform_dir)
         log.info('Android NDK installation done.')
 
     def _android_list_build_tools_versions(self):
