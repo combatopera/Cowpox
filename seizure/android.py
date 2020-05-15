@@ -287,7 +287,7 @@ class TargetAndroid:
         local_recipes = self.config.getdefault('app', 'p4a.local_recipes')
         return realpath(expanduser(local_recipes)) if local_recipes else None
 
-    def execute_build_package(self, build_cmd):
+    def _execute_build_package(self, build_cmd):
         # wrapper from previous old_toolchain to new toolchain
         dist_name = self.config.get('app', 'package.name')
         local_recipes = self.get_local_recipes_dir()
@@ -558,8 +558,7 @@ class TargetAndroid:
             build_cmd += [("release", )]
             mode_sign = "release"
             mode = self.get_release_mode()
-
-        self.execute_build_package(build_cmd)
+        self._execute_build_package(build_cmd)
         build_tools_versions = os.listdir(join(self.dirs.android_sdk_dir, "build-tools"))
         build_tools_versions = sorted(build_tools_versions, key=LooseVersion)
         build_tools_version = build_tools_versions[-1]
