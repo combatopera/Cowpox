@@ -121,9 +121,8 @@ class TargetAndroid:
         self.android_ndk_version = config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
         self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
         self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
-        self.android_sdk_dir = dirs.global_platform_dir / 'android-sdk'
         self.android_ndk_dir = dirs.global_platform_dir / f"android-ndk-r{config.getdefault('app', 'android.ndk', self.android_ndk_version)}"
-        self.sdkmanager_path = self.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
+        self.sdkmanager_path = dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
         self._p4a_bootstrap = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
@@ -138,7 +137,7 @@ class TargetAndroid:
         self.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
 
     def _sdkmanager(self, shellcommand):
-        return self.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, stdout = subprocess.PIPE).stdout
+        return self.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.dirs.android_sdk_dir, stdout = subprocess.PIPE).stdout
 
     def _install_apache_ant(self):
         ant_dir = self.dirs.apache_ant_dir
@@ -153,7 +152,7 @@ class TargetAndroid:
         log.info('Apache ANT installation done.')
 
     def _install_android_sdk(self):
-        sdk_dir = self.android_sdk_dir
+        sdk_dir = self.dirs.android_sdk_dir
         if sdk_dir.exists():
             log.info('Android SDK found at %s', sdk_dir)
             return
@@ -195,7 +194,7 @@ class TargetAndroid:
         return build_tools_versions
 
     def _android_get_installed_platform_tools_version(self):
-        platform_tools_dir = self.android_sdk_dir / 'platform-tools'
+        platform_tools_dir = self.dirs.android_sdk_dir / 'platform-tools'
         if not platform_tools_dir.exists():
             return None
         data_file = platform_tools_dir / 'source.properties'
@@ -212,7 +211,7 @@ class TargetAndroid:
 
     def _android_update_sdk(self, shellcommand):
         if self.config.getbooldefault('app', 'android.accept_sdk_license', False):
-            self.cmd(f'yes 2>/dev/null | {self.sdkmanager_path} --licenses', cwd = self.android_sdk_dir)
+            self.cmd(f'yes 2>/dev/null | {self.sdkmanager_path} --licenses', cwd = self.dirs.android_sdk_dir)
         self._sdkmanager(shellcommand)
 
     @staticmethod
@@ -251,7 +250,7 @@ class TargetAndroid:
         cache_key = 'android:sdk_installation'
         cache_value = [
             self.android_api, self.android_minapi, self.android_ndk_version,
-            str(self.android_sdk_dir), str(self.android_ndk_dir)
+            str(self.dirs.android_sdk_dir), str(self.android_ndk_dir)
         ]
         if self.state.get(cache_key, None) == cache_value:
             return
@@ -268,7 +267,7 @@ class TargetAndroid:
             log.info('Note: this also prevents installing missing SDK components')
         # 2. install the latest build tool
         log.info('Updating SDK build tools if necessary')
-        installed_v_build_tools = self._read_version_subdir(self.android_sdk_dir,
+        installed_v_build_tools = self._read_version_subdir(self.dirs.android_sdk_dir,
                                                   'build-tools')
         available_v_build_tools = self._android_list_build_tools_versions()
         if not available_v_build_tools:
@@ -282,7 +281,7 @@ class TargetAndroid:
                 log.info('Skipping update to build tools %s due to spec setting', latest_v_build_tools)
         # 3. finally, install the android for the current api
         log.info('Downloading platform api target if necessary')
-        android_platform = self.android_sdk_dir / 'platforms' / f"android-{self.android_api}"
+        android_platform = self.dirs.android_sdk_dir / 'platforms' / f"android-{self.android_api}"
         if not android_platform.exists():
             if not skip_upd:
                 self._sdkmanager(f'"platforms;android-{self.android_api}"')
@@ -299,7 +298,7 @@ class TargetAndroid:
         self._install_android_packages()
         self.cmd.environ.update({
             'PACKAGES_PATH': self.dirs.global_buildozer_dir / self.config.targetname / 'packages',
-            'ANDROIDSDK': self.android_sdk_dir,
+            'ANDROIDSDK': self.dirs.android_sdk_dir,
             'ANDROIDNDK': self.android_ndk_dir,
             'ANDROIDAPI': self.android_api,
             'ANDROIDMINAPI': self.android_minapi,
@@ -626,7 +625,7 @@ class TargetAndroid:
             mode = self.get_release_mode()
 
         self.execute_build_package(build_cmd)
-        build_tools_versions = os.listdir(join(self.android_sdk_dir, "build-tools"))
+        build_tools_versions = os.listdir(join(self.dirs.android_sdk_dir, "build-tools"))
         build_tools_versions = sorted(build_tools_versions, key=LooseVersion)
         build_tools_version = build_tools_versions[-1]
         gradle_files = ["build.gradle", "gradle", "gradlew"]

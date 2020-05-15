@@ -58,6 +58,7 @@ class Dirs:
         self.bin_dir = config.workspace / 'bin'
         self.applibs_dir = self.buildozer_dir / 'applibs'
         self.apache_ant_dir = self.global_platform_dir / f"apache-ant-{config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)}"
+        self.android_sdk_dir = self.global_platform_dir / 'android-sdk'
 
     def install(self):
         for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
