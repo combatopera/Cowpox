@@ -112,7 +112,7 @@ class TargetAndroid:
     javac_cmd = 'javac'
     keytool_cmd = 'keytool'
 
-    def __init__(self, config, state, buildozer, dirs, cmd, build_mode):
+    def __init__(self, config, state, dirs, cmd, build_mode):
         self.android_ndk_version = config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
         self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
         self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
@@ -122,7 +122,6 @@ class TargetAndroid:
         self.sdkmanager_path = self.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
         self.config = config
         self.state = state
-        self.buildozer = buildozer
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
         self._p4a_cmd = '{} -m pythonforandroid.toolchain '.format(sys.executable)
