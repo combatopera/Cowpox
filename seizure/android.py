@@ -290,9 +290,7 @@ class TargetAndroid:
     def _execute_build_package(self, build_cmd):
         dist_name = self.config.get('app', 'package.name')
         local_recipes = self.get_local_recipes_dir()
-        cmd = [*self.p4a_apk_cmd, '--dist_name', dist_name]
-        for args in build_cmd:
-            cmd.extend(args)
+        cmd = [*self.p4a_apk_cmd, '--dist_name', dist_name, *build_cmd]
         presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
         if presplash_color:
             cmd.extend(['--presplash-color', f"'{presplash_color}'"])
@@ -388,91 +386,93 @@ class TargetAndroid:
         # generate the whitelist if needed
         self._generate_whitelist(dist_dir)
         build_cmd = [
-            ("--name", quote(config.get('app', 'title'))),
-            ("--version", version),
-            ("--package", package),
-            ("--minsdk", config.getdefault('app', 'android.minapi', self.android_minapi)),
-            ("--ndk-api", config.getdefault('app', 'android.minapi', self.android_minapi)),
+            "--name", quote(config.get('app', 'title')),
+            "--version", version,
+            "--package", package,
+            "--minsdk", config.getdefault('app', 'android.minapi', self.android_minapi),
+            "--ndk-api", config.getdefault('app', 'android.minapi', self.android_minapi),
         ]
         is_private_storage = config.getbooldefault('app', 'android.private_storage', True)
         if is_private_storage:
-            build_cmd += [("--private", self.dirs.app_dir)]
+            build_cmd += ["--private", self.dirs.app_dir]
         else:
-            build_cmd += [("--dir", self.dirs.app_dir)]
+            build_cmd += ["--dir", self.dirs.app_dir]
         permissions = config.getlist('app', 'android.permissions', [])
         for permission in permissions:
             permission = permission.split('.')
             permission[-1] = permission[-1].upper()
             permission = '.'.join(permission)
-            build_cmd += [("--permission", permission)]
+            build_cmd += ["--permission", permission]
         entrypoint = config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
-        build_cmd += [('--android-entrypoint', entrypoint)]
+        build_cmd += ['--android-entrypoint', entrypoint]
         apptheme = config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar')
-        build_cmd += [('--android-apptheme', apptheme)]
+        build_cmd += ['--android-apptheme', apptheme]
         compile_options = config.getlist('app', 'android.add_compile_options', [])
         for option in compile_options:
-            build_cmd += [('--add-compile-option', option)]
+            build_cmd += ['--add-compile-option', option]
         repos = config.getlist('app','android.add_gradle_repositories', [])
         for repo in repos:
-            build_cmd += [('--add-gradle-repository', repo)]
+            build_cmd += ['--add-gradle-repository', repo]
         pkgoptions = config.getlist('app','android.add_packaging_options', [])
         for pkgoption in pkgoptions:
-            build_cmd += [('--add-packaging-option', pkgoption)]
+            build_cmd += ['--add-packaging-option', pkgoption]
         meta_datas = config.getlistvalues('app', 'android.meta_data', [])
         for meta in meta_datas:
             key, value = meta.split('=', 1)
             meta = '{}={}'.format(key.strip(), value.strip())
-            build_cmd += [("--meta-data", meta)]
+            build_cmd += ["--meta-data", meta]
         add_jars = config.getlist('app', 'android.add_jars', [])
         for pattern in add_jars:
             pattern = str(self.config.workspace / pattern)
             matches = glob(expanduser(pattern.strip()))
             if matches:
                 for jar in matches:
-                    build_cmd += [("--add-jar", jar)]
+                    build_cmd += ["--add-jar", jar]
             else:
                 raise SystemError('Failed to find jar file: {}'.format(pattern))
         add_activities = config.getlist('app', 'android.add_activities', [])
         for activity in add_activities:
-            build_cmd += [("--add-activity", activity)]
+            build_cmd += ["--add-activity", activity]
         presplash = config.getdefault('app', 'presplash.filename', '')
         if presplash:
-            build_cmd += [("--presplash", self.config.workspace / presplash)]
+            build_cmd += ["--presplash", self.config.workspace / presplash]
         icon = config.getdefault('app', 'icon.filename', '')
         if icon:
-            build_cmd += [("--icon", self.config.workspace / icon)]
+            build_cmd += ["--icon", self.config.workspace / icon]
         ouya_category = config.getdefault('app', 'android.ouya.category', '').upper()
         if ouya_category:
             if ouya_category not in ('GAME', 'APP'):
                 raise SystemError(
                     'Invalid android.ouya.category: "{}" must be one of GAME or APP'.format(ouya_category))
             ouya_icon = config.getdefault('app', 'android.ouya.icon.filename', '')
-            build_cmd += [("--ouya-category", ouya_category)]
-            build_cmd += [("--ouya-icon", self.config.workspace / ouya_icon)]
+            build_cmd += ["--ouya-category", ouya_category]
+            build_cmd += ["--ouya-icon", self.config.workspace / ouya_icon]
         if config.getdefault('app','p4a.bootstrap','sdl2') != 'service_only':
             orientation = config.getdefault('app', 'orientation', 'landscape')
             if orientation == 'all':
                 orientation = 'sensor'
-            build_cmd += [("--orientation", orientation)]
+            build_cmd += ["--orientation", orientation]
             fullscreen = config.getbooldefault('app', 'fullscreen', True)
             if not fullscreen:
-                build_cmd += [("--window", )]
+                build_cmd += ["--window"]
         wakelock = config.getbooldefault('app', 'android.wakelock', False)
         if wakelock:
-            build_cmd += [("--wakelock", )]
+            build_cmd += ["--wakelock"]
         intent_filters = config.getdefault(
             'app', 'android.manifest.intent_filters', '')
         if intent_filters:
-            build_cmd += [("--intent-filters", self.config.workspace / intent_filters)]
+            build_cmd += ["--intent-filters", self.config.workspace / intent_filters]
         launch_mode = config.getdefault(
             'app', 'android.manifest.launch_mode', '')
         if launch_mode:
-            build_cmd += [("--activity-launch-mode", launch_mode)]
+            build_cmd += ["--activity-launch-mode", launch_mode]
         if self.config.build_mode == 'debug':
             mode = 'debug'
             mode_sign = mode
         else:
-            build_cmd += [['--release'] + (['--sign'] if self.check_p4a_sign_env(True) else [])]
+            build_cmd += ['--release']
+            if self.check_p4a_sign_env(True):
+                build_cmd += ['--sign']
             mode_sign = "release"
             mode = self.get_release_mode()
         self._execute_build_package(build_cmd)
