@@ -111,6 +111,7 @@ class TargetAndroid:
     p4a_recommended_ndk_version = None
     javac_cmd = 'javac'
     keytool_cmd = 'keytool'
+    _p4a_cmd = f'{sys.executable} -m pythonforandroid.toolchain '
 
     def __init__(self, config, state, dirs, cmd):
         self.android_ndk_version = config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
@@ -120,15 +121,13 @@ class TargetAndroid:
         self.android_ndk_dir = dirs.global_platform_dir / f"android-ndk-r{config.getdefault('app', 'android.ndk', self.android_ndk_version)}"
         self.apache_ant_dir = dirs.global_platform_dir / f"apache-ant-{config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)}"
         self.sdkmanager_path = self.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
-        self.config = config
-        self.state = state
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
-        self._p4a_cmd = '{} -m pythonforandroid.toolchain '.format(sys.executable)
         self._p4a_bootstrap = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
         self.p4a_apk_cmd += self._p4a_bootstrap
-        color = 'always' if USE_COLOR else 'never'
-        self.extra_p4a_args = ' --color={} --storage-dir="{}"'.format(color, self._build_dir)
+        self.extra_p4a_args = f''' --color={'always' if USE_COLOR else 'never'} --storage-dir="{self._build_dir}"'''
+        self.config = config
+        self.state = state
         # minapi should match ndk-api, so can use the same default if
         # nothing is specified
         ndk_api = config.getdefault('app', 'android.ndk_api', self.android_minapi)
