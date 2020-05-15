@@ -41,7 +41,6 @@
 from .config import Config
 from .dirs import Dirs
 from diapyr import types
-from fnmatch import fnmatch
 from os import walk
 from os.path import splitext
 from pathlib import Path
@@ -58,80 +57,23 @@ class Buildozer:
         self.dirs = dirs
 
     def _copy_application_sources(self):
-        # xxx clean the inclusion/exclusion algo.
         source_dir = Path(self.config.getdefault('app', 'source.dir', '.')).resolve()
         include_exts = self.config.getlist('app', 'source.include_exts', '')
-        exclude_exts = self.config.getlist('app', 'source.exclude_exts', '')
-        exclude_dirs = self.config.getlist('app', 'source.exclude_dirs', '')
-        exclude_patterns = self.config.getlist('app', 'source.exclude_patterns', '')
-        include_patterns = self.config.getlist('app', 'source.include_patterns', '')
         log.debug('Copy application source from %s', source_dir)
         rmtree(self.dirs.app_dir)
         for root, dirs, files in walk(source_dir, followlinks=True):
-            # avoid hidden directory
             if True in [x.startswith('.') for x in root.split(os.sep)]:
                 continue
-
-            # need to have sort-of normalization. Let's say you want to exclude
-            # image directory but not images, the filtered_root must have a / at
-            # the end, same for the exclude_dir. And then we can safely compare
             filtered_root = root[len(str(source_dir)) + 1:].lower()
             if filtered_root:
                 filtered_root += '/'
-
-                # manual exclude_dirs approach
-                is_excluded = False
-                for exclude_dir in exclude_dirs:
-                    if exclude_dir[-1] != '/':
-                        exclude_dir += '/'
-                    if filtered_root.startswith(exclude_dir.lower()):
-                        is_excluded = True
-                        break
-
-                # pattern matching
-                if not is_excluded:
-                    # match pattern if not ruled out by exclude_dirs
-                    for pattern in exclude_patterns:
-                        if fnmatch(filtered_root, pattern):
-                            is_excluded = True
-                            break
-                for pattern in include_patterns:
-                    if fnmatch(filtered_root, pattern):
-                        is_excluded = False
-                        break
-
-                if is_excluded:
-                    continue
-
             for fn in files:
-                # avoid hidden files
                 if fn.startswith('.'):
                     continue
-
-                # pattern matching
-                is_excluded = False
-                dfn = fn.lower()
-                if filtered_root:
-                    dfn = Path(filtered_root, fn)
-                for pattern in exclude_patterns:
-                    if fnmatch(dfn, pattern):
-                        is_excluded = True
-                        break
-                for pattern in include_patterns:
-                    if fnmatch(dfn, pattern):
-                        is_excluded = False
-                        break
-                if is_excluded:
-                    continue
-
-                # filter based on the extension
-                # todo more filters
                 basename, ext = splitext(fn)
                 if ext:
                     ext = ext[1:]
                     if include_exts and ext not in include_exts:
-                        continue
-                    if exclude_exts and ext in exclude_exts:
                         continue
                 sfn = Path(root, fn)
                 rfn = (self.dirs.app_dir / root[len(str(source_dir)) + 1:] / fn).resolve()
