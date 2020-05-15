@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from .android import TargetAndroid
-from .cmd import Cmd
 from .config import Config
 from .jsonstore import JsonStore
 from .dirs import Dirs
@@ -79,7 +78,6 @@ def main():
     os.chdir(config.workspace) # FIXME: Only include main.py in artifact.
     di = DI()
     di.add(config)
-    di.add(Cmd)
     di.add(Config)
     di.add(Dirs)
     di.add(JsonStore)
