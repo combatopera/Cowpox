@@ -243,20 +243,17 @@ class TargetAndroid:
             log.info('Skipping Android SDK update due to spec file setting')
             log.info('Note: this also prevents installing missing SDK components')
         log.info('Updating SDK build tools if necessary')
-        installed_v_build_tools = self._read_version_subdir(self.dirs.android_sdk_dir / 'build-tools')
         available_v_build_tools = self._android_list_build_tools_versions()
         if not available_v_build_tools:
             log.error('Did not find any build tools available to download')
         latest_v_build_tools = max(available_v_build_tools)
-        if latest_v_build_tools > installed_v_build_tools:
+        if latest_v_build_tools > self._read_version_subdir(self.dirs.android_sdk_dir / 'build-tools'):
             if not skip_upd:
                 self._android_update_sdk(f"build-tools;{latest_v_build_tools}")
-                installed_v_build_tools = latest_v_build_tools
             else:
                 log.info('Skipping update to build tools %s due to spec setting', latest_v_build_tools)
         log.info('Downloading platform api target if necessary')
-        android_platform = self.dirs.android_sdk_dir / 'platforms' / f"android-{self.android_api}"
-        if not android_platform.exists():
+        if not (self.dirs.android_sdk_dir / 'platforms' / f"android-{self.android_api}").exists():
             if not skip_upd:
                 self.sdkmanager.print(f"platforms;android-{self.android_api}")
             else:
