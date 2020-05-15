@@ -134,8 +134,8 @@ class TargetAndroid:
     def _p4a(self, cmd):
         self.cmd(self._p4a_cmd + cmd + self.extra_p4a_args)
 
-    def _sdkmanager(self, shellcommand):
-        return self.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.dirs.android_sdk_dir, stdout = subprocess.PIPE).stdout
+    def _sdkmanager(self, *args):
+        return Program.text(self.sdkmanager_path)(*args, cwd = self.dirs.android_sdk_dir)
 
     def _install_apache_ant(self):
         ant_dir = self.dirs.apache_ant_dir
@@ -207,11 +207,11 @@ class TargetAndroid:
         # Don't actually exit, in case the build env is
         # okay. Something else will fault if it's important.
 
-    def _android_update_sdk(self, shellcommand):
+    def _android_update_sdk(self, *args):
         if self.config.getbooldefault('app', 'android.accept_sdk_license', False):
             with yes.bg(stderr = subprocess.DEVNULL) as stream:
                 Program.text(self.sdkmanager_path).__licenses(stdin = stream, cwd = self.dirs.android_sdk_dir)
-        self._sdkmanager(shellcommand)
+        self._sdkmanager(*args)
 
     @staticmethod
     def _read_version_subdir(*args):
@@ -253,7 +253,7 @@ class TargetAndroid:
         skip_upd = self.config.getbooldefault('app', 'android.skip_update', False)
         if not skip_upd:
             log.info('Installing/updating SDK platform tools if necessary')
-            self._android_update_sdk('tools platform-tools')
+            self._android_update_sdk('tools', 'platform-tools')
             self._android_update_sdk('--update')
         else:
             log.info('Skipping Android SDK update due to spec file setting')
@@ -267,7 +267,7 @@ class TargetAndroid:
         latest_v_build_tools = sorted(available_v_build_tools)[-1]
         if latest_v_build_tools > installed_v_build_tools:
             if not skip_upd:
-                self._android_update_sdk(f'"build-tools;{latest_v_build_tools}"')
+                self._android_update_sdk(f"build-tools;{latest_v_build_tools}")
                 installed_v_build_tools = latest_v_build_tools
             else:
                 log.info('Skipping update to build tools %s due to spec setting', latest_v_build_tools)
@@ -276,7 +276,7 @@ class TargetAndroid:
         android_platform = self.dirs.android_sdk_dir / 'platforms' / f"android-{self.android_api}"
         if not android_platform.exists():
             if not skip_upd:
-                self._sdkmanager(f'"platforms;android-{self.android_api}"')
+                self._sdkmanager(f"platforms;android-{self.android_api}")
             else:
                 log.info('Skipping install API %s platform tools due to spec setting', self.android_api)
         log.info('Android packages installation done.')
