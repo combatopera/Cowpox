@@ -315,7 +315,7 @@ class TargetAndroid:
         cmd.extend(['--arch', self._arch])
         self._p4a(*cmd)
 
-    def get_release_mode(self):
+    def _get_release_mode(self):
         return 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'
 
     @staticmethod
@@ -468,7 +468,7 @@ class TargetAndroid:
             if self._check_p4a_sign_env(True):
                 build_cmd += ['--sign']
             mode_sign = "release"
-            mode = self.get_release_mode()
+            mode = self._get_release_mode()
         self._execute_build_package(build_cmd)
         build_tools_versions = os.listdir(join(self.dirs.android_sdk_dir, "build-tools"))
         build_tools_versions = sorted(build_tools_versions, key=LooseVersion)
