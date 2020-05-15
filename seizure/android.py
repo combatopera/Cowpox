@@ -241,28 +241,21 @@ class TargetAndroid:
         return max(package_versions)
 
     def _install_android_packages(self):
-
-        # if any of theses value change into the buildozer.spec, retry the
-        # update
         cache_key = 'android:sdk_installation'
         cache_value = [
             self.android_api, self.android_minapi, self.config.android_ndk_version,
-            str(self.dirs.android_sdk_dir), str(self.dirs.android_ndk_dir)
+            str(self.dirs.android_sdk_dir), str(self.dirs.android_ndk_dir),
         ]
         if self.state.get(cache_key, None) == cache_value:
             return
-        skip_upd = self.config.getbooldefault(
-            'app', 'android.skip_update', False)
-
+        skip_upd = self.config.getbooldefault('app', 'android.skip_update', False)
         if not skip_upd:
             log.info('Installing/updating SDK platform tools if necessary')
-            # just calling sdkmanager with the items will install them if necessary
             self._android_update_sdk('tools platform-tools')
             self._android_update_sdk('--update')
         else:
             log.info('Skipping Android SDK update due to spec file setting')
             log.info('Note: this also prevents installing missing SDK components')
-        # 2. install the latest build tool
         log.info('Updating SDK build tools if necessary')
         installed_v_build_tools = self._read_version_subdir(self.dirs.android_sdk_dir,
                                                   'build-tools')
