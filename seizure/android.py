@@ -293,8 +293,6 @@ class TargetAndroid:
         cmd = [*self.p4a_apk_cmd, '--dist_name', dist_name]
         for args in build_cmd:
             option, *values = args
-            if option == "debug":
-                continue
             if option == "release":
                 cmd.append('--release')
                 if self.check_p4a_sign_env(True):
@@ -483,7 +481,6 @@ class TargetAndroid:
         if launch_mode:
             build_cmd += [("--activity-launch-mode", launch_mode)]
         if self.config.build_mode == 'debug':
-            build_cmd += [("debug", )]
             mode = 'debug'
             mode_sign = mode
         else:
