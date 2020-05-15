@@ -41,7 +41,9 @@
 from .config import Config
 from diapyr import types
 from pathlib import Path
+import logging, shutil
 
+log = logging.getLogger(__name__)
 APACHE_ANT_VERSION = '1.9.4'
 
 class Dirs:
@@ -64,3 +66,15 @@ class Dirs:
     def install(self):
         for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
             path.mkdir(parents = True, exist_ok = True)
+
+    def add_sitecustomize(self):
+        shutil.copyfile(Path(__file__).parent / 'sitecustomize.py', self.app_dir / 'sitecustomize.py')
+        main_py = self.app_dir / 'service' / 'main.py'
+        if not main_py.exists():
+            return
+        with open(main_py, 'rb') as fd:
+            data = fd.read()
+        with open(main_py, 'wb') as fd:
+            fd.write(b'import sys, os; sys.path = [os.path.join(os.getcwd(),"..", "_applibs")] + sys.path\n')
+            fd.write(data)
+        log.info('Patched service/main.py to include applibs')

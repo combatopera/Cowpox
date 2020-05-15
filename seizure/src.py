@@ -74,15 +74,3 @@ class Src:
                 rfn.parent.mkdir(parents = True, exist_ok = True)
                 log.debug('Copy %s', sfn)
                 copyfile(sfn, rfn)
-
-    def _add_sitecustomize(self):
-        copyfile(Path(__file__).parent / 'sitecustomize.py', self.dirs.app_dir / 'sitecustomize.py')
-        main_py = self.dirs.app_dir / 'service' / 'main.py'
-        if not main_py.exists():
-            return
-        with open(main_py, 'rb') as fd:
-            data = fd.read()
-        with open(main_py, 'wb') as fd:
-            fd.write(b'import sys, os; sys.path = [os.path.join(os.getcwd(),"..", "_applibs")] + sys.path\n')
-            fd.write(data)
-        log.info('Patched service/main.py to include applibs')
