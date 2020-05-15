@@ -256,27 +256,19 @@ class TargetAndroid:
         })
 
     def compile_platform(self):
-        app_requirements = self.config.getlist(
-            'app', 'requirements', '')
+        app_requirements = self.config.getlist('app', 'requirements', '')
         dist_name = self.config.get('app', 'package.name')
         local_recipes = self.get_local_recipes_dir()
         requirements = ','.join(app_requirements)
         options = []
-
-        source_dirs = {
-            'P4A_{}_DIR'.format(name[20:]): realpath(expanduser(value))
-            for name, value in self.config.items('app')
-            if name.startswith('requirements.source.')
-            }
+        source_dirs = {f'P4A_{name[20:]}_DIR': realpath(expanduser(value)) for name, value in self.config.items('app') if name.startswith('requirements.source.')}
         if source_dirs:
             self.cmd.environ.update(source_dirs)
             log.info('Using custom source dirs:\n    %s', '\n    '.join(f'{k} = {v}' for k, v in source_dirs.items()))
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             options.append("--copy-libs")
-        # support for recipes in a local directory within the project
         if local_recipes:
-            options.append('--local-recipes')
-            options.append(local_recipes)
+            options.extend(['--local-recipes', local_recipes])
         self._p4a(f"create --dist_name={dist_name} --bootstrap={self._p4a_bootstrap} --requirements={requirements} --arch {self._arch} {' '.join(options)}")
 
     def get_dist_dir(self, dist_name, arch):
