@@ -41,6 +41,7 @@
 from argparse import Namespace
 from configparser import SafeConfigParser
 from diapyr import types
+from pythonforandroid.recommendations import RECOMMENDED_NDK_VERSION
 import logging, re
 
 log = logging.getLogger(__name__)
@@ -61,6 +62,7 @@ class Config(SafeConfigParser):
         self.getbooldefault = self._get_config_bool
         self.getrawdefault = self._get_config_raw_default
         self.read('buildozer.spec', 'utf-8')
+        self.android_ndk_version = self.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
 
     def _get_config_list_values(self, *args, **kwargs):
         kwargs['with_values'] = True

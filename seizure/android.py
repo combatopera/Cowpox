@@ -52,7 +52,6 @@ from pathlib import Path
 from pipes import quote
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
-from pythonforandroid.recommendations import RECOMMENDED_NDK_VERSION
 from shutil import copyfile
 import logging, os, shutil, subprocess, sys
 
@@ -118,10 +117,9 @@ class TargetAndroid:
 
     @types(Config, JsonStore, Dirs, Cmd)
     def __init__(self, config, state, dirs, cmd):
-        self.android_ndk_version = config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
         self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
         self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
-        self.android_ndk_dir = dirs.global_platform_dir / f"android-ndk-r{config.getdefault('app', 'android.ndk', self.android_ndk_version)}"
+        self.android_ndk_dir = dirs.global_platform_dir / f"android-ndk-r{config.getdefault('app', 'android.ndk', config.android_ndk_version)}"
         self.sdkmanager_path = dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
@@ -170,11 +168,11 @@ class TargetAndroid:
             log.info('Android NDK found at %s', ndk_dir)
             return
         log.info('Android NDK is missing, downloading')
-        archive = f"android-ndk-r{self.android_ndk_version}-linux-x86_64.zip"
+        archive = f"android-ndk-r{self.config.android_ndk_version}-linux-x86_64.zip"
         download('https://dl.google.com/android/repository/', archive, self.dirs.global_platform_dir)
         log.info('Unpacking Android NDK')
         _file_extract(archive, self.dirs.global_platform_dir)
-        _file_rename(f"android-ndk-r{self.android_ndk_version}", ndk_dir, cwd = self.dirs.global_platform_dir)
+        _file_rename(f"android-ndk-r{self.config.android_ndk_version}", ndk_dir, cwd = self.dirs.global_platform_dir)
         log.info('Android NDK installation done.')
 
     def _android_list_build_tools_versions(self):
@@ -249,7 +247,7 @@ class TargetAndroid:
         # update
         cache_key = 'android:sdk_installation'
         cache_value = [
-            self.android_api, self.android_minapi, self.android_ndk_version,
+            self.android_api, self.android_minapi, self.config.android_ndk_version,
             str(self.dirs.android_sdk_dir), str(self.android_ndk_dir)
         ]
         if self.state.get(cache_key, None) == cache_value:
