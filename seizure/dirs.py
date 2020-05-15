@@ -46,16 +46,15 @@ class Dirs:
 
     global_buildozer_dir = Path.home() / '.buildozer'
     global_cache_dir = global_buildozer_dir / 'cache' # XXX: Used?
-    root_dir = Path.cwd()
-    buildozer_dir = root_dir / '.buildozer'
-    bin_dir = root_dir / 'bin'
-    applibs_dir = buildozer_dir / 'applibs'
 
     @types(Config)
     def __init__(self, config):
         self.global_platform_dir = self.global_buildozer_dir / config.targetname / 'platform'
         self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
         self.app_dir = self.buildozer_dir / config.targetname / 'app'
+        self.buildozer_dir = config.workspace / '.buildozer'
+        self.bin_dir = config.workspace / 'bin'
+        self.applibs_dir = self.buildozer_dir / 'applibs'
 
     def install(self):
         for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
