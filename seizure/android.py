@@ -292,24 +292,23 @@ class TargetAndroid:
         # wrapper from previous old_toolchain to new toolchain
         dist_name = self.config.get('app', 'package.name')
         local_recipes = self.get_local_recipes_dir()
-        cmd = [self.p4a_apk_cmd, "--dist_name", dist_name]
+        cmd = [self.p4a_apk_cmd, '--dist_name', dist_name]
         for args in build_cmd:
             option, values = args[0], args[1:]
             if option == "debug":
                 continue
             elif option == "release":
-                cmd.append("--release")
+                cmd.append('--release')
                 if self.check_p4a_sign_env(True):
-                    cmd.append("--sign")
+                    cmd.append('--sign')
                 continue
             if option == "--window":
-                cmd.append("--window")
+                cmd.append('--window')
             elif option == "--sdk":
-                cmd.append("--android_api")
+                cmd.append('--android_api')
                 cmd.extend(values)
             else:
                 cmd.extend(args)
-
         # support for presplash background color
         presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
         if presplash_color:
