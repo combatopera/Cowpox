@@ -211,18 +211,18 @@ class TargetAndroid:
         self.sdkmanager.print(*args)
 
     @staticmethod
-    def _read_version_subdir(*args):
+    def _read_version_subdir(path):
         versions = []
-        if not os.path.exists(join(*args)):
-            log.debug("build-tools folder not found %s", join(*args))
+        if not path.exists():
+            log.debug("build-tools folder not found %s", path)
             return parse("0")
-        for v in os.listdir(join(*args)):
+        for v in (p.name for p in path.iterdir()):
             try:
                 versions.append(parse(v))
             except:
                 pass
         if not versions:
-            log.error('Unable to find the latest version for %s', join(*args))
+            log.error('Unable to find the latest version for %s', path)
             return parse("0")
         return max(versions)
 
@@ -256,7 +256,7 @@ class TargetAndroid:
             log.info('Skipping Android SDK update due to spec file setting')
             log.info('Note: this also prevents installing missing SDK components')
         log.info('Updating SDK build tools if necessary')
-        installed_v_build_tools = self._read_version_subdir(self.dirs.android_sdk_dir, 'build-tools')
+        installed_v_build_tools = self._read_version_subdir(self.dirs.android_sdk_dir / 'build-tools')
         available_v_build_tools = self._android_list_build_tools_versions()
         if not available_v_build_tools:
             log.error('Did not find any build tools available to download')
