@@ -112,7 +112,7 @@ class TargetAndroid:
     javac_cmd = 'javac'
     keytool_cmd = 'keytool'
 
-    def __init__(self, config, state, dirs, cmd, build_mode):
+    def __init__(self, config, state, dirs, cmd):
         self.android_ndk_version = config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
         self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
         self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
@@ -139,7 +139,6 @@ class TargetAndroid:
         port = config.getdefault('app', 'p4a.port', None)
         if port is not None:
             self.extra_p4a_args += ' --port={}'.format(port)
-        self.build_mode = build_mode
         self.dirs = dirs
         self.cmd = cmd
 
@@ -664,7 +663,7 @@ class TargetAndroid:
             build_cmd += [("--activity-launch-mode", launch_mode)]
 
         # build only in debug right now.
-        if self.build_mode == 'debug':
+        if self.config.build_mode == 'debug':
             build_cmd += [("debug", )]
             mode = 'debug'
             mode_sign = mode
@@ -705,7 +704,7 @@ class TargetAndroid:
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
         self.state['android:latestapk'] = apk_dest
-        self.state['android:latestmode'] = self.build_mode
+        self.state['android:latestmode'] = self.config.build_mode
 
     def _update_libraries_references(self, dist_dir):
         # ensure the project.properties exist

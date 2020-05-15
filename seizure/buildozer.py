@@ -191,7 +191,7 @@ class Buildozer:
 
     def run(self):
         self.dirs.install()
-        target = TargetAndroid(self.config, JsonStore(self.dirs.buildozer_dir / 'state.db'), self.dirs, Cmd(), 'debug')
+        target = TargetAndroid(self.config, JsonStore(self.dirs.buildozer_dir / 'state.db'), self.dirs, Cmd())
         log.info('Preparing build')
         log.info('Check requirements for %s', self.config.targetname)
         target.check_requirements()

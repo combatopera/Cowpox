@@ -47,6 +47,7 @@ log = logging.getLogger(__name__)
 class Config(SafeConfigParser):
 
     targetname = 'android'
+    build_mode = 'debug'
 
     @types()
     def __init__(self):
