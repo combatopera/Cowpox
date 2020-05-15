@@ -248,11 +248,9 @@ class TargetAndroid:
         self._install_android_ndk()
         self._install_android_packages()
         self.cmd.environ.update({
-            'PACKAGES_PATH': self.dirs.global_buildozer_dir / self.config.targetname / 'packages',
             'ANDROIDSDK': self.dirs.android_sdk_dir,
             'ANDROIDNDK': self.dirs.android_ndk_dir,
             'ANDROIDAPI': self.android_api,
-            'ANDROIDMINAPI': self.android_minapi,
         })
 
     def compile_platform(self):
