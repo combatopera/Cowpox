@@ -54,7 +54,7 @@ from pipes import quote
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
 from shutil import copyfile
-import logging, os, shutil, subprocess, sys
+import logging, os, shutil, sys
 
 log = logging.getLogger(__name__)
 ANDROID_API = '27'
@@ -209,8 +209,8 @@ class TargetAndroid:
 
     def _android_update_sdk(self, *args):
         if self.config.getbooldefault('app', 'android.accept_sdk_license', False):
-            with yes.bg(stderr = subprocess.DEVNULL) as stream:
-                Program.text(self.sdkmanager_path).__licenses(stdin = stream, cwd = self.dirs.android_sdk_dir)
+            with yes.bg(check = False) as proc:
+                Program.text(self.sdkmanager_path).__licenses(stdin = proc.stdout, cwd = self.dirs.android_sdk_dir)
         self._sdkmanager(*args)
 
     @staticmethod
