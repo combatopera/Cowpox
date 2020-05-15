@@ -298,11 +298,7 @@ class TargetAndroid:
                 if self.check_p4a_sign_env(True):
                     cmd.append('--sign')
                 continue
-            if option == "--sdk":
-                cmd.append('--android_api')
-                cmd.extend(values)
-            else:
-                cmd.extend(args)
+            cmd.extend(args)
         presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
         if presplash_color:
             cmd.extend(['--presplash-color', f"'{presplash_color}'"])
