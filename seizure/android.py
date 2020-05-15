@@ -38,7 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .cmd import Cmd
+from .config import Config
+from .dirs import Dirs
+from .jsonstore import JsonStore
 from .libs.version import parse
+from diapyr import types
 from distutils.version import LooseVersion
 from glob import glob
 from lagoon import tar, unzip
@@ -113,6 +118,7 @@ class TargetAndroid:
     keytool_cmd = 'keytool'
     _p4a_cmd = f'{sys.executable} -m pythonforandroid.toolchain '
 
+    @types(Config, JsonStore, Dirs, Cmd)
     def __init__(self, config, state, dirs, cmd):
         self.android_ndk_version = config.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
         self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
