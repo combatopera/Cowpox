@@ -1,7 +1,7 @@
 plugin soak configure
 Seizure main name = main
 : TODO: Include project.arid into own namespace.
-. /project/project.arid
+. /src/project.arid
 soak
     buildozer.spec from = buildozer.spec.aridt
     main.py from = main.py.aridt
