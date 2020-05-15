@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from configparser import SafeConfigParser
+from diapyr import types
 import logging, re
 
 log = logging.getLogger(__name__)
@@ -47,6 +48,7 @@ class Config(SafeConfigParser):
 
     targetname = 'android'
 
+    @types()
     def __init__(self):
         super().__init__(allow_no_value = True)
         self.optionxform = lambda value: value

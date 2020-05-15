@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from .config import Config
+from diapyr import DI
 from lagoon import pipify, soak
 from pathlib import Path
 import logging, os, shutil
@@ -67,5 +68,8 @@ def main():
     pipify.print('-f', '/workspace/bdozlib.arid', cwd = '/project')
     os.chdir('/workspace') # FIXME: Only include main.py in artifact.
     from .buildozer import Buildozer, Dirs # FIXME: Do not resolve paths so eagerly.
-    config = Config()
-    Buildozer(config, Dirs(config)).android_debug()
+    di = DI()
+    di.add(Config)
+    di.add(Dirs)
+    di.add(Buildozer)
+    di(Buildozer).android_debug()

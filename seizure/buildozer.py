@@ -40,6 +40,7 @@
 
 from .android import TargetAndroid
 from .jsonstore import JsonStore
+from diapyr import types
 from fnmatch import fnmatch
 from os import walk
 from os.path import splitext
@@ -64,6 +65,7 @@ class Dirs:
     bin_dir = root_dir / 'bin'
     applibs_dir = buildozer_dir / 'applibs'
 
+    @types(Config)
     def __init__(self, config):
         self.global_platform_dir = self.global_buildozer_dir / config.targetname / 'platform'
         self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
@@ -85,6 +87,7 @@ class Cmd:
 
 class Buildozer:
 
+    @types(Config, Dirs)
     def __init__(self, config, dirs):
         self.config = config
         self.dirs = dirs
