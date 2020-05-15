@@ -298,9 +298,7 @@ class TargetAndroid:
                 if self.check_p4a_sign_env(True):
                     cmd.append('--sign')
                 continue
-            if option == "--window":
-                cmd.append('--window')
-            elif option == "--sdk":
+            if option == "--sdk":
                 cmd.append('--android_api')
                 cmd.extend(values)
             else:
