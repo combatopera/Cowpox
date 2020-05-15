@@ -292,12 +292,6 @@ class TargetAndroid:
         local_recipes = self.get_local_recipes_dir()
         cmd = [*self.p4a_apk_cmd, '--dist_name', dist_name]
         for args in build_cmd:
-            option, *values = args
-            if option == "release":
-                cmd.append('--release')
-                if self.check_p4a_sign_env(True):
-                    cmd.append('--sign')
-                continue
             cmd.extend(args)
         presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
         if presplash_color:
@@ -478,7 +472,7 @@ class TargetAndroid:
             mode = 'debug'
             mode_sign = mode
         else:
-            build_cmd += [("release", )]
+            build_cmd += [['--release'] + (['--sign'] if self.check_p4a_sign_env(True) else [])]
             mode_sign = "release"
             mode = self.get_release_mode()
         self._execute_build_package(build_cmd)
