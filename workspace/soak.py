@@ -9,7 +9,7 @@ def processresource(context, *resolvables):
     return Concat(templateparser(resource_string(*(r.resolve(context).cat() for r in resolvables)).decode(charset))).resolve(context)
 
 def githash(context):
-    return Text(git.rev_parse.__short.HEAD(cwd = '/project').rstrip())
+    return Text(git.rev_parse.__short.HEAD(cwd = '/src').rstrip())
 
 def lower(context, resolvable):
     return Text(resolvable.resolve(context).cat().lower())
