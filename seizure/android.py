@@ -175,17 +175,13 @@ class TargetAndroid:
     def _android_list_build_tools_versions(self):
         lines = self.sdkmanager.__list().split('\n')
         build_tools_versions = []
-
         for line in lines:
             if not line.strip().startswith('build-tools;'):
                 continue
             package_name = line.strip().split(' ')[0]
-            assert package_name.count(';') == 1, (
-                'could not parse package "{}"'.format(package_name))
+            assert package_name.count(';') == 1, f'could not parse package "{package_name}"'
             version = package_name.split(';')[1]
-
             build_tools_versions.append(parse(version))
-
         return build_tools_versions
 
     def _android_get_installed_platform_tools_version(self):
