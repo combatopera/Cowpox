@@ -53,30 +53,24 @@ class Buildozer:
 
     @types(Config, Dirs)
     def __init__(self, config, dirs):
-        self.config = config
+        self.source_dir = Path(config.getdefault('app', 'source.dir', '.')).resolve()
+        self.include_exts = config.getlist('app', 'source.include_exts', '')
         self.dirs = dirs
 
     def _copy_application_sources(self):
-        source_dir = Path(self.config.getdefault('app', 'source.dir', '.')).resolve()
-        include_exts = self.config.getlist('app', 'source.include_exts', '')
-        log.debug('Copy application source from %s', source_dir)
+        log.debug('Copy application source from %s', self.source_dir)
         rmtree(self.dirs.app_dir)
-        for root, dirs, files in walk(source_dir, followlinks=True):
-            if True in [x.startswith('.') for x in root.split(os.sep)]:
+        for root, dirs, files in walk(self.source_dir, followlinks=True):
+            if any(x.startswith('.') for x in root.split(os.sep)):
                 continue
-            filtered_root = root[len(str(source_dir)) + 1:].lower()
-            if filtered_root:
-                filtered_root += '/'
             for fn in files:
                 if fn.startswith('.'):
                     continue
-                basename, ext = splitext(fn)
-                if ext:
-                    ext = ext[1:]
-                    if include_exts and ext not in include_exts:
-                        continue
+                _, ext = splitext(fn)
+                if ext and self.include_exts and ext[1:] not in self.include_exts:
+                    continue
                 sfn = Path(root, fn)
-                rfn = (self.dirs.app_dir / root[len(str(source_dir)) + 1:] / fn).resolve()
+                rfn = (self.dirs.app_dir / root[len(str(self.source_dir)) + 1:] / fn).resolve()
                 rfn.parent.mkdir(parents = True, exist_ok = True)
                 log.debug('Copy %s', sfn)
                 copyfile(sfn, rfn)
