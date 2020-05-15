@@ -260,7 +260,7 @@ class TargetAndroid:
             options.extend(['--local-recipes', local_recipes])
         self._p4a('create', f"--dist_name={dist_name}", f"--bootstrap={self._p4a_bootstrap}", f"--requirements={requirements}", '--arch', self._arch, *options)
 
-    def get_dist_dir(self, dist_name, arch):
+    def _get_dist_dir(self, dist_name, arch):
         """Find the dist dir with the given name and target arch, if one
         already exists, otherwise return a new dist_dir name.
         """
@@ -349,7 +349,7 @@ class TargetAndroid:
     def build_package(self):
         dist_name = self.config.get('app', 'package.name')
         arch = self.config.getdefault('app', 'android.arch', DEFAULT_ARCH)
-        dist_dir = self.get_dist_dir(dist_name, arch)
+        dist_dir = self._get_dist_dir(dist_name, arch)
         config = self.config
         package = self._get_package()
         version = self.config.get_version()
