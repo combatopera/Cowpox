@@ -38,21 +38,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .dirs import Dirs
+from diapyr import types
 import json, logging
 
 log = logging.getLogger(__name__)
 
 class JsonStore:
 
-    def __init__(self, path):
+    @types(Dirs)
+    def __init__(self, dirs):
+        self.path = dirs.buildozer_dir / 'state.db'
         self.data = {}
-        if path.exists():
+        if self.path.exists():
             try:
-                with path.open(encoding = 'utf-8') as f:
+                with self.path.open(encoding = 'utf-8') as f:
                     self.data = json.load(f)
             except ValueError:
                 log.warning("Unable to read the state.db, content will be replaced.")
-        self.path = path
 
     def __getitem__(self, key):
         return self.data[key]
