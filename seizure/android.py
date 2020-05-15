@@ -119,7 +119,6 @@ class TargetAndroid:
     def __init__(self, config, state, dirs, cmd):
         self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
         self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
-        self.android_ndk_dir = dirs.global_platform_dir / f"android-ndk-r{config.getdefault('app', 'android.ndk', config.android_ndk_version)}"
         self.sdkmanager_path = dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager'
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
@@ -163,7 +162,7 @@ class TargetAndroid:
         log.info('Android SDK tools base installation done.')
 
     def _install_android_ndk(self):
-        ndk_dir = self.android_ndk_dir
+        ndk_dir = self.dirs.android_ndk_dir
         if ndk_dir.exists():
             log.info('Android NDK found at %s', ndk_dir)
             return
@@ -248,7 +247,7 @@ class TargetAndroid:
         cache_key = 'android:sdk_installation'
         cache_value = [
             self.android_api, self.android_minapi, self.config.android_ndk_version,
-            str(self.dirs.android_sdk_dir), str(self.android_ndk_dir)
+            str(self.dirs.android_sdk_dir), str(self.dirs.android_ndk_dir)
         ]
         if self.state.get(cache_key, None) == cache_value:
             return
@@ -297,7 +296,7 @@ class TargetAndroid:
         self.cmd.environ.update({
             'PACKAGES_PATH': self.dirs.global_buildozer_dir / self.config.targetname / 'packages',
             'ANDROIDSDK': self.dirs.android_sdk_dir,
-            'ANDROIDNDK': self.android_ndk_dir,
+            'ANDROIDNDK': self.dirs.android_ndk_dir,
             'ANDROIDAPI': self.android_api,
             'ANDROIDMINAPI': self.android_minapi,
         })
