@@ -50,9 +50,9 @@ class Dirs:
     @types(Config)
     def __init__(self, config):
         self.global_platform_dir = self.global_buildozer_dir / config.targetname / 'platform'
+        self.buildozer_dir = config.workspace / '.buildozer'
         self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
         self.app_dir = self.buildozer_dir / config.targetname / 'app'
-        self.buildozer_dir = config.workspace / '.buildozer'
         self.bin_dir = config.workspace / 'bin'
         self.applibs_dir = self.buildozer_dir / 'applibs'
 

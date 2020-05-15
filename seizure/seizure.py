@@ -40,7 +40,9 @@
 
 from .android import TargetAndroid
 from .buildozer import Buildozer
+from .cmd import Cmd
 from .config import Config
+from .jsonstore import JsonStore
 from .dirs import Dirs
 from diapyr import DI, types
 from lagoon import pipify, soak
@@ -67,14 +69,15 @@ def main():
     logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG)
     disablegradledaemon()
     shutil.copytree('.', '/project', symlinks = True, dirs_exist_ok = True)
-    config = Config()
-    soak.print(cwd = config.workspace)
-    pipify.print('-f', config.workspace / 'bdozlib.arid', cwd = '/project')
-    os.chdir(config.workspace) # FIXME: Only include main.py in artifact.
+    soak.print(cwd = Config.workspace)
+    pipify.print('-f', Config.workspace / 'bdozlib.arid', cwd = '/project')
+    os.chdir(Config.workspace) # FIXME: Only include main.py in artifact.
     di = DI()
-    di.add(config)
-    di.add(Dirs)
     di.add(Buildozer)
+    di.add(Cmd)
+    di.add(Config)
+    di.add(Dirs)
+    di.add(JsonStore)
     di.add(TargetAndroid)
     di.add(run)
     di(Result)
