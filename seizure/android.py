@@ -288,12 +288,11 @@ class TargetAndroid:
         return realpath(expanduser(local_recipes)) if local_recipes else None
 
     def _execute_build_package(self, build_cmd):
-        # wrapper from previous old_toolchain to new toolchain
         dist_name = self.config.get('app', 'package.name')
         local_recipes = self.get_local_recipes_dir()
         cmd = [*self.p4a_apk_cmd, '--dist_name', dist_name]
         for args in build_cmd:
-            option, values = args[0], args[1:]
+            option, *values = args
             if option == "debug":
                 continue
             elif option == "release":
@@ -308,57 +307,32 @@ class TargetAndroid:
                 cmd.extend(values)
             else:
                 cmd.extend(args)
-        # support for presplash background color
         presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
         if presplash_color:
-            cmd.append('--presplash-color')
-            cmd.append("'{}'".format(presplash_color))
-
-        # support for services
+            cmd.extend(['--presplash-color', f"'{presplash_color}'"])
         services = self.config.getlist('app', 'services', [])
         for service in services:
-            cmd.append("--service")
-            cmd.append(service)
-
-        # support for copy-libs
+            cmd.extend(["--service", service])
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             cmd.append("--copy-libs")
-
-        # support for recipes in a local directory within the project
         if local_recipes:
-            cmd.append('--local-recipes')
-            cmd.append(local_recipes)
-
-        # support for blacklist/whitelist filename
+            cmd.extend(['--local-recipes', local_recipes])
         whitelist_src = self.config.getdefault('app', 'android.whitelist_src', None)
         blacklist_src = self.config.getdefault('app', 'android.blacklist_src', None)
         if whitelist_src:
-            cmd.append('--whitelist')
-            cmd.append(realpath(whitelist_src))
+            cmd.extend(['--whitelist', realpath(whitelist_src)])
         if blacklist_src:
-            cmd.append('--blacklist')
-            cmd.append(realpath(blacklist_src))
-
-        # support for aars
+            cmd.extend(['--blacklist', realpath(blacklist_src)])
         aars = self.config.getlist('app', 'android.add_aars', [])
         for aar in aars:
-            cmd.append('--add-aar')
-            cmd.append(realpath(aar))
-
-        # support for uses-lib
-        uses_library = self.config.getlist(
-            'app', 'android.uses_library', '')
+            cmd.extend(['--add-aar', realpath(aar)])
+        uses_library = self.config.getlist('app', 'android.uses_library', '')
         for lib in uses_library:
-            cmd.append('--uses-library={}'.format(lib))
-
-        # support for gradle dependencies
+            cmd.append(f'--uses-library={lib}')
         gradle_dependencies = self.config.getlist('app', 'android.gradle_dependencies', [])
         for gradle_dependency in gradle_dependencies:
-            cmd.append('--depend')
-            cmd.append(gradle_dependency)
-
-        cmd.append('--arch')
-        cmd.append(self._arch)
+            cmd.extend(['--depend', gradle_dependency])
+        cmd.extend(['--arch', self._arch])
         self._p4a(' '.join(map(str, cmd))) # FIXME: Use lagoon.
 
     def get_release_mode(self):
