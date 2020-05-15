@@ -93,9 +93,6 @@ class Result: pass
 @types(Config, Dirs, TargetAndroid, Src, this = Result)
 def run(config, dirs, target, src):
     dirs.install()
-    log.info('Preparing build')
-    log.info('Check requirements for %s', config.targetname)
-    target.check_requirements()
     log.info('Install platform')
     target.install_platform()
     log.info('Compile platform')

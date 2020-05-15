@@ -140,14 +140,6 @@ class TargetAndroid:
     def _sdkmanager(self, shellcommand):
         return self.cmd(f"{self.sdkmanager_path} {shellcommand}", cwd = self.android_sdk_dir, stdout = subprocess.PIPE).stdout
 
-    def check_requirements(self):
-        path = [str(self.dirs.apache_ant_dir / 'bin')]
-        if 'PATH' in self.cmd.environ:
-            path.append(self.cmd.environ['PATH'])
-        else:
-            path.append(os.environ['PATH'])
-        self.cmd.environ['PATH'] = os.pathsep.join(path)
-
     def _install_apache_ant(self):
         ant_dir = self.dirs.apache_ant_dir
         if Path(ant_dir).exists():
