@@ -192,7 +192,7 @@ class Bootstrap:
         return result
 
     @classmethod
-    def get_usable_bootstraps_for_recipes(cls, recipes, ctx):
+    def _get_usable_bootstraps_for_recipes(cls, recipes, ctx):
         '''Returns all bootstrap whose recipe requirements do not conflict
         with the given recipes, in no particular order.'''
         info('Trying to find a bootstrap that matches the given recipes.')
@@ -242,7 +242,7 @@ class Bootstrap:
 
         known_web_packages = {"flask"}  # to pick webview over service_only
         recipes_with_deps_lists = expand_dependencies(recipes, ctx)
-        acceptable_bootstraps = cls.get_usable_bootstraps_for_recipes(
+        acceptable_bootstraps = cls._get_usable_bootstraps_for_recipes(
             recipes, ctx
         )
 
