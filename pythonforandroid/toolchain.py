@@ -50,9 +50,9 @@ from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
 from distutils.version import LooseVersion
 from lagoon import cp
-from os.path import join, dirname, realpath, expanduser, basename
+from os.path import join, realpath, expanduser, basename
 from pathlib import Path
-import argparse, glob, imp, logging, os, re, sh, sys # FIXME: Retire imp.
+import argparse, glob, imp, logging, os, re, sh # FIXME: Retire imp.
 
 log = logging.getLogger(__name__)
 
@@ -207,13 +207,6 @@ class ToolchainCL:
         ctx.local_recipes = args.local_recipes
         ctx.copy_libs = args.copy_libs
         getattr(self, args.command)(args, ctx, self._require_prebuilt_dist(args, ctx))
-
-    @property
-    def default_storage_dir(self):
-        udd = user_data_dir('python-for-android')
-        if ' ' in udd:
-            udd = '~/.python-for-android'
-        return udd
 
     def _require_prebuilt_dist(self, args, ctx):
         ctx.set_archs(self._archs)
