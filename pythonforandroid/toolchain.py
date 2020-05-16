@@ -55,7 +55,6 @@ from pathlib import Path
 import argparse, glob, imp, logging, os, re, sh, sys # FIXME: Retire imp.
 
 log = logging.getLogger(__name__)
-APK_SUFFIX = '.apk'
 
 class ArgumentParser(argparse.ArgumentParser):
 
@@ -316,9 +315,9 @@ class ToolchainCL:
         log.info("Found APK file: %s", apk_file)
         if apk_add_version:
             log.info('Add version number to APK')
+            APK_SUFFIX = '.apk'
             apk_name = basename(apk_file)[:-len(APK_SUFFIX)]
-            apk_file_dest = "{}-{}-{}".format(
-                apk_name, build_args.version, APK_SUFFIX)
+            apk_file_dest = f"{apk_name}-{build_args.version}-{APK_SUFFIX}" # XXX: This looks wrong?
             log.info("APK renamed to %s", apk_file_dest)
             cp.print(apk_file, apk_file_dest)
         else:
