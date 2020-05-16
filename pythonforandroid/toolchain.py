@@ -290,15 +290,6 @@ class ToolchainCL:
             aliases=['clean-dists'],
             help='Delete all dists',
             parents=[generic_parser])
-        parser_clean_download_cache = subparsers.add_parser(
-            'clean_download_cache', aliases=['clean-download-cache'],
-            help='Delete cached downloads for requirement builds',
-            parents=[generic_parser])
-        parser_clean_download_cache.add_argument(
-            'recipes',
-            nargs='*',
-            help='The recipes to clean (space-separated). If no recipe name is'
-                  ' provided, the entire cache is cleared.')
         parser_export_dist = subparsers.add_parser(
             'export_dist', aliases=['export-dist'],
             help='Copy the named dist to the given path',
@@ -469,31 +460,6 @@ class ToolchainCL:
         ctx = self.ctx
         if exists(ctx.dist_dir):
             shutil.rmtree(ctx.dist_dir)
-
-    def clean_download_cache(self, args):
-        """ Deletes a download cache for recipes passed as arguments. If no
-        argument is passed, it'll delete *all* downloaded caches. ::
-
-            p4a clean_download_cache kivy,pyjnius
-
-        This does *not* delete the build caches or final distributions.
-        """
-        ctx = self.ctx
-        if hasattr(args, 'recipes') and args.recipes:
-            for package in args.recipes:
-                remove_path = join(ctx.packages_path, package)
-                if exists(remove_path):
-                    shutil.rmtree(remove_path)
-                    info('Download cache removed for: "{}"'.format(package))
-                else:
-                    warning('No download cache found for "{}", skipping'.format(
-                        package))
-        else:
-            if exists(ctx.packages_path):
-                shutil.rmtree(ctx.packages_path)
-                info('Download cache removed.')
-            else:
-                print('No cache found at "{}"'.format(ctx.packages_path))
 
     @require_prebuilt_dist
     def export_dist(self, args):
