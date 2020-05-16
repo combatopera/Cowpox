@@ -168,11 +168,7 @@ class ToolchainCL:
                   'disabling Python 3 core modules to save size'),
             dest="blacklist_requirements",
             default='')
-        generic_parser.add_argument(
-            '--bootstrap',
-            help='The bootstrap to build with. Leave unset to choose '
-                 'automatically.',
-            default=None)
+        generic_parser.add_argument('--bootstrap')
         generic_parser.add_boolean_option('force-build', False, 'Whether to force compilation of a new distribution')
         generic_parser.add_boolean_option('require-perfect-match', False, 'Whether the dist recipes must perfectly match those requested')
         generic_parser.add_boolean_option('allow-replace-dist', True, 'Whether existing dist names can be automatically replaced')
