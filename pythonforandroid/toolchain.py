@@ -300,18 +300,6 @@ class ToolchainCL:
             aliases=['clean-builds'],
             help='Delete all builds',
             parents=[generic_parser])
-        parser_clean_recipe_build = subparsers.add_parser(
-            'clean_recipe_build', aliases=['clean-recipe-build'],
-            help=('Delete the build components of the given recipe. '
-                  'By default this will also delete built dists'),
-            parents=[generic_parser])
-        parser_clean_recipe_build.add_argument(
-            'recipe', help='The recipe name')
-        parser_clean_recipe_build.add_argument(
-            '--no-clean-dists', default=False,
-            dest='no_clean_dists',
-            action='store_true',
-            help='If passed, do not delete existing dists')
         parser_clean_download_cache = subparsers.add_parser(
             'clean_download_cache', aliases=['clean-download-cache'],
             help='Delete cached downloads for requirement builds',
@@ -518,21 +506,6 @@ class ToolchainCL:
         libs_dir = join(self.ctx.build_dir, 'libs_collections')
         if exists(libs_dir):
             shutil.rmtree(libs_dir)
-
-    def clean_recipe_build(self, args):
-        """Deletes the build files of the given recipe.
-
-        This is intended for debug purposes. You may experience
-        strange behaviour or problems with some recipes if their
-        build has made unexpected state changes. If this happens, run
-        clean_builds, or attempt to clean other recipes until things
-        work again.
-        """
-        recipe = Recipe.get_recipe(args.recipe, self.ctx)
-        info('Cleaning build for {} recipe.'.format(recipe.name))
-        recipe.clean_build()
-        if not args.no_clean_dists:
-            self.clean_dists(args)
 
     def clean_download_cache(self, args):
         """ Deletes a download cache for recipes passed as arguments. If no
