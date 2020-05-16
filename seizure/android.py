@@ -59,8 +59,8 @@ class TargetAndroid:
         self.android_api = config.getdefault('app', 'android.api', '27')
         self.android_minapi = config.getdefault('app', 'android.minapi', '21')
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
-        self._arch = config.getdefault('app', 'android.arch', 'armeabi-v7a')
-        self._build_dir = dirs.platform_dir / f"build-{self._arch}"
+        self.arch = config.getdefault('app', 'android.arch', 'armeabi-v7a')
+        self._build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.p4a = Program.text(sys.executable).partial('-m', 'pythonforandroid.toolchain', env = dict(
             ANDROIDSDK = dirs.android_sdk_dir,
             ANDROIDNDK = dirs.android_ndk_dir,
@@ -201,10 +201,10 @@ class TargetAndroid:
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             options.append("--copy-libs")
         options.extend(['--local-recipes', self.local_recipes])
-        self._p4a('create', f"--dist_name={self.dist_name}", f"--bootstrap={self._p4a_bootstrap}", f"--requirements={requirements}", '--arch', self._arch, *options)
+        self._p4a('create', f"--dist_name={self.dist_name}", f"--bootstrap={self._p4a_bootstrap}", f"--requirements={requirements}", '--arch', self.arch, *options)
 
     def _get_dist_dir(self):
-        expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self._arch])
+        expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self.arch])
         expected_dist_dir = self._build_dir / 'dists' / expected_dist_name
         if expected_dist_dir.exists():
             return expected_dist_dir
@@ -230,7 +230,7 @@ class TargetAndroid:
         gradle_dependencies = self.config.getlist('app', 'android.gradle_dependencies', [])
         for gradle_dependency in gradle_dependencies:
             cmd.extend(['--depend', gradle_dependency])
-        cmd.extend(['--arch', self._arch])
+        cmd.extend(['--arch', self.arch])
         self._p4a(*cmd)
 
     def _get_release_mode(self):
@@ -365,7 +365,7 @@ class TargetAndroid:
                 version=version,
                 mode=mode)
             apk_dir = dist_dir / "bin"
-        apk_dest = f"{self.dist_name}-{version}-{self.config['app']['commit']}-{self._arch}-{mode}.apk"
+        apk_dest = f"{self.dist_name}-{version}-{self.config['app']['commit']}-{self.arch}-{mode}.apk"
         shutil.copyfile(apk_dir / apk, self.dirs.bin_dir / apk_dest)
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
