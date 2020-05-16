@@ -64,13 +64,6 @@ ANDROID_MINAPI = '21'
 DEFAULT_SDK_TAG = '4333796'
 DEFAULT_ARCH = 'armeabi-v7a'
 
-def _file_matches(patterns):
-    result = []
-    for pattern in patterns:
-        matches = glob(expanduser(pattern.strip()))
-        result.extend(matches)
-    return result
-
 def _file_copytree(src, dest):
     print('copy {} to {}'.format(src, dest))
     if os.path.isdir(src):
