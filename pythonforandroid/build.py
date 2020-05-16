@@ -612,7 +612,7 @@ def build_recipes(build_order, python_modules, ctx, project_dir):
             recipe.postbuild_arch(arch)
 
     info_main('# Installing pure Python modules')
-    _run_pymodules_install(ctx, python_modules, project_dir, False)
+    _run_pymodules_install(ctx, python_modules, project_dir)
 
 def run_setuppy_install(ctx, project_dir, env=None):
     if env is None:
@@ -727,7 +727,7 @@ def run_setuppy_install(ctx, project_dir, env=None):
         finally:
             os.remove("._tmp_p4a_recipe_constraints.txt")
 
-def _run_pymodules_install(ctx, modules, project_dir, ignore_setup_py):
+def _run_pymodules_install(ctx, modules, project_dir):
     info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
     modules = list(filter(ctx.not_has_package, modules))
 
@@ -796,15 +796,7 @@ def _run_pymodules_install(ctx, modules, project_dir, ignore_setup_py):
                  'and does not work without additional '
                  'changes / workarounds.')
             pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env)
-        if not ignore_setup_py:
-            info("No setup.py found in project directory: " +
-                 str(project_dir)
-                )
-
-        # Strip object files after potential Cython or native code builds:
-        standard_recipe.strip_object_files(ctx.archs[0], env,
-                                           build_dir=ctx.build_dir)
-
+        standard_recipe.strip_object_files(ctx.archs[0], env, build_dir = ctx.build_dir)
 
 def biglink(ctx, arch):
     # First, collate object files from each recipe
