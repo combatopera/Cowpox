@@ -49,7 +49,6 @@ from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
 from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
 from distutils.version import LooseVersion
-from functools import wraps
 from os.path import join, dirname, realpath, exists, expanduser, basename
 import argparse, glob, imp, logging, os, re, sh, sys # FIXME: Retire imp.
 
@@ -67,32 +66,6 @@ class ArgumentParser(argparse.ArgumentParser):
         group.add_argument(f"--no-{name}",
                 help = None if default else "(this is the default)", dest = dest, action = 'store_false')
         self.set_defaults(**{dest: default})
-
-def _require_prebuilt_dist(func):
-    """Decorator for ToolchainCL methods. If present, the method will
-    automatically make sure a dist has been built before continuing
-    or, if no dists are present or can be obtained, will raise an
-    error.
-    """
-
-    @wraps(func)
-    def wrapper_func(self, args):
-        ctx = self.ctx
-        ctx.set_archs(self._archs)
-        ctx.prepare_build_environment(user_sdk_dir=self.sdk_dir,
-                                      user_ndk_dir=self.ndk_dir,
-                                      user_android_api=self.android_api,
-                                      user_ndk_api=self.ndk_api)
-        dist = self._dist
-        if dist.needs_build:
-            if dist.folder_exists():  # possible if the dist is being replaced
-                dist.delete()
-            info_notify('No dist exists that meets your requirements, '
-                        'so one will be built.')
-            build_dist_from_args(ctx, dist, args)
-        func(self, args)
-    return wrapper_func
-
 
 def dist_from_args(ctx, args):
     """Parses out any distribution-related arguments, and uses them to
@@ -283,6 +256,7 @@ class ToolchainCL:
 
         self.ctx.local_recipes = args.local_recipes
         self.ctx.copy_libs = args.copy_libs
+        self._require_prebuilt_dist(args)
         getattr(self, args.command)(args)
 
     @property
@@ -299,7 +273,22 @@ class ToolchainCL:
         ctx.distribution = dist
         return dist
 
-    @_require_prebuilt_dist
+    def _require_prebuilt_dist(self, args):
+        self.ctx.set_archs(self._archs)
+        self.ctx.prepare_build_environment(
+                user_sdk_dir = self.sdk_dir,
+                user_ndk_dir = self.ndk_dir,
+                user_android_api = self.android_api,
+                user_ndk_api = self.ndk_api)
+        if self._dist.needs_build:
+            if self._dist.folder_exists():
+                self._dist.delete()
+            info_notify('No dist exists that meets your requirements, so one will be built.')
+            build_dist_from_args(self.ctx, self._dist, args)
+
+    def create(self, args):
+        pass
+
     def apk(self, args):
         """Create an APK using the given distribution."""
 
@@ -447,13 +436,6 @@ class ToolchainCL:
             shprint(sh.cp, apk_file, apk_file_dest)
         else:
             shprint(sh.cp, apk_file, './')
-
-    @_require_prebuilt_dist
-    def create(self, args):
-        """Create a distribution directory if it doesn't already exist, run
-        any recipes if necessary, and build the apk.
-        """
-        pass  # The decorator does everything
 
 def main():
     ToolchainCL()
