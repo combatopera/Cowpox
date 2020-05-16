@@ -103,7 +103,7 @@ def _build_dist_from_args(ctx, dist, args):
     build_recipes(build_order, python_modules, ctx, getattr(args, "private", None))
     ctx.bootstrap.run_distribute()
     log.info('Your distribution was created successfully, exiting.')
-    log.info("Dist can be found at (for now) %s", join(ctx.dist_dir, ctx.distribution.dist_dir))
+    log.info("Dist can be found at (for now) %s", join(ctx.dist_dir, dist.dist_dir))
 
 def _split_argument_list(l):
     return re.split('[ ,]+', l) if l else []
