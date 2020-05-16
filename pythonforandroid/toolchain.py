@@ -311,7 +311,7 @@ class ToolchainCL:
             build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
             build_tools_version = build_tools_versions[-1]
             log.info("Detected highest available build tools version to be %s", build_tools_version)
-            if build_tools_version >= '25.0' and exists('gradlew'):
+            if build_tools_version >= '25.0' and exists('gradlew'): # TODO: Retire gradlew.
                 build_type = 'gradle'
                 log.info('    Building with gradle, as gradle executable is present')
             else:
