@@ -285,11 +285,6 @@ class ToolchainCL:
             "--compact",
             action="store_true", default=False,
             help="Produce a compact list suitable for scripting")
-        subparsers.add_parser(
-            'clean_dists',
-            aliases=['clean-dists'],
-            help='Delete all dists',
-            parents=[generic_parser])
         parser_export_dist = subparsers.add_parser(
             'export_dist', aliases=['export-dist'],
             help='Copy the named dist to the given path',
@@ -453,13 +448,6 @@ class ToolchainCL:
                     print('    {Fore.YELLOW}optional depends: '
                           '{recipe.opt_depends}{Fore.RESET}'
                           .format(recipe=recipe, Fore=Out_Fore))
-
-    def clean_dists(self, _args):
-        """Delete all compiled distributions in the internal distribution
-        directory."""
-        ctx = self.ctx
-        if exists(ctx.dist_dir):
-            shutil.rmtree(ctx.dist_dir)
 
     @require_prebuilt_dist
     def export_dist(self, args):
