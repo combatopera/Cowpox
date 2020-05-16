@@ -290,11 +290,6 @@ class ToolchainCL:
             aliases=['clean-dists'],
             help='Delete all dists',
             parents=[generic_parser])
-        subparsers.add_parser(
-            'clean_builds',
-            aliases=['clean-builds'],
-            help='Delete all builds',
-            parents=[generic_parser])
         parser_clean_download_cache = subparsers.add_parser(
             'clean_download_cache', aliases=['clean-download-cache'],
             help='Delete cached downloads for requirement builds',
@@ -474,23 +469,6 @@ class ToolchainCL:
         ctx = self.ctx
         if exists(ctx.dist_dir):
             shutil.rmtree(ctx.dist_dir)
-
-    def clean_builds(self, _args):
-        """Delete all build caches for each recipe, python-install, java code
-        and compiled libs collection.
-
-        This does *not* delete the package download cache or the final
-        distributions.  You can also use clean_recipe_build to delete the build
-        of a specific recipe.
-        """
-        ctx = self.ctx
-        if exists(ctx.build_dir):
-            shutil.rmtree(ctx.build_dir)
-        if exists(ctx.python_installs_dir):
-            shutil.rmtree(ctx.python_installs_dir)
-        libs_dir = join(self.ctx.build_dir, 'libs_collections')
-        if exists(libs_dir):
-            shutil.rmtree(libs_dir)
 
     def clean_download_cache(self, args):
         """ Deletes a download cache for recipes passed as arguments. If no
