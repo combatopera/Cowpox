@@ -217,23 +217,21 @@ class TargetAndroid:
         return expected_dist_dir
 
     def _execute_build_package(self, build_cmd):
-        cmd = []
-        presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
-        if presplash_color:
-            cmd += ['--presplash-color', f"{presplash_color}"]
-        services = self.config.getlist('app', 'services', [])
-        for service in services:
-            cmd += ["--service", service]
-        if self.config.getbooldefault('app', 'android.copy_libs', True):
-            cmd.append("--copy-libs")
-        cmd += ['--local-recipes', self.local_recipes]
-        uses_library = self.config.getlist('app', 'android.uses_library', '')
-        for lib in uses_library:
-            cmd.append(f'--uses-library={lib}')
-        gradle_dependencies = self.config.getlist('app', 'android.gradle_dependencies', [])
-        for gradle_dependency in gradle_dependencies:
-            cmd += ['--depend', gradle_dependency]
-        self._p4a('apk', '--debug', *build_cmd, *cmd)
+        def cmd():
+            presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
+            if presplash_color:
+                yield from ['--presplash-color', presplash_color]
+            services = self.config.getlist('app', 'services', [])
+            for service in services:
+                yield from ['--service', service]
+            if self.config.getbooldefault('app', 'android.copy_libs', True): # TODO: Undup.
+                yield '--copy-libs'
+            yield from ['--local-recipes', self.local_recipes] # TODO: Undup.
+            for lib in self.config.getlist('app', 'android.uses_library', ''):
+                yield from ['--uses-library', lib]
+            for gradle_dependency in self.config.getlist('app', 'android.gradle_dependencies', []):
+                yield from ['--depend', gradle_dependency]
+        self._p4a('apk', '--debug', *build_cmd, *cmd())
 
     def _get_release_mode(self):
         return 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'
