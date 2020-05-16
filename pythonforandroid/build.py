@@ -246,17 +246,14 @@ class Context:
     def ndk_dir(self, value):
         self._ndk_dir = value
 
-    def prepare_build_environment(self, user_android_api, user_ndk_api):
+    def prepare_build_environment(self, user_ndk_api):
         self.ensure_dirs()
         if self._build_env_prepared:
             return
         ok = True
         self.sdk_dir = Path(os.environ['ANDROIDSDK']).resolve()
         android_api = None
-        if user_android_api:
-            android_api = user_android_api
-            info('Getting Android API version from user argument: {}'.format(android_api))
-        elif 'ANDROIDAPI' in environ:
+        if 'ANDROIDAPI' in environ:
             android_api = environ['ANDROIDAPI']
             info('Found Android API target in $ANDROIDAPI: {}'.format(android_api))
         else:

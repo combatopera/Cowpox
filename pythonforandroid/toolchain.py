@@ -124,14 +124,6 @@ class ToolchainCL:
             '--color', dest='color', choices=['always', 'never', 'auto'],
             help='Enable or disable color output (default enabled on tty)')
         generic_parser.add_argument(
-            '--android-api',
-            '--android_api',
-            dest='android_api',
-            default=0,
-            type=int,
-            help=('The Android API level to build against defaults to {} if '
-                  'not specified.').format(RECOMMENDED_TARGET_API))
-        generic_parser.add_argument(
             '--ndk-api', type=int, default=None,
             help=('The Android API level to compile against. This should be your '
                   '*minimal supported* API, not normally the same as your --android-api. '
@@ -220,7 +212,6 @@ class ToolchainCL:
             args.requirements = ','.join(requirements)
         self.storage_dir = args.storage_dir
         self.ctx.setup_dirs(self.storage_dir)
-        self.android_api = args.android_api
         self.ndk_api = args.ndk_api
         self.ctx.symlink_java_src = args.symlink_java_src
         self._archs = split_argument_list(args.arch)
@@ -246,7 +237,7 @@ class ToolchainCL:
 
     def _require_prebuilt_dist(self, args):
         self.ctx.set_archs(self._archs)
-        self.ctx.prepare_build_environment(self.android_api, self.ndk_api)
+        self.ctx.prepare_build_environment(self.ndk_api)
         if self._dist.needs_build:
             if self._dist.folder_exists():
                 self._dist.delete()
