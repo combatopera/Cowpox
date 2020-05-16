@@ -200,13 +200,11 @@ class TargetAndroid:
         self._install_android_packages()
 
     def compile_platform(self):
-        app_requirements = self.config.getlist('app', 'requirements', '')
-        requirements = ','.join(app_requirements)
-        options = []
-        if self.config.getbooldefault('app', 'android.copy_libs', True):
-            options.append("--copy-libs")
-        options.extend(['--local-recipes', self.local_recipes])
-        self._p4a('create', '--requirements', requirements, *options)
+        requirements = self.config.getlist('app', 'requirements', '')
+        def options():
+            if self.config.getbooldefault('app', 'android.copy_libs', True):
+                yield '--copy-libs'
+        self._p4a('create', '--requirements', ','.join(requirements), *options(), '--local-recipes', self.local_recipes)
 
     def _get_dist_dir(self):
         expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self.arch])
