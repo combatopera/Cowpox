@@ -163,7 +163,7 @@ class Distribution:
         if possible_dists:
             info('Of the existing distributions, the following meet '
                  'the given requirements:')
-            pretty_log_dists(possible_dists)
+            _pretty_log_dists(possible_dists)
         else:
             info('No existing dists meet the given requirements!')
 
@@ -285,8 +285,7 @@ class Distribution:
                            'python_version': self.ctx.python_recipe.major_minor_version_string},
                           fileh)
 
-
-def pretty_log_dists(dists, log_func=info):
+def _pretty_log_dists(dists, log_func=info):
     infos = []
     for dist in dists:
         ndk_api = 'unknown' if dist.ndk_api is None else dist.ndk_api
@@ -298,7 +297,6 @@ def pretty_log_dists(dists, log_func=info):
                          name=dist.name, recipes=', '.join(dist.recipes),
                          archs=', '.join(dist.archs) if dist.archs else 'UNKNOWN',
                          Fore=Err_Fore, Style=Err_Style))
-
     for line in infos:
         log_func('\t' + line)
 

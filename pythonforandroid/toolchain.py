@@ -43,10 +43,9 @@
 from . import __version__
 from .bootstrap import Bootstrap
 from .build import Context, build_recipes
-from .distribution import Distribution, pretty_log_dists
+from .distribution import Distribution
 from .graph import get_recipe_order_and_bootstrap
-from .logger import logger, info, warning, setup_color, Out_Style, Out_Fore, info_notify, info_main, shprint
-from .recipe import Recipe
+from .logger import logger, info, setup_color, info_notify, info_main, shprint
 from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
 from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
@@ -54,8 +53,7 @@ from argparse import ArgumentParser
 from distutils.version import LooseVersion
 from functools import wraps
 from os.path import join, dirname, realpath, exists, expanduser, basename
-from sys import platform
-import glob, imp, logging, os, re, sh, shlex, shutil, sys # FIXME: Retire imp.
+import glob, imp, logging, os, re, sh, shlex, sys # FIXME: Retire imp.
 
 toolchain_dir = dirname(__file__)
 sys.path.insert(0, join(toolchain_dir, "tools", "external"))
