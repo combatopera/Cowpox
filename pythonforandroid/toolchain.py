@@ -48,19 +48,19 @@ from .logger import logger, info, setup_color, info_notify, info_main, shprint
 from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
 from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
-from argparse import ArgumentParser
 from distutils.version import LooseVersion
 from functools import wraps
 from os.path import join, dirname, realpath, exists, expanduser, basename
-import glob, imp, logging, os, re, sh, sys # FIXME: Retire imp.
+import argparse, glob, imp, logging, os, re, sh, sys # FIXME: Retire imp.
 
 toolchain_dir = dirname(__file__)
 sys.path.insert(0, join(toolchain_dir, "tools", "external"))
 APK_SUFFIX = '.apk'
 
-def add_boolean_option(parser, names, no_names=None,
-                       default=True, dest=None, description=None):
-    group = parser.add_argument_group(description=description)
+class ArgumentParser(argparse.ArgumentParser):
+
+  def add_boolean_option(self, names, no_names=None, default=True, dest=None, description=None):
+    group = self.add_argument_group(description=description)
     if not isinstance(names, (list, tuple)):
         names = [names]
     if dest is None:
@@ -82,8 +82,7 @@ def add_boolean_option(parser, names, no_names=None,
     group.add_argument(
         *opts, help=(None if default else "(this is the default)"),
         dest=dest, action='store_false')
-    parser.set_defaults(**{dest: default})
-
+    self.set_defaults(**{dest: default})
 
 def require_prebuilt_dist(func):
     """Decorator for ToolchainCL methods. If present, the method will
@@ -242,17 +241,17 @@ class ToolchainCL:
             help='The bootstrap to build with. Leave unset to choose '
                  'automatically.',
             default=None)
-        add_boolean_option(
-            generic_parser, ["force-build"],
+        generic_parser.add_boolean_option(
+            ["force-build"],
             default=False,
             description='Whether to force compilation of a new distribution')
-        add_boolean_option(
-            generic_parser, ["require-perfect-match"],
+        generic_parser.add_boolean_option(
+            ["require-perfect-match"],
             default=False,
             description=('Whether the dist recipes must perfectly match '
                          'those requested'))
-        add_boolean_option(
-            generic_parser, ["allow-replace-dist"],
+        generic_parser.add_boolean_option(
+            ["allow-replace-dist"],
             default=True,
             description='Whether existing dist names can be automatically replaced'
             )
@@ -266,8 +265,8 @@ class ToolchainCL:
             choices=['auto', 'ant', 'gradle'],
             help=('The java build tool to use when packaging the APK, defaults '
                   'to automatically selecting an appropriate tool.'))
-        add_boolean_option(
-            generic_parser, ['copy-libs'],
+        generic_parser.add_boolean_option(
+            ['copy-libs'],
             default=False,
             description='Copy libraries instead of using biglink (Android 4.3+)'
         )
