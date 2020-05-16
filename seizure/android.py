@@ -214,7 +214,7 @@ class TargetAndroid:
             return old_dist_dir
         return expected_dist_dir
 
-    def _execute_build_package(self, build_cmd):
+    def _execute_build_package(self, *build_cmd):
         def cmd():
             presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
             if presplash_color:
@@ -319,7 +319,7 @@ class TargetAndroid:
                 yield '--release'
                 if self._check_p4a_sign_env(True):
                     yield '--sign'
-        self._execute_build_package(build_cmd, *options())
+        self._execute_build_package(*build_cmd, *options())
         if self.config.build_mode == 'debug':
             mode_sign = mode = 'debug'
         else:
