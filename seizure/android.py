@@ -71,8 +71,6 @@ def _file_rename(source, target, cwd):
 class TargetAndroid:
 
     p4a_recommended_ndk_version = None
-    javac_cmd = 'javac'
-    keytool_cmd = 'keytool'
 
     @types(Config, JsonStore, Dirs)
     def __init__(self, config, state, dirs):
