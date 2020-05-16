@@ -68,7 +68,7 @@ class ArgumentParser(argparse.ArgumentParser):
                 help = None if default else "(this is the default)", dest = dest, action = 'store_false')
         self.set_defaults(**{dest: default})
 
-def require_prebuilt_dist(func):
+def _require_prebuilt_dist(func):
     """Decorator for ToolchainCL methods. If present, the method will
     automatically make sure a dist has been built before continuing
     or, if no dists are present or can be obtained, will raise an
@@ -299,7 +299,7 @@ class ToolchainCL:
         ctx.distribution = dist
         return dist
 
-    @require_prebuilt_dist
+    @_require_prebuilt_dist
     def apk(self, args):
         """Create an APK using the given distribution."""
 
@@ -448,7 +448,7 @@ class ToolchainCL:
         else:
             shprint(sh.cp, apk_file, './')
 
-    @require_prebuilt_dist
+    @_require_prebuilt_dist
     def create(self, args):
         """Create a distribution directory if it doesn't already exist, run
         any recipes if necessary, and build the apk.
