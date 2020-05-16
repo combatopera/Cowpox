@@ -212,7 +212,6 @@ class ToolchainCL:
             args.requirements = ','.join(requirements)
         self.storage_dir = args.storage_dir
         self.ctx.setup_dirs(self.storage_dir)
-        self.ndk_api = args.ndk_api
         self.ctx.symlink_java_src = args.symlink_java_src
         self._archs = split_argument_list(args.arch)
 
@@ -237,7 +236,7 @@ class ToolchainCL:
 
     def _require_prebuilt_dist(self, args):
         self.ctx.set_archs(self._archs)
-        self.ctx.prepare_build_environment(self.ndk_api)
+        self.ctx.prepare_build_environment(args.ndk_api)
         if self._dist.needs_build:
             if self._dist.folder_exists():
                 self._dist.delete()
