@@ -429,11 +429,6 @@ class ToolchainCL:
         if hasattr(args, "private") and args.private is not None:
             args.unknown_args += ["--private", args.private]
         self.args = args
-
-        if args.subparser_name is None:
-            parser.print_help()
-            exit(1)
-
         setup_color(args.color)
 
         if args.debug:
