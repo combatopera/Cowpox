@@ -48,7 +48,6 @@ from lagoon import tar, unzip, yes
 from lagoon.program import Program
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
-from shutil import copyfile
 import logging, os, shutil, sys
 
 log = logging.getLogger(__name__)
@@ -386,7 +385,7 @@ class TargetAndroid:
                 mode=mode)
             apk_dir = dist_dir / "bin"
         apk_dest = f"{self.dist_name}-{version}-{self.config['app']['commit']}-{self._arch}-{mode}.apk"
-        copyfile(apk_dir / apk, self.dirs.bin_dir / apk_dest)
+        shutil.copyfile(apk_dir / apk, self.dirs.bin_dir / apk_dest)
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
         self.state['android:latestapk'] = apk_dest
