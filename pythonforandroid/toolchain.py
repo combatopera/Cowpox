@@ -207,10 +207,6 @@ class ToolchainCL:
             help=('The Android API level to build against defaults to {} if '
                   'not specified.').format(RECOMMENDED_TARGET_API))
         generic_parser.add_argument(
-            '--ndk-version', '--ndk_version', dest='ndk_version', default=None,
-            help=('DEPRECATED: the NDK version is now found automatically or '
-                  'not at all.'))
-        generic_parser.add_argument(
             '--ndk-api', type=int, default=None,
             help=('The Android API level to compile against. This should be your '
                   '*minimal supported* API, not normally the same as your --android-api. '
@@ -571,11 +567,6 @@ class ToolchainCL:
                 warning("")
                 warning("To enable what will some day be the default, specify:")
                 warning("    --use-setup-py")
-
-        # NDK version is now determined automatically
-        if args.ndk_version is not None:
-            warning('--ndk-version is deprecated and no longer necessary, '
-                    'the value you passed is ignored')
 
     @property
     def default_storage_dir(self):
