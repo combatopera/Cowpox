@@ -268,37 +268,28 @@ class TargetAndroid:
             "--minsdk", config.getdefault('app', 'android.minapi', self.android_minapi),
             "--ndk-api", config.getdefault('app', 'android.minapi', self.android_minapi),
         ]
-        is_private_storage = config.getbooldefault('app', 'android.private_storage', True)
-        if is_private_storage:
+        if config.getbooldefault('app', 'android.private_storage', True):
             build_cmd += ["--private", self.dirs.app_dir]
         else:
             build_cmd += ["--dir", self.dirs.app_dir]
-        permissions = config.getlist('app', 'android.permissions', [])
-        for permission in permissions:
+        for permission in config.getlist('app', 'android.permissions', []):
             permission = permission.split('.')
             permission[-1] = permission[-1].upper()
             permission = '.'.join(permission)
             build_cmd += ["--permission", permission]
-        entrypoint = config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
-        build_cmd += ['--android-entrypoint', entrypoint]
-        apptheme = config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar')
-        build_cmd += ['--android-apptheme', apptheme]
-        compile_options = config.getlist('app', 'android.add_compile_options', [])
-        for option in compile_options:
+        build_cmd += ['--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')]
+        build_cmd += ['--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar')]
+        for option in config.getlist('app', 'android.add_compile_options', []):
             build_cmd += ['--add-compile-option', option]
-        repos = config.getlist('app','android.add_gradle_repositories', [])
-        for repo in repos:
+        for repo in config.getlist('app','android.add_gradle_repositories', []):
             build_cmd += ['--add-gradle-repository', repo]
-        pkgoptions = config.getlist('app','android.add_packaging_options', [])
-        for pkgoption in pkgoptions:
+        for pkgoption in config.getlist('app','android.add_packaging_options', []):
             build_cmd += ['--add-packaging-option', pkgoption]
-        meta_datas = config.getlistvalues('app', 'android.meta_data', [])
-        for meta in meta_datas:
+        for meta in config.getlistvalues('app', 'android.meta_data', []):
             key, value = meta.split('=', 1)
             meta = '{}={}'.format(key.strip(), value.strip())
             build_cmd += ["--meta-data", meta]
-        add_activities = config.getlist('app', 'android.add_activities', [])
-        for activity in add_activities:
+        for activity in config.getlist('app', 'android.add_activities', []):
             build_cmd += ["--add-activity", activity]
         presplash = config.getdefault('app', 'presplash.filename', '')
         if presplash:
