@@ -553,10 +553,7 @@ class Context:
     def not_has_package(self, name, arch=None):
         return not self.has_package(name, arch)
 
-
-def build_recipes(build_order, python_modules, ctx, project_dir,
-                  ignore_project_setup_py=False
-                 ):
+def build_recipes(build_order, python_modules, ctx, project_dir, ignore_project_setup_py):
     # Put recipes in correct build order
     info_notify("Recipe build order is {}".format(build_order))
     if python_modules:

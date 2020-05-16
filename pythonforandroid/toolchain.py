@@ -159,14 +159,7 @@ def build_dist_from_args(ctx, dist, args):
     ctx.prepare_bootstrap(bs)
     if dist.needs_build:
         ctx.prepare_dist()
-
-    build_recipes(build_order, python_modules, ctx,
-                  getattr(args, "private", None),
-                  ignore_project_setup_py=getattr(
-                      args, "ignore_setup_py", False
-                  ),
-                 )
-
+    build_recipes(build_order, python_modules, ctx, getattr(args, "private", None), getattr(args, "ignore_setup_py", False))
     ctx.bootstrap.run_distribute()
 
     info_main('# Your distribution was created successfully, exiting.')
