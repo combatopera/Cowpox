@@ -53,7 +53,7 @@ from argparse import ArgumentParser
 from distutils.version import LooseVersion
 from functools import wraps
 from os.path import join, dirname, realpath, exists, expanduser, basename
-import glob, imp, logging, os, re, sh, shlex, sys # FIXME: Retire imp.
+import glob, imp, logging, os, re, sh, sys # FIXME: Retire imp.
 
 toolchain_dir = dirname(__file__)
 sys.path.insert(0, join(toolchain_dir, "tools", "external"))
