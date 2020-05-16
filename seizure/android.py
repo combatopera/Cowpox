@@ -269,9 +269,8 @@ class TargetAndroid:
         return check
 
     def _get_package(self):
-        config = self.config
-        package_domain = config.getdefault('app', 'package.domain', '')
-        package = config.get('app', 'package.name')
+        package_domain = self.config.getdefault('app', 'package.domain', '')
+        package = self.dist_name
         if package_domain:
             package = package_domain + '.' + package
         return package.lower()
@@ -285,14 +284,13 @@ class TargetAndroid:
     def build_package(self):
         dist_dir = self._get_dist_dir()
         config = self.config
-        package = self._get_package()
         version = self.config.get_version()
         self._update_libraries_references(dist_dir)
         self._generate_whitelist(dist_dir)
         build_cmd = [
             "--name", config.get('app', 'title'),
             "--version", version,
-            "--package", package,
+            "--package", self._get_package(),
             "--minsdk", config.getdefault('app', 'android.minapi', self.android_minapi),
             "--ndk-api", config.getdefault('app', 'android.minapi', self.android_minapi),
         ]
@@ -372,7 +370,6 @@ class TargetAndroid:
         build_tools_version = build_tools_versions[-1]
         gradle_files = ["build.gradle", "gradle", "gradlew"]
         is_gradle_build = build_tools_version >= "25.0" and any((dist_dir / x).exists() for x in gradle_files)
-        packagename = config.get('app', 'package.name')
         if is_gradle_build:
             apk = f'{dist_dir.name}-{mode}.apk'
             apk_dir = dist_dir / "build" / "outputs" / "apk" / mode_sign
@@ -388,7 +385,7 @@ class TargetAndroid:
                 version=version,
                 mode=mode)
             apk_dir = dist_dir / "bin"
-        apk_dest = f"{packagename}-{version}-{self.config['app']['commit']}-{self._arch}-{mode}.apk"
+        apk_dest = f"{self.dist_name}-{version}-{self.config['app']['commit']}-{self._arch}-{mode}.apk"
         copyfile(apk_dir / apk, self.dirs.bin_dir / apk_dest)
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
