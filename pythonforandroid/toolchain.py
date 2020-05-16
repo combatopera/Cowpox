@@ -124,9 +124,6 @@ class ToolchainCL:
             '--color', dest='color', choices=['always', 'never', 'auto'],
             help='Enable or disable color output (default enabled on tty)')
         generic_parser.add_argument(
-            '--sdk-dir', '--sdk_dir', dest='sdk_dir', default='',
-            help='The filepath where the Android SDK is installed')
-        generic_parser.add_argument(
             '--ndk-dir', '--ndk_dir', dest='ndk_dir', default='',
             help='The filepath where the Android NDK is installed')
         generic_parser.add_argument(
@@ -226,7 +223,6 @@ class ToolchainCL:
             args.requirements = ','.join(requirements)
         self.storage_dir = args.storage_dir
         self.ctx.setup_dirs(self.storage_dir)
-        self.sdk_dir = args.sdk_dir
         self.ndk_dir = args.ndk_dir
         self.android_api = args.android_api
         self.ndk_api = args.ndk_api
@@ -255,7 +251,7 @@ class ToolchainCL:
     def _require_prebuilt_dist(self, args):
         self.ctx.set_archs(self._archs)
         self.ctx.prepare_build_environment(
-                user_sdk_dir = self.sdk_dir,
+                user_sdk_dir = '',
                 user_ndk_dir = self.ndk_dir,
                 user_android_api = self.android_api,
                 user_ndk_api = self.ndk_api)

@@ -244,26 +244,11 @@ class Context:
     def ndk_dir(self, value):
         self._ndk_dir = value
 
-    def prepare_build_environment(self,
-                                  user_sdk_dir,
-                                  user_ndk_dir,
-                                  user_android_api,
-                                  user_ndk_api):
-        '''Checks that build dependencies exist and sets internal variables
-        for the Android SDK etc.
-
-        ..warning:: This *must* be called before trying any build stuff
-
-        '''
-
+    def prepare_build_environment(self, user_sdk_dir, user_ndk_dir, user_android_api, user_ndk_api):
         self.ensure_dirs()
-
         if self._build_env_prepared:
             return
-
         ok = True
-
-        # Work out where the Android SDK is
         sdk_dir = None
         if user_sdk_dir:
             sdk_dir = user_sdk_dir
