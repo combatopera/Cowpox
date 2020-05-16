@@ -73,7 +73,7 @@ class TargetAndroid:
                 '--arch', self.arch,
                 '--color', 'always',
                 '--storage-dir', self.build_dir,
-                '--ndk-api', config.getdefault('app', 'android.ndk_api', self.android_minapi]
+                '--ndk-api', config.getdefault('app', 'android.ndk_api', self.android_minapi)]
         if config.getbooldefault('app', 'android.copy_libs', True):
             self.extra_p4a_args.append('--copy-libs')
         self.local_recipes = config.workspace / 'local_recipes'
