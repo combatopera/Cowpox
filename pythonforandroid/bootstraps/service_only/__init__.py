@@ -47,10 +47,7 @@ import sh
 class ServiceOnlyBootstrap(Bootstrap):
 
     name = 'service_only'
-
-    recipe_depends = list(
-        set(Bootstrap.recipe_depends).union({'genericndkbuild'})
-    )
+    recipe_depends = list(set(Bootstrap.recipe_depends) | {'genericndkbuild'})
 
     def run_distribute(self):
         info_main('# Creating Android project from build and {} bootstrap'.format(
