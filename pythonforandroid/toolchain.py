@@ -49,6 +49,7 @@ from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
 from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
 from distutils.version import LooseVersion
+from lagoon import cp
 from os.path import join, dirname, realpath, exists, expanduser, basename
 import argparse, glob, imp, logging, os, re, sh, sys # FIXME: Retire imp.
 
@@ -407,9 +408,9 @@ class ToolchainCL:
             apk_file_dest = "{}-{}-{}".format(
                 apk_name, build_args.version, APK_SUFFIX)
             log.info("APK renamed to %s", apk_file_dest)
-            shprint(sh.cp, apk_file, apk_file_dest)
+            cp.print(apk_file, apk_file_dest)
         else:
-            shprint(sh.cp, apk_file, './')
+            cp.print(apk_file, './')
 
 def main():
     ToolchainCL()
