@@ -454,7 +454,7 @@ class TargetAndroid:
             packagename_src = basename(dist_dir)  # gradle specifically uses the folder name
             apk = u'{packagename}-{mode}.apk'.format(
                 packagename=packagename_src, mode=mode)
-            apk_dir = join(dist_dir, "build", "outputs", "apk", mode_sign)
+            apk_dir = dist_dir / "build" / "outputs" / "apk" / mode_sign
         else:
             # on ant, the apk use the title, and have version
             bl = u'\'" ,'
@@ -466,50 +466,36 @@ class TargetAndroid:
                 title=apktitle,
                 version=version,
                 mode=mode)
-            apk_dir = join(dist_dir, "bin")
+            apk_dir = dist_dir / "bin"
         apk_dest = f"{packagename}-{version}-{self.config['app']['commit']}-{self._arch}-{mode}.apk"
-        copyfile(join(apk_dir, apk), self.dirs.bin_dir / apk_dest)
+        copyfile(apk_dir / apk, self.dirs.bin_dir / apk_dest)
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
         self.state['android:latestapk'] = apk_dest
         self.state['android:latestmode'] = self.config.build_mode
 
     def _update_libraries_references(self, dist_dir):
-        # ensure the project.properties exist
-        project_fn = join(dist_dir, 'project.properties')
-        if not Path(project_fn).exists():
-            content = [
-                'target=android-{}\n'.format(self.android_api),
-                'APP_PLATFORM={}\n'.format(self.android_minapi)]
+        project_fn = dist_dir / 'project.properties'
+        if not project_fn.exists():
+            content = ['target=android-{}\n'.format(self.android_api), 'APP_PLATFORM={}\n'.format(self.android_minapi)]
         else:
-            with open(project_fn, encoding = 'utf-8') as fd:
+            with project_fn.open(encoding = 'utf-8') as fd:
                 content = fd.readlines()
-
-        # extract library reference
         references = []
         for line in content[:]:
             if not line.startswith('android.library.reference.'):
                 continue
             content.remove(line)
-
-        # convert our references to relative path
-        app_references = self.config.getlist(
-            'app', 'android.library_references', [])
-        source_dir = realpath(self.config.getdefault(
-            'app', 'source.dir', '.'))
+        app_references = self.config.getlist('app', 'android.library_references', [])
+        source_dir = realpath(self.config.getdefault('app', 'source.dir', '.'))
         for cref in app_references:
-            # get the full path of the current reference
-            ref = realpath(join(source_dir, cref))
-            if not Path(ref).exists():
+            ref = (source_dir / cref).resolve()
+            if not ref.exists():
                 log.error('Invalid library reference (path not found): %s', cref)
                 exit(1)
-            # get a relative path from the project file
-            ref = relpath(ref, realpath(dist_dir))
-            # ensure the reference exists
+            ref = relpath(ref, dist_dir.resolve())
             references.append(ref)
-
-        # recreate the project.properties
-        with open(project_fn, 'w', encoding = 'utf-8') as fd:
+        with project_fn.open('w', encoding = 'utf-8') as fd:
             try:
                 fd.writelines((line.decode('utf-8') for line in content))
             except:
