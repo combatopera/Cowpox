@@ -308,14 +308,13 @@ class TargetAndroid:
             launch_mode = config.getdefault('app', 'android.manifest.launch_mode', '')
             if launch_mode:
                 yield from ["--activity-launch-mode", launch_mode]
-        if self.bootstrapname != 'service_only':
-            orientation = config.getdefault('app', 'orientation', 'landscape')
-            if orientation == 'all':
-                orientation = 'sensor'
-            build_cmd += ["--orientation", orientation]
-            fullscreen = config.getbooldefault('app', 'fullscreen', True)
-            if not fullscreen:
-                build_cmd += ["--window"]
+            if self.bootstrapname != 'service_only':
+                orientation = config.getdefault('app', 'orientation', 'landscape')
+                if orientation == 'all':
+                    orientation = 'sensor'
+                yield from ["--orientation", orientation]
+                if not config.getbooldefault('app', 'fullscreen', True):
+                    yield "--window"
         if self.config.build_mode == 'debug':
             mode = 'debug'
             mode_sign = mode
