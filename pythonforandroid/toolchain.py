@@ -198,9 +198,8 @@ class ToolchainCL:
                     log.info("""Recipe %s: version "%s" requested""", requirement, version)
                 requirements.append(requirement)
             args.requirements = ','.join(requirements)
-        self.storage_dir = args.storage_dir
         ctx = Context()
-        ctx.setup_dirs(self.storage_dir)
+        ctx.setup_dirs(args.storage_dir)
         ctx.symlink_java_src = args.symlink_java_src
         ctx.local_recipes = args.local_recipes
         ctx.copy_libs = args.copy_libs
