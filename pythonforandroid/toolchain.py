@@ -70,14 +70,11 @@ class ArgumentParser(argparse.ArgumentParser):
                 help = None if default else "(this is the default)", dest = dest, action = 'store_false')
         self.set_defaults(**{dest: default})
 
-def dist_from_args(ctx, args):
-    """Parses out any distribution-related arguments, and uses them to
-    obtain a Distribution class instance for the build.
-    """
+def _dist_from_args(ctx, args):
     return Distribution.get_distribution(
         ctx,
         name=args.dist_name,
-        recipes=split_argument_list(args.requirements),
+        recipes=_split_argument_list(args.requirements),
         arch_name=args.arch,
         ndk_api=args.ndk_api,
         force_build=args.force_build,
@@ -108,10 +105,8 @@ def _build_dist_from_args(ctx, dist, args):
     log.info('Your distribution was created successfully, exiting.')
     log.info("Dist can be found at (for now) %s", join(ctx.dist_dir, ctx.distribution.dist_dir))
 
-def split_argument_list(l):
-    if not len(l):
-        return []
-    return re.split(r'[ ,]+', l)
+def _split_argument_list(l):
+    return re.split('[ ,]+', l) if l else []
 
 class ToolchainCL:
 
@@ -196,14 +191,12 @@ class ToolchainCL:
             args.unknown_args += ["--private", args.private]
         self.args = args
         setup_color(args.color)
-
         if args.debug:
             logger.setLevel(logging.DEBUG)
-
         self.ctx = Context()
         if hasattr(args, 'requirements'):
             requirements = []
-            for requirement in split_argument_list(args.requirements):
+            for requirement in _split_argument_list(args.requirements):
                 if "==" in requirement:
                     requirement, version = requirement.split(u"==", 1)
                     os.environ["VERSION_{}".format(requirement)] = version
@@ -213,12 +206,10 @@ class ToolchainCL:
         self.storage_dir = args.storage_dir
         self.ctx.setup_dirs(self.storage_dir)
         self.ctx.symlink_java_src = args.symlink_java_src
-        self._archs = split_argument_list(args.arch)
-
+        self._archs = _split_argument_list(args.arch)
         self.ctx.local_recipes = args.local_recipes
         self.ctx.copy_libs = args.copy_libs
-        self._require_prebuilt_dist(args)
-        getattr(self, args.command)(args)
+        getattr(self, args.command)(args, self._require_prebuilt_dist(args))
 
     @property
     def default_storage_dir(self):
@@ -227,37 +218,23 @@ class ToolchainCL:
             udd = '~/.python-for-android'
         return udd
 
-    @property
-    def _dist(self):
-        ctx = self.ctx
-        dist = dist_from_args(ctx, self.args)
-        ctx.distribution = dist
-        return dist
-
     def _require_prebuilt_dist(self, args):
         self.ctx.set_archs(self._archs)
         self.ctx.prepare_build_environment(args.ndk_api)
-        if self._dist.needs_build:
-            if self._dist.folder_exists():
-                self._dist.delete()
+        dist = _dist_from_args(self.ctx, args)
+        self.ctx.distribution = dist
+        if dist.needs_build:
+            if dist.folder_exists():
+                dist.delete()
             log.info('No dist exists that meets your requirements, so one will be built.')
-            _build_dist_from_args(self.ctx, self._dist, args)
+            _build_dist_from_args(self.ctx, dist, args)
+        return dist
 
-    def create(self, args):
+    def create(self, args, dist):
         pass
 
-    def apk(self, args):
-        """Create an APK using the given distribution."""
-
-        ctx = self.ctx
-        dist = self._dist
-
-        # Manually fixing these arguments at the string stage is
-        # unsatisfactory and should probably be changed somehow, but
-        # we can't leave it until later as the build.py scripts assume
-        # they are in the current directory.
-        fix_args = ('--dir', '--private', '--add-jar', '--add-source',
-                    '--whitelist', '--blacklist', '--presplash', '--icon')
+    def apk(self, args, dist):
+        fix_args = '--dir', '--private', '--add-jar', '--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'
         unknown_args = args.unknown_args
         for i, arg in enumerate(unknown_args):
             argx = arg.split('=')
@@ -284,7 +261,7 @@ class ToolchainCL:
             os.environ["ANDROID_API"] = str(self.ctx.android_api)
             build_args = build.parse_args(args.unknown_args)
             log.info('Selecting java build tool:')
-            build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
+            build_tools_versions = os.listdir(join(self.ctx.sdk_dir, 'build-tools'))
             build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
             build_tools_version = build_tools_versions[-1]
             log.info("Detected highest available build tools version to be %s", build_tools_version)
