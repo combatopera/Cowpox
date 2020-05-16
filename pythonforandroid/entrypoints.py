@@ -38,17 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .recommendations import check_python_version
+from .toolchain import ToolchainCL
 from .util import BuildInterruptingException, handle_build_exception
 
 def main():
     try:
-        # Check the Python version before importing anything heavier than
-        # the util functions.  This lets us provide a nice message about
-        # incompatibility rather than having the interpreter crash if it
-        # reaches unsupported syntax from a newer Python version.
-        check_python_version()
-        from .toolchain import ToolchainCL
         ToolchainCL()
     except BuildInterruptingException as exc:
         handle_build_exception(exc)

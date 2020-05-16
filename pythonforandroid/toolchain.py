@@ -59,7 +59,6 @@ from os.path import join, dirname, realpath, exists, expanduser, basename
 from sys import platform
 import argparse, glob, imp, logging, os, re, sh, shlex, shutil, sys # FIXME: Retire imp.
 
-user_dir = dirname(realpath(os.path.curdir))
 toolchain_dir = dirname(__file__)
 sys.path.insert(0, join(toolchain_dir, "tools", "external"))
 APK_SUFFIX = '.apk'
