@@ -82,7 +82,7 @@ def dist_from_args(ctx, args):
         allow_replace_dist=args.allow_replace_dist)
 
 
-def build_dist_from_args(ctx, dist, args):
+def _build_dist_from_args(ctx, dist, args):
     """Parses out any bootstrap related arguments, and uses them to build
     a dist."""
     bs = Bootstrap.get_bootstrap(args.bootstrap, ctx)
@@ -284,7 +284,7 @@ class ToolchainCL:
             if self._dist.folder_exists():
                 self._dist.delete()
             info_notify('No dist exists that meets your requirements, so one will be built.')
-            build_dist_from_args(self.ctx, self._dist, args)
+            _build_dist_from_args(self.ctx, self._dist, args)
 
     def create(self, args):
         pass
