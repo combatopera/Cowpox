@@ -317,7 +317,7 @@ class TargetAndroid:
                 raise SystemError(f'Invalid android.ouya.category: "{ouya_category}" must be one of GAME or APP')
             ouya_icon = config.getdefault('app', 'android.ouya.icon.filename', '')
             build_cmd += ["--ouya-category", ouya_category, "--ouya-icon", self.config.workspace / ouya_icon]
-        if config.getdefault('app','p4a.bootstrap','sdl2') != 'service_only':
+        if self.bootstrapname != 'service_only':
             orientation = config.getdefault('app', 'orientation', 'landscape')
             if orientation == 'all':
                 orientation = 'sensor'
