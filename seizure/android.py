@@ -66,6 +66,7 @@ class TargetAndroid:
             ANDROIDNDK = dirs.android_ndk_dir,
             ANDROIDAPI = self.android_api,
         ))
+        self.dist_name = config.get('app', 'package.name')
         self.bootstrapname = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
         self.extra_p4a_args = [
                 '--dist_name', self.dist_name,
@@ -77,7 +78,6 @@ class TargetAndroid:
                 '--local-recipes', config.workspace / 'local_recipes']
         if config.getbooldefault('app', 'android.copy_libs', True):
             self.extra_p4a_args.append('--copy-libs')
-        self.dist_name = config.get('app', 'package.name')
         self.config = config
         self.state = state
         self.dirs = dirs
