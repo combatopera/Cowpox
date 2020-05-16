@@ -305,15 +305,6 @@ class ToolchainCL:
             aliases=['clean-builds'],
             help='Delete all builds',
             parents=[generic_parser])
-        parser_clean = subparsers.add_parser(
-            'clean',
-            help='Delete build components.',
-            parents=[generic_parser])
-        parser_clean.add_argument(
-            'component', nargs='+',
-            help=('The build component(s) to delete. You can pass any '
-                  'number of arguments from "all", "builds", "dists", '
-                  '"distributions", "bootstrap_builds", "downloads".'))
         parser_clean_recipe_build = subparsers.add_parser(
             'clean_recipe_build', aliases=['clean-recipe-build'],
             help=('Delete the build components of the given recipe. '
@@ -498,24 +489,6 @@ class ToolchainCL:
                     print('    {Fore.YELLOW}optional depends: '
                           '{recipe.opt_depends}{Fore.RESET}'
                           .format(recipe=recipe, Fore=Out_Fore))
-
-    def clean(self, args):
-        components = args.component
-
-        component_clean_methods = {
-            'all': self.clean_all,
-            'dists': self.clean_dists,
-            'distributions': self.clean_dists,
-            'builds': self.clean_builds,
-            'bootstrap_builds': self.clean_bootstrap_builds,
-            'downloads': self.clean_download_cache}
-
-        for component in components:
-            if component not in component_clean_methods:
-                raise BuildInterruptingException((
-                    'Asked to clean "{}" but this argument is not '
-                    'recognised'.format(component)))
-            component_clean_methods[component](args)
 
     def clean_all(self, args):
         """Delete all build components; the package cache, package builds,
