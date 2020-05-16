@@ -83,7 +83,7 @@ def _build_dist_from_args(ctx, dist, args):
     blacklist = getattr(args, "blacklist_requirements", "").split(",")
     if len(blacklist) == 1 and blacklist[0] == "":
         blacklist = []
-    build_order, python_modules, bs = get_recipe_order_and_bootstrap(ctx, dist.recipes, bs, blacklist = blacklist)
+    build_order, python_modules, bs = get_recipe_order_and_bootstrap(ctx, dist.recipes, bs, blacklist)
     assert not set(build_order) & set(python_modules)
     ctx.recipe_build_order = build_order
     ctx.python_modules = python_modules
