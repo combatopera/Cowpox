@@ -52,13 +52,6 @@ from shutil import copyfile
 import logging, os, shutil, sys
 
 log = logging.getLogger(__name__)
-ANDROID_API = '27'
-ANDROID_MINAPI = '21'
-# Default SDK tag to download. This is not a configurable option
-# because it doesn't seem to matter much, it is normally correct to
-# download once then update all the components as buildozer already
-# does.
-DEFAULT_SDK_TAG = '4333796'
 DEFAULT_ARCH = 'armeabi-v7a'
 
 def _file_extract(archive, cwd):
@@ -85,8 +78,8 @@ class TargetAndroid:
 
     @types(Config, JsonStore, Dirs)
     def __init__(self, config, state, dirs):
-        self.android_api = config.getdefault('app', 'android.api', ANDROID_API)
-        self.android_minapi = config.getdefault('app', 'android.minapi', ANDROID_MINAPI)
+        self.android_api = config.getdefault('app', 'android.api', '27')
+        self.android_minapi = config.getdefault('app', 'android.minapi', '21')
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
@@ -124,7 +117,7 @@ class TargetAndroid:
             log.info('Android SDK found at %s', sdk_dir)
             return
         log.info('Android SDK is missing, downloading')
-        archive = f"sdk-tools-linux-{DEFAULT_SDK_TAG}.zip"
+        archive = 'sdk-tools-linux-4333796.zip'
         sdk_dir.mkdir(parents = True)
         download('http://dl.google.com/android/repository/', archive, sdk_dir)
         log.info('Unpacking Android SDK')
