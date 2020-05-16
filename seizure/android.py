@@ -51,7 +51,6 @@ from pythonforandroid.mirror import download
 import logging, os, shutil, sys
 
 log = logging.getLogger(__name__)
-DEFAULT_ARCH = 'armeabi-v7a'
 
 def _file_extract(archive, cwd):
     if archive.endswith('.tar.gz'):
@@ -80,7 +79,7 @@ class TargetAndroid:
         self.android_api = config.getdefault('app', 'android.api', '27')
         self.android_minapi = config.getdefault('app', 'android.minapi', '21')
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
-        self._arch = config.getdefault('app', 'android.arch', DEFAULT_ARCH)
+        self._arch = config.getdefault('app', 'android.arch', 'armeabi-v7a')
         self._build_dir = dirs.platform_dir / f"build-{self._arch}"
         self.p4a = Program.text(sys.executable).partial('-m', 'pythonforandroid.toolchain', env = dict(
             ANDROIDSDK = dirs.android_sdk_dir,
