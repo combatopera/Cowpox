@@ -44,7 +44,7 @@ from .bootstrap import Bootstrap
 from .build import Context, build_recipes
 from .distribution import Distribution
 from .graph import get_recipe_order_and_bootstrap
-from .logger import logger, info, setup_color, info_notify, shprint
+from .logger import logger, setup_color, info_notify, shprint
 from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
 from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
@@ -91,12 +91,12 @@ def _build_dist_from_args(ctx, dist, args):
     assert not set(build_order) & set(python_modules)
     ctx.recipe_build_order = build_order
     ctx.python_modules = python_modules
-    info('The selected bootstrap is {}'.format(bs.name))
+    log.info("The selected bootstrap is %s", bs.name)
     log.info("Creating dist with %s bootstrap", bs.name)
     bs.distribution = dist
     info_notify('Dist will have name {} and requirements ({})'.format(dist.name, ', '.join(dist.recipes)))
-    info('Dist contains the following requirements as recipes: {}'.format(ctx.recipe_build_order))
-    info('Dist will also contain modules ({}) installed from pip'.format(', '.join(ctx.python_modules)))
+    log.info("Dist contains the following requirements as recipes: %s", ctx.recipe_build_order)
+    log.info("Dist will also contain modules (%s) installed from pip", ', '.join(ctx.python_modules))
     ctx.distribution = dist
     ctx.prepare_bootstrap(bs)
     if dist.needs_build:
@@ -104,7 +104,7 @@ def _build_dist_from_args(ctx, dist, args):
     build_recipes(build_order, python_modules, ctx, getattr(args, "private", None))
     ctx.bootstrap.run_distribute()
     log.info('Your distribution was created successfully, exiting.')
-    info('Dist can be found at (for now) {}'.format(join(ctx.dist_dir, ctx.distribution.dist_dir)))
+    log.info("Dist can be found at (for now) %s", join(ctx.dist_dir, ctx.distribution.dist_dir))
 
 def split_argument_list(l):
     if not len(l):
@@ -225,8 +225,7 @@ class ToolchainCL:
                 if "==" in requirement:
                     requirement, version = requirement.split(u"==", 1)
                     os.environ["VERSION_{}".format(requirement)] = version
-                    info('Recipe {}: version "{}" requested'.format(
-                        requirement, version))
+                    log.info("""Recipe %s: version "%s" requested""", requirement, version)
                 requirements.append(requirement)
             args.requirements = ','.join(requirements)
         self.storage_dir = args.storage_dir
@@ -316,30 +315,22 @@ class ToolchainCL:
             build_args = build.parse_args(args.unknown_args)
             build_type = ctx.java_build_tool
             if build_type == 'auto':
-                info('Selecting java build tool:')
-
+                log.info('Selecting java build tool:')
                 build_tools_versions = os.listdir(join(ctx.sdk_dir,
                                                        'build-tools'))
                 build_tools_versions = sorted(build_tools_versions,
                                               key=LooseVersion)
                 build_tools_version = build_tools_versions[-1]
-                info(('Detected highest available build tools '
-                      'version to be {}').format(build_tools_version))
-
+                log.info("Detected highest available build tools version to be %s", build_tools_version)
                 if build_tools_version >= '25.0' and exists('gradlew'):
                     build_type = 'gradle'
-                    info('    Building with gradle, as gradle executable is '
-                         'present')
+                    log.info('    Building with gradle, as gradle executable is present')
                 else:
                     build_type = 'ant'
                     if build_tools_version < '25.0':
-                        info(('    Building with ant, as the highest '
-                              'build-tools-version is only {}').format(
-                            build_tools_version))
+                        log.info("    Building with ant, as the highest build-tools-version is only %s", build_tools_version)
                     else:
-                        info('    Building with ant, as no gradle executable '
-                             'detected')
-
+                        log.info('    Building with ant, as no gradle executable detected')
             if build_type == 'gradle':
                 # gradle-based build
                 env["ANDROID_NDK_HOME"] = self.ctx.ndk_dir
@@ -404,19 +395,18 @@ class ToolchainCL:
                 apks = glob.glob(join(apk_dir, apk_glob.format(suffix)))
                 if apks:
                     if len(apks) > 1:
-                        info('More than one built APK found... guessing you '
-                             'just built {}'.format(apks[-1]))
+                        log.info("More than one built APK found... guessing you just built %s", apks[-1])
                     apk_file = apks[-1]
                     break
             else:
                 raise BuildInterruptingException('Couldn\'t find the built APK')
         log.info("Found APK file: %s", apk_file)
         if apk_add_version:
-            info('# Add version number to APK')
+            log.info('Add version number to APK')
             apk_name = basename(apk_file)[:-len(APK_SUFFIX)]
             apk_file_dest = "{}-{}-{}".format(
                 apk_name, build_args.version, APK_SUFFIX)
-            info('# APK renamed to {}'.format(apk_file_dest))
+            log.info("APK renamed to %s", apk_file_dest)
             shprint(sh.cp, apk_file, apk_file_dest)
         else:
             shprint(sh.cp, apk_file, './')
