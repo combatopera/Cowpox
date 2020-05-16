@@ -41,7 +41,6 @@
 from .logger import info, warning
 from .util import BuildInterruptingException
 from distutils.version import LooseVersion
-from os.path import join
 
 # We only check the NDK major version
 MIN_NDK_VERSION = 19
