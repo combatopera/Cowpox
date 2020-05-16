@@ -136,7 +136,7 @@ class OpenSSLRecipe(Recipe):
         env = super(OpenSSLRecipe, self).get_recipe_env(arch)
         env['OPENSSL_VERSION'] = self.version
         env['MAKE'] = 'make'  # This removes the '-j5', which isn't safe
-        env['ANDROID_NDK'] = self.ctx.ndk_dir
+        env['ANDROID_NDK'] = str(self.ctx.ndk_dir)
         return env
 
     def select_build_arch(self, arch):
