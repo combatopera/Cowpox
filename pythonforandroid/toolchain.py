@@ -305,9 +305,6 @@ class ToolchainCL:
         subparsers.add_parser(
             'create', help='Compile a set of requirements into a dist',
             parents=[generic_parser])
-        subparsers.add_parser(
-            'delete_dist', aliases=['delete-dist'], help='Delete a compiled dist',
-            parents=[generic_parser])
         parser_sdk_tools = subparsers.add_parser(
             'sdk_tools', aliases=['sdk-tools'],
             help='Run the given binary from the SDK tools dis',
@@ -546,14 +543,6 @@ class ToolchainCL:
         any recipes if necessary, and build the apk.
         """
         pass  # The decorator does everything
-
-    def delete_dist(self, _args):
-        dist = self._dist
-        if not dist.folder_exists():
-            info('No dist exists that matches your specifications, '
-                 'exiting without deleting.')
-            return
-        dist.delete()
 
     def sdk_tools(self, args):
         """Runs the android binary from the detected SDK directory, passing
