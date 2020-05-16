@@ -40,7 +40,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import __version__
 from .bootstrap import Bootstrap
 from .build import Context, build_recipes
 from .distribution import Distribution
@@ -282,7 +281,6 @@ class ToolchainCL:
         parser_apk.add_argument('--keystorepw')
         parser_apk.add_argument('--signkeypw')
         subparsers.add_parser('create', parents = [generic_parser])
-        parser.add_argument('-v', '--version', action='version', version=__version__)
         args, unknown = parser.parse_known_args(sys.argv[1:])
         args.unknown_args = unknown
         if hasattr(args, "private") and args.private is not None:
