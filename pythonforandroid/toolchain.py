@@ -59,25 +59,21 @@ APK_SUFFIX = '.apk'
 
 class ArgumentParser(argparse.ArgumentParser):
 
-  def add_boolean_option(self, names, no_names=None, default=True, dest=None, description=None):
+  def add_boolean_option(self, names, default, description):
     group = self.add_argument_group(description=description)
     if not isinstance(names, (list, tuple)):
         names = [names]
-    if dest is None:
-        dest = names[0].strip("-").replace("-", "_")
-
+    dest = names[0].strip("-").replace("-", "_")
     def add_dashes(x):
         return x if x.startswith("-") else "--"+x
-
     opts = [add_dashes(x) for x in names]
     group.add_argument(
         *opts, help=("(this is the default)" if default else None),
         dest=dest, action='store_true')
-    if no_names is None:
-        def add_no(x):
-            x = x.lstrip("-")
-            return ("no_"+x) if "_" in x else ("no-"+x)
-        no_names = [add_no(x) for x in names]
+    def add_no(x):
+        x = x.lstrip("-")
+        return ("no_"+x) if "_" in x else ("no-"+x)
+    no_names = [add_no(x) for x in names]
     opts = [add_dashes(x) for x in no_names]
     group.add_argument(
         *opts, help=(None if default else "(this is the default)"),
