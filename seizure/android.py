@@ -286,10 +286,8 @@ class TargetAndroid:
                 yield from ['--add-gradle-repository', repo]
             for pkgoption in config.getlist('app','android.add_packaging_options', []):
                 yield from ['--add-packaging-option', pkgoption]
-        for meta in config.getlistvalues('app', 'android.meta_data', []):
-            key, value = meta.split('=', 1)
-            meta = '{}={}'.format(key.strip(), value.strip())
-            build_cmd += ["--meta-data", meta]
+            for meta in config.getlistvalues('app', 'android.meta_data', []):
+                yield from ["--meta-data", '='.join(korv.strip() for korv in meta.split('=', 1))]
         for activity in config.getlist('app', 'android.add_activities', []):
             build_cmd += ["--add-activity", activity]
         presplash = config.getdefault('app', 'presplash.filename', '')
