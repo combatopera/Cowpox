@@ -48,7 +48,9 @@ from lagoon.program import Program
 from os import environ
 from os.path import abspath, join, realpath, dirname, expanduser, exists, split, isdir
 from pathlib import Path
-import copy, glob, os, re, sh, shutil, subprocess, sys
+import copy, glob, logging, os, re, sh, shutil, subprocess, sys
+
+log = logging.getLogger(__name__)
 
 def get_ndk_platform_dir(ndk_dir, ndk_api, arch):
     ndk_platform_dir_exists = True
@@ -275,37 +277,9 @@ class Context:
             raise BuildInterruptingException(
                 ('Requested API target {} is not available, install '
                  'it with the SDK android tool.').format(android_api))
-        ndk_dir = None
-        if ndk_dir is None:  # The old P4A-specific dir
-            ndk_dir = environ.get('ANDROIDNDK', None)
-            if ndk_dir is not None:
-                info('Found NDK dir in $ANDROIDNDK: {}'.format(ndk_dir))
-        if ndk_dir is None:  # Apparently the most common convention
-            ndk_dir = environ.get('NDK_HOME', None)
-            if ndk_dir is not None:
-                info('Found NDK dir in $NDK_HOME: {}'.format(ndk_dir))
-        if ndk_dir is None:  # Another convention (with maven?)
-            ndk_dir = environ.get('ANDROID_NDK_HOME', None)
-            if ndk_dir is not None:
-                info('Found NDK dir in $ANDROID_NDK_HOME: {}'.format(ndk_dir))
-        if ndk_dir is None:  # Checks in the buildozer NDK dir, useful
-            #                # for debug tests of p4a
-            possible_dirs = glob.glob(expanduser(join(
-                '~', '.buildozer', 'android', 'platform', 'android-ndk-r*')))
-            if possible_dirs:
-                info('Found possible NDK dirs in buildozer dir: {}'.format(
-                    ', '.join([d.split(os.sep)[-1] for d in possible_dirs])))
-                info('Will attempt to use NDK at {}'.format(possible_dirs[0]))
-                warning('This NDK lookup is intended for debug only, if you '
-                        'use python-for-android much you should probably '
-                        'maintain your own NDK download.')
-                ndk_dir = possible_dirs[0]
-        if ndk_dir is None:
-            raise BuildInterruptingException('Android NDK dir was not specified')
-        self.ndk_dir = realpath(ndk_dir)
-
-        check_ndk_version(ndk_dir)
-
+        self.ndk_dir = Path(os.environ['ANDROIDNDK']).resolve()
+        log.info("Found NDK dir in $ANDROIDNDK: %s", self.ndk_dir)
+        check_ndk_version(self.ndk_dir)
         ndk_api = None
         if user_ndk_api:
             ndk_api = user_ndk_api

@@ -82,21 +82,8 @@ RECOMMENDED_NDK_VERSION_MESSAGE = (
     'Maximum recommended NDK version is {recommended_ndk_version}, but newer versions may work.'
 )
 
-
 def check_ndk_version(ndk_dir):
-    """
-    Check the NDK version against what is currently recommended and raise an
-    exception of :class:`~pythonforandroid.util.BuildInterruptingException` in
-    case that the user tries to use an NDK lower than minimum supported,
-    specified via attribute `MIN_NDK_VERSION`.
-
-    .. versionchanged:: 2019.06.06.1.dev0
-        Added the ability to get android's NDK `letter version` and also
-        rewrote to raise an exception in case that an NDK version lower than
-        the minimum supported is detected.
-    """
-    version = read_ndk_version(ndk_dir)
-
+    version = _read_ndk_version(ndk_dir)
     if version is None:
         warning(READ_ERROR_NDK_MESSAGE.format(ndk_dir=ndk_dir))
         warning(
@@ -107,7 +94,6 @@ def check_ndk_version(ndk_dir):
             )
         )
         return
-
     # create a dictionary which will describe the relationship of the android's
     # NDK minor version with the `human readable` letter version, egs:
     # Pkg.Revision = 17.1.4828580 => ndk-17b
@@ -148,28 +134,20 @@ def check_ndk_version(ndk_dir):
         )
         warning(NEW_NDK_MESSAGE)
 
-
-def read_ndk_version(ndk_dir):
-    """Read the NDK version from the NDK dir, if possible"""
+def _read_ndk_version(ndk_dir):
     try:
-        with open(join(ndk_dir, 'source.properties')) as fileh:
-            ndk_data = fileh.read()
+        ndk_data = (ndk_dir / 'source.properties').read_text()
     except IOError:
         info(UNKNOWN_NDK_MESSAGE)
         return
-
     for line in ndk_data.split('\n'):
         if line.startswith('Pkg.Revision'):
             break
     else:
         info(PARSE_ERROR_NDK_MESSAGE)
         return
-
-    # Line should have the form "Pkg.Revision = ..."
     ndk_version = LooseVersion(line.split('=')[-1].strip())
-
     return ndk_version
-
 
 MIN_TARGET_API = 26
 
