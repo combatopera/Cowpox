@@ -134,13 +134,3 @@ class BuildInterruptingException(Exception):
         super().__init__(message, instructions)
         self.message = message
         self.instructions = instructions
-
-def handle_build_exception(exception):
-    """
-    Handles a raised BuildInterruptingException by printing its error
-    message and associated instructions, if any, then exiting.
-    """
-    error('Build failed: {}'.format(exception.message))
-    if exception.instructions is not None:
-        info('Instructions: {}'.format(exception.instructions))
-    exit(1)

@@ -39,10 +39,6 @@
 # THE SOFTWARE.
 
 from .toolchain import ToolchainCL
-from .util import BuildInterruptingException, handle_build_exception
 
 def main():
-    try:
-        ToolchainCL()
-    except BuildInterruptingException as exc:
-        handle_build_exception(exc)
+    ToolchainCL()
