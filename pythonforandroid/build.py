@@ -249,29 +249,7 @@ class Context:
         if self._build_env_prepared:
             return
         ok = True
-        sdk_dir = None
-        if sdk_dir is None:
-            sdk_dir = environ.get('ANDROIDSDK', None)
-        if sdk_dir is None:
-            sdk_dir = environ.get('ANDROID_HOME', None)
-        if sdk_dir is None:
-            possible_dirs = glob.glob(expanduser(join(
-                '~', '.buildozer', 'android', 'platform', 'android-sdk-*')))
-            possible_dirs = [d for d in possible_dirs if not
-                             (d.endswith('.bz2') or d.endswith('.gz'))]
-            if possible_dirs:
-                info('Found possible SDK dirs in buildozer dir: {}'.format(
-                    ', '.join([d.split(os.sep)[-1] for d in possible_dirs])))
-                info('Will attempt to use SDK at {}'.format(possible_dirs[0]))
-                warning('This SDK lookup is intended for debug only, if you '
-                        'use python-for-android much you should probably '
-                        'maintain your own SDK download.')
-                sdk_dir = possible_dirs[0]
-        if sdk_dir is None:
-            raise BuildInterruptingException('Android SDK dir was not specified, exiting.')
-        self.sdk_dir = realpath(sdk_dir)
-
-        # Check what Android API we're using
+        self.sdk_dir = Path(os.environ['ANDROIDSDK']).resolve()
         android_api = None
         if user_android_api:
             android_api = user_android_api
