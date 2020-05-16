@@ -286,10 +286,6 @@ class ToolchainCL:
             action="store_true", default=False,
             help="Produce a compact list suitable for scripting")
         subparsers.add_parser(
-            'bootstraps',
-            help='List the available bootstraps',
-            parents=[generic_parser])
-        subparsers.add_parser(
             'clean_all',
             aliases=['clean-all'],
             help='Delete all builds, dists and caches',
@@ -502,15 +498,6 @@ class ToolchainCL:
                     print('    {Fore.YELLOW}optional depends: '
                           '{recipe.opt_depends}{Fore.RESET}'
                           .format(recipe=recipe, Fore=Out_Fore))
-
-    def bootstraps(self, _args):
-        """List all the bootstraps available to build with."""
-        for bs in Bootstrap.all_bootstraps():
-            bs = Bootstrap.get_bootstrap(bs, self.ctx)
-            print('{Fore.BLUE}{Style.BRIGHT}{bs.name}{Style.RESET_ALL}'
-                  .format(bs=bs, Fore=Out_Fore, Style=Out_Style))
-            print('    {Fore.GREEN}depends: {bs.recipe_depends}{Fore.RESET}'
-                  .format(bs=bs, Fore=Out_Fore))
 
     def clean(self, args):
         components = args.component
