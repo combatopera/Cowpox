@@ -44,7 +44,7 @@ from .bootstrap import Bootstrap
 from .build import Context, build_recipes
 from .distribution import Distribution
 from .graph import get_recipe_order_and_bootstrap
-from .logger import logger, setup_color, info_notify, shprint
+from .logger import logger, setup_color, shprint
 from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
 from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
@@ -94,7 +94,7 @@ def _build_dist_from_args(ctx, dist, args):
     log.info("The selected bootstrap is %s", bs.name)
     log.info("Creating dist with %s bootstrap", bs.name)
     bs.distribution = dist
-    info_notify('Dist will have name {} and requirements ({})'.format(dist.name, ', '.join(dist.recipes)))
+    log.info("Dist will have name %s and requirements (%s)", dist.name, ', '.join(dist.recipes))
     log.info("Dist contains the following requirements as recipes: %s", ctx.recipe_build_order)
     log.info("Dist will also contain modules (%s) installed from pip", ', '.join(ctx.python_modules))
     ctx.distribution = dist
@@ -268,7 +268,7 @@ class ToolchainCL:
         if self._dist.needs_build:
             if self._dist.folder_exists():
                 self._dist.delete()
-            info_notify('No dist exists that meets your requirements, so one will be built.')
+            log.info('No dist exists that meets your requirements, so one will be built.')
             _build_dist_from_args(self.ctx, self._dist, args)
 
     def create(self, args):
