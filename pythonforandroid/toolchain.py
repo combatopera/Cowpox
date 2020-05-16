@@ -63,9 +63,9 @@ class ArgumentParser(argparse.ArgumentParser):
     group = self.add_argument_group(description = description)
     dest = name.replace('-', '_')
     group.add_argument(f"--{name}",
-        help = "(this is the default)" if default else None, dest = dest, action = 'store_true')
+            help = "(this is the default)" if default else None, dest = dest, action = 'store_true')
     group.add_argument(f"--no-{name}",
-        help = None if default else "(this is the default)", dest = dest, action = 'store_false')
+            help = None if default else "(this is the default)", dest = dest, action = 'store_false')
     self.set_defaults(**{dest: default})
 
 def require_prebuilt_dist(func):
