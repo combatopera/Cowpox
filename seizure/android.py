@@ -48,7 +48,6 @@ from glob import glob
 from lagoon import tar, unzip, yes
 from lagoon.program import Program
 from os.path import realpath, expanduser, basename, relpath
-from pathlib import Path
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
 from shutil import copyfile
@@ -63,17 +62,6 @@ ANDROID_MINAPI = '21'
 # does.
 DEFAULT_SDK_TAG = '4333796'
 DEFAULT_ARCH = 'armeabi-v7a'
-
-def _file_copytree(src, dest):
-    print('copy {} to {}'.format(src, dest))
-    if os.path.isdir(src):
-        if not os.path.isdir(dest):
-            os.makedirs(dest)
-        files = os.listdir(src)
-        for f in files:
-            _file_copytree(Path(src, f), Path(dest, f))
-    else:
-        copyfile(src, dest)
 
 def _file_extract(archive, cwd):
     if archive.endswith('.tar.gz'):
