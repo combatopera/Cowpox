@@ -123,10 +123,6 @@ class Context:
     # but before being placed in dists
     libs_dir = None
     aars_dir = None
-
-    # Whether setup.py or similar should be used if present:
-    use_setup_py = False
-
     ccache = None  # whether to use ccache
 
     ndk_platform = None  # the ndk platform directory

@@ -381,11 +381,6 @@ class ToolchainCL:
             const='release', default='debug',
             help='Build the PARSER_APK. in Release mode')
         parser_apk.add_argument(
-            '--use-setup-py', dest="use_setup_py",
-            action='store_true', default=False,
-            help="Process the setup.py of a project if present. " +
-                 "(Experimental!")
-        parser_apk.add_argument(
             '--ignore-setup-py', dest="ignore_setup_py",
             action='store_true', default=False,
             help="Don't run the setup.py of a project if present. " +
@@ -448,9 +443,6 @@ class ToolchainCL:
         args.unknown_args = unknown
         if hasattr(args, "private") and args.private is not None:
             args.unknown_args += ["--private", args.private]
-        if hasattr(args, "ignore_setup_py") and args.ignore_setup_py:
-            args.use_setup_py = False
-
         self.args = args
 
         if args.subparser_name is None:
@@ -463,7 +455,6 @@ class ToolchainCL:
             logger.setLevel(logging.DEBUG)
 
         self.ctx = Context()
-        self.ctx.use_setup_py = getattr(args, "use_setup_py", True)
         if hasattr(args, 'requirements'):
             requirements = []
             for requirement in split_argument_list(args.requirements):
