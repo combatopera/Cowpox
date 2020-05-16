@@ -251,7 +251,6 @@ class ToolchainCL:
     def _require_prebuilt_dist(self, args):
         self.ctx.set_archs(self._archs)
         self.ctx.prepare_build_environment(
-                user_sdk_dir = '',
                 user_ndk_dir = self.ndk_dir,
                 user_android_api = self.android_api,
                 user_ndk_api = self.ndk_api)

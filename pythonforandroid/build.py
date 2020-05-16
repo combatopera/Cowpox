@@ -244,21 +244,16 @@ class Context:
     def ndk_dir(self, value):
         self._ndk_dir = value
 
-    def prepare_build_environment(self, user_sdk_dir, user_ndk_dir, user_android_api, user_ndk_api):
+    def prepare_build_environment(self, user_ndk_dir, user_android_api, user_ndk_api):
         self.ensure_dirs()
         if self._build_env_prepared:
             return
         ok = True
         sdk_dir = None
-        if user_sdk_dir:
-            sdk_dir = user_sdk_dir
-        # This is the old P4A-specific var
         if sdk_dir is None:
             sdk_dir = environ.get('ANDROIDSDK', None)
-        # This seems used more conventionally
         if sdk_dir is None:
             sdk_dir = environ.get('ANDROID_HOME', None)
-        # Checks in the buildozer SDK dir, useful for debug tests of p4a
         if sdk_dir is None:
             possible_dirs = glob.glob(expanduser(join(
                 '~', '.buildozer', 'android', 'platform', 'android-sdk-*')))
