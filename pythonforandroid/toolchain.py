@@ -580,9 +580,6 @@ class ToolchainCL:
         if args.ndk_version is not None:
             warning('--ndk-version is deprecated and no longer necessary, '
                     'the value you passed is ignored')
-        if 'ANDROIDNDKVER' in environ:
-            warning('$ANDROIDNDKVER is deprecated and no longer necessary, '
-                    'the value you set is ignored')
 
     def hook(self, name):
         if not self.args.hook:
