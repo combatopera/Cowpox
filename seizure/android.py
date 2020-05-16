@@ -99,13 +99,6 @@ def _file_rename(source, target, cwd):
         log.error('Rename %s to %s fails because %s is not a directory', source, target, target)
     shutil.move(source, target)
 
-def _file_copy(self, source, target, cwd=None):
-    if cwd:
-        source = Path(cwd, source)
-        target = Path(cwd, target)
-    log.debug('Copy %s to %s', source, target)
-    copyfile(source, target)
-
 class TargetAndroid:
 
     p4a_recommended_ndk_version = None
@@ -342,18 +335,6 @@ class TargetAndroid:
         config = self.config
         package = self._get_package()
         version = self.config.get_version()
-        for config_key, lib_dir in (
-                ('android.add_libs_armeabi', 'armeabi'),
-                ('android.add_libs_armeabi_v7a', 'armeabi-v7a'),
-                ('android.add_libs_arm64_v8a', 'arm64-v8a'),
-                ('android.add_libs_x86', 'x86'),
-                ('android.add_libs_mips', 'mips')):
-            patterns = config.getlist('app', config_key, [])
-            if not patterns or self._arch != lib_dir:
-                continue
-            log.debug("Search and copy libs for %s", lib_dir)
-            for fn in _file_matches(patterns):
-                _file_copy(self.config.workspace / fn, dist_dir / 'libs' / lib_dir / basename(fn))
         self._update_libraries_references(dist_dir)
         self._add_java_src(dist_dir)
         self._generate_whitelist(dist_dir)
