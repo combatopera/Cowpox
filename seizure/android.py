@@ -47,7 +47,7 @@ from distutils.version import LooseVersion
 from glob import glob
 from lagoon import tar, unzip, yes
 from lagoon.program import Program
-from os.path import join, realpath, expanduser, basename, relpath
+from os.path import realpath, expanduser, basename, relpath
 from pathlib import Path
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
@@ -353,7 +353,7 @@ class TargetAndroid:
                 continue
             log.debug("Search and copy libs for %s", lib_dir)
             for fn in _file_matches(patterns):
-                _file_copy(self.config.workspace / fn, join(dist_dir, 'libs', lib_dir, basename(fn)))
+                _file_copy(self.config.workspace / fn, dist_dir / 'libs' / lib_dir / basename(fn))
         self._update_libraries_references(dist_dir)
         self._add_java_src(dist_dir)
         self._generate_whitelist(dist_dir)
