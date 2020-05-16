@@ -67,13 +67,15 @@ class TargetAndroid:
             ANDROIDAPI = self.android_api,
         ))
         self.bootstrapname = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
-        self.extra_p4a_args = (
+        self.extra_p4a_args = [
                 '--dist_name', self.dist_name,
                 '--bootstrap', self.bootstrapname,
                 '--arch', self.arch,
                 '--color', 'always',
                 '--storage-dir', self.build_dir,
-                '--ndk-api', config.getdefault('app', 'android.ndk_api', self.android_minapi)
+                '--ndk-api', config.getdefault('app', 'android.ndk_api', self.android_minapi]
+        if config.getbooldefault('app', 'android.copy_libs', True):
+            self.extra_p4a_args.append('--copy-libs')
         self.local_recipes = config.workspace / 'local_recipes'
         self.dist_name = config.get('app', 'package.name')
         self.config = config
@@ -201,10 +203,7 @@ class TargetAndroid:
 
     def compile_platform(self):
         requirements = self.config.getlist('app', 'requirements', '')
-        def options():
-            if self.config.getbooldefault('app', 'android.copy_libs', True):
-                yield '--copy-libs'
-        self._p4a('create', '--requirements', ','.join(requirements), *options(), '--local-recipes', self.local_recipes)
+        self._p4a('create', '--requirements', ','.join(requirements), '--local-recipes', self.local_recipes)
 
     def _get_dist_dir(self):
         expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self.arch])
@@ -224,8 +223,6 @@ class TargetAndroid:
             services = self.config.getlist('app', 'services', [])
             for service in services:
                 yield from ['--service', service]
-            if self.config.getbooldefault('app', 'android.copy_libs', True): # TODO: Undup.
-                yield '--copy-libs'
             yield from ['--local-recipes', self.local_recipes] # TODO: Undup.
             for lib in self.config.getlist('app', 'android.uses_library', ''):
                 yield from ['--uses-library', lib]
