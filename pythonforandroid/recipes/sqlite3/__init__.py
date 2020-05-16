@@ -39,12 +39,11 @@
 # THE SOFTWARE.
 
 from pythonforandroid.recipe import NDKRecipe
-from pythonforandroid.toolchain import shutil
 from os.path import join
-import sh
-
+import sh, shutil
 
 class Sqlite3Recipe(NDKRecipe):
+
     version = '3.15.1'
     # Don't forget to change the URL when changing the version
     url = 'https://www.sqlite.org/2016/sqlite-amalgamation-3150100.zip'
@@ -70,6 +69,5 @@ class Sqlite3Recipe(NDKRecipe):
         env = super(Sqlite3Recipe, self).get_recipe_env(arch)
         env['NDK_PROJECT_PATH'] = self.get_build_dir(arch.arch)
         return env
-
 
 recipe = Sqlite3Recipe()
