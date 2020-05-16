@@ -44,7 +44,6 @@ from .jsonstore import JsonStore
 from .libs.version import parse
 from diapyr import types
 from distutils.version import LooseVersion
-from glob import glob
 from lagoon import tar, unzip, yes
 from lagoon.program import Program
 from os.path import realpath, expanduser, basename, relpath
@@ -353,14 +352,6 @@ class TargetAndroid:
             key, value = meta.split('=', 1)
             meta = '{}={}'.format(key.strip(), value.strip())
             build_cmd += ["--meta-data", meta]
-        add_jars = config.getlist('app', 'android.add_jars', [])
-        for pattern in add_jars:
-            pattern = str(self.config.workspace / pattern)
-            matches = glob(expanduser(pattern.strip()))
-            if not matches:
-                raise SystemError(f'Failed to find jar file: {pattern}')
-            for jar in matches:
-                build_cmd += ["--add-jar", jar]
         add_activities = config.getlist('app', 'android.add_activities', [])
         for activity in add_activities:
             build_cmd += ["--add-activity", activity]
