@@ -267,7 +267,6 @@ class ToolchainCL:
                         (argx[0], realpath(expanduser(argx[1]))))
                 elif i + 1 < len(unknown_args):
                     unknown_args[i+1] = realpath(expanduser(unknown_args[i+1]))
-
         env = os.environ.copy()
         if args.build_mode == 'release':
             if args.keystore:
@@ -280,7 +279,6 @@ class ToolchainCL:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.signkeypw
             elif args.keystorepw and 'P4A_RELEASE_KEYALIAS_PASSWD' not in env:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.keystorepw
-
         build = imp.load_source('build', join(dist.dist_dir, 'build.py'))
         with current_directory(dist.dist_dir):
             os.environ["ANDROID_API"] = str(self.ctx.android_api)
@@ -300,9 +298,8 @@ class ToolchainCL:
                 else:
                     log.info('    Building with ant, as no gradle executable detected')
             if build_type == 'gradle':
-                # gradle-based build
-                env["ANDROID_NDK_HOME"] = self.ctx.ndk_dir
-                env["ANDROID_HOME"] = self.ctx.sdk_dir
+                env['ANDROID_NDK_HOME'] = str(self.ctx.ndk_dir)
+                env['ANDROID_HOME'] = str(self.ctx.sdk_dir)
                 gradlew = sh.Command('./gradlew')
                 if Path('/usr/bin/dos2unix').exists():
                     # .../dists/bdisttest_python3/gradlew
