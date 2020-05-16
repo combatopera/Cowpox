@@ -60,14 +60,6 @@ def _file_extract(archive, cwd):
     else:
         raise Exception(f"Unhandled extraction for type {archive}")
 
-def _file_rename(source, target, cwd):
-    source = cwd / source
-    target = cwd / target
-    log.debug('Rename %s to %s', source, target)
-    if not target.parent.is_dir():
-        log.error('Rename %s to %s fails because %s is not a directory', source, target, target)
-    shutil.move(source, target)
-
 class TargetAndroid:
 
     @types(Config, JsonStore, Dirs)
@@ -129,7 +121,9 @@ class TargetAndroid:
         download('https://dl.google.com/android/repository/', archive, self.dirs.global_platform_dir)
         log.info('Unpacking Android NDK')
         _file_extract(archive, self.dirs.global_platform_dir)
-        _file_rename(f"android-ndk-r{self.config.android_ndk_version}", ndk_dir, self.dirs.global_platform_dir)
+        source = self.dirs.global_platform_dir / f"android-ndk-r{self.config.android_ndk_version}"
+        log.debug('Rename %s to %s', source, ndk_dir)
+        shutil.move(source, ndk_dir)
         log.info('Android NDK installation done.')
 
     def _android_list_build_tools_versions(self):
