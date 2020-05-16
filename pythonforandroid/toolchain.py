@@ -306,29 +306,24 @@ class ToolchainCL:
         with current_directory(dist.dist_dir):
             os.environ["ANDROID_API"] = str(self.ctx.android_api)
             build_args = build.parse_args(args.unknown_args)
-            build_type = ctx.java_build_tool
-            if build_type == 'auto':
-                log.info('Selecting java build tool:')
-                build_tools_versions = os.listdir(join(ctx.sdk_dir,
-                                                       'build-tools'))
-                build_tools_versions = sorted(build_tools_versions,
-                                              key=LooseVersion)
-                build_tools_version = build_tools_versions[-1]
-                log.info("Detected highest available build tools version to be %s", build_tools_version)
-                if build_tools_version >= '25.0' and exists('gradlew'):
-                    build_type = 'gradle'
-                    log.info('    Building with gradle, as gradle executable is present')
+            log.info('Selecting java build tool:')
+            build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
+            build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
+            build_tools_version = build_tools_versions[-1]
+            log.info("Detected highest available build tools version to be %s", build_tools_version)
+            if build_tools_version >= '25.0' and exists('gradlew'):
+                build_type = 'gradle'
+                log.info('    Building with gradle, as gradle executable is present')
+            else:
+                build_type = 'ant'
+                if build_tools_version < '25.0':
+                    log.info("    Building with ant, as the highest build-tools-version is only %s", build_tools_version)
                 else:
-                    build_type = 'ant'
-                    if build_tools_version < '25.0':
-                        log.info("    Building with ant, as the highest build-tools-version is only %s", build_tools_version)
-                    else:
-                        log.info('    Building with ant, as no gradle executable detected')
+                    log.info('    Building with ant, as no gradle executable detected')
             if build_type == 'gradle':
                 # gradle-based build
                 env["ANDROID_NDK_HOME"] = self.ctx.ndk_dir
                 env["ANDROID_HOME"] = self.ctx.sdk_dir
-
                 gradlew = sh.Command('./gradlew')
                 if exists('/usr/bin/dos2unix'):
                     # .../dists/bdisttest_python3/gradlew
@@ -345,27 +340,12 @@ class ToolchainCL:
                 else:
                     raise BuildInterruptingException(
                         "Unknown build mode {} for apk()".format(args.build_mode))
-                output = shprint(gradlew, gradle_task, _tail=20,
-                                 _critical=True, _env=env)
-
-                # gradle output apks somewhere else
-                # and don't have version in file
-                apk_dir = join(dist.dist_dir,
-                               "build", "outputs", "apk",
-                               args.build_mode)
+                output = shprint(gradlew, gradle_task, _tail=20, _critical=True, _env=env)
+                apk_dir = join(dist.dist_dir, "build", "outputs", "apk", args.build_mode)
                 apk_glob = "*-{}.apk"
                 apk_add_version = True
-
             else:
-                # ant-based build
-                try:
-                    ant = sh.Command('ant')
-                except sh.CommandNotFound:
-                    raise BuildInterruptingException(
-                        'Could not find ant binary, please install it '
-                        'and make sure it is in your $PATH.')
-                output = shprint(ant, args.build_mode, _tail=20,
-                                 _critical=True, _env=env)
+                output = shprint(sh.Command('ant'), args.build_mode, _tail=20, _critical=True, _env=env)
                 apk_dir = join(dist.dist_dir, "bin")
                 apk_glob = "*-*-{}.apk"
                 apk_add_version = False
