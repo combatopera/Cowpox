@@ -38,14 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-""" ifaddrs for Android
-"""
 from os.path import join, exists
-import sh
 from pythonforandroid.logger import info, shprint
 from pythonforandroid.recipe import CompiledComponentsPythonRecipe
-from pythonforandroid.toolchain import current_directory
-
+from pythonforandroid.util import current_directory
+import sh
 
 class IFAddrRecipe(CompiledComponentsPythonRecipe):
     version = '8f9a87c'
@@ -89,6 +86,5 @@ class IFAddrRecipe(CompiledComponentsPythonRecipe):
             cflags.extend(env['LDFLAGS'].split())
             shprint(cc, *cflags, _env=env)
             shprint(sh.cp, 'libifaddrs.so', self.ctx.get_libs_dir(arch.arch))
-
 
 recipe = IFAddrRecipe()

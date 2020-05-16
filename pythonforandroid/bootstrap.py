@@ -93,11 +93,8 @@ def _cmp_bootstraps_by_priority(a, b):
         else:
             return 1
 
+class Bootstrap:
 
-class Bootstrap(object):
-    '''An Android project template, containing recipe stuff for
-    compilation and templated fields for APK info.
-    '''
     name = ''
     jni_subdir = '/jni'
     ctx = None

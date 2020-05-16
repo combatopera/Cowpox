@@ -38,19 +38,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.toolchain import Bootstrap
-
+from pythonforandroid.bootstrap import Bootstrap
 
 class EmptyBootstrap(Bootstrap):
+
     name = 'empty'
-
     recipe_depends = []
-
     can_be_chosen_automatically = False
 
     def run_distribute(self):
         print('empty bootstrap has no distribute')
         exit(1)
-
 
 bootstrap = EmptyBootstrap()

@@ -38,18 +38,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.toolchain import Bootstrap, current_directory, info, info_main, shprint
-from pythonforandroid.util import ensure_dir
+from pythonforandroid.bootstrap import Bootstrap
+from pythonforandroid.logger import info, info_main, shprint
+from pythonforandroid.util import current_directory, ensure_dir
 from os.path import join
 import sh
 
-
 class WebViewBootstrap(Bootstrap):
-    name = 'webview'
 
-    recipe_depends = list(
-        set(Bootstrap.recipe_depends).union({'genericndkbuild'})
-    )
+    name = 'webview'
+    recipe_depends = list(set(Bootstrap.recipe_depends) | {'genericndkbuild'})
 
     def run_distribute(self):
         info_main('# Creating Android project from build and {} bootstrap'.format(

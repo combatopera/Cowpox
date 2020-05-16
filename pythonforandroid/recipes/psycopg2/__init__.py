@@ -38,10 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from pythonforandroid.logger import shprint
 from pythonforandroid.recipe import PythonRecipe
-from pythonforandroid.toolchain import current_directory, shprint
+from pythonforandroid.util import current_directory
 import sh
-
 
 class Psycopg2Recipe(PythonRecipe):
     """
@@ -85,6 +85,5 @@ class Psycopg2Recipe(PythonRecipe):
             shprint(hostpython, 'setup.py', 'install', '-O2',
                     '--root={}'.format(self.ctx.get_python_install_dir()),
                     '--install-lib=.', _env=env)
-
 
 recipe = Psycopg2Recipe()

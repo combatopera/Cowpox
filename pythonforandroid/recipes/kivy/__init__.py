@@ -38,12 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.recipe import CythonRecipe
-from pythonforandroid.toolchain import current_directory, shprint
 from os.path import exists, join, basename
-import sh
-import glob
-
+from pythonforandroid.logger import shprint
+from pythonforandroid.recipe import CythonRecipe
+from pythonforandroid.util import current_directory
+import glob, sh
 
 class KivyRecipe(CythonRecipe):
     version = '1.11.1'
@@ -90,6 +89,5 @@ class KivyRecipe(CythonRecipe):
                 ])
 
         return env
-
 
 recipe = KivyRecipe()

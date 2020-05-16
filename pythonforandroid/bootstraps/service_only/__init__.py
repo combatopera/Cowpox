@@ -38,12 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import sh
 from os.path import join
-from pythonforandroid.toolchain import (
-    Bootstrap, current_directory, info, info_main, shprint)
-from pythonforandroid.util import ensure_dir
-
+from pythonforandroid.bootstrap import Bootstrap
+from pythonforandroid.logger import info, info_main, shprint
+from pythonforandroid.util import current_directory, ensure_dir
+import sh
 
 class ServiceOnlyBootstrap(Bootstrap):
 
