@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .toolchain import main
 from glob import glob
 from os import makedirs
 from os.path import realpath, join, exists, dirname, curdir, basename, split
@@ -111,7 +112,6 @@ class BdistAPK(Command):
 
     def run(self):
         self.prepare_build_dir()
-        from .entrypoints import main
         sys.argv[1] = 'apk'
         main()
 

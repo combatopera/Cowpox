@@ -1139,5 +1139,8 @@ class ToolchainCL:
                 recipe_str += '{Style.RESET_ALL}'.format(Style=Out_Style)
                 print(recipe_str)
 
-if __name__ == "__main__": # TODO: Retire.
+def main():
     ToolchainCL()
+
+if __name__ == "__main__": # TODO: Invoke module directly instead.
+    main()
