@@ -252,28 +252,16 @@ class Context:
             return
         ok = True
         self.sdk_dir = Path(os.environ['ANDROIDSDK']).resolve()
-        android_api = None
-        if 'ANDROIDAPI' in environ:
-            android_api = environ['ANDROIDAPI']
-            info('Found Android API target in $ANDROIDAPI: {}'.format(android_api))
-        else:
-            info('Android API target was not set manually, using '
-                 'the default of {}'.format(RECOMMENDED_TARGET_API))
-            android_api = RECOMMENDED_TARGET_API
-        android_api = int(android_api)
-        self.android_api = android_api
-
-        check_target_api(android_api, self.archs[0].arch)
+        self.android_api = int(os.environ['ANDROIDAPI'])
+        log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
+        check_target_api(self.android_api, self.archs[0].arch)
         apis = get_available_apis(self.sdk_dir)
-        info('Available Android APIs are ({})'.format(
-            ', '.join(map(str, apis))))
-        if android_api in apis:
-            info(('Requested API target {} is available, '
-                  'continuing.').format(android_api))
+        info('Available Android APIs are ({})'.format(', '.join(map(str, apis))))
+        if self.android_api in apis:
+            log.info("Requested API target %s is available, continuing.", self.android_api)
         else:
             raise BuildInterruptingException(
-                ('Requested API target {} is not available, install '
-                 'it with the SDK android tool.').format(android_api))
+                'Requested API target {} is not available, install it with the SDK android tool.'.format(self.android_api))
         self.ndk_dir = Path(os.environ['ANDROIDNDK']).resolve()
         log.info("Found NDK dir in $ANDROIDNDK: %s", self.ndk_dir)
         check_ndk_version(self.ndk_dir)
