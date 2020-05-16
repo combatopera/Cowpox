@@ -615,13 +615,7 @@ def build_recipes(build_order, python_modules, ctx, project_dir,
             recipe.postbuild_arch(arch)
 
     info_main('# Installing pure Python modules')
-    _run_pymodules_install(
-        ctx, python_modules, project_dir,
-        ignore_setup_py=ignore_project_setup_py
-    )
-
-    return
-
+    _run_pymodules_install(ctx, python_modules, project_dir, ignore_project_setup_py)
 
 def project_has_setup_py(project_dir):
     if project_dir is not None and \
@@ -747,19 +741,7 @@ def run_setuppy_install(ctx, project_dir, env=None):
         finally:
             os.remove("._tmp_p4a_recipe_constraints.txt")
 
-
-def _run_pymodules_install(ctx, modules, project_dir=None,
-                          ignore_setup_py=False):
-    """ This function will take care of all non-recipe things, by:
-
-        1. Processing them from --requirements (the modules argument)
-           and installing them
-
-        2. Installing the user project/app itself via setup.py if
-           ignore_setup_py=True
-
-    """
-
+def _run_pymodules_install(ctx, modules, project_dir, ignore_setup_py):
     info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
     modules = list(filter(ctx.not_has_package, modules))
 
