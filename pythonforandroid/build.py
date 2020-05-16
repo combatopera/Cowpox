@@ -615,7 +615,7 @@ def build_recipes(build_order, python_modules, ctx, project_dir,
             recipe.postbuild_arch(arch)
 
     info_main('# Installing pure Python modules')
-    run_pymodules_install(
+    _run_pymodules_install(
         ctx, python_modules, project_dir,
         ignore_setup_py=ignore_project_setup_py
     )
@@ -748,7 +748,7 @@ def run_setuppy_install(ctx, project_dir, env=None):
             os.remove("._tmp_p4a_recipe_constraints.txt")
 
 
-def run_pymodules_install(ctx, modules, project_dir=None,
+def _run_pymodules_install(ctx, modules, project_dir=None,
                           ignore_setup_py=False):
     """ This function will take care of all non-recipe things, by:
 
