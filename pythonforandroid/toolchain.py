@@ -306,9 +306,6 @@ class ToolchainCL:
             'create', help='Compile a set of requirements into a dist',
             parents=[generic_parser])
         subparsers.add_parser(
-            'archs', help='List the available target architectures',
-            parents=[generic_parser])
-        subparsers.add_parser(
             'distributions', aliases=['dists'],
             help='List the currently available (compiled) dists',
             parents=[generic_parser])
@@ -553,13 +550,6 @@ class ToolchainCL:
         any recipes if necessary, and build the apk.
         """
         pass  # The decorator does everything
-
-    def archs(self, _args):
-        """List the target architectures available to be built for."""
-        print('{Style.BRIGHT}Available target architectures are:'
-              '{Style.RESET_ALL}'.format(Style=Out_Style))
-        for arch in self.ctx.archs:
-            print('    {}'.format(arch.arch))
 
     def dists(self, args):
         """The same as :meth:`distributions`."""
