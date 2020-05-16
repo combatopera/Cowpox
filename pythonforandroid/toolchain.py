@@ -93,7 +93,6 @@ def _build_dist_from_args(ctx, dist, args):
     log.info("Dist will have name %s and requirements (%s)", dist.name, ', '.join(dist.recipes))
     log.info("Dist contains the following requirements as recipes: %s", ctx.recipe_build_order)
     log.info("Dist will also contain modules (%s) installed from pip", ', '.join(ctx.python_modules))
-    ctx.distribution = dist
     ctx.prepare_bootstrap(bs)
     if dist.needs_build:
         ctx.prepare_dist()
