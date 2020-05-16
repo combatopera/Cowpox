@@ -159,7 +159,7 @@ def build_dist_from_args(ctx, dist, args):
     ctx.prepare_bootstrap(bs)
     if dist.needs_build:
         ctx.prepare_dist()
-    build_recipes(build_order, python_modules, ctx, getattr(args, "private", None), getattr(args, "ignore_setup_py", False))
+    build_recipes(build_order, python_modules, ctx, getattr(args, "private", None), False)
     ctx.bootstrap.run_distribute()
 
     info_main('# Your distribution was created successfully, exiting.')
@@ -373,14 +373,6 @@ class ToolchainCL:
             '--release', dest='build_mode', action='store_const',
             const='release', default='debug',
             help='Build the PARSER_APK. in Release mode')
-        parser_apk.add_argument(
-            '--ignore-setup-py', dest="ignore_setup_py",
-            action='store_true', default=False,
-            help="Don't run the setup.py of a project if present. " +
-                 "This may be required if the setup.py is not " +
-                 "designed to work inside p4a (e.g. by installing " +
-                 "dependencies that won't work or aren't desired " +
-                 "on Android")
         parser_apk.add_argument(
             '--keystore', dest='keystore', action='store', default=None,
             help=('Keystore for JAR signing key, will use jarsigner '
