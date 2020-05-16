@@ -38,12 +38,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.toolchain import Recipe, current_directory, shprint
 from os.path import exists, join, realpath
+from pythonforandroid.logger import shprint
+from pythonforandroid.recipe import Recipe
+from pythonforandroid.util import current_directory
 import sh
 
-
 class FFMpegRecipe(Recipe):
+
     version = '007e03348dbd8d3de3eb09022d72c734a8608144'
     # Moved to github.com instead of ffmpeg.org to improve download speed
     url = 'https://github.com/FFmpeg/FFmpeg/archive/{version}.zip'
@@ -178,6 +180,5 @@ class FFMpegRecipe(Recipe):
             # copy libs:
             sh.cp('-a', sh.glob('./lib/lib*.so'),
                   self.ctx.get_libs_dir(arch.arch))
-
 
 recipe = FFMpegRecipe()

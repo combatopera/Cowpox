@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.toolchain import Recipe
+from pythonforandroid.recipe import Recipe
 
 # if android app crashes on start with "ImportError: No module named websocket"
 #

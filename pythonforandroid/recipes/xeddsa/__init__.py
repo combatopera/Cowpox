@@ -38,13 +38,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.recipe import CythonRecipe
-from pythonforandroid.toolchain import current_directory, shprint
 from os.path import join
+from pythonforandroid.logger import shprint
+from pythonforandroid.recipe import CythonRecipe
+from pythonforandroid.util import current_directory
 import sh
 
-
 class XedDSARecipe(CythonRecipe):
+
     name = 'xeddsa'
     version = '0.4.4'
     url = 'https://pypi.python.org/packages/source/X/XEdDSA/XEdDSA-{version}.tar.gz'
@@ -68,6 +69,5 @@ class XedDSARecipe(CythonRecipe):
             # or simply `_crypto_sign.so` depending on the platform/distribution
             sh.cp('-a', sh.glob('_crypto_sign*.so'), self.ctx.get_site_packages_dir())
             self.install_python_package(arch)
-
 
 recipe = XedDSARecipe()

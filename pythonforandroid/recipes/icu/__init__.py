@@ -38,16 +38,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import sh
-import os
-from os.path import join, isdir, exists
 from multiprocessing import cpu_count
+from os.path import join, isdir, exists
+from pythonforandroid.logger import shprint
 from pythonforandroid.recipe import Recipe
-from pythonforandroid.toolchain import shprint
 from pythonforandroid.util import current_directory, ensure_dir
-
+import os, sh
 
 class ICURecipe(Recipe):
+
     name = 'icu4c'
     version = '57.1'
     major_version = version.split('.')[0]
@@ -158,6 +157,5 @@ class ICURecipe(Recipe):
         ensure_dir(dst_include)
         shprint(sh.cp, "-r", join(src_include, "layout"), dst_include)
         shprint(sh.cp, "-r", join(src_include, "unicode"), dst_include)
-
 
 recipe = ICURecipe()

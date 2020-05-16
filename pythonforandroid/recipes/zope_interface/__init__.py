@@ -38,13 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.recipe import PythonRecipe
-from pythonforandroid.toolchain import current_directory
 from os.path import join
+from pythonforandroid.recipe import PythonRecipe
+from pythonforandroid.util import current_directory
 import sh
 
-
 class ZopeInterfaceRecipe(PythonRecipe):
+
     call_hostpython_via_targetpython = False
     name = 'zope_interface'
     version = '4.1.3'
@@ -70,6 +70,5 @@ class ZopeInterfaceRecipe(PythonRecipe):
                 'src/zope/interface/tests',
                 'src/zope/interface/common/tests',
             )
-
 
 recipe = ZopeInterfaceRecipe()

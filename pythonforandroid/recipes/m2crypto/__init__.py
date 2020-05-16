@@ -39,13 +39,12 @@
 # THE SOFTWARE.
 
 from pythonforandroid.recipe import CompiledComponentsPythonRecipe
-from pythonforandroid.toolchain import current_directory
 from pythonforandroid.logger import shprint, info
-import glob
-import sh
-
+from pythonforandroid.util import current_directory
+import glob, sh
 
 class M2CryptoRecipe(CompiledComponentsPythonRecipe):
+
     version = '0.30.1'
     url = 'https://pypi.python.org/packages/source/M/M2Crypto/M2Crypto-{version}.tar.gz'
     depends = ['openssl', 'setuptools']
@@ -75,6 +74,5 @@ class M2CryptoRecipe(CompiledComponentsPythonRecipe):
         env = super(M2CryptoRecipe, self).get_recipe_env(arch)
         env['OPENSSL_BUILD_PATH'] = self.get_recipe('openssl', self.ctx).get_build_dir(arch.arch)
         return env
-
 
 recipe = M2CryptoRecipe()

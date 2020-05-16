@@ -38,16 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""
-    android libglob
-    available via '-lglob' LDFLAG
-"""
 from os.path import exists, join
-from pythonforandroid.recipe import Recipe
-from pythonforandroid.toolchain import current_directory
 from pythonforandroid.logger import info, shprint
+from pythonforandroid.recipe import Recipe
+from pythonforandroid.util import current_directory
 import sh
-
 
 class LibGlobRecipe(Recipe):
     """Make a glob.h and glob.so for the python_install_dir()"""
@@ -101,6 +96,5 @@ class LibGlobRecipe(Recipe):
             cflags.extend(['-shared', '-I.', 'glob.o', '-o', 'libglob.so'])
             cflags.extend(env['LDFLAGS'].split())
             shprint(cc, *cflags, _env=env)
-
 
 recipe = LibGlobRecipe()
