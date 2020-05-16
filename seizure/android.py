@@ -214,24 +214,23 @@ class TargetAndroid:
         return expected_dist_dir
 
     def _execute_build_package(self, build_cmd):
-        cmd = [*self.p4a_apk_cmd, '--dist_name', self.dist_name, *build_cmd]
+        cmd = []
         presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
         if presplash_color:
-            cmd.extend(['--presplash-color', f"{presplash_color}"])
+            cmd += ['--presplash-color', f"{presplash_color}"]
         services = self.config.getlist('app', 'services', [])
         for service in services:
-            cmd.extend(["--service", service])
+            cmd += ["--service", service]
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             cmd.append("--copy-libs")
-        cmd.extend(['--local-recipes', self.local_recipes])
+        cmd += ['--local-recipes', self.local_recipes]
         uses_library = self.config.getlist('app', 'android.uses_library', '')
         for lib in uses_library:
             cmd.append(f'--uses-library={lib}')
         gradle_dependencies = self.config.getlist('app', 'android.gradle_dependencies', [])
         for gradle_dependency in gradle_dependencies:
-            cmd.extend(['--depend', gradle_dependency])
-        cmd.extend(['--arch', self.arch])
-        self._p4a(*cmd)
+            cmd += ['--depend', gradle_dependency]
+        self._p4a(*self.p4a_apk_cmd, '--dist_name', self.dist_name, *build_cmd, *cmd, '--arch', self.arch)
 
     def _get_release_mode(self):
         return 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'
