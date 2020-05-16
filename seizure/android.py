@@ -300,6 +300,14 @@ class TargetAndroid:
                 if ouya_category not in {'GAME', 'APP'}:
                     raise SystemError(f'Invalid android.ouya.category: "{ouya_category}" must be one of GAME or APP')
                 yield from ["--ouya-category", ouya_category, "--ouya-icon", self.config.workspace / config.getdefault('app', 'android.ouya.icon.filename', '')]
+            if config.getbooldefault('app', 'android.wakelock', False):
+                yield "--wakelock"
+            intent_filters = config.getdefault('app', 'android.manifest.intent_filters', '')
+            if intent_filters:
+                yield from ["--intent-filters", self.config.workspace / intent_filters]
+            launch_mode = config.getdefault('app', 'android.manifest.launch_mode', '')
+            if launch_mode:
+                yield from ["--activity-launch-mode", launch_mode]
         if self.bootstrapname != 'service_only':
             orientation = config.getdefault('app', 'orientation', 'landscape')
             if orientation == 'all':
@@ -308,15 +316,6 @@ class TargetAndroid:
             fullscreen = config.getbooldefault('app', 'fullscreen', True)
             if not fullscreen:
                 build_cmd += ["--window"]
-        wakelock = config.getbooldefault('app', 'android.wakelock', False)
-        if wakelock:
-            build_cmd += ["--wakelock"]
-        intent_filters = config.getdefault('app', 'android.manifest.intent_filters', '')
-        if intent_filters:
-            build_cmd += ["--intent-filters", self.config.workspace / intent_filters]
-        launch_mode = config.getdefault('app', 'android.manifest.launch_mode', '')
-        if launch_mode:
-            build_cmd += ["--activity-launch-mode", launch_mode]
         if self.config.build_mode == 'debug':
             mode = 'debug'
             mode_sign = mode
