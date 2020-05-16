@@ -81,44 +81,29 @@ def dist_from_args(ctx, args):
         require_perfect_match=args.require_perfect_match,
         allow_replace_dist=args.allow_replace_dist)
 
-
 def _build_dist_from_args(ctx, dist, args):
-    """Parses out any bootstrap related arguments, and uses them to build
-    a dist."""
     bs = Bootstrap.get_bootstrap(args.bootstrap, ctx)
     blacklist = getattr(args, "blacklist_requirements", "").split(",")
     if len(blacklist) == 1 and blacklist[0] == "":
         blacklist = []
-    build_order, python_modules, bs = (
-        get_recipe_order_and_bootstrap(
-            ctx, dist.recipes, bs,
-            blacklist=blacklist
-        ))
-    assert set(build_order).intersection(set(python_modules)) == set()
+    build_order, python_modules, bs = get_recipe_order_and_bootstrap(ctx, dist.recipes, bs, blacklist = blacklist)
+    assert not set(build_order) & set(python_modules)
     ctx.recipe_build_order = build_order
     ctx.python_modules = python_modules
-
     info('The selected bootstrap is {}'.format(bs.name))
     info_main('# Creating dist with {} bootstrap'.format(bs.name))
     bs.distribution = dist
-    info_notify('Dist will have name {} and requirements ({})'.format(
-        dist.name, ', '.join(dist.recipes)))
-    info('Dist contains the following requirements as recipes: {}'.format(
-        ctx.recipe_build_order))
-    info('Dist will also contain modules ({}) installed from pip'.format(
-        ', '.join(ctx.python_modules)))
-
+    info_notify('Dist will have name {} and requirements ({})'.format(dist.name, ', '.join(dist.recipes)))
+    info('Dist contains the following requirements as recipes: {}'.format(ctx.recipe_build_order))
+    info('Dist will also contain modules ({}) installed from pip'.format(', '.join(ctx.python_modules)))
     ctx.distribution = dist
     ctx.prepare_bootstrap(bs)
     if dist.needs_build:
         ctx.prepare_dist()
     build_recipes(build_order, python_modules, ctx, getattr(args, "private", None))
     ctx.bootstrap.run_distribute()
-
     info_main('# Your distribution was created successfully, exiting.')
-    info('Dist can be found at (for now) {}'
-         .format(join(ctx.dist_dir, ctx.distribution.dist_dir)))
-
+    info('Dist can be found at (for now) {}'.format(join(ctx.dist_dir, ctx.distribution.dist_dir)))
 
 def split_argument_list(l):
     if not len(l):
