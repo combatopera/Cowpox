@@ -46,7 +46,6 @@ from .build import Context, build_recipes
 from .distribution import Distribution, pretty_log_dists
 from .graph import get_recipe_order_and_bootstrap
 from .logger import logger, info, warning, setup_color, Out_Style, Out_Fore, info_notify, info_main, shprint
-from .pythonpackage import get_dep_names_of_package
 from .recipe import Recipe
 from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API, print_recommendations
 from .util import BuildInterruptingException, current_directory
@@ -54,7 +53,6 @@ from appdirs import user_data_dir
 from argparse import ArgumentParser
 from distutils.version import LooseVersion
 from functools import wraps
-from os import environ
 from os.path import join, dirname, realpath, exists, expanduser, basename
 from sys import platform
 import glob, imp, logging, os, re, sh, shlex, shutil, sys # FIXME: Retire imp.
@@ -466,56 +464,8 @@ class ToolchainCL:
 
         self.ctx = Context()
         self.ctx.use_setup_py = getattr(args, "use_setup_py", True)
-
-        have_setup_py_or_similar = False
-        if getattr(args, "private", None) is not None:
-            project_dir = getattr(args, "private")
-            if (os.path.exists(os.path.join(project_dir, "setup.py")) or
-                    os.path.exists(os.path.join(project_dir,
-                                                "pyproject.toml"))):
-                have_setup_py_or_similar = True
-
-        # Process requirements and put version in environ
         if hasattr(args, 'requirements'):
             requirements = []
-
-            # Add dependencies from setup.py, but only if they are recipes
-            # (because otherwise, setup.py itself will install them later)
-            if (have_setup_py_or_similar and
-                    getattr(args, "use_setup_py", False)):
-                try:
-                    info("Analyzing package dependencies. MAY TAKE A WHILE.")
-                    # Get all the dependencies corresponding to a recipe:
-                    dependencies = [
-                        dep.lower() for dep in
-                        get_dep_names_of_package(
-                            args.private,
-                            keep_version_pins=True,
-                            recursive=True,
-                            verbose=True,
-                        )
-                    ]
-                    info("Dependencies obtained: " + str(dependencies))
-                    all_recipes = [
-                        recipe.lower() for recipe in
-                        set(Recipe.list_recipes(self.ctx))
-                    ]
-                    dependencies = set(dependencies).intersection(
-                        set(all_recipes)
-                    )
-                    # Add dependencies to argument list:
-                    if len(dependencies) > 0:
-                        if len(args.requirements) > 0:
-                            args.requirements += u","
-                        args.requirements += u",".join(dependencies)
-                except ValueError:
-                    # Not a python package, apparently.
-                    warning(
-                        "Processing failed, is this project a valid "
-                        "package? Will continue WITHOUT setup.py deps."
-                    )
-
-            # Parse --requirements argument list:
             for requirement in split_argument_list(args.requirements):
                 if "==" in requirement:
                     requirement, version = requirement.split(u"==", 1)
@@ -523,10 +473,8 @@ class ToolchainCL:
                     info('Recipe {}: version "{}" requested'.format(
                         requirement, version))
                 requirements.append(requirement)
-            args.requirements = u",".join(requirements)
-
+            args.requirements = ','.join(requirements)
         self.warn_on_deprecated_args(args)
-
         self.storage_dir = args.storage_dir
         self.ctx.setup_dirs(self.storage_dir)
         self.sdk_dir = args.sdk_dir
