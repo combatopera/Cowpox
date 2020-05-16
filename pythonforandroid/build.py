@@ -553,7 +553,7 @@ class Context:
     def not_has_package(self, name, arch=None):
         return not self.has_package(name, arch)
 
-def build_recipes(build_order, python_modules, ctx, project_dir, ignore_project_setup_py):
+def build_recipes(build_order, python_modules, ctx, project_dir):
     # Put recipes in correct build order
     info_notify("Recipe build order is {}".format(build_order))
     if python_modules:
@@ -612,7 +612,7 @@ def build_recipes(build_order, python_modules, ctx, project_dir, ignore_project_
             recipe.postbuild_arch(arch)
 
     info_main('# Installing pure Python modules')
-    _run_pymodules_install(ctx, python_modules, project_dir, ignore_project_setup_py)
+    _run_pymodules_install(ctx, python_modules, project_dir, False)
 
 def run_setuppy_install(ctx, project_dir, env=None):
     if env is None:
