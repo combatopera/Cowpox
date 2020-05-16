@@ -474,7 +474,6 @@ class ToolchainCL:
                         requirement, version))
                 requirements.append(requirement)
             args.requirements = ','.join(requirements)
-        self.warn_on_deprecated_args(args)
         self.storage_dir = args.storage_dir
         self.ctx.setup_dirs(self.storage_dir)
         self.sdk_dir = args.sdk_dir
@@ -491,30 +490,6 @@ class ToolchainCL:
 
         # Each subparser corresponds to a method
         getattr(self, args.subparser_name.replace('-', '_'))(args)
-
-    def warn_on_deprecated_args(self, args):
-        """
-        Print warning messages for any deprecated arguments that were passed.
-        """
-
-        # Output warning if setup.py is present and neither --ignore-setup-py
-        # nor --use-setup-py was specified.
-        if getattr(args, "private", None) is not None and \
-                (os.path.exists(os.path.join(args.private, "setup.py")) or
-                 os.path.exists(os.path.join(args.private, "pyproject.toml"))
-                ):
-            if not getattr(args, "use_setup_py", False) and \
-                    not getattr(args, "ignore_setup_py", False):
-                warning("  **** FUTURE BEHAVIOR CHANGE WARNING ****")
-                warning("Your project appears to contain a setup.py file.")
-                warning("Currently, these are ignored by default.")
-                warning("This will CHANGE in an upcoming version!")
-                warning("")
-                warning("To ensure your setup.py is ignored, please specify:")
-                warning("    --ignore-setup-py")
-                warning("")
-                warning("To enable what will some day be the default, specify:")
-                warning("    --use-setup-py")
 
     @property
     def default_storage_dir(self):
