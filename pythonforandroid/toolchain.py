@@ -277,14 +277,6 @@ class ToolchainCL:
         )
         self._read_configuration()
         subparsers = parser.add_subparsers(dest = 'subparser_name', help = 'The command to run')
-        parser_recipes = subparsers.add_parser(
-            'recipes',
-            parents=[generic_parser],
-            help='List the available recipes')
-        parser_recipes.add_argument(
-            "--compact",
-            action="store_true", default=False,
-            help="Produce a compact list suitable for scripting")
         parser_apk = subparsers.add_parser(
             'apk', help='Build an APK',
             parents=[generic_parser])
@@ -398,46 +390,6 @@ class ToolchainCL:
         for line in lines:
             for arg in line:
                 sys.argv.append(arg)
-
-    def recipes(self, args):
-        """
-        Prints recipes basic info, e.g.
-        .. code-block:: bash
-            python3      3.7.1
-                depends: ['hostpython3', 'sqlite3', 'openssl', 'libffi']
-                conflicts: ['python2']
-                optional depends: ['sqlite3', 'libffi', 'openssl']
-        """
-        ctx = self.ctx
-        if args.compact:
-            print(" ".join(set(Recipe.list_recipes(ctx))))
-        else:
-            for name in sorted(Recipe.list_recipes(ctx)):
-                try:
-                    recipe = Recipe.get_recipe(name, ctx)
-                except (IOError, ValueError):
-                    warning('Recipe "{}" could not be loaded'.format(name))
-                except SyntaxError:
-                    import traceback
-                    traceback.print_exc()
-                    warning(('Recipe "{}" could not be loaded due to a '
-                             'syntax error').format(name))
-                version = str(recipe.version)
-                print('{Fore.BLUE}{Style.BRIGHT}{recipe.name:<12} '
-                      '{Style.RESET_ALL}{Fore.LIGHTBLUE_EX}'
-                      '{version:<8}{Style.RESET_ALL}'.format(
-                            recipe=recipe, Fore=Out_Fore, Style=Out_Style,
-                            version=version))
-                print('    {Fore.GREEN}depends: {recipe.depends}'
-                      '{Fore.RESET}'.format(recipe=recipe, Fore=Out_Fore))
-                if recipe.conflicts:
-                    print('    {Fore.RED}conflicts: {recipe.conflicts}'
-                          '{Fore.RESET}'
-                          .format(recipe=recipe, Fore=Out_Fore))
-                if recipe.opt_depends:
-                    print('    {Fore.YELLOW}optional depends: '
-                          '{recipe.opt_depends}{Fore.RESET}'
-                          .format(recipe=recipe, Fore=Out_Fore))
 
     @property
     def _dist(self):
