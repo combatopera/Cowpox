@@ -67,6 +67,16 @@ class ArgumentParser(argparse.ArgumentParser):
                 help = None if default else "(this is the default)", dest = dest, action = 'store_false')
         self.set_defaults(**{dest: default})
 
+def _createcontext(args):
+    ctx = Context()
+    ctx.setup_dirs(args.storage_dir)
+    ctx.symlink_java_src = args.symlink_java_src
+    ctx.local_recipes = args.local_recipes
+    ctx.copy_libs = args.copy_libs
+    ctx.set_archs(_split_argument_list(args.arch))
+    ctx.prepare_build_environment(args.ndk_api)
+    return ctx
+
 def _dist_from_args(ctx, args):
     return Distribution.get_distribution(
         ctx,
@@ -198,13 +208,7 @@ class ToolchainCL:
                     log.info("""Recipe %s: version "%s" requested""", requirement, version)
                 requirements.append(requirement)
             args.requirements = ','.join(requirements)
-        ctx = Context()
-        ctx.setup_dirs(args.storage_dir)
-        ctx.symlink_java_src = args.symlink_java_src
-        ctx.local_recipes = args.local_recipes
-        ctx.copy_libs = args.copy_libs
-        ctx.set_archs(_split_argument_list(args.arch))
-        ctx.prepare_build_environment(args.ndk_api)
+        ctx = _createcontext(args)
         getattr(self, args.command)(args, ctx, self._require_prebuilt_dist(args, ctx))
 
     def _require_prebuilt_dist(self, args, ctx):
