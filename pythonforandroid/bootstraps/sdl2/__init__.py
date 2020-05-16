@@ -38,19 +38,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.toolchain import (
-    Bootstrap, shprint, current_directory, info, info_main)
-from pythonforandroid.util import ensure_dir
+from pythonforandroid.bootstrap import Bootstrap
+from pythonforandroid.logger import info, info_main, shprint
+from pythonforandroid.util import current_directory, ensure_dir
 from os.path import join
 import sh
 
-
 class SDL2GradleBootstrap(Bootstrap):
-    name = 'sdl2'
 
-    recipe_depends = list(
-        set(Bootstrap.recipe_depends).union({'sdl2'})
-    )
+    name = 'sdl2'
+    recipe_depends = list(set(Bootstrap.recipe_depends) | {'sdl2'})
 
     def run_distribute(self):
         info_main("# Creating Android project ({})".format(self.name))
