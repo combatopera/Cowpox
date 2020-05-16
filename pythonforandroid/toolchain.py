@@ -329,10 +329,7 @@ class ToolchainCL:
                     # .../dists/bdisttest_python3/gradlew
                     # .../build/bootstrap_builds/sdl2-python3/gradlew
                     # if docker on windows, gradle contains CRLF
-                    output = shprint(
-                        sh.Command('dos2unix'), gradlew._path.decode('utf8'),
-                        _tail=20, _critical=True, _env=env
-                    )
+                    shprint(sh.Command('dos2unix'), gradlew._path.decode('utf8'), _tail=20, _critical=True, _env=env)
                 if args.build_mode == "debug":
                     gradle_task = "assembleDebug"
                 elif args.build_mode == "release":
@@ -357,7 +354,6 @@ class ToolchainCL:
             if m:
                 apk_file = m.groups()[0]
                 break
-
         if not apk_file:
             log.info('APK filename not found in build output. Guessing...')
             if args.build_mode == "release":
