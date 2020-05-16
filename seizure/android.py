@@ -46,7 +46,7 @@ from diapyr import types
 from distutils.version import LooseVersion
 from lagoon import tar, unzip, yes
 from lagoon.program import Program
-from os.path import realpath, basename, relpath
+from os.path import realpath, basename
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
 from shutil import copyfile
@@ -430,15 +430,6 @@ class TargetAndroid:
             if not line.startswith('android.library.reference.'):
                 continue
             content.remove(line)
-        app_references = self.config.getlist('app', 'android.library_references', [])
-        source_dir = realpath(self.config.getdefault('app', 'source.dir', '.'))
-        for cref in app_references:
-            ref = (source_dir / cref).resolve()
-            if not ref.exists():
-                log.error('Invalid library reference (path not found): %s', cref)
-                exit(1)
-            ref = relpath(ref, dist_dir.resolve())
-            references.append(ref)
         with project_fn.open('w', encoding = 'utf-8') as fd:
             try:
                 fd.writelines((line.decode('utf-8') for line in content))
