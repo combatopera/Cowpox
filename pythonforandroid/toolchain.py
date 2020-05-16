@@ -59,21 +59,19 @@ APK_SUFFIX = '.apk'
 
 class ArgumentParser(argparse.ArgumentParser):
 
-  def add_boolean_option(self, names, default, description):
+  def add_boolean_option(self, name, default, description):
     group = self.add_argument_group(description=description)
-    if not isinstance(names, (list, tuple)):
-        names = [names]
-    dest = names[0].strip("-").replace("-", "_")
+    dest = name.strip("-").replace("-", "_")
     def add_dashes(x):
         return x if x.startswith("-") else "--"+x
-    opts = [add_dashes(x) for x in names]
+    opts = [add_dashes(name)]
     group.add_argument(
         *opts, help=("(this is the default)" if default else None),
         dest=dest, action='store_true')
     def add_no(x):
         x = x.lstrip("-")
         return ("no_"+x) if "_" in x else ("no-"+x)
-    no_names = [add_no(x) for x in names]
+    no_names = [add_no(name)]
     opts = [add_dashes(x) for x in no_names]
     group.add_argument(
         *opts, help=(None if default else "(this is the default)"),
@@ -237,20 +235,9 @@ class ToolchainCL:
             help='The bootstrap to build with. Leave unset to choose '
                  'automatically.',
             default=None)
-        generic_parser.add_boolean_option(
-            ["force-build"],
-            default=False,
-            description='Whether to force compilation of a new distribution')
-        generic_parser.add_boolean_option(
-            ["require-perfect-match"],
-            default=False,
-            description=('Whether the dist recipes must perfectly match '
-                         'those requested'))
-        generic_parser.add_boolean_option(
-            ["allow-replace-dist"],
-            default=True,
-            description='Whether existing dist names can be automatically replaced'
-            )
+        generic_parser.add_boolean_option("force-build", False, 'Whether to force compilation of a new distribution')
+        generic_parser.add_boolean_option("require-perfect-match", False, 'Whether the dist recipes must perfectly match those requested')
+        generic_parser.add_boolean_option("allow-replace-dist", True, 'Whether existing dist names can be automatically replaced')
         generic_parser.add_argument(
             '--local-recipes', '--local_recipes',
             dest='local_recipes', default='./p4a-recipes',
@@ -261,11 +248,7 @@ class ToolchainCL:
             choices=['auto', 'ant', 'gradle'],
             help=('The java build tool to use when packaging the APK, defaults '
                   'to automatically selecting an appropriate tool.'))
-        generic_parser.add_boolean_option(
-            ['copy-libs'],
-            default=False,
-            description='Copy libraries instead of using biglink (Android 4.3+)'
-        )
+        generic_parser.add_boolean_option('copy-libs', False, 'Copy libraries instead of using biglink (Android 4.3+)')
         parser = ArgumentParser(allow_abbrev = False)
         subparsers = parser.add_subparsers(dest = 'command')
         subparsers.add_parser('create', parents = [generic_parser])
