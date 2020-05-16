@@ -67,8 +67,7 @@ class TargetAndroid:
             ANDROIDAPI = self.android_api,
         ))
         self.bootstrapname = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
-        self.p4a_apk_cmd = 'apk', '--debug', f"--bootstrap={self.bootstrapname}"
-        self.extra_p4a_args = '--color=always', f"--storage-dir={self.build_dir}", f"--ndk-api={config.getdefault('app', 'android.ndk_api', self.android_minapi)}"
+        self.extra_p4a_args = '--color', 'always', '--storage-dir', self.build_dir, '--ndk-api', config.getdefault('app', 'android.ndk_api', self.android_minapi)
         self.local_recipes = config.workspace / 'local_recipes'
         self.dist_name = config.get('app', 'package.name')
         self.config = config
@@ -201,7 +200,7 @@ class TargetAndroid:
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             options.append("--copy-libs")
         options.extend(['--local-recipes', self.local_recipes])
-        self._p4a('create', f"--dist_name={self.dist_name}", f"--bootstrap={self.bootstrapname}", f"--requirements={requirements}", '--arch', self.arch, *options)
+        self._p4a('create', '--dist_name', self.dist_name, '--bootstrap', self.bootstrapname, '--requirements', requirements, '--arch', self.arch, *options)
 
     def _get_dist_dir(self):
         expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self.arch])
@@ -230,7 +229,7 @@ class TargetAndroid:
         gradle_dependencies = self.config.getlist('app', 'android.gradle_dependencies', [])
         for gradle_dependency in gradle_dependencies:
             cmd += ['--depend', gradle_dependency]
-        self._p4a(*self.p4a_apk_cmd, '--dist_name', self.dist_name, *build_cmd, *cmd, '--arch', self.arch)
+        self._p4a('apk', '--debug', '--bootstrap', self.bootstrapname, '--dist_name', self.dist_name, *build_cmd, *cmd, '--arch', self.arch)
 
     def _get_release_mode(self):
         return 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'
