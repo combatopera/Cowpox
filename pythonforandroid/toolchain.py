@@ -47,7 +47,7 @@ from .distribution import Distribution, pretty_log_dists
 from .graph import get_recipe_order_and_bootstrap
 from .logger import logger, info, warning, setup_color, Out_Style, Out_Fore, info_notify, info_main, shprint
 from .recipe import Recipe
-from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API, print_recommendations
+from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
 from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
 from argparse import ArgumentParser
@@ -277,10 +277,6 @@ class ToolchainCL:
         )
         self._read_configuration()
         subparsers = parser.add_subparsers(dest = 'subparser_name', help = 'The command to run')
-        subparsers.add_parser(
-            'recommendations',
-            parents=[generic_parser],
-            help='List recommended p4a dependencies')
         parser_recipes = subparsers.add_parser(
             'recipes',
             parents=[generic_parser],
@@ -879,9 +875,6 @@ class ToolchainCL:
         for line in output:
             sys.stdout.write(line)
             sys.stdout.flush()
-
-    def recommendations(self, args):
-        print_recommendations()
 
     def build_status(self, _args):
         """Print the status of the specified build. """
