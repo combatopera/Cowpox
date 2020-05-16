@@ -275,34 +275,14 @@ class ToolchainCL:
         )
         self._read_configuration()
         subparsers = parser.add_subparsers(dest = 'subparser_name', help = 'The command to run')
-        parser_apk = subparsers.add_parser(
-            'apk', help='Build an APK',
-            parents=[generic_parser])
-        parser_apk.add_argument(
-            '--private', dest='private',
-            help='the directory with the app source code files' +
-                 ' (containing your main.py entrypoint)',
-            required=False, default=None)
-        parser_apk.add_argument(
-            '--release', dest='build_mode', action='store_const',
-            const='release', default='debug',
-            help='Build the PARSER_APK. in Release mode')
-        parser_apk.add_argument(
-            '--keystore', dest='keystore', action='store', default=None,
-            help=('Keystore for JAR signing key, will use jarsigner '
-                  'default if not specified (release build only)'))
-        parser_apk.add_argument(
-            '--signkey', dest='signkey', action='store', default=None,
-            help='Key alias to sign PARSER_APK. with (release build only)')
-        parser_apk.add_argument(
-            '--keystorepw', dest='keystorepw', action='store', default=None,
-            help='Password for keystore')
-        parser_apk.add_argument(
-            '--signkeypw', dest='signkeypw', action='store', default=None,
-            help='Password for key alias')
-        subparsers.add_parser(
-            'create', help='Compile a set of requirements into a dist',
-            parents=[generic_parser])
+        parser_apk = subparsers.add_parser('apk', parents = [generic_parser])
+        parser_apk.add_argument('--private')
+        parser_apk.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
+        parser_apk.add_argument('--keystore')
+        parser_apk.add_argument('--signkey')
+        parser_apk.add_argument('--keystorepw')
+        parser_apk.add_argument('--signkeypw')
+        subparsers.add_parser('create', parents = [generic_parser])
         parser.add_argument('-v', '--version', action='version', version=__version__)
         args, unknown = parser.parse_known_args(sys.argv[1:])
         args.unknown_args = unknown
