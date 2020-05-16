@@ -70,7 +70,7 @@ class TargetAndroid:
         self.p4a_apk_cmd = 'apk', '--debug', f"--bootstrap={self._p4a_bootstrap}"
         self.extra_p4a_args = '--color=always', f"--storage-dir={self._build_dir}", f"--ndk-api={config.getdefault('app', 'android.ndk_api', self.android_minapi)}"
         self.local_recipes = config.workspace / 'local_recipes'
-        self.dist_name = self.config.get('app', 'package.name')
+        self.dist_name = config.get('app', 'package.name')
         self.config = config
         self.state = state
         self.dirs = dirs
