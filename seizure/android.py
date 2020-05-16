@@ -46,7 +46,7 @@ from diapyr import types
 from distutils.version import LooseVersion
 from lagoon import tar, unzip, yes
 from lagoon.program import Program
-from os.path import realpath, expanduser, basename, relpath
+from os.path import realpath, basename, relpath
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
 from shutil import copyfile
@@ -99,6 +99,7 @@ class TargetAndroid:
         self._p4a_bootstrap = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
         self.p4a_apk_cmd = 'apk', '--debug', f"--bootstrap={self._p4a_bootstrap}"
         self.extra_p4a_args = '--color=always', f"--storage-dir={self._build_dir}", f"--ndk-api={config.getdefault('app', 'android.ndk_api', self.android_minapi)}"
+        self.local_recipes = config.workspace / 'local_recipes'
         self.config = config
         self.state = state
         self.dirs = dirs
@@ -223,13 +224,11 @@ class TargetAndroid:
     def compile_platform(self):
         app_requirements = self.config.getlist('app', 'requirements', '')
         dist_name = self.config.get('app', 'package.name')
-        local_recipes = self._get_local_recipes_dir()
         requirements = ','.join(app_requirements)
         options = []
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             options.append("--copy-libs")
-        if local_recipes:
-            options.extend(['--local-recipes', local_recipes])
+        options.extend(['--local-recipes', self.local_recipes])
         self._p4a('create', f"--dist_name={dist_name}", f"--bootstrap={self._p4a_bootstrap}", f"--requirements={requirements}", '--arch', self._arch, *options)
 
     def _get_dist_dir(self, dist_name, arch):
@@ -242,13 +241,8 @@ class TargetAndroid:
             return old_dist_dir
         return expected_dist_dir
 
-    def _get_local_recipes_dir(self):
-        local_recipes = self.config.getdefault('app', 'p4a.local_recipes')
-        return realpath(expanduser(local_recipes)) if local_recipes else None
-
     def _execute_build_package(self, build_cmd):
         dist_name = self.config.get('app', 'package.name')
-        local_recipes = self._get_local_recipes_dir()
         cmd = [*self.p4a_apk_cmd, '--dist_name', dist_name, *build_cmd]
         presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
         if presplash_color:
@@ -258,8 +252,7 @@ class TargetAndroid:
             cmd.extend(["--service", service])
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             cmd.append("--copy-libs")
-        if local_recipes:
-            cmd.extend(['--local-recipes', local_recipes])
+        cmd.extend(['--local-recipes', self.local_recipes])
         whitelist_src = self.config.getdefault('app', 'android.whitelist_src', None)
         blacklist_src = self.config.getdefault('app', 'android.blacklist_src', None)
         if whitelist_src:
