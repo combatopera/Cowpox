@@ -259,10 +259,6 @@ class ToolchainCL:
             help='The bootstrap to build with. Leave unset to choose '
                  'automatically.',
             default=None)
-        generic_parser.add_argument(
-            '--hook',
-            help='Filename to a module that contains python-for-android hooks',
-            default=None)
         add_boolean_option(
             generic_parser, ["force-build"],
             default=False,
@@ -581,19 +577,6 @@ class ToolchainCL:
             warning('--ndk-version is deprecated and no longer necessary, '
                     'the value you passed is ignored')
 
-    def hook(self, name):
-        if not self.args.hook:
-            return
-        if not hasattr(self, "hook_module"):
-            # first time, try to load the hook module
-            self.hook_module = imp.load_source("pythonforandroid.hook",
-                                               self.args.hook)
-        if hasattr(self.hook_module, name):
-            info("Hook: execute {}".format(name))
-            getattr(self.hook_module, name)(self)
-        else:
-            info("Hook: ignore {}".format(name))
-
     @property
     def default_storage_dir(self):
         udd = user_data_dir('python-for-android')
@@ -828,12 +811,8 @@ class ToolchainCL:
 
         build = imp.load_source('build', join(dist.dist_dir, 'build.py'))
         with current_directory(dist.dist_dir):
-            self.hook("before_apk_build")
             os.environ["ANDROID_API"] = str(self.ctx.android_api)
             build_args = build.parse_args(args.unknown_args)
-            self.hook("after_apk_build")
-            self.hook("before_apk_assemble")
-
             build_type = ctx.java_build_tool
             if build_type == 'auto':
                 info('Selecting java build tool:')
@@ -905,9 +884,6 @@ class ToolchainCL:
                 apk_dir = join(dist.dist_dir, "bin")
                 apk_glob = "*-*-{}.apk"
                 apk_add_version = False
-
-            self.hook("after_apk_assemble")
-
         info_main('# Copying APK to current directory')
 
         apk_re = re.compile(r'.*Package: (.*\.apk)$')
