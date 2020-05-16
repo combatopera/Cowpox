@@ -46,7 +46,7 @@ from diapyr import types
 from distutils.version import LooseVersion
 from lagoon import tar, unzip, yes
 from lagoon.program import Program
-from os.path import realpath, basename
+from os.path import basename
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
 from shutil import copyfile
@@ -253,15 +253,6 @@ class TargetAndroid:
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             cmd.append("--copy-libs")
         cmd.extend(['--local-recipes', self.local_recipes])
-        whitelist_src = self.config.getdefault('app', 'android.whitelist_src', None)
-        blacklist_src = self.config.getdefault('app', 'android.blacklist_src', None)
-        if whitelist_src:
-            cmd.extend(['--whitelist', realpath(whitelist_src)])
-        if blacklist_src:
-            cmd.extend(['--blacklist', realpath(blacklist_src)])
-        aars = self.config.getlist('app', 'android.add_aars', [])
-        for aar in aars:
-            cmd.extend(['--add-aar', realpath(aar)])
         uses_library = self.config.getlist('app', 'android.uses_library', '')
         for lib in uses_library:
             cmd.append(f'--uses-library={lib}')
