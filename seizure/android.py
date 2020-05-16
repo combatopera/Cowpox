@@ -47,7 +47,7 @@ from distutils.version import LooseVersion
 from glob import glob
 from lagoon import tar, unzip, yes
 from lagoon.program import Program
-from os.path import exists, join, realpath, expanduser, basename, relpath
+from os.path import join, realpath, expanduser, basename, relpath
 from pathlib import Path
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
@@ -447,7 +447,7 @@ class TargetAndroid:
         build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
         build_tools_version = build_tools_versions[-1]
         gradle_files = ["build.gradle", "gradle", "gradlew"]
-        is_gradle_build = build_tools_version >= "25.0" and any(exists(join(dist_dir, x)) for x in gradle_files)
+        is_gradle_build = build_tools_version >= "25.0" and any((dist_dir / x).exists() for x in gradle_files)
         packagename = config.get('app', 'package.name')
         if is_gradle_build:
             # on gradle build, the apk use the package name, and have no version
