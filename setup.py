@@ -61,13 +61,7 @@ setup(
     package_data = package_data,
     install_requires = Path('requirements.txt').read_text().splitlines(),
     entry_points={
-        'console_scripts': [
-            'Seizure=seizure.seizure:main',
-            'python-for-android=pythonforandroid.entrypoints:main',
-            'p4a=pythonforandroid.entrypoints:main',
-        ],
-        'distutils.commands': [
-            'apk=pythonforandroid.bdistapk:BdistAPK',
-        ],
+        'console_scripts': ['Seizure=seizure.seizure:main'],
+        'distutils.commands': ['apk=pythonforandroid.bdistapk:BdistAPK'],
     },
 )
