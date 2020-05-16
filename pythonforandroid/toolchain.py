@@ -330,14 +330,7 @@ class ToolchainCL:
                     # .../build/bootstrap_builds/sdl2-python3/gradlew
                     # if docker on windows, gradle contains CRLF
                     shprint(sh.Command('dos2unix'), gradlew._path.decode('utf8'), _tail=20, _critical=True, _env=env)
-                if args.build_mode == "debug":
-                    gradle_task = "assembleDebug"
-                elif args.build_mode == "release":
-                    gradle_task = "assembleRelease"
-                else:
-                    raise BuildInterruptingException(
-                        "Unknown build mode {} for apk()".format(args.build_mode))
-                output = shprint(gradlew, gradle_task, _tail=20, _critical=True, _env=env)
+                output = shprint(gradlew, dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], _tail=20, _critical=True, _env=env)
                 apk_dir = join(dist.dist_dir, "build", "outputs", "apk", args.build_mode)
                 apk_glob = "*-{}.apk"
                 apk_add_version = True
