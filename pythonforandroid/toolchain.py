@@ -51,12 +51,13 @@ from .recipe import Recipe
 from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API, print_recommendations
 from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
+from argparse import ArgumentParser
 from distutils.version import LooseVersion
 from functools import wraps
 from os import environ
 from os.path import join, dirname, realpath, exists, expanduser, basename
 from sys import platform
-import argparse, glob, imp, logging, os, re, sh, shlex, shutil, sys # FIXME: Retire imp.
+import glob, imp, logging, os, re, sh, shlex, shutil, sys # FIXME: Retire imp.
 
 toolchain_dir = dirname(__file__)
 sys.path.insert(0, join(toolchain_dir, "tools", "external"))
@@ -180,31 +181,11 @@ def split_argument_list(l):
         return []
     return re.split(r'[ ,]+', l)
 
-
-class NoAbbrevParser(argparse.ArgumentParser):
-    """We want to disable argument abbreviation so as not to interfere
-    with passing through arguments to build.py, but in python2 argparse
-    doesn't have this option.
-
-    This subclass alternative is follows the suggestion at
-    https://bugs.python.org/issue14910.
-    """
-    def _get_option_tuples(self, option_string):
-        return []
-
 class ToolchainCL:
 
     def __init__(self):
-        parser = NoAbbrevParser(
-            description='A packaging tool for turning Python scripts and apps '
-                        'into Android APKs')
-
-        generic_parser = argparse.ArgumentParser(
-            add_help=False,
-            description='Generic arguments applied to all commands')
-        argparse.ArgumentParser(
-            add_help=False, description='Arguments for dist building')
-
+        parser = ArgumentParser(allow_abbrev = False)
+        generic_parser = ArgumentParser(add_help = False)
         generic_parser.add_argument(
             '--debug', dest='debug', action='store_true', default=False,
             help='Display debug output and all build info')
