@@ -274,7 +274,7 @@ class ToolchainCL:
             description='Copy libraries instead of using biglink (Android 4.3+)'
         )
         self._read_configuration()
-        subparsers = parser.add_subparsers(dest = 'subparser_name', help = 'The command to run')
+        subparsers = parser.add_subparsers(dest = 'command')
         parser_apk = subparsers.add_parser('apk', parents = [generic_parser])
         parser_apk.add_argument('--private')
         parser_apk.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
@@ -318,9 +318,7 @@ class ToolchainCL:
 
         self.ctx.local_recipes = args.local_recipes
         self.ctx.copy_libs = args.copy_libs
-
-        # Each subparser corresponds to a method
-        getattr(self, args.subparser_name.replace('-', '_'))(args)
+        getattr(self, args.command)(args)
 
     @property
     def default_storage_dir(self):
