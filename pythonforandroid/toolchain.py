@@ -44,7 +44,6 @@ from . import __version__
 from .bootstrap import Bootstrap
 from .build import Context, build_recipes
 from .distribution import Distribution, pretty_log_dists
-from .entrypoints import main
 from .graph import get_recipe_order_and_bootstrap
 from .logger import logger, info, warning, setup_color, Out_Style, Out_Fore, info_notify, info_main, shprint
 from .pythonpackage import get_dep_names_of_package
@@ -1141,4 +1140,4 @@ class ToolchainCL:
                 print(recipe_str)
 
 if __name__ == "__main__": # TODO: Retire.
-    main()
+    ToolchainCL()
