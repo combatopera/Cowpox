@@ -311,10 +311,6 @@ class ToolchainCL:
         subparsers.add_parser(
             'logcat', help='Run logcat from the given SDK',
             parents=[generic_parser])
-        subparsers.add_parser(
-            'build_status', aliases=['build-status'],
-            help='Print some debug information about current built components',
-            parents=[generic_parser])
         parser.add_argument('-v', '--version', action='version', version=__version__)
         args, unknown = parser.parse_known_args(sys.argv[1:])
         args.unknown_args = unknown
@@ -567,34 +563,6 @@ class ToolchainCL:
         for line in output:
             sys.stdout.write(line)
             sys.stdout.flush()
-
-    def build_status(self, _args):
-        """Print the status of the specified build. """
-        print('{Style.BRIGHT}Bootstraps whose core components are probably '
-              'already built:{Style.RESET_ALL}'.format(Style=Out_Style))
-
-        bootstrap_dir = join(self.ctx.build_dir, 'bootstrap_builds')
-        if exists(bootstrap_dir):
-            for filen in os.listdir(bootstrap_dir):
-                print('    {Fore.GREEN}{Style.BRIGHT}{filen}{Style.RESET_ALL}'
-                      .format(filen=filen, Fore=Out_Fore, Style=Out_Style))
-
-        print('{Style.BRIGHT}Recipes that are probably already built:'
-              '{Style.RESET_ALL}'.format(Style=Out_Style))
-        other_builds_dir = join(self.ctx.build_dir, 'other_builds')
-        if exists(other_builds_dir):
-            for filen in sorted(os.listdir(other_builds_dir)):
-                name = filen.split('-')[0]
-                dependencies = filen.split('-')[1:]
-                recipe_str = ('    {Style.BRIGHT}{Fore.GREEN}{name}'
-                              '{Style.RESET_ALL}'.format(
-                                  Style=Out_Style, name=name, Fore=Out_Fore))
-                if dependencies:
-                    recipe_str += (
-                        ' ({Fore.BLUE}with ' + ', '.join(dependencies) +
-                        '{Fore.RESET})').format(Fore=Out_Fore)
-                recipe_str += '{Style.RESET_ALL}'.format(Style=Out_Style)
-                print(recipe_str)
 
 def main():
     ToolchainCL()
