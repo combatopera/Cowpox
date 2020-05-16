@@ -70,8 +70,6 @@ def _file_rename(source, target, cwd):
 
 class TargetAndroid:
 
-    p4a_recommended_ndk_version = None
-
     @types(Config, JsonStore, Dirs)
     def __init__(self, config, state, dirs):
         self.android_api = config.getdefault('app', 'android.api', '27')
