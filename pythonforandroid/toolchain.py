@@ -60,19 +60,12 @@ APK_SUFFIX = '.apk'
 class ArgumentParser(argparse.ArgumentParser):
 
   def add_boolean_option(self, name, default, description):
-    group = self.add_argument_group(description=description)
-    dest = name.strip("-").replace("-", "_")
-    def add_dashes(x):
-        return x if x.startswith("-") else "--"+x
-    group.add_argument(
-        add_dashes(name), help=("(this is the default)" if default else None),
-        dest=dest, action='store_true')
-    def add_no(x):
-        x = x.lstrip("-")
-        return ("no_"+x) if "_" in x else ("no-"+x)
-    group.add_argument(
-        add_dashes(add_no(name)), help=(None if default else "(this is the default)"),
-        dest=dest, action='store_false')
+    group = self.add_argument_group(description = description)
+    dest = name.replace('-', '_')
+    group.add_argument(f"--{name}",
+        help = "(this is the default)" if default else None, dest = dest, action = 'store_true')
+    group.add_argument(f"--no-{name}",
+        help = None if default else "(this is the default)", dest = dest, action = 'store_false')
     self.set_defaults(**{dest: default})
 
 def require_prebuilt_dist(func):
@@ -232,9 +225,9 @@ class ToolchainCL:
             help='The bootstrap to build with. Leave unset to choose '
                  'automatically.',
             default=None)
-        generic_parser.add_boolean_option("force-build", False, 'Whether to force compilation of a new distribution')
-        generic_parser.add_boolean_option("require-perfect-match", False, 'Whether the dist recipes must perfectly match those requested')
-        generic_parser.add_boolean_option("allow-replace-dist", True, 'Whether existing dist names can be automatically replaced')
+        generic_parser.add_boolean_option('force-build', False, 'Whether to force compilation of a new distribution')
+        generic_parser.add_boolean_option('require-perfect-match', False, 'Whether the dist recipes must perfectly match those requested')
+        generic_parser.add_boolean_option('allow-replace-dist', True, 'Whether existing dist names can be automatically replaced')
         generic_parser.add_argument(
             '--local-recipes', '--local_recipes',
             dest='local_recipes', default='./p4a-recipes',
