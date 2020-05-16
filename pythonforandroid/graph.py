@@ -276,9 +276,9 @@ def obvious_conflict_checker(ctx, name_tuples, blacklist=None):
     # If we came here, then there were no obvious conflicts.
     return None
 
-def get_recipe_order(ctx, names, bs, blacklist):
+def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
     # Get set of recipe/dependency names, clean up and add bootstrap deps:
-    names = set(names) | set(bs.recipe_depends)
+    names = set(names) | set(bs_recipe_depends)
     names = fix_deplist([
         ([name] if not isinstance(name, (list, tuple)) else name)
         for name in names
