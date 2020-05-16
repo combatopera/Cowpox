@@ -617,17 +617,6 @@ def build_recipes(build_order, python_modules, ctx, project_dir,
     info_main('# Installing pure Python modules')
     _run_pymodules_install(ctx, python_modules, project_dir, ignore_project_setup_py)
 
-def project_has_setup_py(project_dir):
-    if project_dir is not None and \
-            (os.path.exists(os.path.join(project_dir,
-                            "setup.py")) or
-             os.path.exists(os.path.join(project_dir,
-                            "pyproject.toml"))
-            ):
-        return True
-    return False
-
-
 def run_setuppy_install(ctx, project_dir, env=None):
     if env is None:
         env = dict()
@@ -748,27 +737,11 @@ def _run_pymodules_install(ctx, modules, project_dir, ignore_setup_py):
     # We change current working directory later, so this has to be an absolute
     # path or `None` in case that we didn't supply the `project_dir` via kwargs
     project_dir = abspath(project_dir) if project_dir else None
-
-    # Bail out if no python deps and no setup.py to process:
-    if not modules and (
-            ignore_setup_py or
-            project_dir is None or
-            not project_has_setup_py(project_dir)
-            ):
+    if not modules:
         info('No Python modules and no setup.py to process, skipping')
         return
-
-    # Output messages about what we're going to do:
-    if modules:
-        info('The requirements ({}) don\'t have recipes, attempting to '
-             'install them with pip'.format(', '.join(modules)))
-        info('If this fails, it may mean that the module has compiled '
-             'components and needs a recipe.')
-    if project_dir is not None and \
-            project_has_setup_py(project_dir) and not ignore_setup_py:
-        info('Will process project install, if it fails then the '
-             'project may not be compatible for Android install.')
-
+    info('The requirements ({}) don\'t have recipes, attempting to install them with pip'.format(', '.join(modules)))
+    info('If this fails, it may mean that the module has compiled components and needs a recipe.')
     venv = sh.Command(ctx.virtualenv)
     with current_directory(join(ctx.build_dir)):
         shprint(venv,
@@ -826,12 +799,7 @@ def _run_pymodules_install(ctx, modules, project_dir, ignore_setup_py):
                  'and does not work without additional '
                  'changes / workarounds.')
             pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env)
-        # Afterwards, run setup.py if present:
-        if project_dir is not None and (
-                project_has_setup_py(project_dir) and not ignore_setup_py
-                ):
-            run_setuppy_install(ctx, project_dir, env)
-        elif not ignore_setup_py:
+        if not ignore_setup_py:
             info("No setup.py found in project directory: " +
                  str(project_dir)
                 )
