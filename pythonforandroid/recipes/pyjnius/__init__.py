@@ -38,12 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.recipe import CythonRecipe
-from pythonforandroid.toolchain import shprint, current_directory, info
-from pythonforandroid.patching import will_build
-import sh
 from os.path import join
-
+from pythonforandroid.logger import info, shprint
+from pythonforandroid.patching import will_build
+from pythonforandroid.recipe import CythonRecipe
+from pythonforandroid.util import current_directory
+import sh
 
 class PyjniusRecipe(CythonRecipe):
     # "6553ad4" is one commit after last release (1.2.0)
@@ -53,15 +53,13 @@ class PyjniusRecipe(CythonRecipe):
     name = 'pyjnius'
     depends = [('genericndkbuild', 'sdl2'), 'six']
     site_packages_name = 'jnius'
-
     patches = [('sdl2_jnienv_getter.patch', will_build('sdl2')),
                ('genericndkbuild_jnienv_getter.patch', will_build('genericndkbuild'))]
 
     def postbuild_arch(self, arch):
-        super(PyjniusRecipe, self).postbuild_arch(arch)
+        super().postbuild_arch(arch)
         info('Copying pyjnius java class to classes build dir')
         with current_directory(self.get_build_dir(arch.arch)):
             shprint(sh.cp, '-a', join('jnius', 'src', 'org'), self.ctx.javaclass_dir)
-
 
 recipe = PyjniusRecipe()

@@ -38,15 +38,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from pythonforandroid.logger import shprint
 from pythonforandroid.recipe import BootstrapNDKRecipe
-from pythonforandroid.toolchain import current_directory, shprint
+from pythonforandroid.util import current_directory
 import sh
 
-
 class GenericNDKBuildRecipe(BootstrapNDKRecipe):
+
     version = None
     url = None
-
     depends = [('python2', 'python3')]
     conflicts = ['sdl2']
 
@@ -61,9 +61,7 @@ class GenericNDKBuildRecipe(BootstrapNDKRecipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-
         with current_directory(self.get_jni_dir()):
             shprint(sh.ndk_build, "V=1", _env=env)
-
 
 recipe = GenericNDKBuildRecipe()

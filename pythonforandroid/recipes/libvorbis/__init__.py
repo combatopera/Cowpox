@@ -38,17 +38,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.recipe import NDKRecipe
-from pythonforandroid.toolchain import current_directory, shprint
 from os.path import join
+from pythonforandroid.logger import shprint
+from pythonforandroid.recipe import NDKRecipe
+from pythonforandroid.util import current_directory
 import sh
 
-
 class VorbisRecipe(NDKRecipe):
+
     version = '1.3.6'
     url = 'http://downloads.xiph.org/releases/vorbis/libvorbis-{version}.tar.gz'
     opt_depends = ['libogg']
-
     generated_libraries = ['libvorbis.so', 'libvorbisfile.so', 'libvorbisenc.so']
 
     def get_recipe_env(self, arch=None):
@@ -72,6 +72,5 @@ class VorbisRecipe(NDKRecipe):
                 join('lib', '.libs', 'libvorbis.so'),
                 join('lib', '.libs', 'libvorbisfile.so'),
                 join('lib', '.libs', 'libvorbisenc.so'))
-
 
 recipe = VorbisRecipe()

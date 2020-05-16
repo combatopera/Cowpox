@@ -38,20 +38,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.toolchain import Recipe, current_directory
-from pythonforandroid.logger import info, debug, shprint, warning
-from os.path import join, isdir, isfile
 from os import environ
+from os.path import join, isdir, isfile
+from pythonforandroid.logger import info, debug, shprint, warning
+from pythonforandroid.recipe import Recipe
+from pythonforandroid.util import current_directory
 import sh
 
-
 class VlcRecipe(Recipe):
+
     version = '3.0.0'
     url = None
     name = 'vlc'
-
     depends = []
-
     port_git = 'http://git.videolan.org/git/vlc-ports/android.git'
 #    vlc_git = 'http://git.videolan.org/git/vlc.git'
     ENV_LIBVLC_AAR = 'LIBVLC_AAR'
@@ -110,6 +109,5 @@ class VlcRecipe(Recipe):
                 shprint(sh.Command('./compile-libvlc.sh'), _env=env,
                         _tail=50, _critical=True)
         shprint(sh.cp, '-a', aar, self.ctx.aars_dir)
-
 
 recipe = VlcRecipe()

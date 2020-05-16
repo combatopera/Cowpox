@@ -38,11 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.toolchain import Recipe, shprint, shutil, current_directory
 from multiprocessing import cpu_count
-from os.path import join, basename
 from os import listdir, walk
-import sh
+from os.path import join, basename
+from pythonforandroid.logger import shprint
+from pythonforandroid.recipe import Recipe
+from pythonforandroid.util import current_directory
+import sh, shutil
 
 # This recipe builds libtorrent with Python bindings
 # It depends on Boost.Build and the source of several Boost libraries present
@@ -183,6 +185,5 @@ class LibtorrentRecipe(Recipe):
             env['OPENSSL_INCLUDE'] = join(r.get_build_dir(arch.arch), 'include')
             env['OPENSSL_VERSION'] = r.version
         return env
-
 
 recipe = LibtorrentRecipe()

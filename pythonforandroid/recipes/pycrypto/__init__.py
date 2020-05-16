@@ -38,16 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from pythonforandroid.logger import info, shprint
 from pythonforandroid.recipe import CompiledComponentsPythonRecipe, Recipe
-from pythonforandroid.toolchain import (
-    current_directory,
-    info,
-    shprint,
-)
+from pythonforandroid.util import current_directory
 import sh
 
-
 class PyCryptoRecipe(CompiledComponentsPythonRecipe):
+
     version = '2.7a1'
     url = 'https://github.com/dlitz/pycrypto/archive/v{version}.zip'
     depends = ['openssl', ('python2', 'python3')]
@@ -59,19 +56,16 @@ class PyCryptoRecipe(CompiledComponentsPythonRecipe):
         env = super(PyCryptoRecipe, self).get_recipe_env(arch)
         openssl_recipe = Recipe.get_recipe('openssl', self.ctx)
         env['CC'] = env['CC'] + openssl_recipe.include_flags(arch)
-
         env['LDFLAGS'] += ' -L{}'.format(self.ctx.get_libs_dir(arch.arch))
         env['LDFLAGS'] += ' -L{}'.format(self.ctx.libs_dir)
         env['LDFLAGS'] += openssl_recipe.link_dirs_flags(arch)
         env['LIBS'] = env.get('LIBS', '') + openssl_recipe.link_libs_flags()
-
         env['EXTRA_CFLAGS'] = '--host linux-armv'
         env['ac_cv_func_malloc_0_nonnull'] = 'yes'
         return env
 
     def build_compiled_components(self, arch):
         info('Configuring compiled components in {}'.format(self.name))
-
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
             configure = sh.Command('./configure')
@@ -79,6 +73,5 @@ class PyCryptoRecipe(CompiledComponentsPythonRecipe):
                     '--prefix={}'.format(self.ctx.get_python_install_dir()),
                     '--enable-shared', _env=env)
         super(PyCryptoRecipe, self).build_compiled_components(arch)
-
 
 recipe = PyCryptoRecipe()

@@ -38,12 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from pythonforandroid.logger import shprint
 from pythonforandroid.recipe import PythonRecipe
-from pythonforandroid.toolchain import current_directory, shprint
+from pythonforandroid.util import current_directory
 import sh
 
-
 class ApswRecipe(PythonRecipe):
+
     version = '3.15.0-r1'
     url = 'https://github.com/rogerbinns/apsw/archive/{version}.tar.gz'
     depends = ['sqlite3', ('python2', 'python3'), 'setuptools']
@@ -69,6 +70,5 @@ class ApswRecipe(PythonRecipe):
         env['LDFLAGS'] += ' -L' + sqlite_recipe.get_lib_dir(arch)
         env['LIBS'] = env.get('LIBS', '') + ' -lsqlite3'
         return env
-
 
 recipe = ApswRecipe()

@@ -38,12 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from pythonforandroid.logger import shprint
 from pythonforandroid.recipe import Recipe
-from pythonforandroid.toolchain import current_directory, shprint
+from pythonforandroid.util import current_directory
 import sh
 
-
 class OggRecipe(Recipe):
+
     version = '1.3.3'
     url = 'http://downloads.xiph.org/releases/ogg/libogg-{version}.tar.gz'
     built_libraries = {'libogg.so': 'src/.libs'}
@@ -58,6 +59,5 @@ class OggRecipe(Recipe):
             configure = sh.Command('./configure')
             shprint(configure, *flags, _env=env)
             shprint(sh.make, _env=env)
-
 
 recipe = OggRecipe()

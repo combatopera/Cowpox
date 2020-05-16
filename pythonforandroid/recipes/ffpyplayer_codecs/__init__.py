@@ -38,14 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.toolchain import Recipe
-
+from pythonforandroid.recipe import Recipe
 
 class FFPyPlayerCodecsRecipe(Recipe):
+
     depends = ['libx264', 'libshine']
 
     def build_arch(self, arch):
         pass
-
 
 recipe = FFPyPlayerCodecsRecipe()

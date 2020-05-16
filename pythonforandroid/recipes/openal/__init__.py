@@ -38,17 +38,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.recipe import NDKRecipe
-from pythonforandroid.toolchain import current_directory, shprint
 from os.path import join
-import os
-import sh
-
+from pythonforandroid.logger import shprint
+from pythonforandroid.recipe import NDKRecipe
+from pythonforandroid.util import current_directory
+import os, sh
 
 class OpenALRecipe(NDKRecipe):
+
     version = '1.18.2'
     url = 'https://github.com/kcat/openal-soft/archive/openal-soft-{version}.tar.gz'
-
     generated_libraries = ['libopenal.so']
 
     def prebuild_arch(self, arch):
@@ -71,6 +70,5 @@ class OpenALRecipe(NDKRecipe):
             )
             shprint(sh.make, _env=env)
             self.install_libs(arch, 'libopenal.so')
-
 
 recipe = OpenALRecipe()
