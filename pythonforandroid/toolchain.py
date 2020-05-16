@@ -44,7 +44,7 @@ from .bootstrap import Bootstrap
 from .build import Context, build_recipes
 from .distribution import Distribution
 from .graph import get_recipe_order_and_bootstrap
-from .logger import logger, info, setup_color, info_notify, info_main, shprint
+from .logger import logger, info, setup_color, info_notify, shprint
 from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
 from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
@@ -52,6 +52,7 @@ from distutils.version import LooseVersion
 from os.path import join, dirname, realpath, exists, expanduser, basename
 import argparse, glob, imp, logging, os, re, sh, sys # FIXME: Retire imp.
 
+log = logging.getLogger(__name__)
 toolchain_dir = dirname(__file__)
 sys.path.insert(0, join(toolchain_dir, "tools", "external"))
 APK_SUFFIX = '.apk'
@@ -91,7 +92,7 @@ def _build_dist_from_args(ctx, dist, args):
     ctx.recipe_build_order = build_order
     ctx.python_modules = python_modules
     info('The selected bootstrap is {}'.format(bs.name))
-    info_main('# Creating dist with {} bootstrap'.format(bs.name))
+    log.info("Creating dist with %s bootstrap", bs.name)
     bs.distribution = dist
     info_notify('Dist will have name {} and requirements ({})'.format(dist.name, ', '.join(dist.recipes)))
     info('Dist contains the following requirements as recipes: {}'.format(ctx.recipe_build_order))
@@ -102,7 +103,7 @@ def _build_dist_from_args(ctx, dist, args):
         ctx.prepare_dist()
     build_recipes(build_order, python_modules, ctx, getattr(args, "private", None))
     ctx.bootstrap.run_distribute()
-    info_main('# Your distribution was created successfully, exiting.')
+    log.info('Your distribution was created successfully, exiting.')
     info('Dist can be found at (for now) {}'.format(join(ctx.dist_dir, ctx.distribution.dist_dir)))
 
 def split_argument_list(l):
@@ -384,8 +385,7 @@ class ToolchainCL:
                 apk_dir = join(dist.dist_dir, "bin")
                 apk_glob = "*-*-{}.apk"
                 apk_add_version = False
-        info_main('# Copying APK to current directory')
-
+        log.info('Copying APK to current directory')
         apk_re = re.compile(r'.*Package: (.*\.apk)$')
         apk_file = None
         for line in reversed(output.splitlines()):
@@ -395,7 +395,7 @@ class ToolchainCL:
                 break
 
         if not apk_file:
-            info_main('# APK filename not found in build output. Guessing...')
+            log.info('APK filename not found in build output. Guessing...')
             if args.build_mode == "release":
                 suffixes = ("release", "release-unsigned")
             else:
@@ -410,8 +410,7 @@ class ToolchainCL:
                     break
             else:
                 raise BuildInterruptingException('Couldn\'t find the built APK')
-
-        info_main('# Found APK file: {}'.format(apk_file))
+        log.info("Found APK file: %s", apk_file)
         if apk_add_version:
             info('# Add version number to APK')
             apk_name = basename(apk_file)[:-len(APK_SUFFIX)]
