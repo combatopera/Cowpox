@@ -190,7 +190,6 @@ class ToolchainCL:
         setup_color(args.color)
         if args.debug:
             logger.setLevel(logging.DEBUG)
-        ctx = Context()
         if hasattr(args, 'requirements'):
             requirements = []
             for requirement in _split_argument_list(args.requirements):
@@ -201,15 +200,16 @@ class ToolchainCL:
                 requirements.append(requirement)
             args.requirements = ','.join(requirements)
         self.storage_dir = args.storage_dir
+        ctx = Context()
         ctx.setup_dirs(self.storage_dir)
         ctx.symlink_java_src = args.symlink_java_src
         ctx.local_recipes = args.local_recipes
         ctx.copy_libs = args.copy_libs
+        ctx.set_archs(_split_argument_list(args.arch))
+        ctx.prepare_build_environment(args.ndk_api)
         getattr(self, args.command)(args, ctx, self._require_prebuilt_dist(args, ctx))
 
     def _require_prebuilt_dist(self, args, ctx):
-        ctx.set_archs(_split_argument_list(args.arch))
-        ctx.prepare_build_environment(args.ndk_api)
         dist = _dist_from_args(ctx, args)
         ctx.distribution = dist
         if dist.needs_build:
