@@ -209,7 +209,7 @@ class ToolchainCL:
         self._archs = _split_argument_list(args.arch)
         ctx.local_recipes = args.local_recipes
         ctx.copy_libs = args.copy_libs
-        getattr(self, args.command)(args, self._require_prebuilt_dist(args, ctx))
+        getattr(self, args.command)(args, ctx, self._require_prebuilt_dist(args, ctx))
 
     @property
     def default_storage_dir(self):
