@@ -172,7 +172,6 @@ def split_argument_list(l):
 class ToolchainCL:
 
     def __init__(self):
-        parser = ArgumentParser(allow_abbrev = False)
         generic_parser = ArgumentParser(add_help = False)
         generic_parser.add_argument(
             '--debug', dest='debug', action='store_true', default=False,
@@ -272,7 +271,9 @@ class ToolchainCL:
             default=False,
             description='Copy libraries instead of using biglink (Android 4.3+)'
         )
+        parser = ArgumentParser(allow_abbrev = False)
         subparsers = parser.add_subparsers(dest = 'command')
+        subparsers.add_parser('create', parents = [generic_parser])
         parser_apk = subparsers.add_parser('apk', parents = [generic_parser])
         parser_apk.add_argument('--private')
         parser_apk.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
@@ -280,8 +281,7 @@ class ToolchainCL:
         parser_apk.add_argument('--signkey')
         parser_apk.add_argument('--keystorepw')
         parser_apk.add_argument('--signkeypw')
-        subparsers.add_parser('create', parents = [generic_parser])
-        args, unknown = parser.parse_known_args(sys.argv[1:])
+        args, unknown = parser.parse_known_args()
         args.unknown_args = unknown
         if hasattr(args, "private") and args.private is not None:
             args.unknown_args += ["--private", args.private]
