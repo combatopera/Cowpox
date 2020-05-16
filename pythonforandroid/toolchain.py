@@ -64,17 +64,14 @@ class ArgumentParser(argparse.ArgumentParser):
     dest = name.strip("-").replace("-", "_")
     def add_dashes(x):
         return x if x.startswith("-") else "--"+x
-    opts = [add_dashes(name)]
     group.add_argument(
-        *opts, help=("(this is the default)" if default else None),
+        add_dashes(name), help=("(this is the default)" if default else None),
         dest=dest, action='store_true')
     def add_no(x):
         x = x.lstrip("-")
         return ("no_"+x) if "_" in x else ("no-"+x)
-    no_names = [add_no(name)]
-    opts = [add_dashes(x) for x in no_names]
     group.add_argument(
-        *opts, help=(None if default else "(this is the default)"),
+        add_dashes(add_no(name)), help=(None if default else "(this is the default)"),
         dest=dest, action='store_false')
     self.set_defaults(**{dest: default})
 
