@@ -335,7 +335,6 @@ class TargetAndroid:
         package = self._get_package()
         version = self.config.get_version()
         self._update_libraries_references(dist_dir)
-        self._add_java_src(dist_dir)
         self._generate_whitelist(dist_dir)
         build_cmd = [
             "--name", config.get('app', 'title'),
@@ -485,17 +484,3 @@ class TargetAndroid:
             for index, ref in enumerate(references):
                 fd.write(u'android.library.reference.{}={}\n'.format(index + 1, ref))
         log.debug('project.properties updated')
-
-    def _add_java_src(self, dist_dir):
-        java_src = self.config.getlist('app', 'android.add_src', [])
-        gradle_files = ["build.gradle", "gradle", "gradlew"]
-        if any((dist_dir / x).exists() for x in gradle_files):
-            src_dir = dist_dir / "src" / "main" / "java"
-            log.info("Gradle project detected, copy files %s", src_dir)
-        else:
-            src_dir = dist_dir / 'src'
-            log.info("Ant project detected, copy files in %s", src_dir)
-        for pattern in java_src:
-            for fn in glob(expanduser(pattern.strip())):
-                last_component = basename(fn)
-                _file_copytree(fn, src_dir / last_component)
