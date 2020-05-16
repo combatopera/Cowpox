@@ -265,23 +265,9 @@ class Context:
         self.ndk_dir = Path(os.environ['ANDROIDNDK']).resolve()
         log.info("Found NDK dir in $ANDROIDNDK: %s", self.ndk_dir)
         check_ndk_version(self.ndk_dir)
-        ndk_api = None
-        if user_ndk_api:
-            ndk_api = user_ndk_api
-            info('Getting NDK API version (i.e. minimum supported API) from user argument')
-        elif 'NDKAPI' in environ:
-            ndk_api = environ.get('NDKAPI', None)
-            info('Found Android API target in $NDKAPI')
-        else:
-            ndk_api = min(self.android_api, RECOMMENDED_NDK_API)
-            warning('NDK API target was not set manually, using '
-                    'the default of {} = min(android-api={}, default ndk-api={})'.format(
-                        ndk_api, self.android_api, RECOMMENDED_NDK_API))
-        ndk_api = int(ndk_api)
-        self.ndk_api = ndk_api
-
-        check_ndk_api(ndk_api, self.android_api)
-
+        log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
+        check_ndk_api(user_ndk_api, self.android_api)
+        self.ndk_api = user_ndk_api
         virtualenv = get_virtualenv_executable()
         if virtualenv is None:
             raise IOError('Couldn\'t find a virtualenv executable, '

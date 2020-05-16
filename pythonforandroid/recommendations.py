@@ -181,16 +181,10 @@ TARGET_NDK_API_GREATER_THAN_TARGET_API_MESSAGE = (
     'higher than the target Android API {android_api}.'
 )
 
-
 def check_ndk_api(ndk_api, android_api):
-    """Warn if the user's NDK is too high or low."""
     if ndk_api > android_api:
         raise BuildInterruptingException(
-            TARGET_NDK_API_GREATER_THAN_TARGET_API_MESSAGE.format(
-                ndk_api=ndk_api, android_api=android_api
-            ),
-            instructions=('The NDK API is a minimum supported API number and must be lower '
-                          'than the target Android API'))
-
+                TARGET_NDK_API_GREATER_THAN_TARGET_API_MESSAGE.format(ndk_api = ndk_api, android_api = android_api),
+                instructions = 'The NDK API is a minimum supported API number and must be lower than the target Android API')
     if ndk_api < MIN_NDK_API:
         warning(OLD_NDK_API_MESSAGE)
