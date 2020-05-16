@@ -291,11 +291,6 @@ class ToolchainCL:
             help='Delete all dists',
             parents=[generic_parser])
         subparsers.add_parser(
-            'clean_bootstrap_builds',
-            aliases=['clean-bootstrap-builds'],
-            help='Delete all bootstrap builds',
-            parents=[generic_parser])
-        subparsers.add_parser(
             'clean_builds',
             aliases=['clean-builds'],
             help='Delete all builds',
@@ -479,16 +474,6 @@ class ToolchainCL:
         ctx = self.ctx
         if exists(ctx.dist_dir):
             shutil.rmtree(ctx.dist_dir)
-
-    def clean_bootstrap_builds(self, _args):
-        """Delete all the bootstrap builds."""
-        if exists(join(self.ctx.build_dir, 'bootstrap_builds')):
-            shutil.rmtree(join(self.ctx.build_dir, 'bootstrap_builds'))
-        # for bs in Bootstrap.all_bootstraps():
-        #     bs = Bootstrap.get_bootstrap(bs, self.ctx)
-        #     if bs.build_dir and exists(bs.build_dir):
-        #         info('Cleaning build for {} bootstrap.'.format(bs.name))
-        #         shutil.rmtree(bs.build_dir)
 
     def clean_builds(self, _args):
         """Delete all build caches for each recipe, python-install, java code
