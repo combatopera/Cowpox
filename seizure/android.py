@@ -261,22 +261,13 @@ class TargetAndroid:
         self._p4a('create', f"--dist_name={dist_name}", f"--bootstrap={self._p4a_bootstrap}", f"--requirements={requirements}", '--arch', self._arch, *options)
 
     def _get_dist_dir(self, dist_name, arch):
-        """Find the dist dir with the given name and target arch, if one
-        already exists, otherwise return a new dist_dir name.
-        """
-        expected_dist_name = generate_dist_folder_name(dist_name, arch_names=[arch])
-
-        # If the expected dist name does exist, simply use that
+        expected_dist_name = generate_dist_folder_name(dist_name, arch_names = [arch])
         expected_dist_dir = self._build_dir / 'dists' / expected_dist_name
         if expected_dist_dir.exists():
             return expected_dist_dir
-        # For backwards compatibility, check if a directory without
-        # the arch exists. If so, this is probably the target dist.
         old_dist_dir = self._build_dir / 'dists' / dist_name
         if old_dist_dir.exists():
             return old_dist_dir
-        # If no directory has been found yet, our dist probably
-        # doesn't exist yet, so use the expected name
         return expected_dist_dir
 
     def _get_local_recipes_dir(self):
@@ -339,10 +330,8 @@ class TargetAndroid:
         return package.lower()
 
     def _generate_whitelist(self, dist_dir):
-        p4a_whitelist = self.config.getlist(
-            'app', 'android.whitelist') or []
-        whitelist_fn = join(dist_dir, 'whitelist.txt')
-        with open(whitelist_fn, 'w') as fd:
+        p4a_whitelist = self.config.getlist('app', 'android.whitelist') or []
+        with (dist_dir / 'whitelist.txt').open('w') as fd:
             for wl in p4a_whitelist:
                 fd.write(wl + '\n')
 
@@ -533,17 +522,14 @@ class TargetAndroid:
 
     def _add_java_src(self, dist_dir):
         java_src = self.config.getlist('app', 'android.add_src', [])
-
         gradle_files = ["build.gradle", "gradle", "gradlew"]
-        is_gradle_build = any((
-            exists(join(dist_dir, x)) for x in gradle_files))
-        if is_gradle_build:
-            src_dir = join(dist_dir, "src", "main", "java")
+        if any((dist_dir / x).exists() for x in gradle_files):
+            src_dir = dist_dir / "src" / "main" / "java"
             log.info("Gradle project detected, copy files %s", src_dir)
         else:
-            src_dir = join(dist_dir, 'src')
+            src_dir = dist_dir / 'src'
             log.info("Ant project detected, copy files in %s", src_dir)
         for pattern in java_src:
             for fn in glob(expanduser(pattern.strip())):
                 last_component = basename(fn)
-                _file_copytree(fn, join(src_dir, last_component))
+                _file_copytree(fn, src_dir / last_component)
