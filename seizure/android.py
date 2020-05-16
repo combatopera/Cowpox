@@ -46,7 +46,6 @@ from diapyr import types
 from distutils.version import LooseVersion
 from lagoon import tar, unzip, yes
 from lagoon.program import Program
-from os.path import basename
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
 from shutil import copyfile
@@ -385,10 +384,7 @@ class TargetAndroid:
         is_gradle_build = build_tools_version >= "25.0" and any((dist_dir / x).exists() for x in gradle_files)
         packagename = config.get('app', 'package.name')
         if is_gradle_build:
-            # on gradle build, the apk use the package name, and have no version
-            packagename_src = basename(dist_dir)  # gradle specifically uses the folder name
-            apk = u'{packagename}-{mode}.apk'.format(
-                packagename=packagename_src, mode=mode)
+            apk = f'{dist_dir.name}-{mode}.apk'
             apk_dir = dist_dir / "build" / "outputs" / "apk" / mode_sign
         else:
             # on ant, the apk use the title, and have version
