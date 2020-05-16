@@ -43,7 +43,7 @@
 from .bootstrap import Bootstrap
 from .build import Context, build_recipes
 from .distribution import Distribution
-from .graph import get_recipe_order_and_bootstrap
+from .graph import get_recipe_order
 from .logger import logger, setup_color, shprint
 from .recommendations import RECOMMENDED_NDK_API
 from .util import BuildInterruptingException, current_directory
@@ -93,7 +93,7 @@ def _build_dist_from_args(ctx, dist, args):
     blacklist = getattr(args, "blacklist_requirements", "").split(",")
     if blacklist == ['']:
         blacklist = []
-    build_order, python_modules, bs = get_recipe_order_and_bootstrap(ctx, dist.recipes, bs, blacklist)
+    build_order, python_modules = get_recipe_order(ctx, dist.recipes, bs, blacklist)
     assert not set(build_order) & set(python_modules)
     ctx.recipe_build_order = build_order
     ctx.python_modules = python_modules
