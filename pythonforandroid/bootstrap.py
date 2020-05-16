@@ -41,9 +41,10 @@
 from .logger import shprint, info, logger, debug
 from .recipe import Recipe
 from .util import current_directory, ensure_dir, temp_directory, BuildInterruptingException
+from importlib import import_module
 from os import listdir, walk, sep
 from os.path import join, dirname, isdir, normpath, splitext, basename
-import functools, glob, importlib, os, sh, shlex, shutil
+import functools, glob, os, sh, shlex, shutil
 
 def copy_files(src_root, dest_root, override=True):
     for root, dirnames, filenames in walk(src_root):
@@ -98,26 +99,12 @@ class Bootstrap:
     name = ''
     jni_subdir = '/jni'
     ctx = None
-
     bootstrap_dir = None
-
     build_dir = None
     dist_name = None
     distribution = None
-
-    # All bootstraps should include Python in some way:
     recipe_depends = [("python2", "python3"), 'android']
-
     can_be_chosen_automatically = True
-    '''Determines whether the bootstrap can be chosen as one that
-    satisfies user requirements. If False, it will not be returned
-    from Bootstrap.get_bootstrap_from_recipes.
-    '''
-
-    # Other things a Bootstrap might need to track (maybe separately):
-    # ndk_main.c
-    # whitelist.txt
-    # blacklist.txt
 
     @property
     def dist_dir(self):
@@ -296,22 +283,7 @@ class Bootstrap:
 
     @classmethod
     def get_bootstrap(cls, name, ctx):
-        '''Returns an instance of a bootstrap with the given name.
-
-        This is the only way you should access a bootstrap class, as
-        it sets the bootstrap directory correctly.
-        '''
-        if name is None:
-            return None
-        if not hasattr(cls, 'bootstraps'):
-            cls.bootstraps = {}
-        if name in cls.bootstraps:
-            return cls.bootstraps[name]
-        mod = importlib.import_module('pythonforandroid.bootstraps.{}'
-                                      .format(name))
-        if len(logger.handlers) > 1:
-            logger.removeHandler(logger.handlers[1])
-        bootstrap = mod.bootstrap
+        bootstrap = import_module(f"pythonforandroid.bootstraps.{name}").bootstrap
         bootstrap.bootstrap_dir = join(ctx.root_dir, 'bootstraps', name)
         bootstrap.ctx = ctx
         return bootstrap
