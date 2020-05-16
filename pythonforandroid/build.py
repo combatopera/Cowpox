@@ -244,7 +244,7 @@ class Context:
     def ndk_dir(self, value):
         self._ndk_dir = value
 
-    def prepare_build_environment(self, user_ndk_dir, user_android_api, user_ndk_api):
+    def prepare_build_environment(self, user_android_api, user_ndk_api):
         self.ensure_dirs()
         if self._build_env_prepared:
             return
@@ -275,13 +275,7 @@ class Context:
             raise BuildInterruptingException(
                 ('Requested API target {} is not available, install '
                  'it with the SDK android tool.').format(android_api))
-
-        # Find the Android NDK
-        # Could also use ANDROID_NDK, but doesn't look like many tools use this
         ndk_dir = None
-        if user_ndk_dir:
-            ndk_dir = user_ndk_dir
-            info('Getting NDK dir from from user argument')
         if ndk_dir is None:  # The old P4A-specific dir
             ndk_dir = environ.get('ANDROIDNDK', None)
             if ndk_dir is not None:

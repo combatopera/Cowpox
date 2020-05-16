@@ -246,10 +246,7 @@ class ToolchainCL:
 
     def _require_prebuilt_dist(self, args):
         self.ctx.set_archs(self._archs)
-        self.ctx.prepare_build_environment(
-                user_ndk_dir = '',
-                user_android_api = self.android_api,
-                user_ndk_api = self.ndk_api)
+        self.ctx.prepare_build_environment(self.android_api, self.ndk_api)
         if self._dist.needs_build:
             if self._dist.folder_exists():
                 self._dist.delete()
