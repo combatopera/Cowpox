@@ -223,7 +223,6 @@ class ToolchainCL:
             help=('If True, symlinks the java src folder during build and dist '
                   'creation. This is useful for development only, it could also'
                   ' cause weird problems.'))
-
         default_storage_dir = user_data_dir('python-for-android')
         if ' ' in default_storage_dir:
             default_storage_dir = '~/.python-for-android'
@@ -231,77 +230,63 @@ class ToolchainCL:
             '--storage-dir', dest='storage_dir', default=default_storage_dir,
             help=('Primary storage directory for downloads and builds '
                   '(default: {})'.format(default_storage_dir)))
-
         generic_parser.add_argument(
             '--arch', help='The arch to build for.',
             default='armeabi-v7a')
-
-        # Options for specifying the Distribution
         generic_parser.add_argument(
             '--dist-name', '--dist_name',
             help='The name of the distribution to use or create', default='')
-
         generic_parser.add_argument(
             '--requirements',
             help=('Dependencies of your app, should be recipe names or '
                   'Python modules. NOT NECESSARY if you are using '
                   'Python 3 with --use-setup-py'),
             default='')
-
         generic_parser.add_argument(
             '--recipe-blacklist',
             help=('Blacklist an internal recipe from use. Allows '
                   'disabling Python 3 core modules to save size'),
             dest="recipe_blacklist",
             default='')
-
         generic_parser.add_argument(
             '--blacklist-requirements',
             help=('Blacklist an internal recipe from use. Allows '
                   'disabling Python 3 core modules to save size'),
             dest="blacklist_requirements",
             default='')
-
         generic_parser.add_argument(
             '--bootstrap',
             help='The bootstrap to build with. Leave unset to choose '
                  'automatically.',
             default=None)
-
         generic_parser.add_argument(
             '--hook',
             help='Filename to a module that contains python-for-android hooks',
             default=None)
-
         add_boolean_option(
             generic_parser, ["force-build"],
             default=False,
             description='Whether to force compilation of a new distribution')
-
         add_boolean_option(
             generic_parser, ["require-perfect-match"],
             default=False,
             description=('Whether the dist recipes must perfectly match '
                          'those requested'))
-
         add_boolean_option(
             generic_parser, ["allow-replace-dist"],
             default=True,
             description='Whether existing dist names can be automatically replaced'
             )
-
         generic_parser.add_argument(
             '--local-recipes', '--local_recipes',
             dest='local_recipes', default='./p4a-recipes',
             help='Directory to look for local recipes')
-
         generic_parser.add_argument(
             '--java-build-tool',
             dest='java_build_tool', default='auto',
             choices=['auto', 'ant', 'gradle'],
             help=('The java build tool to use when packaging the APK, defaults '
                   'to automatically selecting an appropriate tool.'))
-
         add_boolean_option(
             generic_parser, ['copy-libs'],
             default=False,
@@ -349,7 +334,6 @@ class ToolchainCL:
             aliases=['clean-builds'],
             help='Delete all builds',
             parents=[generic_parser])
-
         parser_clean = add_parser(
             subparsers, 'clean',
             help='Delete build components.',
@@ -359,7 +343,6 @@ class ToolchainCL:
             help=('The build component(s) to delete. You can pass any '
                   'number of arguments from "all", "builds", "dists", '
                   '"distributions", "bootstrap_builds", "downloads".'))
-
         parser_clean_recipe_build = add_parser(
             subparsers,
             'clean_recipe_build', aliases=['clean-recipe-build'],
@@ -373,7 +356,6 @@ class ToolchainCL:
             dest='no_clean_dists',
             action='store_true',
             help='If passed, do not delete existing dists')
-
         parser_clean_download_cache = add_parser(
             subparsers,
             'clean_download_cache', aliases=['clean-download-cache'],
@@ -384,7 +366,6 @@ class ToolchainCL:
             nargs='*',
             help='The recipes to clean (space-separated). If no recipe name is'
                   ' provided, the entire cache is cleared.')
-
         parser_export_dist = add_parser(
             subparsers,
             'export_dist', aliases=['export-dist'],
@@ -396,16 +377,10 @@ class ToolchainCL:
             '--symlink',
             action='store_true',
             help='Symlink the dist instead of copying')
-
         parser_apk = add_parser(
             subparsers,
             'apk', help='Build an APK',
             parents=[generic_parser])
-        # This is actually an internal argument of the build.py
-        # (see pythonforandroid/bootstraps/common/build/build.py).
-        # However, it is also needed before the distribution is finally
-        # assembled for locating the setup.py / other build systems, which
-        # is why we also add it here:
         parser_apk.add_argument(
             '--private', dest='private',
             help='the directory with the app source code files' +
@@ -441,7 +416,6 @@ class ToolchainCL:
         parser_apk.add_argument(
             '--signkeypw', dest='signkeypw', action='store', default=None,
             help='Password for key alias')
-
         add_parser(
             subparsers,
             'create', help='Compile a set of requirements into a dist',
@@ -459,7 +433,6 @@ class ToolchainCL:
             subparsers,
             'delete_dist', aliases=['delete-dist'], help='Delete a compiled dist',
             parents=[generic_parser])
-
         parser_sdk_tools = add_parser(
             subparsers,
             'sdk_tools', aliases=['sdk-tools'],
@@ -467,7 +440,6 @@ class ToolchainCL:
             parents=[generic_parser])
         parser_sdk_tools.add_argument(
             'tool', help='The binary tool name to run')
-
         add_parser(
             subparsers,
             'adb', help='Run adb from the given SDK',
@@ -481,15 +453,10 @@ class ToolchainCL:
             'build_status', aliases=['build-status'],
             help='Print some debug information about current built components',
             parents=[generic_parser])
-
-        parser.add_argument('-v', '--version', action='version',
-                            version=__version__)
-
+        parser.add_argument('-v', '--version', action='version', version=__version__)
         args, unknown = parser.parse_known_args(sys.argv[1:])
         args.unknown_args = unknown
-
         if hasattr(args, "private") and args.private is not None:
-            # Pass this value on to the internal bootstrap build.py:
             args.unknown_args += ["--private", args.private]
         if hasattr(args, "ignore_setup_py") and args.ignore_setup_py:
             args.use_setup_py = False
