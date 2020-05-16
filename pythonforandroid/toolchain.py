@@ -306,10 +306,6 @@ class ToolchainCL:
             'create', help='Compile a set of requirements into a dist',
             parents=[generic_parser])
         subparsers.add_parser(
-            'distributions', aliases=['dists'],
-            help='List the currently available (compiled) dists',
-            parents=[generic_parser])
-        subparsers.add_parser(
             'delete_dist', aliases=['delete-dist'], help='Delete a compiled dist',
             parents=[generic_parser])
         parser_sdk_tools = subparsers.add_parser(
@@ -550,24 +546,6 @@ class ToolchainCL:
         any recipes if necessary, and build the apk.
         """
         pass  # The decorator does everything
-
-    def dists(self, args):
-        """The same as :meth:`distributions`."""
-        self.distributions(args)
-
-    def distributions(self, _args):
-        """Lists all distributions currently available (i.e. that have already
-        been built)."""
-        ctx = self.ctx
-        dists = Distribution.get_distributions(ctx)
-
-        if dists:
-            print('{Style.BRIGHT}Distributions currently installed are:'
-                  '{Style.RESET_ALL}'.format(Style=Out_Style))
-            pretty_log_dists(dists, print)
-        else:
-            print('{Style.BRIGHT}There are no dists currently built.'
-                  '{Style.RESET_ALL}'.format(Style=Out_Style))
 
     def delete_dist(self, _args):
         dist = self._dist
