@@ -41,8 +41,7 @@
 from .logger import info, info_notify, warning, Err_Style, Err_Fore
 from .util import current_directory, BuildInterruptingException
 from os.path import exists, join
-from shutil import rmtree
-import glob, json
+import glob, json, shutil
 
 class Distribution:
     '''State container for information about a distribution (i.e. an
@@ -228,7 +227,7 @@ class Distribution:
         return exists(self.dist_dir)
 
     def delete(self):
-        rmtree(self.dist_dir)
+        shutil.rmtree(self.dist_dir)
 
     @classmethod
     def get_distributions(cls, ctx, extra_dist_dirs=[]):
