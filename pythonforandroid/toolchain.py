@@ -193,7 +193,7 @@ class ToolchainCL:
         setup_color(args.color)
         if args.debug:
             logger.setLevel(logging.DEBUG)
-        self.ctx = Context()
+        ctx = Context()
         if hasattr(args, 'requirements'):
             requirements = []
             for requirement in _split_argument_list(args.requirements):
@@ -204,12 +204,12 @@ class ToolchainCL:
                 requirements.append(requirement)
             args.requirements = ','.join(requirements)
         self.storage_dir = args.storage_dir
-        self.ctx.setup_dirs(self.storage_dir)
-        self.ctx.symlink_java_src = args.symlink_java_src
+        ctx.setup_dirs(self.storage_dir)
+        ctx.symlink_java_src = args.symlink_java_src
         self._archs = _split_argument_list(args.arch)
-        self.ctx.local_recipes = args.local_recipes
-        self.ctx.copy_libs = args.copy_libs
-        getattr(self, args.command)(args, self._require_prebuilt_dist(args))
+        ctx.local_recipes = args.local_recipes
+        ctx.copy_libs = args.copy_libs
+        getattr(self, args.command)(args, self._require_prebuilt_dist(args, ctx))
 
     @property
     def default_storage_dir(self):
@@ -218,22 +218,22 @@ class ToolchainCL:
             udd = '~/.python-for-android'
         return udd
 
-    def _require_prebuilt_dist(self, args):
-        self.ctx.set_archs(self._archs)
-        self.ctx.prepare_build_environment(args.ndk_api)
-        dist = _dist_from_args(self.ctx, args)
-        self.ctx.distribution = dist
+    def _require_prebuilt_dist(self, args, ctx):
+        ctx.set_archs(self._archs)
+        ctx.prepare_build_environment(args.ndk_api)
+        dist = _dist_from_args(ctx, args)
+        ctx.distribution = dist
         if dist.needs_build:
             if dist.folder_exists():
                 dist.delete()
             log.info('No dist exists that meets your requirements, so one will be built.')
-            _build_dist_from_args(self.ctx, dist, args)
+            _build_dist_from_args(ctx, dist, args)
         return dist
 
-    def create(self, args, dist):
+    def create(self, args, ctx, dist):
         pass
 
-    def apk(self, args, dist):
+    def apk(self, args, ctx, dist):
         fix_args = '--dir', '--private', '--add-jar', '--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'
         unknown_args = args.unknown_args
         for i, arg in enumerate(unknown_args):
@@ -258,10 +258,10 @@ class ToolchainCL:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.keystorepw
         build = imp.load_source('build', join(dist.dist_dir, 'build.py'))
         with current_directory(dist.dist_dir):
-            os.environ["ANDROID_API"] = str(self.ctx.android_api)
+            os.environ["ANDROID_API"] = str(ctx.android_api)
             build_args = build.parse_args(args.unknown_args)
             log.info('Selecting java build tool:')
-            build_tools_versions = os.listdir(join(self.ctx.sdk_dir, 'build-tools'))
+            build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
             build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
             build_tools_version = build_tools_versions[-1]
             log.info("Detected highest available build tools version to be %s", build_tools_version)
@@ -275,8 +275,8 @@ class ToolchainCL:
                 else:
                     log.info('    Building with ant, as no gradle executable detected')
             if build_type == 'gradle':
-                env['ANDROID_NDK_HOME'] = str(self.ctx.ndk_dir)
-                env['ANDROID_HOME'] = str(self.ctx.sdk_dir)
+                env['ANDROID_NDK_HOME'] = str(ctx.ndk_dir)
+                env['ANDROID_HOME'] = str(ctx.sdk_dir)
                 gradlew = sh.Command('./gradlew')
                 if Path('/usr/bin/dos2unix').exists():
                     # .../dists/bdisttest_python3/gradlew
