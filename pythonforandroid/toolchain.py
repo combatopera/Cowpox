@@ -305,12 +305,6 @@ class ToolchainCL:
         subparsers.add_parser(
             'create', help='Compile a set of requirements into a dist',
             parents=[generic_parser])
-        subparsers.add_parser(
-            'adb', help='Run adb from the given SDK',
-            parents=[generic_parser])
-        subparsers.add_parser(
-            'logcat', help='Run logcat from the given SDK',
-            parents=[generic_parser])
         parser.add_argument('-v', '--version', action='version', version=__version__)
         args, unknown = parser.parse_known_args(sys.argv[1:])
         args.unknown_args = unknown
@@ -533,36 +527,6 @@ class ToolchainCL:
         any recipes if necessary, and build the apk.
         """
         pass  # The decorator does everything
-
-    def adb(self, args):
-        """Runs the adb binary from the detected SDK directory, passing all
-        arguments straight to it. This is intended as a convenience
-        function if adb is not in your $PATH.
-        """
-        self._adb(args.unknown_args)
-
-    def logcat(self, args):
-        """Runs ``adb logcat`` using the adb binary from the detected SDK
-        directory. All extra args are passed as arguments to logcat."""
-        self._adb(['logcat'] + args.unknown_args)
-
-    def _adb(self, commands):
-        """Call the adb executable from the SDK, passing the given commands as
-        arguments."""
-        ctx = self.ctx
-        ctx.prepare_build_environment(user_sdk_dir=self.sdk_dir,
-                                      user_ndk_dir=self.ndk_dir,
-                                      user_android_api=self.android_api,
-                                      user_ndk_api=self.ndk_api)
-        if platform in ('win32', 'cygwin'):
-            adb = sh.Command(join(ctx.sdk_dir, 'platform-tools', 'adb.exe'))
-        else:
-            adb = sh.Command(join(ctx.sdk_dir, 'platform-tools', 'adb'))
-        info_notify('Starting adb...')
-        output = adb(*commands, _iter=True, _out_bufsize=1, _err_to_out=True)
-        for line in output:
-            sys.stdout.write(line)
-            sys.stdout.flush()
 
 def main():
     ToolchainCL()
