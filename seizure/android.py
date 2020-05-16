@@ -278,8 +278,7 @@ class TargetAndroid:
             for permission in config.getlist('app', 'android.permissions', []):
                 permission = permission.split('.')
                 permission[-1] = permission[-1].upper()
-                permission = '.'.join(permission)
-                yield from ["--permission", permission]
+                yield from ["--permission", '.'.join(permission)]
             for option in config.getlist('app', 'android.add_compile_options', []):
                 yield from ['--add-compile-option', option]
             for repo in config.getlist('app','android.add_gradle_repositories', []):
@@ -288,20 +287,19 @@ class TargetAndroid:
                 yield from ['--add-packaging-option', pkgoption]
             for meta in config.getlistvalues('app', 'android.meta_data', []):
                 yield from ["--meta-data", '='.join(korv.strip() for korv in meta.split('=', 1))]
-        for activity in config.getlist('app', 'android.add_activities', []):
-            build_cmd += ["--add-activity", activity]
-        presplash = config.getdefault('app', 'presplash.filename', '')
-        if presplash:
-            build_cmd += ["--presplash", self.config.workspace / presplash]
-        icon = config.getdefault('app', 'icon.filename', '')
-        if icon:
-            build_cmd += ["--icon", self.config.workspace / icon]
-        ouya_category = config.getdefault('app', 'android.ouya.category', '').upper()
-        if ouya_category:
-            if ouya_category not in {'GAME', 'APP'}:
-                raise SystemError(f'Invalid android.ouya.category: "{ouya_category}" must be one of GAME or APP')
-            ouya_icon = config.getdefault('app', 'android.ouya.icon.filename', '')
-            build_cmd += ["--ouya-category", ouya_category, "--ouya-icon", self.config.workspace / ouya_icon]
+            for activity in config.getlist('app', 'android.add_activities', []):
+                yield from ["--add-activity", activity]
+            presplash = config.getdefault('app', 'presplash.filename', '')
+            if presplash:
+                yield from ["--presplash", self.config.workspace / presplash]
+            icon = config.getdefault('app', 'icon.filename', '')
+            if icon:
+                yield from ["--icon", self.config.workspace / icon]
+            ouya_category = config.getdefault('app', 'android.ouya.category', '').upper()
+            if ouya_category:
+                if ouya_category not in {'GAME', 'APP'}:
+                    raise SystemError(f'Invalid android.ouya.category: "{ouya_category}" must be one of GAME or APP')
+                yield from ["--ouya-category", ouya_category, "--ouya-icon", self.config.workspace / config.getdefault('app', 'android.ouya.icon.filename', '')]
         if self.bootstrapname != 'service_only':
             orientation = config.getdefault('app', 'orientation', 'landscape')
             if orientation == 'all':
