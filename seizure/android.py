@@ -202,8 +202,7 @@ class TargetAndroid:
         self._install_android_packages()
 
     def compile_platform(self):
-        requirements = self.config.getlist('app', 'requirements', '')
-        self._p4a('create', '--requirements', ','.join(requirements))
+        self._p4a('create', '--requirements', ','.join(self.config.getlist('app', 'requirements', '')))
 
     def _get_dist_dir(self):
         expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self.arch])
@@ -220,8 +219,7 @@ class TargetAndroid:
             presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
             if presplash_color:
                 yield from ['--presplash-color', presplash_color]
-            services = self.config.getlist('app', 'services', [])
-            for service in services:
+            for service in self.config.getlist('app', 'services', []):
                 yield from ['--service', service]
             for lib in self.config.getlist('app', 'android.uses_library', ''):
                 yield from ['--uses-library', lib]
