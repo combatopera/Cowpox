@@ -285,16 +285,6 @@ class ToolchainCL:
             "--compact",
             action="store_true", default=False,
             help="Produce a compact list suitable for scripting")
-        parser_export_dist = subparsers.add_parser(
-            'export_dist', aliases=['export-dist'],
-            help='Copy the named dist to the given path',
-            parents=[generic_parser])
-        parser_export_dist.add_argument('output_dir',
-                                        help='The output dir to copy to')
-        parser_export_dist.add_argument(
-            '--symlink',
-            action='store_true',
-            help='Symlink the dist instead of copying')
         parser_apk = subparsers.add_parser(
             'apk', help='Build an APK',
             parents=[generic_parser])
@@ -448,26 +438,6 @@ class ToolchainCL:
                     print('    {Fore.YELLOW}optional depends: '
                           '{recipe.opt_depends}{Fore.RESET}'
                           .format(recipe=recipe, Fore=Out_Fore))
-
-    @require_prebuilt_dist
-    def export_dist(self, args):
-        """Copies a created dist to an output dir.
-
-        This makes it easy to navigate to the dist to investigate it
-        or call build.py, though you do not in general need to do this
-        and can use the apk command instead.
-        """
-        ctx = self.ctx
-        dist = dist_from_args(ctx, args)
-        if dist.needs_build:
-            raise BuildInterruptingException(
-                'You asked to export a dist, but there is no dist '
-                'with suitable recipes available. For now, you must '
-                ' create one first with the create argument.')
-        if args.symlink:
-            shprint(sh.ln, '-s', dist.dist_dir, args.output_dir)
-        else:
-            shprint(sh.cp, '-r', dist.dist_dir, args.output_dir)
 
     @property
     def _dist(self):
