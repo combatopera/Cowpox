@@ -55,8 +55,6 @@ from pathlib import Path
 import argparse, glob, imp, logging, os, re, sh, sys # FIXME: Retire imp.
 
 log = logging.getLogger(__name__)
-toolchain_dir = dirname(__file__)
-sys.path.insert(0, join(toolchain_dir, "tools", "external"))
 APK_SUFFIX = '.apk'
 
 class ArgumentParser(argparse.ArgumentParser):
