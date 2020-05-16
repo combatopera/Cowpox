@@ -261,7 +261,7 @@ class TargetAndroid:
         version = self.config.get_version()
         self._update_libraries_references(dist_dir)
         self._generate_whitelist(dist_dir)
-        build_cmd = [
+        build_cmd = (
             "--name", config.get('app', 'title'),
             "--version", version,
             "--package", self._get_package(),
@@ -269,7 +269,7 @@ class TargetAndroid:
             "--ndk-api", config.getdefault('app', 'android.minapi', self.android_minapi),
             '--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity'),
             '--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar'),
-        ]
+        )
         def options():
             if config.getbooldefault('app', 'android.private_storage', True):
                 yield from ["--private", self.dirs.app_dir]
@@ -315,16 +315,16 @@ class TargetAndroid:
                 yield from ["--orientation", orientation]
                 if not config.getbooldefault('app', 'fullscreen', True):
                     yield "--window"
+            if self.config.build_mode != 'debug':
+                yield '--release'
+                if self._check_p4a_sign_env(True):
+                    yield '--sign'
+        self._execute_build_package(build_cmd, *options())
         if self.config.build_mode == 'debug':
-            mode = 'debug'
-            mode_sign = mode
+            mode_sign = mode = 'debug'
         else:
-            build_cmd += ['--release']
-            if self._check_p4a_sign_env(True):
-                build_cmd += ['--sign']
             mode_sign = "release"
             mode = self._get_release_mode()
-        self._execute_build_package(build_cmd, *options())
         build_tools_versions = os.listdir(self.dirs.android_sdk_dir / "build-tools")
         build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
         build_tools_version = build_tools_versions[-1]
