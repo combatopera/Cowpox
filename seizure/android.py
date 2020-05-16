@@ -223,8 +223,9 @@ class TargetAndroid:
         options.extend(['--local-recipes', self.local_recipes])
         self._p4a('create', f"--dist_name={dist_name}", f"--bootstrap={self._p4a_bootstrap}", f"--requirements={requirements}", '--arch', self._arch, *options)
 
-    def _get_dist_dir(self, dist_name, arch):
-        expected_dist_name = generate_dist_folder_name(dist_name, arch_names = [arch])
+    def _get_dist_dir(self):
+        dist_name = self.config.get('app', 'package.name')
+        expected_dist_name = generate_dist_folder_name(dist_name, arch_names = [self._arch])
         expected_dist_dir = self._build_dir / 'dists' / expected_dist_name
         if expected_dist_dir.exists():
             return expected_dist_dir
@@ -284,9 +285,7 @@ class TargetAndroid:
                 fd.write(wl + '\n')
 
     def build_package(self):
-        dist_name = self.config.get('app', 'package.name')
-        arch = self.config.getdefault('app', 'android.arch', DEFAULT_ARCH)
-        dist_dir = self._get_dist_dir(dist_name, arch)
+        dist_dir = self._get_dist_dir()
         config = self.config
         package = self._get_package()
         version = self.config.get_version()
