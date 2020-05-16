@@ -273,7 +273,6 @@ class ToolchainCL:
             default=False,
             description='Copy libraries instead of using biglink (Android 4.3+)'
         )
-        self._read_configuration()
         subparsers = parser.add_subparsers(dest = 'command')
         parser_apk = subparsers.add_parser('apk', parents = [generic_parser])
         parser_apk.add_argument('--private')
@@ -326,20 +325,6 @@ class ToolchainCL:
         if ' ' in udd:
             udd = '~/.python-for-android'
         return udd
-
-    @staticmethod
-    def _read_configuration():
-        # search for a .p4a configuration file in the current directory
-        if not exists(".p4a"):
-            return
-        info("Reading .p4a configuration")
-        with open(".p4a") as fd:
-            lines = fd.readlines()
-        lines = [shlex.split(line)
-                 for line in lines if not line.startswith("#")]
-        for line in lines:
-            for arg in line:
-                sys.argv.append(arg)
 
     @property
     def _dist(self):
