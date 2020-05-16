@@ -38,16 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from multiprocessing import cpu_count
+from pythonforandroid.logger import info, info_notify, shprint
 from pythonforandroid.recipe import CppCompiledComponentsPythonRecipe
-from pythonforandroid.logger import shprint, info_notify
 from pythonforandroid.util import current_directory
 from os.path import exists, join
-import sh
-from multiprocessing import cpu_count
-from pythonforandroid.toolchain import info
-import sys
-import os
-
+import os, sh, sys
 
 class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
     """This is a two-in-one recipe:
