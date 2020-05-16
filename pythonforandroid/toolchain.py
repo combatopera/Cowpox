@@ -305,12 +305,6 @@ class ToolchainCL:
         subparsers.add_parser(
             'create', help='Compile a set of requirements into a dist',
             parents=[generic_parser])
-        parser_sdk_tools = subparsers.add_parser(
-            'sdk_tools', aliases=['sdk-tools'],
-            help='Run the given binary from the SDK tools dis',
-            parents=[generic_parser])
-        parser_sdk_tools.add_argument(
-            'tool', help='The binary tool name to run')
         subparsers.add_parser(
             'adb', help='Run adb from the given SDK',
             parents=[generic_parser])
@@ -543,25 +537,6 @@ class ToolchainCL:
         any recipes if necessary, and build the apk.
         """
         pass  # The decorator does everything
-
-    def sdk_tools(self, args):
-        """Runs the android binary from the detected SDK directory, passing
-        all arguments straight to it. This binary is used to install
-        e.g. platform-tools for different API level targets. This is
-        intended as a convenience function if android is not in your
-        $PATH.
-        """
-        ctx = self.ctx
-        ctx.prepare_build_environment(user_sdk_dir=self.sdk_dir,
-                                      user_ndk_dir=self.ndk_dir,
-                                      user_android_api=self.android_api,
-                                      user_ndk_api=self.ndk_api)
-        android = sh.Command(join(ctx.sdk_dir, 'tools', args.tool))
-        output = android(
-            *args.unknown_args, _iter=True, _out_bufsize=1, _err_to_out=True)
-        for line in output:
-            sys.stdout.write(line)
-            sys.stdout.flush()
 
     def adb(self, args):
         """Runs the adb binary from the detected SDK directory, passing all
