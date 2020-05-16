@@ -286,11 +286,6 @@ class ToolchainCL:
             action="store_true", default=False,
             help="Produce a compact list suitable for scripting")
         subparsers.add_parser(
-            'clean_all',
-            aliases=['clean-all'],
-            help='Delete all builds, dists and caches',
-            parents=[generic_parser])
-        subparsers.add_parser(
             'clean_dists',
             aliases=['clean-dists'],
             help='Delete all dists',
@@ -489,13 +484,6 @@ class ToolchainCL:
                     print('    {Fore.YELLOW}optional depends: '
                           '{recipe.opt_depends}{Fore.RESET}'
                           .format(recipe=recipe, Fore=Out_Fore))
-
-    def clean_all(self, args):
-        """Delete all build components; the package cache, package builds,
-        bootstrap builds and distributions."""
-        self.clean_dists(args)
-        self.clean_builds(args)
-        self.clean_download_cache(args)
 
     def clean_dists(self, _args):
         """Delete all compiled distributions in the internal distribution
