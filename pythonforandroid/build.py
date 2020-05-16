@@ -42,7 +42,7 @@ from .archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
 from .logger import info, warning, info_notify, info_main, shprint
 from .pythonpackage import get_package_name
 from .recipe import CythonRecipe, Recipe
-from .recommendations import check_ndk_version, check_target_api, check_ndk_api, RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
+from .recommendations import check_ndk_version, check_target_api, check_ndk_api, RECOMMENDED_NDK_API
 from .util import current_directory, ensure_dir, get_virtualenv_executable, BuildInterruptingException
 from lagoon.program import Program
 from os import environ

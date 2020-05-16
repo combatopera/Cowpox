@@ -149,11 +149,6 @@ def _read_ndk_version(ndk_dir):
     return ndk_version
 
 MIN_TARGET_API = 26
-
-# highest version tested to work fine with SDL2
-# should be a good default for other bootstraps too
-RECOMMENDED_TARGET_API = 27
-
 ARMEABI_MAX_TARGET_API = 21
 OLD_API_MESSAGE = (
     'Target APIs lower than 26 are no longer supported on Google Play, '
@@ -199,14 +194,3 @@ def check_ndk_api(ndk_api, android_api):
 
     if ndk_api < MIN_NDK_API:
         warning(OLD_NDK_API_MESSAGE)
-
-def print_recommendations():
-    """
-    Print the main recommended dependency versions as simple key-value pairs.
-    """
-    print('Min supported NDK version: {}'.format(MIN_NDK_VERSION))
-    print('Recommended NDK version: {}'.format(RECOMMENDED_NDK_VERSION))
-    print('Min target API: {}'.format(MIN_TARGET_API))
-    print('Recommended target API: {}'.format(RECOMMENDED_TARGET_API))
-    print('Min NDK API: {}'.format(MIN_NDK_API))
-    print('Recommended NDK API: {}'.format(RECOMMENDED_NDK_API))

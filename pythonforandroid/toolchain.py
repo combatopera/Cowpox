@@ -45,7 +45,7 @@ from .build import Context, build_recipes
 from .distribution import Distribution
 from .graph import get_recipe_order_and_bootstrap
 from .logger import logger, setup_color, shprint
-from .recommendations import RECOMMENDED_NDK_API, RECOMMENDED_TARGET_API
+from .recommendations import RECOMMENDED_NDK_API
 from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
 from distutils.version import LooseVersion
