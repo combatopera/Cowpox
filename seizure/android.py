@@ -92,6 +92,7 @@ class TargetAndroid:
         self.p4a_apk_cmd = 'apk', '--debug', f"--bootstrap={self._p4a_bootstrap}"
         self.extra_p4a_args = '--color=always', f"--storage-dir={self._build_dir}", f"--ndk-api={config.getdefault('app', 'android.ndk_api', self.android_minapi)}"
         self.local_recipes = config.workspace / 'local_recipes'
+        self.dist_name = self.config.get('app', 'package.name')
         self.config = config
         self.state = state
         self.dirs = dirs
@@ -215,28 +216,25 @@ class TargetAndroid:
 
     def compile_platform(self):
         app_requirements = self.config.getlist('app', 'requirements', '')
-        dist_name = self.config.get('app', 'package.name')
         requirements = ','.join(app_requirements)
         options = []
         if self.config.getbooldefault('app', 'android.copy_libs', True):
             options.append("--copy-libs")
         options.extend(['--local-recipes', self.local_recipes])
-        self._p4a('create', f"--dist_name={dist_name}", f"--bootstrap={self._p4a_bootstrap}", f"--requirements={requirements}", '--arch', self._arch, *options)
+        self._p4a('create', f"--dist_name={self.dist_name}", f"--bootstrap={self._p4a_bootstrap}", f"--requirements={requirements}", '--arch', self._arch, *options)
 
     def _get_dist_dir(self):
-        dist_name = self.config.get('app', 'package.name')
-        expected_dist_name = generate_dist_folder_name(dist_name, arch_names = [self._arch])
+        expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self._arch])
         expected_dist_dir = self._build_dir / 'dists' / expected_dist_name
         if expected_dist_dir.exists():
             return expected_dist_dir
-        old_dist_dir = self._build_dir / 'dists' / dist_name
+        old_dist_dir = self._build_dir / 'dists' / self.dist_name
         if old_dist_dir.exists():
             return old_dist_dir
         return expected_dist_dir
 
     def _execute_build_package(self, build_cmd):
-        dist_name = self.config.get('app', 'package.name')
-        cmd = [*self.p4a_apk_cmd, '--dist_name', dist_name, *build_cmd]
+        cmd = [*self.p4a_apk_cmd, '--dist_name', self.dist_name, *build_cmd]
         presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
         if presplash_color:
             cmd.extend(['--presplash-color', f"{presplash_color}"])
