@@ -50,7 +50,8 @@ from .util import BuildInterruptingException, current_directory
 from appdirs import user_data_dir
 from distutils.version import LooseVersion
 from lagoon import cp
-from os.path import join, dirname, realpath, exists, expanduser, basename
+from os.path import join, dirname, realpath, expanduser, basename
+from pathlib import Path
 import argparse, glob, imp, logging, os, re, sh, sys # FIXME: Retire imp.
 
 log = logging.getLogger(__name__)
@@ -311,7 +312,7 @@ class ToolchainCL:
             build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
             build_tools_version = build_tools_versions[-1]
             log.info("Detected highest available build tools version to be %s", build_tools_version)
-            if build_tools_version >= '25.0' and exists('gradlew'): # TODO: Retire gradlew.
+            if build_tools_version >= '25.0' and Path('gradlew').exists(): # TODO: Retire gradlew.
                 build_type = 'gradle'
                 log.info('    Building with gradle, as gradle executable is present')
             else:
@@ -325,7 +326,7 @@ class ToolchainCL:
                 env["ANDROID_NDK_HOME"] = self.ctx.ndk_dir
                 env["ANDROID_HOME"] = self.ctx.sdk_dir
                 gradlew = sh.Command('./gradlew')
-                if exists('/usr/bin/dos2unix'):
+                if Path('/usr/bin/dos2unix').exists():
                     # .../dists/bdisttest_python3/gradlew
                     # .../build/bootstrap_builds/sdl2-python3/gradlew
                     # if docker on windows, gradle contains CRLF
