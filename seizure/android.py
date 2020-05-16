@@ -73,10 +73,10 @@ class TargetAndroid:
                 '--arch', self.arch,
                 '--color', 'always',
                 '--storage-dir', self.build_dir,
-                '--ndk-api', config.getdefault('app', 'android.ndk_api', self.android_minapi)]
+                '--ndk-api', config.getdefault('app', 'android.ndk_api', self.android_minapi),
+                '--local-recipes', config.workspace / 'local_recipes']
         if config.getbooldefault('app', 'android.copy_libs', True):
             self.extra_p4a_args.append('--copy-libs')
-        self.local_recipes = config.workspace / 'local_recipes'
         self.dist_name = config.get('app', 'package.name')
         self.config = config
         self.state = state
@@ -203,7 +203,7 @@ class TargetAndroid:
 
     def compile_platform(self):
         requirements = self.config.getlist('app', 'requirements', '')
-        self._p4a('create', '--requirements', ','.join(requirements), '--local-recipes', self.local_recipes)
+        self._p4a('create', '--requirements', ','.join(requirements))
 
     def _get_dist_dir(self):
         expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self.arch])
@@ -223,7 +223,6 @@ class TargetAndroid:
             services = self.config.getlist('app', 'services', [])
             for service in services:
                 yield from ['--service', service]
-            yield from ['--local-recipes', self.local_recipes] # TODO: Undup.
             for lib in self.config.getlist('app', 'android.uses_library', ''):
                 yield from ['--uses-library', lib]
             for gradle_dependency in self.config.getlist('app', 'android.gradle_dependencies', []):
