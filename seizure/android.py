@@ -267,24 +267,25 @@ class TargetAndroid:
             "--package", self._get_package(),
             "--minsdk", config.getdefault('app', 'android.minapi', self.android_minapi),
             "--ndk-api", config.getdefault('app', 'android.minapi', self.android_minapi),
+            '--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity'),
+            '--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar'),
         ]
-        if config.getbooldefault('app', 'android.private_storage', True):
-            build_cmd += ["--private", self.dirs.app_dir]
-        else:
-            build_cmd += ["--dir", self.dirs.app_dir]
-        for permission in config.getlist('app', 'android.permissions', []):
-            permission = permission.split('.')
-            permission[-1] = permission[-1].upper()
-            permission = '.'.join(permission)
-            build_cmd += ["--permission", permission]
-        build_cmd += ['--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')]
-        build_cmd += ['--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar')]
-        for option in config.getlist('app', 'android.add_compile_options', []):
-            build_cmd += ['--add-compile-option', option]
-        for repo in config.getlist('app','android.add_gradle_repositories', []):
-            build_cmd += ['--add-gradle-repository', repo]
-        for pkgoption in config.getlist('app','android.add_packaging_options', []):
-            build_cmd += ['--add-packaging-option', pkgoption]
+        def options():
+            if config.getbooldefault('app', 'android.private_storage', True):
+                yield from ["--private", self.dirs.app_dir]
+            else:
+                yield from ["--dir", self.dirs.app_dir]
+            for permission in config.getlist('app', 'android.permissions', []):
+                permission = permission.split('.')
+                permission[-1] = permission[-1].upper()
+                permission = '.'.join(permission)
+                yield from ["--permission", permission]
+            for option in config.getlist('app', 'android.add_compile_options', []):
+                yield from ['--add-compile-option', option]
+            for repo in config.getlist('app','android.add_gradle_repositories', []):
+                yield from ['--add-gradle-repository', repo]
+            for pkgoption in config.getlist('app','android.add_packaging_options', []):
+                yield from ['--add-packaging-option', pkgoption]
         for meta in config.getlistvalues('app', 'android.meta_data', []):
             key, value = meta.split('=', 1)
             meta = '{}={}'.format(key.strip(), value.strip())
@@ -329,7 +330,7 @@ class TargetAndroid:
                 build_cmd += ['--sign']
             mode_sign = "release"
             mode = self._get_release_mode()
-        self._execute_build_package(build_cmd)
+        self._execute_build_package(build_cmd, *options())
         build_tools_versions = os.listdir(self.dirs.android_sdk_dir / "build-tools")
         build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
         build_tools_version = build_tools_versions[-1]
