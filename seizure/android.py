@@ -52,14 +52,6 @@ import logging, os, shutil, sys
 
 log = logging.getLogger(__name__)
 
-def _file_extract(archive, cwd):
-    if archive.endswith('.tar.gz'):
-        tar.xzf.print(archive, cwd = cwd)
-    elif archive.endswith('.zip'):
-        unzip._q.print(archive, cwd = cwd)
-    else:
-        raise Exception(f"Unhandled extraction for type {archive}")
-
 class TargetAndroid:
 
     @types(Config, JsonStore, Dirs)
@@ -95,7 +87,7 @@ class TargetAndroid:
         log.info('Android ANT is missing, downloading')
         archive = f"apache-ant-{APACHE_ANT_VERSION}-bin.tar.gz"
         download('http://archive.apache.org/dist/ant/binaries/', archive, ant_dir)
-        _file_extract(archive, ant_dir)
+        tar.xzf.print(archive, cwd = ant_dir)
         log.info('Apache ANT installation done.')
 
     def _install_android_sdk(self):
@@ -108,7 +100,7 @@ class TargetAndroid:
         sdk_dir.mkdir(parents = True)
         download('http://dl.google.com/android/repository/', archive, sdk_dir)
         log.info('Unpacking Android SDK')
-        _file_extract(archive, sdk_dir)
+        unzip._q.print(archive, cwd = sdk_dir)
         log.info('Android SDK tools base installation done.')
 
     def _install_android_ndk(self):
@@ -120,7 +112,7 @@ class TargetAndroid:
         archive = f"android-ndk-r{self.config.android_ndk_version}-linux-x86_64.zip"
         download('https://dl.google.com/android/repository/', archive, self.dirs.global_platform_dir)
         log.info('Unpacking Android NDK')
-        _file_extract(archive, self.dirs.global_platform_dir)
+        unzip._q.print(archive, cwd = self.dirs.global_platform_dir)
         source = self.dirs.global_platform_dir / f"android-ndk-r{self.config.android_ndk_version}"
         log.debug('Rename %s to %s', source, ndk_dir)
         shutil.move(source, ndk_dir)
