@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import logger, Err_Fore, error, info
+from .logger import logger, Err_Fore
 from fnmatch import fnmatch
 from os import getcwd, chdir, makedirs, walk, uname
 from os.path import exists, join
