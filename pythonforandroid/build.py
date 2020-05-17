@@ -221,15 +221,6 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
                 raise Exception("Requested jar does not exist: %s" % jarname)
             shutil.copy(jarname, 'src/main/libs')
             jars.append(basename(jarname))
-    aars = []
-    if args.add_aar:
-        _ensure_dir("libs")
-        for aarname in args.add_aar:
-            if not exists(aarname):
-                raise Exception("Requested aar does not exists: %s" % aarname)
-            shutil.copy(aarname, 'libs')
-            aars.append(basename(aarname).rsplit('.', 1)[0])
-
     versioned_name = (args.name.replace(' ', '').replace('\'', '') +
                       '-' + args.version)
 
@@ -346,30 +337,22 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
     if exists('AndroidManifest.xml'):
         remove('AndroidManifest.xml')
     shutil.copy(manifest_path, 'AndroidManifest.xml')
-
-    # gradle build templates
     render(
         'build.tmpl.gradle',
         'build.gradle',
-        args=args,
-        aars=aars,
-        jars=jars,
-        android_api=android_api,
-        build_tools_version=build_tools_version
-        )
-
-    # ant build templates
+        args = args,
+        aars = [],
+        jars = jars,
+        android_api = android_api,
+        build_tools_version = build_tools_version,
+    )
     render(
         'build.tmpl.xml',
         'build.xml',
-        args=args,
-        versioned_name=versioned_name)
-
-    # String resources:
-    render_args = {
-        "args": args,
-        "private_version": str(time.time())
-    }
+        args = args,
+        versioned_name = versioned_name,
+    )
+    render_args = {"args": args, "private_version": str(time.time())}
     if bootstrapname == "sdl2":
         render_args["url_scheme"] = url_scheme
     render('strings.tmpl.xml', res_dir / 'values' / 'strings.xml', **render_args)
@@ -503,8 +486,6 @@ def makeapkversion(args, distdir, common_build):
                     help=('Add a Java .jar to the libs, so you can access its '
                           'classes with pyjnius. You can specify this '
                           'argument more than once to include multiple jars'))
-    ap.add_argument('--add-aar', dest='add_aar', action='append',
-                    help=('Add an aar dependency manually'))
     ap.add_argument('--depend', dest='depends', action='append',
                     help=('Add a external dependency '
                           '(eg: com.android.support:appcompat-v7:19.0.1)'))
