@@ -438,7 +438,7 @@ class HostPythonRecipe(Recipe):
     def get_build_container_dir(self, arch=None):
         choices = self.check_recipe_choices()
         dir_name = '-'.join([self.name] + choices)
-        return join(self.ctx.build_dir, 'other_builds', dir_name, 'desktop')
+        return join(self.ctx.buildsdir, 'other_builds', dir_name, 'desktop')
 
     def get_build_dir(self, arch=None):
         '''

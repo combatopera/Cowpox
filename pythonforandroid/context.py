@@ -110,11 +110,6 @@ class Context:
     root_dir = None
     # the root dir where builds and dists will be stored
     storage_dir = None
-
-    # in which bootstraps are copied for building
-    # and recipes are built
-    build_dir = None
-
     distribution = None
     libs_dir = None
     aars_dir = None
@@ -140,29 +135,25 @@ class Context:
 
     @property
     def libs_dir(self):
-        # Was previously hardcoded as self.build_dir/libs
-        dir = join(self.build_dir, 'libs_collections',
-                   self.bootstrap.distribution.name)
+        dir = join(self.buildsdir, 'libs_collections', self.bootstrap.distribution.name)
         ensure_dir(dir)
         return dir
 
     @property
     def javaclass_dir(self):
-        # Was previously hardcoded as self.build_dir/java
-        dir = join(self.build_dir, 'javaclasses',
-                   self.bootstrap.distribution.name)
+        dir = join(self.buildsdir, 'javaclasses', self.bootstrap.distribution.name)
         ensure_dir(dir)
         return dir
 
     @property
     def aars_dir(self):
-        dir = join(self.build_dir, 'aars', self.bootstrap.distribution.name)
+        dir = join(self.buildsdir, 'aars', self.bootstrap.distribution.name)
         ensure_dir(dir)
         return dir
 
     @property
     def python_installs_dir(self):
-        dir = join(self.build_dir, 'python-installs')
+        dir = join(self.buildsdir, 'python-installs')
         ensure_dir(dir)
         return dir
 
@@ -177,15 +168,15 @@ class Context:
         if ' ' in self.storage_dir:
             raise ValueError('storage dir path cannot contain spaces, please '
                              'specify a path with --storage-dir')
-        self.build_dir = join(self.storage_dir, 'build')
+        self.buildsdir = join(self.storage_dir, 'build')
         self.distsdir = Path(self.storage_dir, 'dists')
 
     def ensure_dirs(self):
         ensure_dir(self.storage_dir)
-        ensure_dir(self.build_dir)
+        ensure_dir(self.buildsdir)
         ensure_dir(self.distsdir)
-        ensure_dir(join(self.build_dir, 'bootstrap_builds'))
-        ensure_dir(join(self.build_dir, 'other_builds'))
+        ensure_dir(join(self.buildsdir, 'bootstrap_builds'))
+        ensure_dir(join(self.buildsdir, 'other_builds'))
 
     @property
     def android_api(self):
@@ -514,7 +505,7 @@ def run_setuppy_install(ctx, project_dir, env=None):
         info('Contents that will be used for constraints.txt:')
         constraints = subprocess.check_output([
             join(
-                ctx.build_dir, "venv", "bin", "pip"
+                ctx.buildsdir, "venv", "bin", "pip"
             ),
             "freeze"
         ], env=copy.copy(env))
@@ -546,9 +537,9 @@ def run_setuppy_install(ctx, project_dir, env=None):
                 os.path.abspath(ctx.get_site_packages_dir())
             )
             venv_site_packages_dir = os.path.normpath(os.path.join(
-                ctx.build_dir, "venv", "lib", [
+                ctx.buildsdir, "venv", "lib", [
                     f for f in os.listdir(os.path.join(
-                        ctx.build_dir, "venv", "lib"
+                        ctx.buildsdir, "venv", "lib"
                     )) if f.startswith("python")
                 ][0], "site-packages"
             ))
@@ -579,7 +570,7 @@ def run_setuppy_install(ctx, project_dir, env=None):
             info('Launching package install...')
             shprint(sh.bash, '-c', (
                 "'" + join(
-                    ctx.build_dir, "venv", "bin", "pip"
+                    ctx.buildsdir, "venv", "bin", "pip"
                 ).replace("'", "'\"'\"'") + "' " +
                 "install -c ._tmp_p4a_recipe_constraints.txt -v ."
             ).format(ctx.get_site_packages_dir().
@@ -624,7 +615,7 @@ def _run_pymodules_install(ctx, modules):
     info('The requirements ({}) don\'t have recipes, attempting to install them with pip'.format(', '.join(modules)))
     info('If this fails, it may mean that the module has compiled components and needs a recipe.')
     venv = sh.Command(ctx.virtualenv)
-    with current_directory(join(ctx.build_dir)):
+    with current_directory(join(ctx.buildsdir)):
         shprint(venv,
                 '--python=python{}'.format(
                     ctx.python_recipe.major_minor_version_string.
@@ -655,7 +646,7 @@ def _run_pymodules_install(ctx, modules):
         # site packages come FIRST (so the proper pip version is used):
         env["PYTHONPATH"] += ":" + ctx.get_site_packages_dir()
         env["PYTHONPATH"] = os.path.abspath(join(
-            ctx.build_dir, "venv", "lib",
+            ctx.buildsdir, "venv", "lib",
             "python" + ctx.python_recipe.major_minor_version_string,
             "site-packages")) + ":" + env["PYTHONPATH"]
 
@@ -680,7 +671,7 @@ def _run_pymodules_install(ctx, modules):
                  'and does not work without additional '
                  'changes / workarounds.')
             pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env)
-        standard_recipe.strip_object_files(ctx.archs[0], env, build_dir = ctx.build_dir)
+        standard_recipe.strip_object_files(ctx.archs[0], env, build_dir = ctx.buildsdir)
 
 def biglink(ctx, arch):
     # First, collate object files from each recipe
