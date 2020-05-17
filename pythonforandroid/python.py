@@ -44,6 +44,7 @@ from .util import current_directory, ensure_dir, walk_valid_filens, BuildInterru
 from multiprocessing import cpu_count
 from os import environ
 from os.path import dirname, exists, join, isfile
+from pathlib import Path
 from shutil import copy2
 import glob, sh, subprocess
 
@@ -368,24 +369,14 @@ class GuestPythonRecipe(TargetPythonRecipe):
                 info(" - copy {}".format(filen))
                 ensure_dir(join(dirn, 'site-packages', dirname(filen)))
                 copy2(filen, join(dirn, 'site-packages', filen))
-
-        # copy the python .so files into place
-        python_build_dir = join(self.get_build_dir(arch.arch),
-                                'android-build')
+        python_build_dir = Path(self.get_build_dir(arch.arch), 'android-build')
         python_lib_name = 'libpython' + self.major_minor_version_string
         if self.major_minor_version_string[0] == '3':
             python_lib_name += 'm'
-        shprint(
-            sh.cp,
-            join(python_build_dir, python_lib_name + '.so'),
-            join(self.ctx.bootstrap.dist_dir, 'libs', arch.arch)
-        )
-
+        shprint(sh.cp, python_build_dir / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.arch)
         info('Renaming .so files to reflect cross-compile')
         self.reduce_object_file_names(join(dirn, 'site-packages'))
-
         return join(dirn, 'site-packages')
-
 
 class HostPythonRecipe(Recipe):
     '''
