@@ -430,19 +430,9 @@ def makeapkversion(args):
         log.warning('Failed to read ndk_api from dist info, defaulting to 12')
         default_min_api = 12  # The old default before ndk_api was introduced
         ndk_api = 12
-    ap = ArgumentParser(description='''\
-Package a Python application for Android (using
-bootstrap ''' + _get_bootstrap_name() + ''').
-
-For this to work, Java and Ant need to be in your path, as does the
-tools directory of the Android SDK.
-''')
-
-    # --private is required unless for sdl2, where there's also --launcher
-    ap.add_argument('--private', dest='private',
-                    help='the directory with the app source code files' +
-                         ' (containing your main.py entrypoint)',
-                    required=(_get_bootstrap_name() != "sdl2"))
+    bootstrapname = _get_bootstrap_name()
+    ap = ArgumentParser()
+    ap.add_argument('--private', required = bootstrapname != "sdl2")
     ap.add_argument('--package', dest='package',
                     help=('The name of the java package the project will be'
                           ' packaged under.'),
@@ -460,7 +450,7 @@ tools directory of the Android SDK.
                           'same number of groups of numbers as previous '
                           'versions.'),
                     required=True)
-    if _get_bootstrap_name() == "sdl2":
+    if bootstrapname == "sdl2":
         ap.add_argument('--launcher', dest='launcher', action='store_true',
                         help=('Provide this argument to build a multi-app '
                               'launcher, rather than a single app.'))
@@ -476,7 +466,7 @@ tools directory of the Android SDK.
     ap.add_argument('--service', dest='services', action='append', default=[],
                     help='Declare a new service entrypoint: '
                          'NAME:PATH_TO_PY[:foreground]')
-    if _get_bootstrap_name() != "service_only":
+    if bootstrapname != "service_only":
         ap.add_argument('--presplash', dest='presplash',
                         help=('A jpeg file to use as a screen while the '
                               'application is loading.'))
@@ -564,7 +554,7 @@ tools directory of the Android SDK.
                     help='If set, the billing service will be added (not implemented)')
     ap.add_argument('--add-source', dest='extra_source_dirs', action='append',
                     help='Include additional source dirs in Java build')
-    if _get_bootstrap_name() == "webview":
+    if bootstrapname == "webview":
         ap.add_argument('--port',
                         help='The port on localhost that the WebView will access',
                         default='5000')
@@ -618,14 +608,10 @@ tools directory of the Android SDK.
     if ndk_api != args.min_sdk_version:
         log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
         if not args.allow_minsdk_ndkapi_mismatch:
-            log.error('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
-            sys.exit(1)
-        else:
-            log.info('Proceeding with --minsdk not matching build target api')
+            raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
+        log.info('Proceeding with --minsdk not matching build target api')
     if args.billing_pubkey:
-        log.error('Billing not yet supported!')
-        sys.exit(1)
-
+        raise Exception('Billing not yet supported!')
     if args.sdk_version == -1:
         log.warning('WARNING: Received a --sdk argument, but this argument is deprecated and does nothing.')
         args.sdk_version = -1  # ensure it is not used
@@ -659,10 +645,7 @@ tools directory of the Android SDK.
             patterns = [x.strip() for x in fd.read().splitlines()
                         if x.strip() and not x.strip().startswith('#')]
         WHITELIST_PATTERNS += patterns
-
-    if args.private is None and \
-            _get_bootstrap_name() == 'sdl2' and args.launcher is None:
-        log.error('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
-        sys.exit(1)
+    if args.private is None and bootstrapname == 'sdl2' and args.launcher is None:
+        raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
     _make_package(args)
     return args.version
