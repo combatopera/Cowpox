@@ -77,17 +77,6 @@ def _createcontext(args):
     ctx.prepare_build_environment(args.ndk_api)
     return ctx
 
-def _dist_from_args(ctx, args):
-    return Distribution.get_distribution(
-        ctx,
-        name=args.dist_name,
-        recipes=_split_argument_list(args.requirements),
-        arch_name=args.arch,
-        ndk_api=args.ndk_api,
-        force_build=args.force_build,
-        require_perfect_match=args.require_perfect_match,
-        allow_replace_dist=args.allow_replace_dist)
-
 def _build_dist_from_args(ctx, dist, args):
     bs = Bootstrap.get_bootstrap(args.bootstrap, ctx)
     blacklist = getattr(args, "blacklist_requirements", "").split(",")
@@ -208,7 +197,15 @@ class ToolchainCL:
         getattr(self, args.command)(args, ctx, self._require_prebuilt_dist(args, ctx))
 
     def _require_prebuilt_dist(self, args, ctx):
-        dist = _dist_from_args(ctx, args)
+        dist = Distribution.get_distribution(
+                ctx,
+                args.dist_name,
+                _split_argument_list(args.requirements),
+                args.arch,
+                args.ndk_api,
+                args.force_build,
+                args.require_perfect_match,
+                args.allow_replace_dist)
         ctx.distribution = dist
         if dist.needs_build:
             if dist.folder_exists():
