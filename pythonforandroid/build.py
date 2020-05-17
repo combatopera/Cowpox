@@ -448,7 +448,7 @@ class Context:
     def not_has_package(self, name, arch=None):
         return not self.has_package(name, arch)
 
-def build_recipes(build_order, python_modules, ctx, project_dir):
+def build_recipes(build_order, python_modules, ctx):
     # Put recipes in correct build order
     info_notify("Recipe build order is {}".format(build_order))
     if python_modules:
@@ -507,7 +507,7 @@ def build_recipes(build_order, python_modules, ctx, project_dir):
             recipe.postbuild_arch(arch)
 
     info_main('# Installing pure Python modules')
-    _run_pymodules_install(ctx, python_modules, project_dir)
+    _run_pymodules_install(ctx, python_modules)
 
 def run_setuppy_install(ctx, project_dir, env=None):
     if env is None:
@@ -622,13 +622,9 @@ def run_setuppy_install(ctx, project_dir, env=None):
         finally:
             os.remove("._tmp_p4a_recipe_constraints.txt")
 
-def _run_pymodules_install(ctx, modules, project_dir):
+def _run_pymodules_install(ctx, modules):
     info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
     modules = list(filter(ctx.not_has_package, modules))
-
-    # We change current working directory later, so this has to be an absolute
-    # path or `None` in case that we didn't supply the `project_dir` via kwargs
-    project_dir = abspath(project_dir) if project_dir else None
     if not modules:
         info('No Python modules and no setup.py to process, skipping')
         return

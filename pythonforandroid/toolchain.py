@@ -94,7 +94,7 @@ def _build_dist_from_args(ctx, dist, args):
     log.info("Dist will also contain modules (%s) installed from pip", ', '.join(ctx.python_modules))
     ctx.prepare_bootstrap(bs)
     ctx.prepare_dist()
-    build_recipes(build_order, python_modules, ctx, args.private)
+    build_recipes(build_order, python_modules, ctx)
     ctx.bootstrap.run_distribute()
     log.info('Your distribution was created successfully, exiting.')
     log.info("Dist can be found at (for now) %s", join(ctx.dist_dir, dist.dist_dir))
