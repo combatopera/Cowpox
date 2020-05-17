@@ -69,9 +69,7 @@ BLACKLIST_PATTERNS = [
     '*.swp',
     '*.py',
 ]
-WHITELIST_PATTERNS = []
-if _get_bootstrap_name() in {'sdl2', 'webview', 'service_only'}:
-    WHITELIST_PATTERNS.append('pyconfig.h')
+WHITELIST_PATTERNS = ['pyconfig.h'] if _get_bootstrap_name() in {'sdl2', 'webview', 'service_only'} else []
 
 def _try_unlink(fn):
     if exists(fn):
