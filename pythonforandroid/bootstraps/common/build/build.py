@@ -60,7 +60,6 @@ curdir = Path(__file__).parent
 ANDROID = 'android'
 ANT = 'ant'
 PYTHON = _get_dist_info_for('hostpython')
-PYTHON_VERSION = _get_dist_info_for('python_version')
 BLACKLIST_PATTERNS = [
     '^*.hg/*',
     '^*.git/*',
