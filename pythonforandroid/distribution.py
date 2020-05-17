@@ -195,32 +195,20 @@ class Distribution:
                     dist_ndk_api=folder_match_dist.ndk_api,
                     req_recipes=', '.join(recipes),
                     dist_recipes=', '.join(folder_match_dist.recipes)))
-
         assert len(possible_dists) < 2
-
-        # If we got this far, we need to build a new dist
         dist = Distribution(ctx)
         dist.needs_build = True
-
         if not name:
             filen = 'unnamed_dist_{}'
             i = 1
             while exists(join(ctx.dist_dir, filen.format(i))):
                 i += 1
             name = filen.format(i)
-
         dist.name = name
-        dist.dist_dir = join(
-            ctx.dist_dir,
-            generate_dist_folder_name(
-                name,
-                [arch_name] if arch_name is not None else None,
-            )
-        )
+        dist.dist_dir = join(ctx.dist_dir, generate_dist_folder_name(name, None if arch_name is None else [arch_name]))
         dist.recipes = recipes
         dist.ndk_api = ctx.ndk_api
         dist.archs = [arch_name]
-
         return dist
 
     def folder_exists(self):
