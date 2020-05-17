@@ -161,7 +161,7 @@ class Distribution:
 
     @classmethod
     def _get_distributions(cls, ctx):
-        folders = glob.glob(ctx.distsdir / '*')
+        folders = glob.glob(str(ctx.distsdir / '*'))
         dists = []
         for folder in folders:
             if exists(join(folder, 'dist_info.json')):
