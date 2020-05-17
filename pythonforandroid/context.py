@@ -116,13 +116,7 @@ class Context:
     build_dir = None
 
     distribution = None
-    """The Distribution object representing the current build target location."""
-
-    # the Android project folder where everything ends up
-    dist_dir = None
-
-    # where Android libs are cached after build
-    # but before being placed in dists
+    distsdir = None
     libs_dir = None
     aars_dir = None
     ccache = None  # whether to use ccache
@@ -185,12 +179,12 @@ class Context:
             raise ValueError('storage dir path cannot contain spaces, please '
                              'specify a path with --storage-dir')
         self.build_dir = join(self.storage_dir, 'build')
-        self.dist_dir = join(self.storage_dir, 'dists')
+        self.distsdir = join(self.storage_dir, 'dists')
 
     def ensure_dirs(self):
         ensure_dir(self.storage_dir)
         ensure_dir(self.build_dir)
-        ensure_dir(self.dist_dir)
+        ensure_dir(self.distsdir)
         ensure_dir(join(self.build_dir, 'bootstrap_builds'))
         ensure_dir(join(self.build_dir, 'other_builds'))
 

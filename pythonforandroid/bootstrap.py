@@ -137,7 +137,7 @@ class Bootstrap:
         return join(self.ctx.build_dir, 'bootstrap_builds', self.get_build_dir_name())
 
     def get_dist_dir(self, name):
-        return join(self.ctx.dist_dir, name)
+        return join(self.ctx.distsdir, name)
 
     def get_common_dir(self):
         return os.path.abspath(join(self.bootstrap_dir, "..", 'common'))
