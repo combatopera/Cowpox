@@ -121,7 +121,7 @@ def _listfiles(d):
 def _make_python_zip(blacklist):
     if not exists('private'):
         log.info('No compiled python is present to zip, skipping.')
-        return
+        return []
     d = realpath(join('private', 'lib', 'python2.7'))
     def select(fn):
         if blacklist.has(fn):
