@@ -79,7 +79,7 @@ class Distribution:
         return str(self)
 
     @classmethod
-    def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api, extra_dist_dirs = []):
+    def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api):
         possible_dists = cls._get_distributions(ctx)
         if name is not None and name:
             possible_dists = [d for d in possible_dists if (d.name == name) and (arch_name in d.archs)]
