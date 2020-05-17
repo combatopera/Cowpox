@@ -101,7 +101,6 @@ class Bootstrap:
     jni_subdir = '/jni'
     ctx = None
     build_dir = None
-    dist_name = None
     distribution = None
     recipe_depends = [("python2", "python3"), 'android']
     can_be_chosen_automatically = True
