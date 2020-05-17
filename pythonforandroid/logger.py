@@ -102,20 +102,13 @@ Out_Fore = colorama_shim(Colo_Fore)
 Err_Style = colorama_shim(Colo_Style)
 Err_Fore = colorama_shim(Colo_Fore)
 
-
-def setup_color(color):
-    enable_out = (False if color == 'never' else
-                  True if color == 'always' else
-                  stdout.isatty())
+def setup_color(force = None):
+    enable_out = stdout.isatty() if force is None else force
+    enable_err = stderr.isatty() if force is None else force
     Out_Style.enable(enable_out)
     Out_Fore.enable(enable_out)
-
-    enable_err = (False if color == 'never' else
-                  True if color == 'always' else
-                  stderr.isatty())
     Err_Style.enable(enable_err)
     Err_Fore.enable(enable_err)
-
 
 def info_main(*args):
     logger.info(''.join([Err_Style.BRIGHT, Err_Fore.GREEN] + list(args) +

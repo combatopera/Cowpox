@@ -72,7 +72,6 @@ class TargetAndroid:
                 '--dist_name', self.dist_name,
                 '--bootstrap', self.bootstrapname,
                 '--arch', self.arch,
-                '--color', 'always',
                 '--storage-dir', self.build_dir,
                 '--ndk-api', config.getdefault('app', 'android.ndk_api', self.android_minapi),
                 '--local-recipes', config.workspace / 'local_recipes']

@@ -109,9 +109,6 @@ class ToolchainCL:
             '--debug', dest='debug', action='store_true', default=False,
             help='Display debug output and all build info')
         generic_parser.add_argument(
-            '--color', dest='color', choices=['always', 'never', 'auto'],
-            help='Enable or disable color output (default enabled on tty)')
-        generic_parser.add_argument(
             '--ndk-api', type=int, default=None,
             help=('The Android API level to compile against. This should be your '
                   '*minimal supported* API, not normally the same as your --android-api. '
@@ -161,7 +158,7 @@ class ToolchainCL:
         parser_apk.add_argument('--keystorepw')
         parser_apk.add_argument('--signkeypw')
         args, downstreamargs = parser.parse_known_args()
-        setup_color(args.color)
+        setup_color(True)
         if args.debug:
             logger.setLevel(logging.DEBUG)
         requirements = []
