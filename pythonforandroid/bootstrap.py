@@ -45,6 +45,7 @@ from importlib import import_module
 from lagoon import cp, ln, mkdir, mv, rm, unzip
 from os import listdir, walk, sep
 from os.path import join, dirname, isdir, normpath, splitext, basename
+from pathlib import Path
 import functools, glob, os, sh, shlex, shutil
 
 def _copy_files(src_root, dest_root, override):
@@ -99,7 +100,6 @@ class Bootstrap:
     name = ''
     jni_subdir = '/jni'
     ctx = None
-    bootstrap_dir = None
     build_dir = None
     dist_name = None
     distribution = None
@@ -148,14 +148,14 @@ class Bootstrap:
         '''Ensure that a build dir exists for the recipe. This same single
         dir will be used for building all different archs.'''
         self.build_dir = self.get_build_dir()
-        _copy_files(join(self.bootstrap_dir, 'build'), self.build_dir, True)
-        _copy_files(join(os.path.abspath(join(self.bootstrap_dir, "..", 'common')), 'build'), self.build_dir, False)
+        _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
+        _copy_files(join(os.path.abspath(self.bootstrap_dir / ".." / 'common'), 'build'), self.build_dir, False)
         if self.ctx.symlink_java_src:
             info('Symlinking java src instead of copying')
             rm._r.print(join(self.build_dir, 'src'))
             mkdir.print(join(self.build_dir, 'src'))
-            for dirn in listdir(join(self.bootstrap_dir, 'build', 'src')):
-                ln._s.print(join(self.bootstrap_dir, 'build', 'src', dirn), join(self.build_dir, 'src'))
+            for dirn in listdir(self.bootstrap_dir / 'build' / 'src'):
+                ln._s.print(self.bootstrap_dir / 'build' / 'src' / dirn, join(self.build_dir, 'src'))
         with current_directory(self.build_dir):
             with open('project.properties', 'w') as fileh:
                 fileh.write('target=android-{}'.format(self.ctx.android_api))
@@ -273,7 +273,7 @@ class Bootstrap:
     @classmethod
     def get_bootstrap(cls, name, ctx):
         bootstrap = import_module(f"pythonforandroid.bootstraps.{name}").bootstrap
-        bootstrap.bootstrap_dir = join(ctx.root_dir, 'bootstraps', name)
+        bootstrap.bootstrap_dir = Path(ctx.root_dir, 'bootstraps', name)
         bootstrap.ctx = ctx
         return bootstrap
 
