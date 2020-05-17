@@ -79,7 +79,7 @@ class Distribution:
 
     @classmethod
     def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api, force_build, require_perfect_match, allow_replace_dist, extra_dist_dirs = []):
-        possible_dists = Distribution.get_distributions(ctx)
+        possible_dists = cls._get_distributions(ctx)
         folder_match_dist = None
         if name is not None and name:
             possible_dists = [
@@ -159,11 +159,11 @@ class Distribution:
         shutil.rmtree(self.dist_dir)
 
     @classmethod
-    def get_distributions(cls, ctx, extra_dist_dirs=[]):
+    def _get_distributions(cls, ctx, extra_dist_dirs=[]):
         '''Returns all the distributions found locally.'''
         if extra_dist_dirs:
             raise BuildInterruptingException(
-                'extra_dist_dirs argument to get_distributions '
+                'extra_dist_dirs argument to _get_distributions '
                 'is not yet implemented')
         dist_dir = ctx.dist_dir
         folders = glob.glob(join(dist_dir, '*'))
