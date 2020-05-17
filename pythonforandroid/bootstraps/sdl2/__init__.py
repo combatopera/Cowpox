@@ -38,11 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from lagoon import cp, rm
 from pathlib import Path
 from pythonforandroid.bootstrap import Bootstrap
-from pythonforandroid.logger import info, info_main, shprint
+from pythonforandroid.logger import info, info_main
 from pythonforandroid.util import current_directory, ensure_dir
-import sh
 
 class SDL2GradleBootstrap(Bootstrap):
 
@@ -58,11 +58,8 @@ class SDL2GradleBootstrap(Bootstrap):
             raise ValueError("SDL2/gradle support only one arch")
 
         info("Copying SDL2/gradle build for {}".format(arch))
-        shprint(sh.rm, "-rf", self.dist_dir)
-        shprint(sh.cp, "-r", self.build_dir, self.dist_dir)
-
-        # either the build use environment variable (ANDROID_HOME)
-        # or the local.properties if exists
+        rm._rf.print(self.dist_dir)
+        cp._r.print(self.build_dir, self.dist_dir)
         with current_directory(self.dist_dir):
             with open('local.properties', 'w') as fileh:
                 fileh.write('sdk.dir={}'.format(self.ctx.sdk_dir))
