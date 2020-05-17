@@ -46,8 +46,6 @@ from pathlib import Path
 from zipfile import ZipFile
 import jinja2, json, os, shlex, shutil, subprocess, sys, tarfile, tempfile, time
 
-curdir = Path(__file__).parent
-
 def _get_dist_info_for(key, error_if_missing=True):
     try:
         with (curdir / 'dist_info.json').open() as fileh:
@@ -61,19 +59,14 @@ def _get_dist_info_for(key, error_if_missing=True):
         sys.exit(1)
     return value
 
-def get_hostpython():
-    return _get_dist_info_for('hostpython')
-
-def get_python_version():
-    return _get_dist_info_for('python_version')
-
 def get_bootstrap_name():
     return _get_dist_info_for('bootstrap')
 
+curdir = Path(__file__).parent
 ANDROID = 'android'
 ANT = 'ant'
-PYTHON = get_hostpython()
-PYTHON_VERSION = get_python_version()
+PYTHON = _get_dist_info_for('hostpython')
+PYTHON_VERSION = _get_dist_info_for('python_version')
 if PYTHON is not None and not exists(PYTHON):
     PYTHON = None
 BLACKLIST_PATTERNS = [
