@@ -42,7 +42,8 @@ from .logger import logger, info, warning, debug, shprint, info_main
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
-from os import listdir, unlink, mkdir, curdir, walk
+from lagoon import cp, mkdir, rm, rmdir
+from os import listdir, unlink, curdir, walk
 from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
 from pathlib import Path
 from re import match
@@ -352,9 +353,7 @@ class Recipe(metaclass = RecipeMeta):
             expected_md5 = ma.group(2)
         else:
             expected_md5 = self.md5sum
-
-        shprint(sh.mkdir, '-p', join(self.ctx.packages_path, self.name))
-
+        mkdir._p.print(join(self.ctx.packages_path, self.name))
         with current_directory(join(self.ctx.packages_path, self.name)):
             filename = shprint(sh.basename, url).stdout[:-1].decode('utf-8')
 
@@ -405,13 +404,12 @@ class Recipe(metaclass = RecipeMeta):
                 self.name.lower()))
             if exists(self.get_build_dir(arch)):
                 return
-            shprint(sh.rm, '-rf', build_dir)
-            shprint(sh.mkdir, '-p', build_dir)
-            shprint(sh.rmdir, build_dir)
+            rm._rf.print(build_dir)
+            mkdir._p.print(build_dir)
+            rmdir.print(build_dir)
             ensure_dir(build_dir)
-            shprint(sh.cp, '-a', user_dir, self.get_build_dir(arch))
+            cp._a.print(user_dir, self.get_build_dir(arch))
             return
-
         if self.url is None:
             info('Skipping {} unpack as no URL is set'.format(self.name))
             return
@@ -455,7 +453,7 @@ class Recipe(metaclass = RecipeMeta):
                             'Could not extract {} download, it must be .zip, '
                             '.tar.gz or .tar.bz2 or .tar.xz'.format(extraction_filename))
                 elif isdir(extraction_filename):
-                    mkdir(directory_name)
+                    Path(directory_name).mkdir()
                     for entry in listdir(extraction_filename):
                         if entry not in ('.git',):
                             shprint(sh.cp, '-Rv',
