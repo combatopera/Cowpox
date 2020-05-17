@@ -95,9 +95,7 @@ def _render(template, dest, **kwargs):
         f.write(text.encode('utf-8'))
 
 def _is_blacklist(name):
-    if match_filename(WHITELIST_PATTERNS, name):
-        return False
-    return match_filename(BLACKLIST_PATTERNS, name)
+    return not match_filename(WHITELIST_PATTERNS, name) and match_filename(BLACKLIST_PATTERNS, name)
 
 def match_filename(pattern_list, name):
     for pattern in pattern_list:
