@@ -74,7 +74,6 @@ if PYTHON is not None:
 WHITELIST_PATTERNS = []
 if _get_bootstrap_name() in {'sdl2', 'webview', 'service_only'}:
     WHITELIST_PATTERNS.append('pyconfig.h')
-python_files = []
 environment = jinja2.Environment(loader = jinja2.FileSystemLoader(curdir / 'templates'))
 
 def _try_unlink(fn):
@@ -86,32 +85,21 @@ def _ensure_dir(path):
         makedirs(path)
 
 def _render(template, dest, **kwargs):
-    '''Using jinja2, _render `template` to the filename `dest`, supplying the
-
-    keyword arguments as template parameters.
-    '''
-
     dest_dir = dirname(dest)
     if dest_dir and not exists(dest_dir):
         makedirs(dest_dir)
-
     template = environment.get_template(template)
     text = template._render(**kwargs)
-
-    f = open(dest, 'wb')
-    f.write(text.encode('utf-8'))
-    f.close()
-
+    with open(dest, 'wb') as f:
+        f.write(text.encode('utf-8'))
 
 def is_whitelist(name):
     return match_filename(WHITELIST_PATTERNS, name)
-
 
 def is_blacklist(name):
     if is_whitelist(name):
         return False
     return match_filename(BLACKLIST_PATTERNS, name)
-
 
 def match_filename(pattern_list, name):
     for pattern in pattern_list:
@@ -121,7 +109,6 @@ def match_filename(pattern_list, name):
             pattern = '*/' + pattern
         if fnmatch(name, pattern):
             return True
-
 
 def listfiles(d):
     basedir = d
@@ -136,21 +123,14 @@ def listfiles(d):
         for fn in listfiles(subdir):
             yield fn
 
+python_files = []
 
 def make_python_zip():
-    '''
-    Search for all the python related files, and construct the pythonXX.zip
-    According to
-    # http://randomsplat.com/id5-cross-compiling-python-for-embedded-linux.html
-    site-packages, config and lib-dynload will be not included.
-    '''
-
     if not exists('private'):
         print('No compiled python is present to zip, skipping.')
         return
     global python_files # FIXME: No!
     d = realpath(join('private', 'lib', 'python2.7'))
-
     def select(fn):
         if is_blacklist(fn):
             return False
@@ -163,18 +143,11 @@ def make_python_zip():
                 or fn.startswith('/libpymodules.so')):
             return False
         return fn
-
-    # get a list of all python file
     python_files = [x for x in listfiles(d) if select(x)]
-
-    # create the final zipfile
     zfn = join('private', 'lib', 'python27.zip')
     zf = ZipFile(zfn, 'w')
-
-    # put all the python files in it
     for fn in python_files:
-        afn = fn[len(d):]
-        zf.write(fn, afn)
+        zf.write(fn, fn[len(d):])
     zf.close()
 
 def make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
@@ -196,7 +169,6 @@ def make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
         for fn, afn in files:
             dn = dirname(afn)
             if dn not in dirs:
-                # create every dirs first if not exist yet
                 d = ''
                 for component in split(dn):
                     d = join(d, component)
@@ -212,28 +184,12 @@ def make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
             tf.add(fn, afn)
 
 def compile_dir(dfn, optimize_python=True):
-    '''
-    Compile *.py in directory `dfn` to *.pyo
-    '''
-
     if PYTHON is None:
         return
-
-    if int(PYTHON_VERSION[0]) >= 3:
-        args = [PYTHON, '-m', 'compileall', '-b', '-f', dfn]
-    else:
-        args = [PYTHON, '-m', 'compileall', '-f', dfn]
+    args = [PYTHON, '-m', 'compileall', '-b', '-f', dfn]
     if optimize_python:
-        # -OO = strip docstrings
         args.insert(1, '-OO')
-    return_code = subprocess.call(args)
-
-    if return_code != 0:
-        print('Error while running "{}"'.format(' '.join(args)))
-        print('This probably means one of your Python files has a syntax '
-              'error, see logs above')
-        exit(1)
-
+    subprocess.check_call(args)
 
 def make_package(args):
     # If no launcher is specified, require a main.py/main.pyo:
