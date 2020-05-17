@@ -95,16 +95,15 @@ def _render(template, dest, **kwargs):
         f.write(text.encode('utf-8'))
 
 def _is_blacklist(name):
-    return not match_filename(WHITELIST_PATTERNS, name) and match_filename(BLACKLIST_PATTERNS, name)
-
-def match_filename(pattern_list, name):
-    for pattern in pattern_list:
-        if pattern.startswith('^'):
-            pattern = pattern[1:]
-        else:
-            pattern = '*/' + pattern
-        if fnmatch(name, pattern):
-            return True
+    def match_filename(pattern_list):
+        for pattern in pattern_list:
+            if pattern.startswith('^'):
+                pattern = pattern[1:]
+            else:
+                pattern = '*/' + pattern
+            if fnmatch(name, pattern):
+                return True
+    return not match_filename(WHITELIST_PATTERNS) and match_filename(BLACKLIST_PATTERNS)
 
 def listfiles(d):
     basedir = d
