@@ -159,17 +159,9 @@ class Distribution:
         shutil.rmtree(self.dist_dir)
 
     @classmethod
-    def _get_distributions(cls, ctx, extra_dist_dirs=[]):
-        '''Returns all the distributions found locally.'''
-        if extra_dist_dirs:
-            raise BuildInterruptingException(
-                'extra_dist_dirs argument to _get_distributions '
-                'is not yet implemented')
+    def _get_distributions(cls, ctx):
         dist_dir = ctx.dist_dir
         folders = glob.glob(join(dist_dir, '*'))
-        for dir in extra_dist_dirs:
-            folders.extend(glob.glob(join(dir, '*')))
-
         dists = []
         for folder in folders:
             if exists(join(folder, 'dist_info.json')):
