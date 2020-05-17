@@ -44,7 +44,9 @@ from os import listdir, makedirs, remove
 from os.path import dirname, join, isfile, realpath, relpath, split, exists, basename
 from pathlib import Path
 from zipfile import ZipFile
-import jinja2, json, os, shlex, shutil, subprocess, sys, tarfile, tempfile, time
+import jinja2, json, logging, os, shlex, shutil, subprocess, sys, tarfile, tempfile, time
+
+log = logging.getLogger(__name__)
 
 def _get_dist_info_for(key):
     with (curdir / 'dist_info.json').open() as fileh:
@@ -126,7 +128,7 @@ python_files = []
 
 def make_python_zip():
     if not exists('private'):
-        print('No compiled python is present to zip, skipping.')
+        log.info('No compiled python is present to zip, skipping.')
         return
     global python_files # FIXME: No!
     d = realpath(join('private', 'lib', 'python2.7'))
@@ -195,7 +197,7 @@ def _make_package(args):
         if args.private is None or (
                 not exists(join(realpath(args.private), 'main.py')) and
                 not exists(join(realpath(args.private), 'main.pyo'))):
-            print('''BUILD FAILURE: No main.py(o) found in your app directory. This
+            log.error('''BUILD FAILURE: No main.py(o) found in your app directory. This
 file must exist to act as the entry point for you app. If your app is
 started by a file with a different name, rename it to main.py or add a
 main.py that loads it.''')
@@ -215,7 +217,7 @@ main.py that loads it.''')
         f.write("P4A_MINSDK=" + str(args.min_sdk_version) + "\n")
     tar_dirs = [env_vars_tarpath]
     if args.private:
-        print('No setup.py/pyproject.toml used, copying full private data into .apk.')
+        log.info('No setup.py/pyproject.toml used, copying full private data into .apk.')
         tar_dirs.append(args.private)
     for python_bundle_dir in 'private', '_python_bundle':
         if exists(python_bundle_dir):
@@ -235,7 +237,7 @@ main.py that loads it.''')
     if args.add_jar:
         for jarname in args.add_jar:
             if not exists(jarname):
-                print('Requested jar does not exist: {}'.format(jarname))
+                log.error("Requested jar does not exist: %s", jarname)
                 sys.exit(-1)
             shutil.copy(jarname, 'src/main/libs')
             jars.append(basename(jarname))
@@ -244,7 +246,7 @@ main.py that loads it.''')
         _ensure_dir("libs")
         for aarname in args.add_aar:
             if not exists(aarname):
-                print('Requested aar does not exists: {}'.format(aarname))
+                log.error("Requested aar does not exists: %s", aarname)
                 sys.exit(-1)
             shutil.copy(aarname, 'libs')
             aars.append(basename(aarname).rsplit('.', 1)[0])
@@ -411,16 +413,16 @@ main.py that loads it.''')
             os.remove('build.properties')
     src_patches = Path('src', 'patches')
     if src_patches.exists():
-        print("Applying Java source code patches...")
+        log.info("Applying Java source code patches...")
         for patch_name in os.listdir(src_patches):
             patch_path = src_patches / patch_name
-            print("Applying patch: " + str(patch_path))
+            log.info("Applying patch: %s", patch_path)
             try:
                 subprocess.check_call(["patch", "-N", "-p1", "-t", "-i", patch_path])
             except subprocess.CalledProcessError as e:
                 if e.returncode != 1:
                     raise e
-                print("Warning: failed to apply patch (exit code 1), assuming it is already applied: " + str(patch_path))
+                log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
 def parse_args(args=None):
     global BLACKLIST_PATTERNS, WHITELIST_PATTERNS, PYTHON
@@ -432,7 +434,7 @@ def parse_args(args=None):
             default_min_api = int(info['ndk_api'])
             ndk_api = default_min_api
     except (OSError, KeyError, ValueError, TypeError):
-        print('WARNING: Failed to read ndk_api from dist info, defaulting to 12')
+        log.warning('Failed to read ndk_api from dist info, defaulting to 12')
         default_min_api = 12  # The old default before ndk_api was introduced
         ndk_api = 12
 
@@ -606,7 +608,7 @@ tools directory of the Android SDK.
     def _read_configuration():
         if not exists(".p4a"):
             return
-        print("Reading .p4a configuration")
+        log.info('Reading .p4a configuration')
         with open(".p4a") as fd:
             lines = fd.readlines()
         lines = [shlex.split(line)
