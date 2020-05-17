@@ -177,21 +177,20 @@ class ToolchainCL:
         parser_apk.add_argument('--signkeypw')
         args, unknown = parser.parse_known_args()
         args.unknown_args = unknown
-        if hasattr(args, "private") and args.private is not None:
+        if args.private is not None:
             args.unknown_args += ["--private", args.private]
         self.args = args
         setup_color(args.color)
         if args.debug:
             logger.setLevel(logging.DEBUG)
-        if hasattr(args, 'requirements'):
-            requirements = []
-            for requirement in _split_argument_list(args.requirements):
-                if "==" in requirement:
-                    requirement, version = requirement.split(u"==", 1)
-                    os.environ["VERSION_{}".format(requirement)] = version
-                    log.info("""Recipe %s: version "%s" requested""", requirement, version)
-                requirements.append(requirement)
-            args.requirements = ','.join(requirements)
+        requirements = []
+        for requirement in _split_argument_list(args.requirements):
+            if "==" in requirement:
+                requirement, version = requirement.split("==", 1)
+                os.environ[f"VERSION_{requirement}"] = version
+                log.info("""Recipe %s: version "%s" requested""", requirement, version)
+            requirements.append(requirement)
+        args.requirements = ','.join(requirements)
         ctx = _createcontext(args)
         getattr(self, args.command)(args, ctx, self._require_prebuilt_dist(args, ctx))
 
