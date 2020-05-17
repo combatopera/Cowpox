@@ -88,8 +88,7 @@ def _render(template, dest, **kwargs):
     dest_dir = dirname(dest)
     if dest_dir and not exists(dest_dir):
         makedirs(dest_dir)
-    template = environment.get_template(template)
-    text = template.render(**kwargs)
+    text = environment.get_template(template).render(**kwargs)
     with open(dest, 'wb') as f:
         f.write(text.encode('utf-8'))
 
