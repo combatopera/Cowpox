@@ -62,7 +62,7 @@ ANT = 'ant'
 
 class Blacklist:
 
-    def __init__(self):
+    def __init__(self, bootstrapname):
         self.BLACKLIST_PATTERNS = [
             '^*.hg/*',
             '^*.git/*',
@@ -73,7 +73,7 @@ class Blacklist:
             '*.swp',
             '*.py',
         ]
-        self.WHITELIST_PATTERNS = ['pyconfig.h'] if _get_bootstrap_name() in {'sdl2', 'webview', 'service_only'} else []
+        self.WHITELIST_PATTERNS = ['pyconfig.h'] if bootstrapname in {'sdl2', 'webview', 'service_only'} else []
 
     def has(self, name):
         def match_filename(pattern_list):
@@ -418,7 +418,6 @@ main.py that loads it.''')
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
 def makeapkversion(args):
-    blacklist = Blacklist()
     try:
         with open('dist_info.json', 'r') as fileh:
             info = json.load(fileh)
@@ -429,6 +428,7 @@ def makeapkversion(args):
         default_min_api = 12  # The old default before ndk_api was introduced
         ndk_api = 12
     bootstrapname = _get_bootstrap_name()
+    blacklist = Blacklist(bootstrapname)
     ap = ArgumentParser()
     ap.add_argument('--private', required = bootstrapname != "sdl2")
     ap.add_argument('--package', dest='package',
