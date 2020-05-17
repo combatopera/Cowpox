@@ -150,12 +150,6 @@ class Bootstrap:
         self.build_dir = self.get_build_dir()
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files(join(os.path.abspath(self.bootstrap_dir / ".." / 'common'), 'build'), self.build_dir, False)
-        if self.ctx.symlink_java_src:
-            info('Symlinking java src instead of copying')
-            rm._r.print(join(self.build_dir, 'src'))
-            mkdir.print(join(self.build_dir, 'src'))
-            for dirn in listdir(self.bootstrap_dir / 'build' / 'src'):
-                ln._s.print(self.bootstrap_dir / 'build' / 'src' / dirn, join(self.build_dir, 'src'))
         with current_directory(self.build_dir):
             with open('project.properties', 'w') as fileh:
                 fileh.write('target=android-{}'.format(self.ctx.android_api))

@@ -71,7 +71,6 @@ class ArgumentParser(argparse.ArgumentParser):
 def _createcontext(args):
     ctx = Context()
     ctx.setup_dirs(args.storage_dir)
-    ctx.symlink_java_src = args.symlink_java_src
     ctx.local_recipes = args.local_recipes
     ctx.copy_libs = args.copy_libs
     ctx.set_archs(_split_argument_list(args.arch))
@@ -118,14 +117,6 @@ class ToolchainCL:
             help=('The Android API level to compile against. This should be your '
                   '*minimal supported* API, not normally the same as your --android-api. '
                   'Defaults to min(ANDROID_API, {}) if not specified.').format(RECOMMENDED_NDK_API))
-        generic_parser.add_argument(
-            '--symlink-java-src', '--symlink_java_src',
-            action='store_true',
-            dest='symlink_java_src',
-            default=False,
-            help=('If True, symlinks the java src folder during build and dist '
-                  'creation. This is useful for development only, it could also'
-                  ' cause weird problems.'))
         default_storage_dir = user_data_dir('python-for-android')
         if ' ' in default_storage_dir:
             default_storage_dir = '~/.python-for-android'
