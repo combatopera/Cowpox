@@ -120,7 +120,7 @@ def _listfiles(d):
 
 python_files = []
 
-def make_python_zip():
+def _make_python_zip():
     if not exists('private'):
         log.info('No compiled python is present to zip, skipping.')
         return
@@ -145,7 +145,7 @@ def make_python_zip():
         zf.write(fn, fn[len(d):])
     zf.close()
 
-def make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
+def _make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
     def select(fn):
         rfn = realpath(fn)
         for p in ignore_path:
@@ -200,7 +200,7 @@ main.py that loads it.''')
     _try_unlink(assets_dir / 'public.mp3')
     _try_unlink(assets_dir / 'private.mp3')
     _ensure_dir(assets_dir)
-    make_python_zip()
+    _make_python_zip()
     env_vars_tarpath = tempfile.mkdtemp(prefix = "p4a-extra-env-")
     with Path(env_vars_tarpath, "p4a_env_vars.txt").open("w") as f:
         if hasattr(args, "window"):
@@ -219,7 +219,7 @@ main.py that loads it.''')
     if _get_bootstrap_name() == "webview":
         tar_dirs.append('webview_includes')
     if args.private or args.launcher:
-        make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, optimize_python = args.optimize_python)
+        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, optimize_python = args.optimize_python)
     shutil.rmtree(env_vars_tarpath)
     res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
