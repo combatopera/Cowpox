@@ -290,7 +290,7 @@ class Bootstrap:
         '''Copy existing javaclasses from build dir to current dist dir.'''
         info('Copying java files')
         ensure_dir(dest_dir)
-        for filename in glob.glob(javaclass_dir):
+        for filename in glob.glob(str(javaclass_dir)):
             cp._a.print(filename, dest_dir)
 
     def distribute_aars(self, arch):
