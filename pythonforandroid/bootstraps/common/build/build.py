@@ -50,7 +50,7 @@ def _get_dist_info_for(key):
     with (curdir / 'dist_info.json').open() as fileh:
         return json.load(fileh)[key]
 
-def get_bootstrap_name():
+def _get_bootstrap_name():
     return _get_dist_info_for('bootstrap')
 
 curdir = Path(__file__).parent
@@ -72,7 +72,7 @@ BLACKLIST_PATTERNS = [
 if PYTHON is not None:
     BLACKLIST_PATTERNS.append('*.py')
 WHITELIST_PATTERNS = []
-if get_bootstrap_name() in {'sdl2', 'webview', 'service_only'}:
+if _get_bootstrap_name() in {'sdl2', 'webview', 'service_only'}:
     WHITELIST_PATTERNS.append('pyconfig.h')
 python_files = []
 environment = jinja2.Environment(loader = jinja2.FileSystemLoader(curdir / 'templates'))
@@ -237,8 +237,8 @@ def compile_dir(dfn, optimize_python=True):
 
 def make_package(args):
     # If no launcher is specified, require a main.py/main.pyo:
-    if (get_bootstrap_name() != "sdl" or args.launcher is None) and \
-            get_bootstrap_name() != "webview":
+    if (_get_bootstrap_name() != "sdl" or args.launcher is None) and \
+            _get_bootstrap_name() != "webview":
         # (webview doesn't need an entrypoint, apparently)
         if args.private is None or (
                 not exists(join(realpath(args.private), 'main.py')) and
@@ -278,7 +278,7 @@ main.py that loads it.''')
         for python_bundle_dir in 'private', '_python_bundle':
             if exists(python_bundle_dir):
                 tar_dirs.append(python_bundle_dir)
-        if get_bootstrap_name() == "webview":
+        if _get_bootstrap_name() == "webview":
             tar_dirs.append('webview_includes')
         if args.private or args.launcher:
             make_tar(
@@ -299,7 +299,7 @@ main.py that loads it.''')
         args.icon or default_icon,
         join(res_dir, 'drawable/icon.png')
     )
-    if get_bootstrap_name() != "service_only":
+    if _get_bootstrap_name() != "service_only":
         shutil.copy(
             args.presplash or default_presplash,
             join(res_dir, 'drawable/presplash.jpg')
@@ -431,7 +431,7 @@ main.py that loads it.''')
         "service_names": service_names,
         "android_api": android_api
     }
-    if get_bootstrap_name() == "sdl2":
+    if _get_bootstrap_name() == "sdl2":
         render_args["url_scheme"] = url_scheme
     render(
         'AndroidManifest.tmpl.xml',
@@ -467,7 +467,7 @@ main.py that loads it.''')
         "args": args,
         "private_version": str(time.time())
     }
-    if get_bootstrap_name() == "sdl2":
+    if _get_bootstrap_name() == "sdl2":
         render_args["url_scheme"] = url_scheme
     render(
         'strings.tmpl.xml',
@@ -480,7 +480,7 @@ main.py that loads it.''')
             'custom_rules.xml',
             args=args)
 
-    if get_bootstrap_name() == "webview":
+    if _get_bootstrap_name() == "webview":
         render('WebViewLoader.tmpl.java',
                'src/main/java/org/kivy/android/WebViewLoader.java',
                args=args)
@@ -534,7 +534,7 @@ def parse_args(args=None):
     import argparse
     ap = argparse.ArgumentParser(description='''\
 Package a Python application for Android (using
-bootstrap ''' + get_bootstrap_name() + ''').
+bootstrap ''' + _get_bootstrap_name() + ''').
 
 For this to work, Java and Ant need to be in your path, as does the
 tools directory of the Android SDK.
@@ -544,7 +544,7 @@ tools directory of the Android SDK.
     ap.add_argument('--private', dest='private',
                     help='the directory with the app source code files' +
                          ' (containing your main.py entrypoint)',
-                    required=(get_bootstrap_name() != "sdl2"))
+                    required=(_get_bootstrap_name() != "sdl2"))
     ap.add_argument('--package', dest='package',
                     help=('The name of the java package the project will be'
                           ' packaged under.'),
@@ -562,7 +562,7 @@ tools directory of the Android SDK.
                           'same number of groups of numbers as previous '
                           'versions.'),
                     required=True)
-    if get_bootstrap_name() == "sdl2":
+    if _get_bootstrap_name() == "sdl2":
         ap.add_argument('--launcher', dest='launcher', action='store_true',
                         help=('Provide this argument to build a multi-app '
                               'launcher, rather than a single app.'))
@@ -578,7 +578,7 @@ tools directory of the Android SDK.
     ap.add_argument('--service', dest='services', action='append', default=[],
                     help='Declare a new service entrypoint: '
                          'NAME:PATH_TO_PY[:foreground]')
-    if get_bootstrap_name() != "service_only":
+    if _get_bootstrap_name() != "service_only":
         ap.add_argument('--presplash', dest='presplash',
                         help=('A jpeg file to use as a screen while the '
                               'application is loading.'))
@@ -666,7 +666,7 @@ tools directory of the Android SDK.
                     help='If set, the billing service will be added (not implemented)')
     ap.add_argument('--add-source', dest='extra_source_dirs', action='append',
                     help='Include additional source dirs in Java build')
-    if get_bootstrap_name() == "webview":
+    if _get_bootstrap_name() == "webview":
         ap.add_argument('--port',
                         help='The port on localhost that the WebView will access',
                         default='5000')
@@ -770,7 +770,7 @@ tools directory of the Android SDK.
         WHITELIST_PATTERNS += patterns
 
     if args.private is None and \
-            get_bootstrap_name() == 'sdl2' and args.launcher is None:
+            _get_bootstrap_name() == 'sdl2' and args.launcher is None:
         print('Need --private directory or ' +
               '--launcher (SDL2 bootstrap only)' +
               'to have something to launch inside the .apk!')
