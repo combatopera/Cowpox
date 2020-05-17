@@ -46,7 +46,7 @@ from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from .util import current_directory, ensure_dir, get_virtualenv_executable, BuildInterruptingException
 from lagoon.program import Program
 from os import environ
-from os.path import abspath, join, realpath, dirname, expanduser, exists, split, isdir
+from os.path import join, realpath, dirname, expanduser, exists, split, isdir
 from pathlib import Path
 import copy, glob, logging, os, re, sh, shutil, subprocess, sys
 
