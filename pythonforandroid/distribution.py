@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from .logger import info, info_notify, warning, Err_Style, Err_Fore
-from .util import current_directory, BuildInterruptingException
+from .util import current_directory
 from os.path import exists, join
 from pathlib import Path
 import glob, json, shutil
@@ -79,15 +79,10 @@ class Distribution:
         return str(self)
 
     @classmethod
-    def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api, force_build, allow_replace_dist, extra_dist_dirs = []):
+    def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api, force_build, extra_dist_dirs = []):
         possible_dists = cls._get_distributions(ctx)
-        folder_match_dist = None
         if name is not None and name:
-            possible_dists = [
-                d for d in possible_dists if
-                (d.name == name) and (arch_name in d.archs)]
-            if possible_dists:
-                folder_match_dist = possible_dists[0]
+            possible_dists = [d for d in possible_dists if (d.name == name) and (arch_name in d.archs)]
         _possible_dists = []
         for dist in possible_dists:
             if (
@@ -116,20 +111,6 @@ class Distribution:
             if set(recipes).issubset(set(dist.recipes)):
                 info_notify('{} has compatible recipes, using this one'.format(dist.name))
                 return dist
-        # If there was a name match but we didn't already choose it,
-        # then the existing dist is incompatible with the requested
-        # configuration and the build cannot continue
-        if folder_match_dist is not None and not allow_replace_dist:
-            raise BuildInterruptingException(
-                'Asked for dist with name {name} with recipes ({req_recipes}) and '
-                'NDK API {req_ndk_api}, but a dist '
-                'with this name already exists and has either incompatible recipes '
-                '({dist_recipes}) or NDK API {dist_ndk_api}'.format(
-                    name=name,
-                    req_ndk_api=ndk_api,
-                    dist_ndk_api=folder_match_dist.ndk_api,
-                    req_recipes=', '.join(recipes),
-                    dist_recipes=', '.join(folder_match_dist.recipes)))
         assert len(possible_dists) < 2
         dist = cls(ctx)
         dist.needs_build = True

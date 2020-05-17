@@ -120,7 +120,6 @@ class ToolchainCL:
             default='')
         generic_parser.add_argument('--bootstrap')
         generic_parser.add_boolean_option('force-build', False, 'Whether to force compilation of a new distribution')
-        generic_parser.add_boolean_option('allow-replace-dist', True, 'Whether existing dist names can be automatically replaced')
         generic_parser.add_argument(
             '--local-recipes', '--local_recipes',
             dest='local_recipes', default='./p4a-recipes',
@@ -156,8 +155,7 @@ class ToolchainCL:
                 _split_argument_list(args.requirements),
                 args.arch,
                 args.ndk_api,
-                args.force_build,
-                args.allow_replace_dist)
+                args.force_build)
         ctx.distribution = dist
         if dist.needs_build:
             if dist.folder_exists():
