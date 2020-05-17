@@ -125,12 +125,6 @@ class ToolchainCL:
                   'Python 3 with --use-setup-py'),
             default='')
         generic_parser.add_argument(
-            '--recipe-blacklist',
-            help=('Blacklist an internal recipe from use. Allows '
-                  'disabling Python 3 core modules to save size'),
-            dest="recipe_blacklist",
-            default='')
-        generic_parser.add_argument(
             '--blacklist-requirements',
             help=('Blacklist an internal recipe from use. Allows '
                   'disabling Python 3 core modules to save size'),
