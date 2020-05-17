@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .toolchain import main
+from .p4a import main
 from glob import glob
 from os import makedirs
 from os.path import realpath, join, exists, dirname, curdir, basename, split

@@ -61,7 +61,7 @@ class TargetAndroid:
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.arch = config.getdefault('app', 'android.arch', 'armeabi-v7a')
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
-        self.p4a = Program.text(sys.executable).partial('-m', 'pythonforandroid.toolchain', env = dict(
+        self.p4a = Program.text(sys.executable).partial('-m', 'pythonforandroid.p4a', env = dict(
             ANDROIDSDK = dirs.android_sdk_dir,
             ANDROIDNDK = dirs.android_ndk_dir,
             ANDROIDAPI = self.android_api,
