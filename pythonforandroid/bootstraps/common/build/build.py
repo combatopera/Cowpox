@@ -51,8 +51,8 @@ log = logging.getLogger(__name__)
 
 class DistInfo:
 
-    def __init__(self, curdir):
-        with (curdir / 'dist_info.json').open() as f:
+    def __init__(self, distdir):
+        with (distdir / 'dist_info.json').open() as f:
             self.d = json.load(f)
 
     def forkey(self, key):
@@ -415,9 +415,9 @@ main.py that loads it.''')
                     raise e
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
-def makeapkversion(args):
+def makeapkversion(args, distdir):
     curdir = Path(__file__).parent
-    distinfo = DistInfo(Path(curdir))
+    distinfo = DistInfo(distdir)
     ndk_api = default_min_api = int(distinfo.forkey('ndk_api'))
     bootstrapname = distinfo.forkey('bootstrap')
     blacklist = Blacklist(bootstrapname)

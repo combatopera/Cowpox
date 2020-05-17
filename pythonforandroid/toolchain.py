@@ -240,7 +240,7 @@ class ToolchainCL:
         makeapkversion = imp.load_source('build', join(dist.dist_dir, 'build.py')).makeapkversion
         with current_directory(dist.dist_dir):
             os.environ["ANDROID_API"] = str(ctx.android_api)
-            apkversion = makeapkversion(args.unknown_args)
+            apkversion = makeapkversion(args.unknown_args, dist.dist_dir)
             log.info('Selecting java build tool:')
             build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
             build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
