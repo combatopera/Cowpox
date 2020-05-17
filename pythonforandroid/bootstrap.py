@@ -47,7 +47,7 @@ from os import listdir, walk, sep
 from os.path import join, dirname, isdir, normpath, splitext, basename
 import functools, glob, os, sh, shlex, shutil
 
-def copy_files(src_root, dest_root, override=True):
+def _copy_files(src_root, dest_root, override=True):
     for root, dirnames, filenames in walk(src_root):
         for filename in filenames:
             subdir = normpath(root.replace(src_root, ""))
@@ -65,7 +65,6 @@ def copy_files(src_root, dest_root, override=True):
                     shutil.copy(src_file, dest_file)
             else:
                 os.makedirs(dest_file)
-
 
 default_recipe_priorities = [
     "webview", "sdl2", "service_only"  # last is highest
@@ -149,8 +148,8 @@ class Bootstrap:
         '''Ensure that a build dir exists for the recipe. This same single
         dir will be used for building all different archs.'''
         self.build_dir = self.get_build_dir()
-        copy_files(join(self.bootstrap_dir, 'build'), self.build_dir)
-        copy_files(join(os.path.abspath(join(self.bootstrap_dir, "..", 'common')), 'build'), self.build_dir,
+        _copy_files(join(self.bootstrap_dir, 'build'), self.build_dir)
+        _copy_files(join(os.path.abspath(join(self.bootstrap_dir, "..", 'common')), 'build'), self.build_dir,
                    override=False)
         if self.ctx.symlink_java_src:
             info('Symlinking java src instead of copying')
