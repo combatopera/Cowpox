@@ -69,7 +69,7 @@ class TargetAndroid:
         self.dist_name = config.get('app', 'package.name')
         self.bootstrapname = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
         self.extra_p4a_args = [
-                '--dist_name', self.dist_name,
+                '--dist-name', self.dist_name,
                 '--bootstrap', self.bootstrapname,
                 '--arch', self.arch,
                 '--storage-dir', self.build_dir,

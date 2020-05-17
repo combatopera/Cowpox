@@ -117,9 +117,7 @@ class ToolchainCL:
         generic_parser.add_argument(
             '--arch', help='The arch to build for.',
             default='armeabi-v7a')
-        generic_parser.add_argument(
-            '--dist-name', '--dist_name',
-            help='The name of the distribution to use or create', default='')
+        generic_parser.add_argument('--dist-name')
         generic_parser.add_argument(
             '--requirements',
             help=('Dependencies of your app, should be recipe names or '
