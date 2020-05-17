@@ -88,21 +88,18 @@ BLACKLIST_PATTERNS = [
 if PYTHON is not None:
     BLACKLIST_PATTERNS.append('*.py')
 WHITELIST_PATTERNS = []
-if get_bootstrap_name() in ('sdl2', 'webview', 'service_only'):
+if get_bootstrap_name() in {'sdl2', 'webview', 'service_only'}:
     WHITELIST_PATTERNS.append('pyconfig.h')
-
 python_files = []
 environment = jinja2.Environment(loader = jinja2.FileSystemLoader(curdir / 'templates'))
 
-def try_unlink(fn):
+def _try_unlink(fn):
     if exists(fn):
         os.unlink(fn)
 
-
-def ensure_dir(path):
+def _ensure_dir(path):
     if not exists(path):
         makedirs(path)
-
 
 def render(template, dest, **kwargs):
     '''Using jinja2, render `template` to the filename `dest`, supplying the
@@ -271,9 +268,9 @@ main.py that loads it.''')
     assets_dir = "src/main/assets"
 
     # Delete the old assets.
-    try_unlink(join(assets_dir, 'public.mp3'))
-    try_unlink(join(assets_dir, 'private.mp3'))
-    ensure_dir(assets_dir)
+    _try_unlink(join(assets_dir, 'public.mp3'))
+    _try_unlink(join(assets_dir, 'private.mp3'))
+    _ensure_dir(assets_dir)
 
     # In order to speedup import and initial depack,
     # construct a python27.zip
@@ -378,7 +375,7 @@ main.py that loads it.''')
     # If extra aar were requested, copy them into the libs directory
     aars = []
     if args.add_aar:
-        ensure_dir("libs")
+        _ensure_dir("libs")
         for aarname in args.add_aar:
             if not exists(aarname):
                 print('Requested aar does not exists: {}'.format(aarname))
