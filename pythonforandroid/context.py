@@ -330,16 +330,13 @@ class Context:
 
         self.toolchain_prefix = None
         self.toolchain_version = None
-
-        self.local_recipes = None
         self.archs = (
             ArchARM(self),
             ArchARMv7_a(self),
             Archx86(self),
             Archx86_64(self),
             ArchAarch_64(self),
-            )
-
+        )
         self.root_dir = realpath(dirname(__file__))
 
         # remove the most obvious flags that can break the compilation

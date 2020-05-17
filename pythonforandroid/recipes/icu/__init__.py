@@ -81,10 +81,9 @@ class ICURecipe(Recipe):
                   mismatch name between the recipe's folder (icu) and the value
                   of `ICURecipe.name` (icu4c).
         """
-        if self.ctx.local_recipes is not None:
-            local_recipe_dir = join(self.ctx.local_recipes, 'icu')
-            if exists(local_recipe_dir):
-                return local_recipe_dir
+        local_recipe_dir = join(self.ctx.local_recipes, 'icu')
+        if exists(local_recipe_dir):
+            return local_recipe_dir
         return join(self.ctx.root_dir, 'recipes', 'icu')
 
     def build_arch(self, arch):

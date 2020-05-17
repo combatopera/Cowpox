@@ -108,10 +108,7 @@ class ToolchainCL:
                   'Python 3 with --use-setup-py'),
             default='')
         generic_parser.add_argument('--bootstrap')
-        generic_parser.add_argument(
-            '--local-recipes', '--local_recipes',
-            dest='local_recipes', default='./p4a-recipes',
-            help='Directory to look for local recipes')
+        generic_parser.add_argument('--local-recipes')
         parser = ArgumentParser(allow_abbrev = False)
         subparsers = parser.add_subparsers(dest = 'command')
         subparsers.add_parser('create', parents = [generic_parser])
