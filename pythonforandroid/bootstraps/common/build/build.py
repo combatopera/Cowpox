@@ -59,7 +59,6 @@ def _get_bootstrap_name():
 curdir = Path(__file__).parent
 ANDROID = 'android'
 ANT = 'ant'
-PYTHON = _get_dist_info_for('hostpython')
 BLACKLIST_PATTERNS = [
     '^*.hg/*',
     '^*.git/*',
@@ -180,9 +179,7 @@ def _make_tar(tfn, source_dirs, ignore_path, optimize_python):
             tf.add(fn, afn)
 
 def _compile_dir(dfn, optimize_python=True):
-    if PYTHON is None:
-        return
-    args = [PYTHON, '-m', 'compileall', '-b', '-f', dfn]
+    args = [_get_dist_info_for('hostpython'), '-m', 'compileall', '-b', '-f', dfn]
     if optimize_python:
         args.insert(1, '-OO')
     subprocess.check_call(args)
@@ -419,7 +416,7 @@ main.py that loads it.''')
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
 def makeapkversion(args):
-    global BLACKLIST_PATTERNS, WHITELIST_PATTERNS, PYTHON
+    global BLACKLIST_PATTERNS, WHITELIST_PATTERNS
     try:
         with open('dist_info.json', 'r') as fileh:
             info = json.load(fileh)
