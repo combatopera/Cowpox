@@ -143,14 +143,9 @@ def _make_python_zip(blacklist):
     zf.close()
     return python_files
 
-def _make_tar(tfn, source_dirs, ignore_path, optimize_python, blacklist, distinfo, python_files):
+def _make_tar(tfn, source_dirs, optimize_python, blacklist, distinfo, python_files):
     def select(fn):
         rfn = realpath(fn)
-        for p in ignore_path:
-            if p.endswith('/'):
-                p = p[:-1]
-            if rfn.startswith(p):
-                return False
         return False if rfn in python_files else not blacklist.has(fn)
     files = []
     for sd in source_dirs:
@@ -215,7 +210,7 @@ main.py that loads it.''')
     if bootstrapname == "webview":
         tar_dirs.append('webview_includes')
     if args.private or args.launcher:
-        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, args.optimize_python, blacklist, distinfo, python_files)
+        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.optimize_python, blacklist, distinfo, python_files)
     shutil.rmtree(env_vars_tarpath)
     res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
@@ -564,8 +559,6 @@ def makeapkversion(args, distdir, common_build):
                     help=('Extra xml to write directly inside the <manifest> element of'
                           'AndroidManifest.xml'))
     args = ap.parse_args(args)
-    args.ignore_path = []
-
     if args.name and args.name[0] == '"' and args.name[-1] == '"':
         args.name = args.name[1:-1]
 
