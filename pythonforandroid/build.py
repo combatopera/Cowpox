@@ -467,10 +467,6 @@ def makeapkversion(args, distdir):
                     default=default_min_api, type=int,
                     help=('Minimum Android SDK version that the app supports. '
                           'Defaults to {}.'.format(default_min_api)))
-    ap.add_argument('--allow-minsdk-ndkapi-mismatch', default=False,
-                    action='store_true',
-                    help=('Allow the --minsdk argument to be different from '
-                          'the discovered ndk_api in the dist'))
     ap.add_argument('--intent-filters', dest='intent_filters',
                     help=('Add intent-filters xml rules to the '
                           'AndroidManifest.xml file. The argument is a '
@@ -506,12 +502,9 @@ def makeapkversion(args, distdir):
     args = ap.parse_args(args)
     if args.name and args.name[0] == '"' and args.name[-1] == '"':
         args.name = args.name[1:-1]
-
     if ndk_api != args.min_sdk_version:
         log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
-        if not args.allow_minsdk_ndkapi_mismatch:
-            raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
-        log.info('Proceeding with --minsdk not matching build target api')
+        raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
     if args.billing_pubkey:
         raise Exception('Billing not yet supported!')
     if args.permissions and isinstance(args.permissions[0], list):
