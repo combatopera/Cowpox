@@ -41,7 +41,7 @@
 # THE SOFTWARE.
 
 from .bootstrap import Bootstrap
-from .build import Context, build_recipes
+from .context import Context, build_recipes
 from .distribution import Distribution
 from .graph import get_recipe_order
 from .logger import logger, setup_color, shprint
