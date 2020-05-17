@@ -157,7 +157,7 @@ def _make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
     files = []
     for sd in source_dirs:
         sd = realpath(sd)
-        compile_dir(sd, optimize_python = optimize_python)
+        _compile_dir(sd, optimize_python = optimize_python)
         files.extend([x, relpath(realpath(x), sd)] for x in _listfiles(sd) if select(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = set()
@@ -178,7 +178,7 @@ def _make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
                     tf.addfile(tinfo)
             tf.add(fn, afn)
 
-def compile_dir(dfn, optimize_python=True):
+def _compile_dir(dfn, optimize_python=True):
     if PYTHON is None:
         return
     args = [PYTHON, '-m', 'compileall', '-b', '-f', dfn]
