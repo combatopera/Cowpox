@@ -237,7 +237,7 @@ class ToolchainCL:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.signkeypw
             elif args.keystorepw and 'P4A_RELEASE_KEYALIAS_PASSWD' not in env:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.keystorepw
-        makeapkversion = imp.load_source('build', dist.dist_dir / 'build.py').makeapkversion
+        makeapkversion = imp.load_source('build', str(dist.dist_dir / 'build.py')).makeapkversion
         with current_directory(dist.dist_dir):
             os.environ["ANDROID_API"] = str(ctx.android_api)
             apkversion = makeapkversion(args.unknown_args, dist.dist_dir)
