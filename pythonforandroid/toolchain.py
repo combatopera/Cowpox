@@ -41,6 +41,7 @@
 # THE SOFTWARE.
 
 from .bootstrap import Bootstrap
+from .build import makeapkversion
 from .context import Context, build_recipes
 from .distribution import Distribution
 from .graph import get_recipe_order
@@ -52,7 +53,7 @@ from distutils.version import LooseVersion
 from lagoon import cp
 from os.path import join, realpath, expanduser, basename
 from pathlib import Path
-import argparse, glob, imp, logging, os, re, sh # FIXME: Retire imp.
+import argparse, glob, logging, os, re, sh
 
 log = logging.getLogger(__name__)
 
@@ -238,7 +239,6 @@ class ToolchainCL:
             elif args.keystorepw and 'P4A_RELEASE_KEYALIAS_PASSWD' not in env:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.keystorepw
         common_build = Path(__file__).parent / 'bootstraps' / 'common' / 'build'
-        makeapkversion = imp.load_source('build', str(dist.dist_dir / 'build.py')).makeapkversion
         with current_directory(dist.dist_dir):
             os.environ["ANDROID_API"] = str(ctx.android_api)
             apkversion = makeapkversion(args.unknown_args, dist.dist_dir, common_build)
