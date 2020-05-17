@@ -116,7 +116,6 @@ class Context:
     build_dir = None
 
     distribution = None
-    distsdir = None
     libs_dir = None
     aars_dir = None
     ccache = None  # whether to use ccache
@@ -179,7 +178,7 @@ class Context:
             raise ValueError('storage dir path cannot contain spaces, please '
                              'specify a path with --storage-dir')
         self.build_dir = join(self.storage_dir, 'build')
-        self.distsdir = join(self.storage_dir, 'dists')
+        self.distsdir = Path(self.storage_dir, 'dists')
 
     def ensure_dirs(self):
         ensure_dir(self.storage_dir)

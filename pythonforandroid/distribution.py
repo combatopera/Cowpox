@@ -143,11 +143,11 @@ class Distribution:
         if not name:
             filen = 'unnamed_dist_{}'
             i = 1
-            while exists(join(ctx.distsdir, filen.format(i))):
+            while (ctx.distsdir / filen.format(i)).exists():
                 i += 1
             name = filen.format(i)
         dist.name = name
-        dist.dist_dir = Path(ctx.distsdir, generate_dist_folder_name(name, None if arch_name is None else [arch_name]))
+        dist.dist_dir = ctx.distsdir / generate_dist_folder_name(name, None if arch_name is None else [arch_name])
         dist.recipes = recipes
         dist.ndk_api = ctx.ndk_api
         dist.archs = [arch_name]
@@ -161,7 +161,7 @@ class Distribution:
 
     @classmethod
     def _get_distributions(cls, ctx):
-        folders = glob.glob(join(ctx.distsdir, '*'))
+        folders = glob.glob(ctx.distsdir / '*')
         dists = []
         for folder in folders:
             if exists(join(folder, 'dist_info.json')):
