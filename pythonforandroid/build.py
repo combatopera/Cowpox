@@ -508,10 +508,6 @@ def makeapkversion(args, distdir, common_build):
     ap.add_argument('--depend', dest='depends', action='append',
                     help=('Add a external dependency '
                           '(eg: com.android.support:appcompat-v7:19.0.1)'))
-    # The --sdk option has been removed, it is ignored in favour of
-    # --android-api handled by toolchain.py
-    ap.add_argument('--sdk', dest='sdk_version', default=-1,
-                    type=int, help=('Deprecated argument, does nothing'))
     ap.add_argument('--minsdk', dest='min_sdk_version',
                     default=default_min_api, type=int,
                     help=('Minimum Android SDK version that the app supports. '
@@ -563,9 +559,6 @@ def makeapkversion(args, distdir, common_build):
         log.info('Proceeding with --minsdk not matching build target api')
     if args.billing_pubkey:
         raise Exception('Billing not yet supported!')
-    if args.sdk_version == -1:
-        log.warning('WARNING: Received a --sdk argument, but this argument is deprecated and does nothing.')
-        args.sdk_version = -1  # ensure it is not used
     if args.permissions and isinstance(args.permissions[0], list):
         args.permissions = [p for perm in args.permissions for p in perm]
     if args.blacklist:
