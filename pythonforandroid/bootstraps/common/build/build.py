@@ -58,8 +58,6 @@ class DistInfo:
     def forkey(self, key):
         return self.d[key]
 
-curdir = Path(__file__).parent
-
 class Blacklist:
 
     def __init__(self, bootstrapname):
@@ -186,7 +184,7 @@ def _compile_dir(dfn, optimize_python, distinfo):
         args.insert(1, '-OO')
     subprocess.check_call(args)
 
-def _make_package(args, bootstrapname, blacklist, distinfo):
+def _make_package(args, bootstrapname, blacklist, distinfo, curdir):
     if (bootstrapname != "sdl" or args.launcher is None) and bootstrapname != "webview":
         if args.private is None or (
                 not exists(join(realpath(args.private), 'main.py')) and
@@ -418,6 +416,7 @@ main.py that loads it.''')
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
 def makeapkversion(args):
+    curdir = Path(__file__).parent
     distinfo = DistInfo(Path(curdir))
     ndk_api = default_min_api = int(distinfo.forkey('ndk_api'))
     bootstrapname = distinfo.forkey('bootstrap')
@@ -616,5 +615,5 @@ def makeapkversion(args):
         blacklist.WHITELIST_PATTERNS += patterns
     if args.private is None and bootstrapname == 'sdl2' and args.launcher is None:
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
-    _make_package(args, bootstrapname, blacklist, distinfo)
+    _make_package(args, bootstrapname, blacklist, distinfo, curdir)
     return args.version
