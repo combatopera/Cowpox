@@ -48,24 +48,14 @@ from .graph import get_recipe_order
 from .logger import setup_color, shprint
 from .recommendations import RECOMMENDED_NDK_API
 from .util import BuildInterruptingException, current_directory
+from argparse import ArgumentParser
 from distutils.version import LooseVersion
 from lagoon import cp
 from os.path import join, realpath, expanduser, basename
 from pathlib import Path
-import argparse, glob, logging, os, re, sh
+import glob, logging, os, re, sh
 
 log = logging.getLogger(__name__)
-
-class ArgumentParser(argparse.ArgumentParser):
-
-    def add_boolean_option(self, name, default, description):
-        group = self.add_argument_group(description = description)
-        dest = name.replace('-', '_')
-        group.add_argument(f"--{name}",
-                help = "(this is the default)" if default else None, dest = dest, action = 'store_true')
-        group.add_argument(f"--no-{name}",
-                help = None if default else "(this is the default)", dest = dest, action = 'store_false')
-        self.set_defaults(**{dest: default})
 
 def _createcontext(args):
     ctx = Context()
