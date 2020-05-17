@@ -94,7 +94,7 @@ def _render(template, dest, **kwargs):
     with open(dest, 'wb') as f:
         f.write(text.encode('utf-8'))
 
-def is_blacklist(name):
+def _is_blacklist(name):
     if match_filename(WHITELIST_PATTERNS, name):
         return False
     return match_filename(BLACKLIST_PATTERNS, name)
@@ -130,7 +130,7 @@ def make_python_zip():
     global python_files # FIXME: No!
     d = realpath(join('private', 'lib', 'python2.7'))
     def select(fn):
-        if is_blacklist(fn):
+        if _is_blacklist(fn):
             return False
         fn = realpath(fn)
         assert(fn.startswith(d))
@@ -156,7 +156,7 @@ def make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
                 p = p[:-1]
             if rfn.startswith(p):
                 return False
-        return False if rfn in python_files else not is_blacklist(fn)
+        return False if rfn in python_files else not _is_blacklist(fn)
     files = []
     for sd in source_dirs:
         sd = realpath(sd)
