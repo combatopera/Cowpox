@@ -100,14 +100,11 @@ class Distribution:
             else:
                 _possible_dists.append(dist)
         possible_dists = _possible_dists
-
         if possible_dists:
-            info('Of the existing distributions, the following meet '
-                 'the given requirements:')
+            info('Of the existing distributions, the following meet the given requirements:')
             _pretty_log_dists(possible_dists)
         else:
             info('No existing dists meet the given requirements!')
-
         # If any dist has perfect recipes, arch and NDK API, return it
         for dist in possible_dists:
             if force_build:
@@ -116,13 +113,9 @@ class Distribution:
                 continue
             if arch_name is not None and arch_name not in dist.archs:
                 continue
-            if (set(dist.recipes) == set(recipes) or
-                (set(recipes).issubset(set(dist.recipes)) and
-                 not require_perfect_match)):
-                info_notify('{} has compatible recipes, using this one'
-                            .format(dist.name))
+            if set(dist.recipes) == set(recipes) or (set(recipes).issubset(set(dist.recipes)) and not require_perfect_match):
+                info_notify('{} has compatible recipes, using this one'.format(dist.name))
                 return dist
-
         # If there was a name match but we didn't already choose it,
         # then the existing dist is incompatible with the requested
         # configuration and the build cannot continue
