@@ -38,10 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from pathlib import Path
 from pythonforandroid.bootstrap import Bootstrap
 from pythonforandroid.logger import info, info_main, shprint
 from pythonforandroid.util import current_directory, ensure_dir
-from os.path import join
 import sh
 
 class WebViewBootstrap(Bootstrap):
@@ -70,12 +70,9 @@ class WebViewBootstrap(Bootstrap):
             self.distribute_libs(arch, [self.ctx.get_libs_dir(arch.arch)])
             self.distribute_aars(arch)
             self.distribute_javaclasses(self.ctx.javaclass_dir)
-
-            python_bundle_dir = join('_python_bundle', '_python_bundle')
+            python_bundle_dir = Path('_python_bundle', '_python_bundle')
             ensure_dir(python_bundle_dir)
-            site_packages_dir = self.ctx.python_recipe.create_python_bundle(
-                join(self.dist_dir, python_bundle_dir), arch)
-
+            site_packages_dir = self.ctx.python_recipe.create_python_bundle(self.dist_dir / python_bundle_dir, arch)
             if 'sqlite3' not in self.ctx.recipe_build_order:
                 with open('blacklist.txt', 'a') as fileh:
                     fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
