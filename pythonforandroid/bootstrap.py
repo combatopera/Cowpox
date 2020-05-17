@@ -42,7 +42,7 @@ from .logger import info, logger, debug
 from .recipe import Recipe
 from .util import current_directory, ensure_dir, temp_directory
 from importlib import import_module
-from lagoon import cp, find, ln, mkdir, mv, rm, unzip
+from lagoon import cp, find, mv, rm, unzip
 from os import listdir, walk, sep
 from os.path import join, dirname, isdir, normpath, splitext, basename
 from pathlib import Path

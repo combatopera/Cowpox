@@ -662,18 +662,6 @@ class Recipe(metaclass = RecipeMeta):
         return recipe_dirs
 
     @classmethod
-    def list_recipes(cls, ctx):
-        forbidden_dirs = ('__pycache__', )
-        for recipes_dir in cls.recipe_dirs(ctx):
-            if recipes_dir and exists(recipes_dir):
-                for name in listdir(recipes_dir):
-                    if name in forbidden_dirs:
-                        continue
-                    fn = join(recipes_dir, name)
-                    if isdir(fn):
-                        yield name
-
-    @classmethod
     def get_recipe(cls, name, ctx):
         '''Returns the Recipe with the given name, if it exists.'''
         name = name.lower()
@@ -681,7 +669,6 @@ class Recipe(metaclass = RecipeMeta):
             cls.recipes = {}
         if name in cls.recipes:
             return cls.recipes[name]
-
         recipe_file = None
         for recipes_dir in cls.recipe_dirs(ctx):
             if not exists(recipes_dir):
@@ -696,10 +683,8 @@ class Recipe(metaclass = RecipeMeta):
                     recipe_file = None
             if recipe_file is not None:
                 break
-
         if not recipe_file:
             raise ValueError('Recipe does not exist: {}'.format(name))
-
         mod = import_recipe('pythonforandroid.recipes.{}'.format(name), recipe_file)
         if len(logger.handlers) > 1:
             logger.removeHandler(logger.handlers[1])
@@ -707,7 +692,6 @@ class Recipe(metaclass = RecipeMeta):
         recipe.ctx = ctx
         cls.recipes[name.lower()] = recipe
         return recipe
-
 
 class IncludedFilesBehaviour(object):
     '''Recipe mixin class that will automatically unpack files included in
