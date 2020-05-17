@@ -243,10 +243,10 @@ class ToolchainCL:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.signkeypw
             elif args.keystorepw and 'P4A_RELEASE_KEYALIAS_PASSWD' not in env:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.keystorepw
-        build = imp.load_source('build', join(dist.dist_dir, 'build.py'))
+        parse_args = imp.load_source('build', join(dist.dist_dir, 'build.py')).parse_args
         with current_directory(dist.dist_dir):
             os.environ["ANDROID_API"] = str(ctx.android_api)
-            build_args = build.parse_args(args.unknown_args)
+            build_args = parse_args(args.unknown_args)
             log.info('Selecting java build tool:')
             build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
             build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
