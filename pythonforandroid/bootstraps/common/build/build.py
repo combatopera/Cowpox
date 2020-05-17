@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from argparse import ArgumentParser
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from os import listdir, makedirs, remove
@@ -429,9 +430,7 @@ def makeapkversion(args):
         log.warning('Failed to read ndk_api from dist info, defaulting to 12')
         default_min_api = 12  # The old default before ndk_api was introduced
         ndk_api = 12
-
-    import argparse
-    ap = argparse.ArgumentParser(description='''\
+    ap = ArgumentParser(description='''\
 Package a Python application for Android (using
 bootstrap ''' + _get_bootstrap_name() + ''').
 
