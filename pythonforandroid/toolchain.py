@@ -176,8 +176,7 @@ class ToolchainCL:
         parser_apk.add_argument('--signkey')
         parser_apk.add_argument('--keystorepw')
         parser_apk.add_argument('--signkeypw')
-        args, unknown = parser.parse_known_args()
-        args.unknown_args = unknown
+        args, downstreamargs = parser.parse_known_args()
         setup_color(args.color)
         if args.debug:
             logger.setLevel(logging.DEBUG)
@@ -190,7 +189,7 @@ class ToolchainCL:
             requirements.append(requirement)
         args.requirements = ','.join(requirements)
         ctx = _createcontext(args)
-        getattr(self, args.command)(args, ctx, self._require_prebuilt_dist(args, ctx))
+        getattr(self, args.command)(args, downstreamargs, ctx, self._require_prebuilt_dist(args, ctx))
 
     def _require_prebuilt_dist(self, args, ctx):
         dist = Distribution.get_distribution(
@@ -210,22 +209,21 @@ class ToolchainCL:
             _build_dist_from_args(ctx, dist, args)
         return dist
 
-    def create(self, args, ctx, dist):
+    def create(self, args, downstreamargs, ctx, dist):
         pass
 
-    def apk(self, args, ctx, dist):
+    def apk(self, args, downstreamargs, ctx, dist):
         if args.private is not None:
-            args.unknown_args += ["--private", args.private]
+            downstreamargs += ["--private", args.private]
         fix_args = '--dir', '--private', '--add-jar', '--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'
-        unknown_args = args.unknown_args
-        for i, arg in enumerate(unknown_args):
+        for i, arg in enumerate(downstreamargs):
             argx = arg.split('=')
             if argx[0] in fix_args:
                 if len(argx) > 1:
-                    unknown_args[i] = '='.join(
+                    downstreamargs[i] = '='.join(
                         (argx[0], realpath(expanduser(argx[1]))))
-                elif i + 1 < len(unknown_args):
-                    unknown_args[i+1] = realpath(expanduser(unknown_args[i+1]))
+                elif i + 1 < len(downstreamargs):
+                    downstreamargs[i+1] = realpath(expanduser(downstreamargs[i+1]))
         env = os.environ.copy()
         if args.build_mode == 'release':
             if args.keystore:
@@ -240,7 +238,7 @@ class ToolchainCL:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.keystorepw
         with current_directory(dist.dist_dir):
             os.environ["ANDROID_API"] = str(ctx.android_api)
-            apkversion = makeapkversion(args.unknown_args, dist.dist_dir)
+            apkversion = makeapkversion(downstreamargs, dist.dist_dir)
             log.info('Selecting java build tool:')
             build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
             build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
