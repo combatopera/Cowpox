@@ -38,34 +38,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-#!/usr/bin/env python2.7
-
-from __future__ import print_function
-
-import json
-from os.path import (
-    dirname, join, isfile, realpath,
-    relpath, split, exists, basename
-)
-from os import listdir, makedirs, remove
-import os
-import shlex
-import shutil
-import subprocess
-import sys
-import tarfile
-import tempfile
-import time
-from zipfile import ZipFile
-
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
-import jinja2
+from os import listdir, makedirs, remove
+from os.path import dirname, join, isfile, realpath, relpath, split, exists, basename
+from pathlib import Path
+from zipfile import ZipFile
+import jinja2, json, os, shlex, shutil, subprocess, sys, tarfile, tempfile, time
 
+curdir = Path(__file__).parent
 
 def get_dist_info_for(key, error_if_missing=True):
     try:
-        with open(join(dirname(__file__), 'dist_info.json'), 'r') as fileh:
+        with (curdir / 'dist_info.json').open() as fileh:
             info = json.load(fileh)
         value = info[key]
     except (OSError, KeyError) as e:
@@ -95,9 +80,6 @@ if os.name == 'nt':
 else:
     ANDROID = 'android'
     ANT = 'ant'
-
-curdir = dirname(__file__)
-
 PYTHON = get_hostpython()
 PYTHON_VERSION = get_python_version()
 if PYTHON is not None and not exists(PYTHON):
@@ -128,11 +110,7 @@ if get_bootstrap_name() in ('sdl2', 'webview', 'service_only'):
     WHITELIST_PATTERNS.append('pyconfig.h')
 
 python_files = []
-
-
-environment = jinja2.Environment(loader=jinja2.FileSystemLoader(
-    join(curdir, 'templates')))
-
+environment = jinja2.Environment(loader = jinja2.FileSystemLoader(curdir / 'templates'))
 
 def try_unlink(fn):
     if exists(fn):
@@ -728,11 +706,11 @@ tools directory of the Android SDK.
                     help=('Indicate if the application needs the device '
                           'to stay on'))
     ap.add_argument('--blacklist', dest='blacklist',
-                    default=join(curdir, 'blacklist.txt'),
+                    default = curdir / 'blacklist.txt',
                     help=('Use a blacklist file to match unwanted file in '
                           'the final APK'))
     ap.add_argument('--whitelist', dest='whitelist',
-                    default=join(curdir, 'whitelist.txt'),
+                    default = curdir / 'whitelist.txt',
                     help=('Use a whitelist file to prevent blacklisting of '
                           'file in the final APK'))
     ap.add_argument('--add-jar', dest='add_jar', action='append',
