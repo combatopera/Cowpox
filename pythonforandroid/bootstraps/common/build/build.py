@@ -187,8 +187,8 @@ def _compile_dir(dfn, optimize_python=True):
         args.insert(1, '-OO')
     subprocess.check_call(args)
 
-def _make_package(args):
-    if (_get_bootstrap_name() != "sdl" or args.launcher is None) and _get_bootstrap_name() != "webview":
+def _make_package(args, bootstrapname):
+    if bootstrapname != "sdl" or args.launcher is None) and bootstrapname != "webview":
         if args.private is None or (
                 not exists(join(realpath(args.private), 'main.py')) and
                 not exists(join(realpath(args.private), 'main.pyo'))):
@@ -217,7 +217,7 @@ main.py that loads it.''')
     for python_bundle_dir in 'private', '_python_bundle':
         if exists(python_bundle_dir):
             tar_dirs.append(python_bundle_dir)
-    if _get_bootstrap_name() == "webview":
+    if bootstrapname == "webview":
         tar_dirs.append('webview_includes')
     if args.private or args.launcher:
         _make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, optimize_python = args.optimize_python)
@@ -226,7 +226,7 @@ main.py that loads it.''')
     default_icon = 'templates/kivy-icon.png'
     default_presplash = 'templates/kivy-presplash.jpg'
     shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
-    if _get_bootstrap_name() != "service_only":
+    if bootstrapname != "service_only":
         shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
     jars = []
     if args.add_jar:
@@ -351,7 +351,7 @@ main.py that loads it.''')
         "service_names": service_names,
         "android_api": android_api
     }
-    if _get_bootstrap_name() == "sdl2":
+    if bootstrapname == "sdl2":
         render_args["url_scheme"] = url_scheme
     _render(
         'AndroidManifest.tmpl.xml',
@@ -387,7 +387,7 @@ main.py that loads it.''')
         "args": args,
         "private_version": str(time.time())
     }
-    if _get_bootstrap_name() == "sdl2":
+    if bootstrapname == "sdl2":
         render_args["url_scheme"] = url_scheme
     _render('strings.tmpl.xml', res_dir / 'values' / 'strings.xml', **render_args)
     if Path("templates", "custom_rules.tmpl.xml").exists():
@@ -395,8 +395,7 @@ main.py that loads it.''')
             'custom_rules.tmpl.xml',
             'custom_rules.xml',
             args=args)
-
-    if _get_bootstrap_name() == "webview":
+    if bootstrapname == "webview":
         _render('WebViewLoader.tmpl.java',
                'src/main/java/org/kivy/android/WebViewLoader.java',
                args=args)
@@ -647,5 +646,5 @@ def makeapkversion(args):
         WHITELIST_PATTERNS += patterns
     if args.private is None and bootstrapname == 'sdl2' and args.launcher is None:
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
-    _make_package(args)
+    _make_package(args, bootstrapname)
     return args.version
