@@ -46,7 +46,7 @@ from pathlib import Path
 from zipfile import ZipFile
 import jinja2, json, os, shlex, shutil, subprocess, sys, tarfile, tempfile, time
 
-curdir = Path(__file__).parent / 'bootstraps' / 'common' / 'build'
+curdir = Path(__file__).parent
 
 def get_dist_info_for(key, error_if_missing=True):
     try:

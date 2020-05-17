@@ -41,7 +41,6 @@
 # THE SOFTWARE.
 
 from .bootstrap import Bootstrap
-from .build import parse_args
 from .context import Context, build_recipes
 from .distribution import Distribution
 from .graph import get_recipe_order
@@ -53,7 +52,7 @@ from distutils.version import LooseVersion
 from lagoon import cp
 from os.path import join, realpath, expanduser, basename
 from pathlib import Path
-import argparse, glob, logging, os, re, sh
+import argparse, glob, imp, logging, os, re, sh # FIXME: Retire imp.
 
 log = logging.getLogger(__name__)
 
@@ -238,6 +237,7 @@ class ToolchainCL:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.signkeypw
             elif args.keystorepw and 'P4A_RELEASE_KEYALIAS_PASSWD' not in env:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.keystorepw
+        parse_args = imp.load_source('build', join(dist.dist_dir, 'build.py')).parse_args
         with current_directory(dist.dist_dir):
             os.environ["ANDROID_API"] = str(ctx.android_api)
             build_args = parse_args(args.unknown_args)
