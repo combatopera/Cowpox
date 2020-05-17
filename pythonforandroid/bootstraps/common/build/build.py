@@ -59,17 +59,32 @@ def _get_bootstrap_name():
 curdir = Path(__file__).parent
 ANDROID = 'android'
 ANT = 'ant'
-BLACKLIST_PATTERNS = [
-    '^*.hg/*',
-    '^*.git/*',
-    '^*.bzr/*',
-    '^*.svn/*',
-    '~',
-    '*.bak',
-    '*.swp',
-    '*.py',
-]
-WHITELIST_PATTERNS = ['pyconfig.h'] if _get_bootstrap_name() in {'sdl2', 'webview', 'service_only'} else []
+
+class Blacklist:
+
+    def __init__(self):
+        self.BLACKLIST_PATTERNS = [
+            '^*.hg/*',
+            '^*.git/*',
+            '^*.bzr/*',
+            '^*.svn/*',
+            '~',
+            '*.bak',
+            '*.swp',
+            '*.py',
+        ]
+        self.WHITELIST_PATTERNS = ['pyconfig.h'] if _get_bootstrap_name() in {'sdl2', 'webview', 'service_only'} else []
+
+    def has(self, name):
+        def match_filename(pattern_list):
+            for pattern in pattern_list:
+                if pattern.startswith('^'):
+                    pattern = pattern[1:]
+                else:
+                    pattern = '*/' + pattern
+                if fnmatch(name, pattern):
+                    return True
+        return not match_filename(self.WHITELIST_PATTERNS) and match_filename(self.BLACKLIST_PATTERNS)
 
 def _try_unlink(fn):
     if exists(fn):
@@ -92,17 +107,6 @@ class Render:
         with open(dest, 'wb') as f:
             f.write(text.encode('utf-8'))
 
-def _is_blacklist(name):
-    def match_filename(pattern_list):
-        for pattern in pattern_list:
-            if pattern.startswith('^'):
-                pattern = pattern[1:]
-            else:
-                pattern = '*/' + pattern
-            if fnmatch(name, pattern):
-                return True
-    return not match_filename(WHITELIST_PATTERNS) and match_filename(BLACKLIST_PATTERNS)
-
 def _listfiles(d):
     basedir = d
     subdirlist = []
@@ -118,14 +122,14 @@ def _listfiles(d):
 
 python_files = []
 
-def _make_python_zip():
+def _make_python_zip(blacklist):
     if not exists('private'):
         log.info('No compiled python is present to zip, skipping.')
         return
     global python_files # FIXME: No!
     d = realpath(join('private', 'lib', 'python2.7'))
     def select(fn):
-        if _is_blacklist(fn):
+        if blacklist.has(fn):
             return False
         fn = realpath(fn)
         assert(fn.startswith(d))
@@ -143,7 +147,7 @@ def _make_python_zip():
         zf.write(fn, fn[len(d):])
     zf.close()
 
-def _make_tar(tfn, source_dirs, ignore_path, optimize_python):
+def _make_tar(tfn, source_dirs, ignore_path, optimize_python, blacklist):
     def select(fn):
         rfn = realpath(fn)
         for p in ignore_path:
@@ -151,7 +155,7 @@ def _make_tar(tfn, source_dirs, ignore_path, optimize_python):
                 p = p[:-1]
             if rfn.startswith(p):
                 return False
-        return False if rfn in python_files else not _is_blacklist(fn)
+        return False if rfn in python_files else not blacklist.has(fn)
     files = []
     for sd in source_dirs:
         sd = realpath(sd)
@@ -182,7 +186,7 @@ def _compile_dir(dfn, optimize_python=True):
         args.insert(1, '-OO')
     subprocess.check_call(args)
 
-def _make_package(args, bootstrapname):
+def _make_package(args, bootstrapname, blacklist):
     if (bootstrapname != "sdl" or args.launcher is None) and bootstrapname != "webview":
         if args.private is None or (
                 not exists(join(realpath(args.private), 'main.py')) and
@@ -196,7 +200,7 @@ main.py that loads it.''')
     _try_unlink(assets_dir / 'public.mp3')
     _try_unlink(assets_dir / 'private.mp3')
     _ensure_dir(assets_dir)
-    _make_python_zip()
+    _make_python_zip(blacklist)
     env_vars_tarpath = tempfile.mkdtemp(prefix = "p4a-extra-env-")
     with Path(env_vars_tarpath, "p4a_env_vars.txt").open("w") as f:
         if hasattr(args, "window"):
@@ -215,7 +219,7 @@ main.py that loads it.''')
     if bootstrapname == "webview":
         tar_dirs.append('webview_includes')
     if args.private or args.launcher:
-        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, args.optimize_python)
+        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, args.optimize_python, blacklist)
     shutil.rmtree(env_vars_tarpath)
     res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
@@ -414,7 +418,7 @@ main.py that loads it.''')
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
 def makeapkversion(args):
-    global BLACKLIST_PATTERNS, WHITELIST_PATTERNS
+    blacklist = Blacklist()
     try:
         with open('dist_info.json', 'r') as fileh:
             info = json.load(fileh)
@@ -611,14 +615,13 @@ def makeapkversion(args):
         with open(args.blacklist) as fd:
             patterns = [x.strip() for x in fd.read().splitlines()
                         if x.strip() and not x.strip().startswith('#')]
-        BLACKLIST_PATTERNS += patterns
-
+        blacklist.BLACKLIST_PATTERNS += patterns
     if args.whitelist:
         with open(args.whitelist) as fd:
             patterns = [x.strip() for x in fd.read().splitlines()
                         if x.strip() and not x.strip().startswith('#')]
-        WHITELIST_PATTERNS += patterns
+        blacklist.WHITELIST_PATTERNS += patterns
     if args.private is None and bootstrapname == 'sdl2' and args.launcher is None:
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
-    _make_package(args, bootstrapname)
+    _make_package(args, bootstrapname, blacklist)
     return args.version
