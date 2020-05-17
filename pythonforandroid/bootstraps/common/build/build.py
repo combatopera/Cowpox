@@ -105,7 +105,7 @@ def _is_blacklist(name):
                 return True
     return not match_filename(WHITELIST_PATTERNS) and match_filename(BLACKLIST_PATTERNS)
 
-def listfiles(d):
+def _listfiles(d):
     basedir = d
     subdirlist = []
     for item in os.listdir(d):
@@ -115,7 +115,7 @@ def listfiles(d):
         else:
             subdirlist.append(join(basedir, item))
     for subdir in subdirlist:
-        for fn in listfiles(subdir):
+        for fn in _listfiles(subdir):
             yield fn
 
 python_files = []
@@ -138,7 +138,7 @@ def make_python_zip():
                 or fn.startswith('/libpymodules.so')):
             return False
         return fn
-    python_files = [x for x in listfiles(d) if select(x)]
+    python_files = [x for x in _listfiles(d) if select(x)]
     zfn = join('private', 'lib', 'python27.zip')
     zf = ZipFile(zfn, 'w')
     for fn in python_files:
@@ -158,7 +158,7 @@ def make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
     for sd in source_dirs:
         sd = realpath(sd)
         compile_dir(sd, optimize_python = optimize_python)
-        files.extend([x, relpath(realpath(x), sd)] for x in listfiles(sd) if select(x))
+        files.extend([x, relpath(realpath(x), sd)] for x in _listfiles(sd) if select(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = set()
         for fn, afn in files:
