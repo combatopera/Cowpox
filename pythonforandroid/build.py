@@ -470,8 +470,6 @@ def makeapkversion(args, distdir):
                           'filename containing xml. The filename should be '
                           'located relative to the python-for-android '
                           'directory'))
-    ap.add_argument('--with-billing', dest='billing_pubkey',
-                    help='If set, the billing service will be added (not implemented)')
     ap.add_argument('--add-source', dest='extra_source_dirs', action='append',
                     help='Include additional source dirs in Java build')
     if bootstrapname == "webview":
@@ -498,8 +496,6 @@ def makeapkversion(args, distdir):
     if ndk_api != args.min_sdk_version:
         log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
         raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
-    if args.billing_pubkey:
-        raise Exception('Billing not yet supported!')
     if args.permissions and isinstance(args.permissions[0], list):
         args.permissions = [p for perm in args.permissions for p in perm]
     if args.blacklist:
