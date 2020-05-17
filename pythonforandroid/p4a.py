@@ -116,7 +116,7 @@ class ToolchainCL:
             help=('The Android API level to compile against. This should be your '
                   '*minimal supported* API, not normally the same as your --android-api. '
                   'Defaults to min(ANDROID_API, {}) if not specified.').format(RECOMMENDED_NDK_API))
-        generic_parser.add_argument('--storage-dir')
+        generic_parser.add_argument('--storage-dir', type = lambda p: Path(p).expanduser())
         generic_parser.add_argument(
             '--arch', help='The arch to build for.',
             default='armeabi-v7a')

@@ -46,7 +46,7 @@ from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from .util import current_directory, ensure_dir, get_virtualenv_executable, BuildInterruptingException
 from lagoon.program import Program
 from os import environ
-from os.path import join, realpath, dirname, expanduser, exists, split, isdir
+from os.path import join, realpath, dirname, exists, split, isdir
 from pathlib import Path
 import copy, glob, logging, os, re, sh, shutil, subprocess, sys
 
@@ -108,8 +108,6 @@ class Context:
     env = environ.copy()
     # the filepath of toolchain.py
     root_dir = None
-    # the root dir where builds and dists will be stored
-    storage_dir = None
     distribution = None
     libs_dir = None
     aars_dir = None
@@ -124,8 +122,7 @@ class Context:
 
     @property
     def packages_path(self):
-        '''Where packages are downloaded before being unpacked'''
-        return join(self.storage_dir, 'packages')
+        return self.storage_dir / 'packages'
 
     @property
     def templates_dir(self):
@@ -160,14 +157,9 @@ class Context:
         return dir
 
     def setup_dirs(self, storage_dir):
-        '''Calculates all the storage and build dirs, and makes sure
-        the directories exist where necessary.'''
-        self.storage_dir = expanduser(storage_dir)
-        if ' ' in self.storage_dir:
-            raise ValueError('storage dir path cannot contain spaces, please '
-                             'specify a path with --storage-dir')
-        self.buildsdir = Path(self.storage_dir, 'build')
-        self.distsdir = Path(self.storage_dir, 'dists')
+        self.buildsdir = storage_dir / 'build'
+        self.distsdir = storage_dir / 'dists'
+        self.storage_dir = storage_dir
 
     def ensure_dirs(self):
         ensure_dir(self.storage_dir)
