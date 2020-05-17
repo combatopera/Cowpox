@@ -194,7 +194,6 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
             f.write("P4A_IS_WINDOWED=" + str(args.window) + "\n")
         if hasattr(args, "orientation"):
             f.write("P4A_ORIENTATION=" + str(args.orientation) + "\n")
-        f.write("P4A_NUMERIC_VERSION=" + str(args.numeric_version) + "\n")
         f.write("P4A_MINSDK=" + str(args.min_sdk_version) + "\n")
     tar_dirs = [env_vars_tarpath]
     if args.private:
@@ -221,31 +220,14 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
                 raise Exception("Requested jar does not exist: %s" % jarname)
             shutil.copy(jarname, 'src/main/libs')
             jars.append(basename(jarname))
-    versioned_name = (args.name.replace(' ', '').replace('\'', '') +
-                      '-' + args.version)
-
-    version_code = 0
-    if not args.numeric_version:
-        # Set version code in format (arch-minsdk-app_version)
-        arch = distinfo.forkey("archs")[0]
-        arch_dict = {"x86_64": "9", "arm64-v8a": "8", "armeabi-v7a": "7", "x86": "6"}
-        arch_code = arch_dict.get(arch, '1')
-        min_sdk = args.min_sdk_version
-        for i in args.version.split('.'):
-            version_code *= 100
-            version_code += int(i)
-        args.numeric_version = "{}{}{}".format(arch_code, min_sdk, version_code)
-
+    versioned_name = args.name.replace(' ', '').replace('\'', '') + '-' + args.version
     if args.intent_filters:
         with open(args.intent_filters) as fd:
             args.intent_filters = fd.read()
-
     if not args.add_activity:
         args.add_activity = []
-
     if not args.activity_launch_mode:
         args.activity_launch_mode = ''
-
     if args.extra_source_dirs:
         esd = []
         for spec in args.extra_source_dirs:
@@ -258,7 +240,6 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
         args.extra_source_dirs = esd
     else:
         args.extra_source_dirs = []
-
     service = False
     if args.private:
         service_main = join(realpath(args.private), 'service', 'main.py')
@@ -270,10 +251,8 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
         name = spec[0]
         entrypoint = spec[1]
         options = spec[2:]
-
         foreground = 'foreground' in options
         sticky = 'sticky' in options
-
         service_names.append(name)
         service_target_path =\
             'src/main/java/{}/Service{}.java'.format(
@@ -290,7 +269,6 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
             sticky=sticky,
             service_id=sid + 1,
         )
-
     # Find the SDK directory and target API
     with open('project.properties', 'r') as fileh:
         target = fileh.read().strip()
@@ -399,10 +377,6 @@ def makeapkversion(args, distdir):
     ap.add_argument('--name', dest='name',
                     help=('The human-readable name of the project.'),
                     required=True)
-    ap.add_argument('--numeric-version', dest='numeric_version',
-                    help=('The numeric version number of the project. If not '
-                          'given, this is automatically computed from the '
-                          'version.'))
     ap.add_argument('--version', dest='version',
                     help=('The version number of the project. This should '
                           'consist of numbers and dots, and should have the '
