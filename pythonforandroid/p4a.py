@@ -78,10 +78,7 @@ def _createcontext(args):
 
 def _build_dist_from_args(ctx, dist, args):
     bs = Bootstrap.get_bootstrap(args.bootstrap, ctx)
-    blacklist = args.blacklist_requirements.split(",")
-    if blacklist == ['']:
-        blacklist = []
-    build_order, python_modules = get_recipe_order(ctx, dist.recipes, bs.recipe_depends, blacklist)
+    build_order, python_modules = get_recipe_order(ctx, dist.recipes, bs.recipe_depends, [])
     assert not set(build_order) & set(python_modules)
     ctx.recipe_build_order = build_order
     ctx.python_modules = python_modules
@@ -123,12 +120,6 @@ class ToolchainCL:
             help=('Dependencies of your app, should be recipe names or '
                   'Python modules. NOT NECESSARY if you are using '
                   'Python 3 with --use-setup-py'),
-            default='')
-        generic_parser.add_argument(
-            '--blacklist-requirements',
-            help=('Blacklist an internal recipe from use. Allows '
-                  'disabling Python 3 core modules to save size'),
-            dest="blacklist_requirements",
             default='')
         generic_parser.add_argument('--bootstrap')
         generic_parser.add_boolean_option('force-build', False, 'Whether to force compilation of a new distribution')
