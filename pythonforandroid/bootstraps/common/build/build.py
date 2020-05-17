@@ -49,9 +49,14 @@ import jinja2, json, logging, os, shlex, shutil, subprocess, sys, tarfile, tempf
 
 log = logging.getLogger(__name__)
 
-def _get_dist_info_for(key):
-    with (curdir / 'dist_info.json').open() as fileh:
-        return json.load(fileh)[key]
+class DistInfo:
+
+    def __init__(self, curdir):
+        with (curdir / 'dist_info.json').open() as f:
+            self.d = json.load(f)
+
+    def forkey(self, key):
+        return self.d[key]
 
 curdir = Path(__file__).parent
 ANDROID = 'android'
@@ -144,7 +149,7 @@ def _make_python_zip(blacklist):
         zf.write(fn, fn[len(d):])
     zf.close()
 
-def _make_tar(tfn, source_dirs, ignore_path, optimize_python, blacklist):
+def _make_tar(tfn, source_dirs, ignore_path, optimize_python, blacklist, distinfo):
     def select(fn):
         rfn = realpath(fn)
         for p in ignore_path:
@@ -156,7 +161,7 @@ def _make_tar(tfn, source_dirs, ignore_path, optimize_python, blacklist):
     files = []
     for sd in source_dirs:
         sd = realpath(sd)
-        _compile_dir(sd, optimize_python = optimize_python)
+        _compile_dir(sd, optimize_python, distinfo)
         files.extend([x, relpath(realpath(x), sd)] for x in _listfiles(sd) if select(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = set()
@@ -177,13 +182,13 @@ def _make_tar(tfn, source_dirs, ignore_path, optimize_python, blacklist):
                     tf.addfile(tinfo)
             tf.add(fn, afn)
 
-def _compile_dir(dfn, optimize_python=True):
-    args = [_get_dist_info_for('hostpython'), '-m', 'compileall', '-b', '-f', dfn]
+def _compile_dir(dfn, optimize_python, distinfo):
+    args = [distinfo.forkey('hostpython'), '-m', 'compileall', '-b', '-f', dfn]
     if optimize_python:
         args.insert(1, '-OO')
     subprocess.check_call(args)
 
-def _make_package(args, bootstrapname, blacklist):
+def _make_package(args, bootstrapname, blacklist, distinfo):
     if (bootstrapname != "sdl" or args.launcher is None) and bootstrapname != "webview":
         if args.private is None or (
                 not exists(join(realpath(args.private), 'main.py')) and
@@ -216,7 +221,7 @@ main.py that loads it.''')
     if bootstrapname == "webview":
         tar_dirs.append('webview_includes')
     if args.private or args.launcher:
-        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, args.optimize_python, blacklist)
+        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, args.optimize_python, blacklist, distinfo)
     shutil.rmtree(env_vars_tarpath)
     res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
@@ -248,7 +253,7 @@ main.py that loads it.''')
     version_code = 0
     if not args.numeric_version:
         # Set version code in format (arch-minsdk-app_version)
-        arch = _get_dist_info_for("archs")[0]
+        arch = distinfo.forkey("archs")[0]
         arch_dict = {"x86_64": "9", "arm64-v8a": "8", "armeabi-v7a": "7", "x86": "6"}
         arch_code = arch_dict.get(arch, '1')
         min_sdk = args.min_sdk_version
@@ -415,16 +420,9 @@ main.py that loads it.''')
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
 def makeapkversion(args):
-    try:
-        with open('dist_info.json', 'r') as fileh:
-            info = json.load(fileh)
-            default_min_api = int(info['ndk_api'])
-            ndk_api = default_min_api
-    except (OSError, KeyError, ValueError, TypeError):
-        log.warning('Failed to read ndk_api from dist info, defaulting to 12')
-        default_min_api = 12  # The old default before ndk_api was introduced
-        ndk_api = 12
-    bootstrapname = _get_dist_info_for('bootstrap')
+    distinfo = DistInfo(Path(curdir))
+    ndk_api = default_min_api = int(distinfo.forkey('ndk_api'))
+    bootstrapname = distinfo.forkey('bootstrap')
     blacklist = Blacklist(bootstrapname)
     ap = ArgumentParser()
     ap.add_argument('--private', required = bootstrapname != "sdl2")
@@ -620,5 +618,5 @@ def makeapkversion(args):
         blacklist.WHITELIST_PATTERNS += patterns
     if args.private is None and bootstrapname == 'sdl2' and args.launcher is None:
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
-    _make_package(args, bootstrapname, blacklist)
+    _make_package(args, bootstrapname, blacklist, distinfo)
     return args.version
