@@ -226,22 +226,12 @@ main.py that loads it.''')
     if args.private or args.launcher:
         make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, optimize_python = args.optimize_python)
     shutil.rmtree(env_vars_tarpath)
-
-    # Prepare some variables for templating process
-    res_dir = "src/main/res"
+    res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
     default_presplash = 'templates/kivy-presplash.jpg'
-    shutil.copy(
-        args.icon or default_icon,
-        join(res_dir, 'drawable/icon.png')
-    )
+    shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
     if _get_bootstrap_name() != "service_only":
-        shutil.copy(
-            args.presplash or default_presplash,
-            join(res_dir, 'drawable/presplash.jpg')
-        )
-
-    # If extra Java jars were requested, copy them into the libs directory
+        shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
     jars = []
     if args.add_jar:
         for jarname in args.add_jar:
@@ -250,8 +240,6 @@ main.py that loads it.''')
                 sys.exit(-1)
             shutil.copy(jarname, 'src/main/libs')
             jars.append(basename(jarname))
-
-    # If extra aar were requested, copy them into the libs directory
     aars = []
     if args.add_aar:
         _ensure_dir("libs")
@@ -405,11 +393,7 @@ main.py that loads it.''')
     }
     if _get_bootstrap_name() == "sdl2":
         render_args["url_scheme"] = url_scheme
-    _render(
-        'strings.tmpl.xml',
-        join(res_dir, 'values/strings.xml'),
-        **render_args)
-
+    _render('strings.tmpl.xml', res_dir / 'values' / 'strings.xml', **render_args)
     if exists(join("templates", "custom_rules.tmpl.xml")):
         _render(
             'custom_rules.tmpl.xml',
