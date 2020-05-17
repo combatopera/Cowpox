@@ -48,7 +48,6 @@ from .graph import get_recipe_order
 from .logger import logger, setup_color, shprint
 from .recommendations import RECOMMENDED_NDK_API
 from .util import BuildInterruptingException, current_directory
-from appdirs import user_data_dir
 from distutils.version import LooseVersion
 from lagoon import cp
 from os.path import join, realpath, expanduser, basename
@@ -117,13 +116,7 @@ class ToolchainCL:
             help=('The Android API level to compile against. This should be your '
                   '*minimal supported* API, not normally the same as your --android-api. '
                   'Defaults to min(ANDROID_API, {}) if not specified.').format(RECOMMENDED_NDK_API))
-        default_storage_dir = user_data_dir('python-for-android')
-        if ' ' in default_storage_dir:
-            default_storage_dir = '~/.python-for-android'
-        generic_parser.add_argument(
-            '--storage-dir', dest='storage_dir', default=default_storage_dir,
-            help=('Primary storage directory for downloads and builds '
-                  '(default: {})'.format(default_storage_dir)))
+        generic_parser.add_argument('--storage-dir')
         generic_parser.add_argument(
             '--arch', help='The arch to build for.',
             default='armeabi-v7a')

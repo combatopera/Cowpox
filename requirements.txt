@@ -1,4 +1,3 @@
-appdirs
 colorama>=0.3.3
 # TODO: Use recent Cython for prebuilt wheel.
 Cython==0.28.6
