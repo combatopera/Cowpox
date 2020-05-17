@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import shprint, info, logger, debug
+from .logger import info, logger, debug
 from .recipe import Recipe
 from .util import current_directory, ensure_dir, temp_directory
 from importlib import import_module
@@ -333,11 +333,9 @@ class Bootstrap:
         if len(tokens) > 1:
             strip = strip.bake(tokens[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
-        filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so')
+        filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so').splitlines()
         logger.info('Stripping libraries in private dir')
-        for filen in filens.split('\n'):
-            if not filen:
-                continue  # skip the last ''
+        for filen in filens:
             try:
                 strip(filen, _env=env)
             except sh.ErrorReturnCode_1:
