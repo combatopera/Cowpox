@@ -42,6 +42,7 @@ from .logger import shprint, info, logger, debug
 from .recipe import Recipe
 from .util import current_directory, ensure_dir, temp_directory
 from importlib import import_module
+from lagoon import cp, ln, mkdir, mv, rm, unzip
 from os import listdir, walk, sep
 from os.path import join, dirname, isdir, normpath, splitext, basename
 import functools, glob, os, sh, shlex, shutil
@@ -157,11 +158,10 @@ class Bootstrap:
                    override=False)
         if self.ctx.symlink_java_src:
             info('Symlinking java src instead of copying')
-            shprint(sh.rm, '-r', join(self.build_dir, 'src'))
-            shprint(sh.mkdir, join(self.build_dir, 'src'))
+            rm._r.print(join(self.build_dir, 'src'))
+            mkdir.print(join(self.build_dir, 'src'))
             for dirn in listdir(join(self.bootstrap_dir, 'build', 'src')):
-                shprint(sh.ln, '-s', join(self.bootstrap_dir, 'build', 'src', dirn),
-                        join(self.build_dir, 'src'))
+                ln._s.print(join(self.bootstrap_dir, 'build', 'src', dirn), join(self.build_dir, 'src'))
         with current_directory(self.build_dir):
             with open('project.properties', 'w') as fileh:
                 fileh.write('target=android-{}'.format(self.ctx.android_api))
@@ -290,14 +290,14 @@ class Bootstrap:
         ensure_dir(tgt_dir)
         for src_dir in src_dirs:
             for lib in glob.glob(join(src_dir, wildcard)):
-                shprint(sh.cp, '-a', lib, tgt_dir)
+                cp._a.print(lib, tgt_dir)
 
     def distribute_javaclasses(self, javaclass_dir, dest_dir="src"):
         '''Copy existing javaclasses from build dir to current dist dir.'''
         info('Copying java files')
         ensure_dir(dest_dir)
         for filename in glob.glob(javaclass_dir):
-            shprint(sh.cp, '-a', filename, dest_dir)
+            cp._a.print(filename, dest_dir)
 
     def distribute_aars(self, arch):
         '''Process existing .aar bundles and copy to current dist dir.'''
@@ -313,16 +313,14 @@ class Bootstrap:
             info("unpack {} aar".format(name))
             debug("  from {}".format(aar))
             debug("  to {}".format(temp_dir))
-            shprint(sh.unzip, '-o', aar, '-d', temp_dir)
-
+            unzip._o.print(aar, '-d', temp_dir)
             jar_src = join(temp_dir, 'classes.jar')
             jar_tgt = join('libs', jar_name)
             debug("copy {} jar".format(name))
             debug("  from {}".format(jar_src))
             debug("  to {}".format(jar_tgt))
             ensure_dir('libs')
-            shprint(sh.cp, '-a', jar_src, jar_tgt)
-
+            cp._a.print(jar_src, jar_tgt)
             so_src_dir = join(temp_dir, 'jni', arch.arch)
             so_tgt_dir = join('libs', arch.arch)
             debug("copy {} .so".format(name))
@@ -331,7 +329,7 @@ class Bootstrap:
             ensure_dir(so_tgt_dir)
             so_files = glob.glob(join(so_src_dir, '*.so'))
             for f in so_files:
-                shprint(sh.cp, '-a', f, so_tgt_dir)
+                cp._a.print(f, so_tgt_dir)
 
     def strip_libraries(self, arch):
         info('Stripping libraries')
@@ -359,9 +357,8 @@ class Bootstrap:
                 info('  ' + d)
                 files = [join(rd, f) for f in listdir(rd) if f != 'EGG-INFO']
                 if files:
-                    shprint(sh.mv, '-t', sitepackages, *files)
-                shprint(sh.rm, '-rf', d)
-
+                    mv._t.print(sitepackages, *files)
+                rm._rf.print(d)
 
 def expand_dependencies(recipes, ctx):
     """ This function expands to lists of all different available
