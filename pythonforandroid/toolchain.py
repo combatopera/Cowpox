@@ -215,15 +215,9 @@ class ToolchainCL:
     def apk(self, args, downstreamargs, ctx, dist):
         if args.private is not None:
             downstreamargs += ["--private", args.private]
-        fix_args = '--dir', '--private', '--add-jar', '--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'
         for i, arg in enumerate(downstreamargs):
-            argx = arg.split('=')
-            if argx[0] in fix_args:
-                if len(argx) > 1:
-                    downstreamargs[i] = '='.join(
-                        (argx[0], realpath(expanduser(argx[1]))))
-                elif i + 1 < len(downstreamargs):
-                    downstreamargs[i+1] = realpath(expanduser(downstreamargs[i+1]))
+            if arg in {'--dir', '--private', '--add-jar', '--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'}:
+                downstreamargs[i + 1] = realpath(expanduser(downstreamargs[i + 1]))
         env = os.environ.copy()
         if args.build_mode == 'release':
             if args.keystore:
