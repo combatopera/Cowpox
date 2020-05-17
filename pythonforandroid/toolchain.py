@@ -177,8 +177,6 @@ class ToolchainCL:
         parser_apk.add_argument('--signkeypw')
         args, unknown = parser.parse_known_args()
         args.unknown_args = unknown
-        if args.private is not None:
-            args.unknown_args += ["--private", args.private]
         self.args = args
         setup_color(args.color)
         if args.debug:
@@ -216,6 +214,8 @@ class ToolchainCL:
         pass
 
     def apk(self, args, ctx, dist):
+        if args.private is not None:
+            args.unknown_args += ["--private", args.private]
         fix_args = '--dir', '--private', '--add-jar', '--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'
         unknown_args = args.unknown_args
         for i, arg in enumerate(unknown_args):
