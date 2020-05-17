@@ -224,7 +224,7 @@ class TargetAndroid:
                 yield from ['--uses-library', lib]
             for gradle_dependency in self.config.getlist('app', 'android.gradle_dependencies', []):
                 yield from ['--depend', gradle_dependency]
-        self._p4a('apk', '--debug', *build_cmd, *cmd())
+        self._p4a('apk', *build_cmd, *cmd())
 
     def _get_release_mode(self):
         return 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'

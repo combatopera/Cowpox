@@ -71,7 +71,7 @@ logger = logging.getLogger('p4a')
 # Necessary as importlib reloads this,
 # which would add a second handler and reset the level
 if not hasattr(logger, 'touched'):
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     logger.touched = True
     ch = logging.StreamHandler(stderr)
     formatter = LevelDifferentiatingFormatter('%(message)s')

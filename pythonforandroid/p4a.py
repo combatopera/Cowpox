@@ -45,7 +45,7 @@ from .build import makeapkversion
 from .context import Context, build_recipes
 from .distribution import Distribution
 from .graph import get_recipe_order
-from .logger import logger, setup_color, shprint
+from .logger import setup_color, shprint
 from .recommendations import RECOMMENDED_NDK_API
 from .util import BuildInterruptingException, current_directory
 from distutils.version import LooseVersion
@@ -103,9 +103,6 @@ class ToolchainCL:
     def __init__(self):
         generic_parser = ArgumentParser(add_help = False)
         generic_parser.add_argument(
-            '--debug', dest='debug', action='store_true', default=False,
-            help='Display debug output and all build info')
-        generic_parser.add_argument(
             '--ndk-api', type=int, default=None,
             help=('The Android API level to compile against. This should be your '
                   '*minimal supported* API, not normally the same as your --android-api. '
@@ -142,8 +139,6 @@ class ToolchainCL:
         parser_apk.add_argument('--signkeypw')
         args, downstreamargs = parser.parse_known_args()
         setup_color(True)
-        if args.debug:
-            logger.setLevel(logging.DEBUG)
         requirements = []
         for requirement in _split_argument_list(args.requirements):
             if "==" in requirement:
