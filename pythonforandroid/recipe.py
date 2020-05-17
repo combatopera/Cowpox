@@ -301,8 +301,7 @@ class Recipe(metaclass = RecipeMeta):
         alternative or optional dependencies are being built.
         '''
         dir_name = self.get_dir_name()
-        return join(self.ctx.buildsdir, 'other_builds',
-                    dir_name, '{}__ndk_target_{}'.format(arch, self.ctx.ndk_api))
+        return self.ctx.buildsdir / 'other_builds' / dir_name / f'{arch}__ndk_target_{self.ctx.ndk_api}'
 
     def get_dir_name(self):
         choices = self.check_recipe_choices()
@@ -601,7 +600,7 @@ class Recipe(metaclass = RecipeMeta):
 
         '''
         if arch is None:
-            base_dir = join(self.ctx.buildsdir, 'other_builds', self.name)
+            base_dir = self.ctx.buildsdir / 'other_builds' / self.name
         else:
             base_dir = self.get_build_container_dir(arch)
         dirs = glob.glob(base_dir + '-*')

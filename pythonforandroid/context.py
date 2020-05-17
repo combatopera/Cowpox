@@ -135,25 +135,25 @@ class Context:
 
     @property
     def libs_dir(self):
-        dir = join(self.buildsdir, 'libs_collections', self.bootstrap.distribution.name)
+        dir = self.buildsdir / 'libs_collections' / self.bootstrap.distribution.name
         ensure_dir(dir)
         return dir
 
     @property
     def javaclass_dir(self):
-        dir = join(self.buildsdir, 'javaclasses', self.bootstrap.distribution.name)
+        dir = self.buildsdir / 'javaclasses' / self.bootstrap.distribution.name
         ensure_dir(dir)
         return dir
 
     @property
     def aars_dir(self):
-        dir = join(self.buildsdir, 'aars', self.bootstrap.distribution.name)
+        dir = self.buildsdir / 'aars' / self.bootstrap.distribution.name
         ensure_dir(dir)
         return dir
 
     @property
     def python_installs_dir(self):
-        dir = join(self.buildsdir, 'python-installs')
+        dir = self.buildsdir / 'python-installs'
         ensure_dir(dir)
         return dir
 
@@ -168,15 +168,15 @@ class Context:
         if ' ' in self.storage_dir:
             raise ValueError('storage dir path cannot contain spaces, please '
                              'specify a path with --storage-dir')
-        self.buildsdir = join(self.storage_dir, 'build')
+        self.buildsdir = Path(self.storage_dir, 'build')
         self.distsdir = Path(self.storage_dir, 'dists')
 
     def ensure_dirs(self):
         ensure_dir(self.storage_dir)
         ensure_dir(self.buildsdir)
         ensure_dir(self.distsdir)
-        ensure_dir(join(self.buildsdir, 'bootstrap_builds'))
-        ensure_dir(join(self.buildsdir, 'other_builds'))
+        ensure_dir(self.buildsdir / 'bootstrap_builds')
+        ensure_dir(self.buildsdir / 'other_builds')
 
     @property
     def android_api(self):
@@ -503,12 +503,7 @@ def run_setuppy_install(ctx, project_dir, env=None):
 
         # Compute & output the constraints we will use:
         info('Contents that will be used for constraints.txt:')
-        constraints = subprocess.check_output([
-            join(
-                ctx.buildsdir, "venv", "bin", "pip"
-            ),
-            "freeze"
-        ], env=copy.copy(env))
+        constraints = subprocess.check_output([ctx.buildsdir / "venv" / "bin" / "pip", "freeze"], env=copy.copy(env))
         try:
             constraints = constraints.decode("utf-8", "replace")
         except AttributeError:
@@ -536,13 +531,8 @@ def run_setuppy_install(ctx, project_dir, env=None):
             ctx_site_packages_dir = os.path.normpath(
                 os.path.abspath(ctx.get_site_packages_dir())
             )
-            venv_site_packages_dir = os.path.normpath(os.path.join(
-                ctx.buildsdir, "venv", "lib", [
-                    f for f in os.listdir(os.path.join(
-                        ctx.buildsdir, "venv", "lib"
-                    )) if f.startswith("python")
-                ][0], "site-packages"
-            ))
+            venvlib = ctx.buildsdir / "venv" / "lib"
+            venv_site_packages_dir = os.path.normpath(venvlib / [f for f in os.listdir(venvlib) if f.startswith("python")][0] / "site-packages")
             copied_over_contents = []
             for f in os.listdir(ctx_site_packages_dir):
                 full_path = os.path.join(ctx_site_packages_dir, f)
@@ -569,10 +559,7 @@ def run_setuppy_install(ctx, project_dir, env=None):
             # Actually run setup.py:
             info('Launching package install...')
             shprint(sh.bash, '-c', (
-                "'" + join(
-                    ctx.buildsdir, "venv", "bin", "pip"
-                ).replace("'", "'\"'\"'") + "' " +
-                "install -c ._tmp_p4a_recipe_constraints.txt -v ."
+                "'" + str(ctx.buildsdir / "venv" / "bin" / "pip").replace("'", "'\"'\"'") + "' install -c ._tmp_p4a_recipe_constraints.txt -v ."
             ).format(ctx.get_site_packages_dir().
                      replace("'", "'\"'\"'")),
                     _env=copy.copy(env))
@@ -615,7 +602,7 @@ def _run_pymodules_install(ctx, modules):
     info('The requirements ({}) don\'t have recipes, attempting to install them with pip'.format(', '.join(modules)))
     info('If this fails, it may mean that the module has compiled components and needs a recipe.')
     venv = sh.Command(ctx.virtualenv)
-    with current_directory(join(ctx.buildsdir)):
+    with current_directory(ctx.buildsdir):
         shprint(venv,
                 '--python=python{}'.format(
                     ctx.python_recipe.major_minor_version_string.
@@ -645,11 +632,7 @@ def _run_pymodules_install(ctx, modules):
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
         env["PYTHONPATH"] += ":" + ctx.get_site_packages_dir()
-        env["PYTHONPATH"] = os.path.abspath(join(
-            ctx.buildsdir, "venv", "lib",
-            "python" + ctx.python_recipe.major_minor_version_string,
-            "site-packages")) + ":" + env["PYTHONPATH"]
-
+        env["PYTHONPATH"] = os.path.abspath(ctx.buildsdir / "venv" / "lib" / f"python{ctx.python_recipe.major_minor_version_string}" / "site-packages") + ":" + env["PYTHONPATH"]
         # Install the manually specified requirements first:
         if not modules:
             info('There are no Python modules to install, skipping')

@@ -89,8 +89,8 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
             return
 
         protoc_url = join(url_prefix, filename)
-        self.protoc_dir = join(self.ctx.buildsdir, "tools", "protoc")
-        if os.path.exists(join(self.protoc_dir, "bin", "protoc")):
+        self.protoc_dir = self.ctx.buildsdir / "tools" / "protoc"
+        if (self.protoc_dir / "bin" / "protoc").exists():
             info_notify("protoc found, no download needed")
             return
         try:

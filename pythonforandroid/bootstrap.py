@@ -134,7 +134,7 @@ class Bootstrap:
         return dir_name
 
     def get_build_dir(self):
-        return join(self.ctx.buildsdir, 'bootstrap_builds', self.get_build_dir_name())
+        return self.ctx.buildsdir / 'bootstrap_builds' / self.get_build_dir_name()
 
     def get_dist_dir(self, name):
         return self.ctx.distsdir / name
