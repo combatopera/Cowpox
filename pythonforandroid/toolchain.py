@@ -237,7 +237,7 @@ class ToolchainCL:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.signkeypw
             elif args.keystorepw and 'P4A_RELEASE_KEYALIAS_PASSWD' not in env:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.keystorepw
-        makeapkversion = imp.load_source('build', join(dist.dist_dir, 'build.py')).makeapkversion
+        makeapkversion = imp.load_source('build', dist.dist_dir / 'build.py').makeapkversion
         with current_directory(dist.dist_dir):
             os.environ["ANDROID_API"] = str(ctx.android_api)
             apkversion = makeapkversion(args.unknown_args, dist.dist_dir)
@@ -265,12 +265,12 @@ class ToolchainCL:
                     # if docker on windows, gradle contains CRLF
                     shprint(sh.Command('dos2unix'), gradlew._path.decode('utf8'), _tail=20, _critical=True, _env=env)
                 output = shprint(gradlew, dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], _tail=20, _critical=True, _env=env)
-                apk_dir = join(dist.dist_dir, "build", "outputs", "apk", args.build_mode)
+                apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
                 apk_glob = "*-{}.apk"
                 apk_add_version = True
             else:
                 output = shprint(sh.Command('ant'), args.build_mode, _tail=20, _critical=True, _env=env)
-                apk_dir = join(dist.dist_dir, "bin")
+                apk_dir = dist.dist_dir / "bin"
                 apk_glob = "*-*-{}.apk"
                 apk_add_version = False
         log.info('Copying APK to current directory')

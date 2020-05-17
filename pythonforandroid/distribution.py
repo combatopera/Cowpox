@@ -41,6 +41,7 @@
 from .logger import info, info_notify, warning, Err_Style, Err_Fore
 from .util import current_directory, BuildInterruptingException
 from os.path import exists, join
+from pathlib import Path
 import glob, json, shutil
 
 class Distribution:
@@ -146,22 +147,21 @@ class Distribution:
                 i += 1
             name = filen.format(i)
         dist.name = name
-        dist.dist_dir = join(ctx.dist_dir, generate_dist_folder_name(name, None if arch_name is None else [arch_name]))
+        dist.dist_dir = Path(ctx.dist_dir, generate_dist_folder_name(name, None if arch_name is None else [arch_name]))
         dist.recipes = recipes
         dist.ndk_api = ctx.ndk_api
         dist.archs = [arch_name]
         return dist
 
     def folder_exists(self):
-        return exists(self.dist_dir)
+        return self.dist_dir.exists()
 
     def delete(self):
         shutil.rmtree(self.dist_dir)
 
     @classmethod
     def _get_distributions(cls, ctx):
-        dist_dir = ctx.dist_dir
-        folders = glob.glob(join(dist_dir, '*'))
+        folders = glob.glob(join(ctx.dist_dir, '*'))
         dists = []
         for folder in folders:
             if exists(join(folder, 'dist_info.json')):
@@ -169,7 +169,7 @@ class Distribution:
                     dist_info = json.load(fileh)
                 dist = cls(ctx)
                 dist.name = dist_info['dist_name']
-                dist.dist_dir = folder
+                dist.dist_dir = Path(folder)
                 dist.needs_build = False
                 dist.recipes = dist_info['recipes']
                 if 'archs' in dist_info:
