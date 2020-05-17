@@ -218,6 +218,13 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
             shutil.copy(jarname, 'src/main/libs')
             jars.append(basename(jarname))
     versioned_name = args.name.replace(' ', '').replace('\'', '') + '-' + args.version
+    def numver():
+        version_code = 0
+        for i in args.version.split('.'):
+            version_code *= 100
+            version_code += int(i)
+        return f"{{'x86_64': 9, 'arm64-v8a': 8, 'armeabi-v7a': 7, 'x86': 6}.get(distinfo.forkey('archs')[0], 1)}{args.min_sdk_version}{version_code}"
+    args.numeric_version = numver() # TODO: Do not abuse args for this.
     if args.intent_filters:
         with open(args.intent_filters) as fd:
             args.intent_filters = fd.read()
@@ -374,12 +381,7 @@ def makeapkversion(args, distdir):
     ap.add_argument('--name', dest='name',
                     help=('The human-readable name of the project.'),
                     required=True)
-    ap.add_argument('--version', dest='version',
-                    help=('The version number of the project. This should '
-                          'consist of numbers and dots, and should have the '
-                          'same number of groups of numbers as previous '
-                          'versions.'),
-                    required=True)
+    ap.add_argument('--version', required = True)
     if bootstrapname == "sdl2":
         ap.add_argument('--launcher', dest='launcher', action='store_true',
                         help=('Provide this argument to build a multi-app '
@@ -507,4 +509,4 @@ def makeapkversion(args, distdir):
     if args.private is None and bootstrapname == 'sdl2' and args.launcher is None:
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
     _make_package(args, bootstrapname, blacklist, distinfo, render)
-    return args.version
+    return args.version # FIXME: We pass this in!
