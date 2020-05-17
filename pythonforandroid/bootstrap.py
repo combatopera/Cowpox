@@ -47,7 +47,7 @@ from os import listdir, walk, sep
 from os.path import join, dirname, isdir, normpath, splitext, basename
 import functools, glob, os, sh, shlex, shutil
 
-def _copy_files(src_root, dest_root, override=True):
+def _copy_files(src_root, dest_root, override):
     for root, dirnames, filenames in walk(src_root):
         for filename in filenames:
             subdir = normpath(root.replace(src_root, ""))
@@ -148,9 +148,8 @@ class Bootstrap:
         '''Ensure that a build dir exists for the recipe. This same single
         dir will be used for building all different archs.'''
         self.build_dir = self.get_build_dir()
-        _copy_files(join(self.bootstrap_dir, 'build'), self.build_dir)
-        _copy_files(join(os.path.abspath(join(self.bootstrap_dir, "..", 'common')), 'build'), self.build_dir,
-                   override=False)
+        _copy_files(join(self.bootstrap_dir, 'build'), self.build_dir, True)
+        _copy_files(join(os.path.abspath(join(self.bootstrap_dir, "..", 'common')), 'build'), self.build_dir, False)
         if self.ctx.symlink_java_src:
             info('Symlinking java src instead of copying')
             rm._r.print(join(self.build_dir, 'src'))
