@@ -47,15 +47,8 @@ from zipfile import ZipFile
 import jinja2, json, os, shlex, shutil, subprocess, sys, tarfile, tempfile, time
 
 def _get_dist_info_for(key):
-    try:
-        with (curdir / 'dist_info.json').open() as fileh:
-            info = json.load(fileh)
-        value = info[key]
-    except (OSError, KeyError) as e:
-        print("BUILD FAILURE: Couldn't extract the key `" + key + "` " +
-              "from dist_info.json: " + str(e))
-        sys.exit(1)
-    return value
+    with (curdir / 'dist_info.json').open() as fileh:
+        return json.load(fileh)[key]
 
 def get_bootstrap_name():
     return _get_dist_info_for('bootstrap')
