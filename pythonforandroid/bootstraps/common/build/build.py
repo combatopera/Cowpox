@@ -48,7 +48,7 @@ import jinja2, json, os, shlex, shutil, subprocess, sys, tarfile, tempfile, time
 
 curdir = Path(__file__).parent
 
-def get_dist_info_for(key, error_if_missing=True):
+def _get_dist_info_for(key, error_if_missing=True):
     try:
         with (curdir / 'dist_info.json').open() as fileh:
             info = json.load(fileh)
@@ -61,18 +61,14 @@ def get_dist_info_for(key, error_if_missing=True):
         sys.exit(1)
     return value
 
-
 def get_hostpython():
-    return get_dist_info_for('hostpython')
-
+    return _get_dist_info_for('hostpython')
 
 def get_python_version():
-    return get_dist_info_for('python_version')
-
+    return _get_dist_info_for('python_version')
 
 def get_bootstrap_name():
-    return get_dist_info_for('bootstrap')
-
+    return _get_dist_info_for('bootstrap')
 
 if os.name == 'nt':
     ANDROID = 'android.bat'
@@ -308,7 +304,7 @@ main.py that loads it.''')
         f.write("P4A_MINSDK=" + str(args.min_sdk_version) + "\n")
 
     # Package up the private data (public not supported).
-    use_setup_py = get_dist_info_for("use_setup_py",
+    use_setup_py = _get_dist_info_for("use_setup_py",
                                      error_if_missing=False) is True
     tar_dirs = [env_vars_tarpath]
     _temp_dirs_to_clean = []
@@ -410,7 +406,7 @@ main.py that loads it.''')
     version_code = 0
     if not args.numeric_version:
         # Set version code in format (arch-minsdk-app_version)
-        arch = get_dist_info_for("archs")[0]
+        arch = _get_dist_info_for("archs")[0]
         arch_dict = {"x86_64": "9", "arm64-v8a": "8", "armeabi-v7a": "7", "x86": "6"}
         arch_code = arch_dict.get(arch, '1')
         min_sdk = args.min_sdk_version
