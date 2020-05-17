@@ -94,8 +94,8 @@ def _ensure_dir(path):
 
 class Render:
 
-    def __init__(self, curdir):
-        self.environment = jinja2.Environment(loader = jinja2.FileSystemLoader(curdir / 'templates'))
+    def __init__(self, common_build):
+        self.environment = jinja2.Environment(loader = jinja2.FileSystemLoader(common_build / 'templates'))
 
     def __call__(self, template, dest, **kwargs):
         dest_dir = dirname(dest)
@@ -184,7 +184,7 @@ def _compile_dir(dfn, optimize_python, distinfo):
         args.insert(1, '-OO')
     subprocess.check_call(args)
 
-def _make_package(args, bootstrapname, blacklist, distinfo, curdir):
+def _make_package(args, bootstrapname, blacklist, distinfo, render):
     if (bootstrapname != "sdl" or args.launcher is None) and bootstrapname != "webview":
         if args.private is None or (
                 not exists(join(realpath(args.private), 'main.py')) and
@@ -286,7 +286,6 @@ main.py that loads it.''')
         service_main = join(realpath(args.private), 'service', 'main.py')
         if exists(service_main) or exists(service_main + 'o'):
             service = True
-    render = Render(curdir)
     service_names = []
     for sid, spec in enumerate(args.services):
         spec = spec.split(':')
@@ -416,7 +415,7 @@ main.py that loads it.''')
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
 def makeapkversion(args, distdir):
-    curdir = Path(__file__).parent
+    render = Render(Path(__file__).parent)
     distinfo = DistInfo(distdir)
     ndk_api = default_min_api = int(distinfo.forkey('ndk_api'))
     bootstrapname = distinfo.forkey('bootstrap')
@@ -615,5 +614,5 @@ def makeapkversion(args, distdir):
         blacklist.WHITELIST_PATTERNS += patterns
     if args.private is None and bootstrapname == 'sdl2' and args.launcher is None:
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
-    _make_package(args, bootstrapname, blacklist, distinfo, curdir)
+    _make_package(args, bootstrapname, blacklist, distinfo, render)
     return args.version
