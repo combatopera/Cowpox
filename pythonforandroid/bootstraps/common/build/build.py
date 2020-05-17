@@ -625,25 +625,18 @@ tools directory of the Android SDK.
         args.name = args.name[1:-1]
 
     if ndk_api != args.min_sdk_version:
-        print(('WARNING: --minsdk argument does not match the api that is '
-               'compiled against. Only proceed if you know what you are '
-               'doing, otherwise use --minsdk={} or recompile against api '
-               '{}').format(ndk_api, args.min_sdk_version))
+        log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
         if not args.allow_minsdk_ndkapi_mismatch:
-            print('You must pass --allow-minsdk-ndkapi-mismatch to build '
-                  'with --minsdk different to the target NDK api from the '
-                  'build step')
+            log.error('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
             sys.exit(1)
         else:
-            print('Proceeding with --minsdk not matching build target api')
-
+            log.info('Proceeding with --minsdk not matching build target api')
     if args.billing_pubkey:
-        print('Billing not yet supported!')
+        log.error('Billing not yet supported!')
         sys.exit(1)
 
     if args.sdk_version == -1:
-        print('WARNING: Received a --sdk argument, but this argument is '
-              'deprecated and does nothing.')
+        log.warning('WARNING: Received a --sdk argument, but this argument is deprecated and does nothing.')
         args.sdk_version = -1  # ensure it is not used
 
     if args.permissions and isinstance(args.permissions[0], list):
@@ -678,14 +671,10 @@ tools directory of the Android SDK.
 
     if args.private is None and \
             _get_bootstrap_name() == 'sdl2' and args.launcher is None:
-        print('Need --private directory or ' +
-              '--launcher (SDL2 bootstrap only)' +
-              'to have something to launch inside the .apk!')
+        log.error('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
         sys.exit(1)
     _make_package(args)
-
     return args
-
 
 if __name__ == "__main__":
     parse_args()
