@@ -120,7 +120,6 @@ class ToolchainCL:
             default='')
         generic_parser.add_argument('--bootstrap')
         generic_parser.add_boolean_option('force-build', False, 'Whether to force compilation of a new distribution')
-        generic_parser.add_boolean_option('require-perfect-match', False, 'Whether the dist recipes must perfectly match those requested')
         generic_parser.add_boolean_option('allow-replace-dist', True, 'Whether existing dist names can be automatically replaced')
         generic_parser.add_argument(
             '--local-recipes', '--local_recipes',
@@ -158,7 +157,6 @@ class ToolchainCL:
                 args.arch,
                 args.ndk_api,
                 args.force_build,
-                args.require_perfect_match,
                 args.allow_replace_dist)
         ctx.distribution = dist
         if dist.needs_build:

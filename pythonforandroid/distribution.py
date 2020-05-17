@@ -79,7 +79,7 @@ class Distribution:
         return str(self)
 
     @classmethod
-    def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api, force_build, require_perfect_match, allow_replace_dist, extra_dist_dirs = []):
+    def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api, force_build, allow_replace_dist, extra_dist_dirs = []):
         possible_dists = cls._get_distributions(ctx)
         folder_match_dist = None
         if name is not None and name:
@@ -113,7 +113,7 @@ class Distribution:
                 continue
             if arch_name is not None and arch_name not in dist.archs:
                 continue
-            if set(dist.recipes) == set(recipes) or (set(recipes).issubset(set(dist.recipes)) and not require_perfect_match):
+            if set(recipes).issubset(set(dist.recipes)):
                 info_notify('{} has compatible recipes, using this one'.format(dist.name))
                 return dist
         # If there was a name match but we didn't already choose it,
