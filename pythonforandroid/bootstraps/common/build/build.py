@@ -506,11 +506,11 @@ def makeapkversion(args, distdir):
                     help=('Indicate if the application needs the device '
                           'to stay on'))
     ap.add_argument('--blacklist', dest='blacklist',
-                    default = curdir / 'blacklist.txt',
+                    default = distdir / 'blacklist.txt',
                     help=('Use a blacklist file to match unwanted file in '
                           'the final APK'))
     ap.add_argument('--whitelist', dest='whitelist',
-                    default = curdir / 'whitelist.txt',
+                    default = distdir / 'whitelist.txt',
                     help=('Use a whitelist file to prevent blacklisting of '
                           'file in the final APK'))
     ap.add_argument('--add-jar', dest='add_jar', action='append',
