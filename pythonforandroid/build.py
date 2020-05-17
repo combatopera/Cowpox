@@ -94,8 +94,8 @@ def _ensure_dir(path):
 
 class Render:
 
-    def __init__(self, common_build):
-        self.environment = jinja2.Environment(loader = jinja2.FileSystemLoader(common_build / 'templates'))
+    def __init__(self, distdir):
+        self.environment = jinja2.Environment(loader = jinja2.FileSystemLoader(distdir / 'templates'))
 
     def __call__(self, template, dest, **kwargs):
         dest_dir = dirname(dest)
@@ -384,8 +384,8 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
                     raise e
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
-def makeapkversion(args, distdir, common_build):
-    render = Render(common_build)
+def makeapkversion(args, distdir):
+    render = Render(distdir)
     distinfo = DistInfo(distdir)
     ndk_api = default_min_api = int(distinfo.forkey('ndk_api'))
     bootstrapname = distinfo.forkey('bootstrap')
