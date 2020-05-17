@@ -59,8 +59,6 @@ class DistInfo:
         return self.d[key]
 
 curdir = Path(__file__).parent
-ANDROID = 'android'
-ANT = 'ant'
 
 class Blacklist:
 
