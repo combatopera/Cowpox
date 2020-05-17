@@ -563,11 +563,6 @@ def makeapkversion(args, distdir, common_build):
     ap.add_argument('--extra-manifest-xml', default='',
                     help=('Extra xml to write directly inside the <manifest> element of'
                           'AndroidManifest.xml'))
-
-    # Put together arguments, and add those from .p4a config file:
-    if args is None:
-        args = sys.argv[1:]
-
     def _read_configuration():
         if not exists(".p4a"):
             return
