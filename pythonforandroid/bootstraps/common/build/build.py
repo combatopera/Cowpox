@@ -77,7 +77,6 @@ if PYTHON is not None:
 WHITELIST_PATTERNS = []
 if _get_bootstrap_name() in {'sdl2', 'webview', 'service_only'}:
     WHITELIST_PATTERNS.append('pyconfig.h')
-environment = jinja2.Environment(loader = jinja2.FileSystemLoader(curdir / 'templates'))
 
 def _try_unlink(fn):
     if exists(fn):
@@ -87,13 +86,18 @@ def _ensure_dir(path):
     if not exists(path):
         makedirs(path)
 
-def _render(template, dest, **kwargs):
-    dest_dir = dirname(dest)
-    if dest_dir and not exists(dest_dir):
-        makedirs(dest_dir)
-    text = environment.get_template(template).render(**kwargs)
-    with open(dest, 'wb') as f:
-        f.write(text.encode('utf-8'))
+def Render:
+
+    def __init__(self, curdir):
+        self.environment = jinja2.Environment(loader = jinja2.FileSystemLoader(curdir / 'templates'))
+
+    def __call__(self, template, dest, **kwargs):
+        dest_dir = dirname(dest)
+        if dest_dir and not exists(dest_dir):
+            makedirs(dest_dir)
+        text = self.environment.get_template(template).render(**kwargs)
+        with open(dest, 'wb') as f:
+            f.write(text.encode('utf-8'))
 
 def _is_blacklist(name):
     def match_filename(pattern_list):
@@ -289,7 +293,7 @@ main.py that loads it.''')
         service_main = join(realpath(args.private), 'service', 'main.py')
         if exists(service_main) or exists(service_main + 'o'):
             service = True
-
+    render = Render(curdir)
     service_names = []
     for sid, spec in enumerate(args.services):
         spec = spec.split(':')
@@ -306,7 +310,7 @@ main.py that loads it.''')
                 args.package.replace(".", "/"),
                 name.capitalize()
             )
-        _render(
+        render(
             'Service.tmpl.java',
             service_target_path,
             name=name,
@@ -353,7 +357,7 @@ main.py that loads it.''')
     }
     if bootstrapname == "sdl2":
         render_args["url_scheme"] = url_scheme
-    _render(
+    render(
         'AndroidManifest.tmpl.xml',
         manifest_path,
         **render_args)
@@ -365,7 +369,7 @@ main.py that loads it.''')
     shutil.copy(manifest_path, 'AndroidManifest.xml')
 
     # gradle build templates
-    _render(
+    render(
         'build.tmpl.gradle',
         'build.gradle',
         args=args,
@@ -376,7 +380,7 @@ main.py that loads it.''')
         )
 
     # ant build templates
-    _render(
+    render(
         'build.tmpl.xml',
         'build.xml',
         args=args,
@@ -389,19 +393,19 @@ main.py that loads it.''')
     }
     if bootstrapname == "sdl2":
         render_args["url_scheme"] = url_scheme
-    _render('strings.tmpl.xml', res_dir / 'values' / 'strings.xml', **render_args)
+    render('strings.tmpl.xml', res_dir / 'values' / 'strings.xml', **render_args)
     if Path("templates", "custom_rules.tmpl.xml").exists():
-        _render(
+        render(
             'custom_rules.tmpl.xml',
             'custom_rules.xml',
             args=args)
     if bootstrapname == "webview":
-        _render('WebViewLoader.tmpl.java',
+        render('WebViewLoader.tmpl.java',
                'src/main/java/org/kivy/android/WebViewLoader.java',
                args=args)
 
     if args.sign:
-        _render('build.properties', 'build.properties')
+        render('build.properties', 'build.properties')
     else:
         if exists('build.properties'):
             os.remove('build.properties')
