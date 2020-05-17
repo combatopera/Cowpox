@@ -51,7 +51,7 @@ import functools, glob, os, sh, shlex, shutil
 def _copy_files(src_root, dest_root, override):
     for root, dirnames, filenames in walk(src_root):
         for filename in filenames:
-            subdir = normpath(root.replace(src_root, ""))
+            subdir = normpath(root.replace(str(src_root), ""))
             if subdir.startswith(sep):  # ensure it is relative
                 subdir = subdir[1:]
             dest_dir = join(dest_root, subdir)
