@@ -177,7 +177,6 @@ class ToolchainCL:
         parser_apk.add_argument('--signkeypw')
         args, unknown = parser.parse_known_args()
         args.unknown_args = unknown
-        self.args = args
         setup_color(args.color)
         if args.debug:
             logger.setLevel(logging.DEBUG)
