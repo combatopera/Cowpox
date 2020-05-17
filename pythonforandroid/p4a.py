@@ -115,10 +115,6 @@ class ToolchainCL:
         parser_apk = subparsers.add_parser('apk', parents = [generic_parser])
         parser_apk.add_argument('--private')
         parser_apk.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
-        parser_apk.add_argument('--keystore')
-        parser_apk.add_argument('--signkey')
-        parser_apk.add_argument('--keystorepw')
-        parser_apk.add_argument('--signkeypw')
         args, downstreamargs = parser.parse_known_args()
         setup_color(True)
         requirements = []
@@ -157,17 +153,6 @@ class ToolchainCL:
             if arg in {'--dir', '--private', '--add-jar', '--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'}:
                 downstreamargs[i + 1] = realpath(expanduser(downstreamargs[i + 1]))
         env = os.environ.copy()
-        if args.build_mode == 'release':
-            if args.keystore:
-                env['P4A_RELEASE_KEYSTORE'] = realpath(expanduser(args.keystore))
-            if args.signkey:
-                env['P4A_RELEASE_KEYALIAS'] = args.signkey
-            if args.keystorepw:
-                env['P4A_RELEASE_KEYSTORE_PASSWD'] = args.keystorepw
-            if args.signkeypw:
-                env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.signkeypw
-            elif args.keystorepw and 'P4A_RELEASE_KEYALIAS_PASSWD' not in env:
-                env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.keystorepw
         with current_directory(dist.dist_dir):
             os.environ["ANDROID_API"] = str(ctx.android_api) # FIXME: No!
             apkversion = makeapkversion(downstreamargs, dist.dist_dir)
