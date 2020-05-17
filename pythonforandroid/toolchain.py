@@ -79,7 +79,7 @@ def _createcontext(args):
 
 def _build_dist_from_args(ctx, dist, args):
     bs = Bootstrap.get_bootstrap(args.bootstrap, ctx)
-    blacklist = getattr(args, "blacklist_requirements", "").split(",")
+    blacklist = args.blacklist_requirements.split(",")
     if blacklist == ['']:
         blacklist = []
     build_order, python_modules = get_recipe_order(ctx, dist.recipes, bs.recipe_depends, blacklist)
@@ -94,7 +94,7 @@ def _build_dist_from_args(ctx, dist, args):
     log.info("Dist will also contain modules (%s) installed from pip", ', '.join(ctx.python_modules))
     ctx.prepare_bootstrap(bs)
     ctx.prepare_dist()
-    build_recipes(build_order, python_modules, ctx, getattr(args, "private", None))
+    build_recipes(build_order, python_modules, ctx, args.private)
     ctx.bootstrap.run_distribute()
     log.info('Your distribution was created successfully, exiting.')
     log.info("Dist can be found at (for now) %s", join(ctx.dist_dir, dist.dist_dir))
