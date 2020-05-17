@@ -192,10 +192,7 @@ def compile_dir(dfn, optimize_python=True):
     subprocess.check_call(args)
 
 def _make_package(args):
-    # If no launcher is specified, require a main.py/main.pyo:
-    if (_get_bootstrap_name() != "sdl" or args.launcher is None) and \
-            _get_bootstrap_name() != "webview":
-        # (webview doesn't need an entrypoint, apparently)
+    if (_get_bootstrap_name() != "sdl" or args.launcher is None) and _get_bootstrap_name() != "webview":
         if args.private is None or (
                 not exists(join(realpath(args.private), 'main.py')) and
                 not exists(join(realpath(args.private), 'main.pyo'))):
@@ -204,21 +201,13 @@ file must exist to act as the entry point for you app. If your app is
 started by a file with a different name, rename it to main.py or add a
 main.py that loads it.''')
             sys.exit(1)
-
-    assets_dir = "src/main/assets"
-
-    # Delete the old assets.
-    _try_unlink(join(assets_dir, 'public.mp3'))
-    _try_unlink(join(assets_dir, 'private.mp3'))
+    assets_dir = Path('src', 'main', 'assets')
+    _try_unlink(assets_dir / 'public.mp3')
+    _try_unlink(assets_dir / 'private.mp3')
     _ensure_dir(assets_dir)
-
-    # In order to speedup import and initial depack,
-    # construct a python27.zip
     make_python_zip()
-
-    # Add extra environment variable file into tar-able directory:
-    env_vars_tarpath = tempfile.mkdtemp(prefix="p4a-extra-env-")
-    with open(os.path.join(env_vars_tarpath, "p4a_env_vars.txt"), "w") as f:
+    env_vars_tarpath = tempfile.mkdtemp(prefix = "p4a-extra-env-")
+    with Path(env_vars_tarpath, "p4a_env_vars.txt").open("w") as f:
         if hasattr(args, "window"):
             f.write("P4A_IS_WINDOWED=" + str(args.window) + "\n")
         if hasattr(args, "orientation"):
@@ -226,25 +215,16 @@ main.py that loads it.''')
         f.write("P4A_NUMERIC_VERSION=" + str(args.numeric_version) + "\n")
         f.write("P4A_MINSDK=" + str(args.min_sdk_version) + "\n")
     tar_dirs = [env_vars_tarpath]
-    _temp_dirs_to_clean = []
-    try:
-        if args.private:
-            print('No setup.py/pyproject.toml used, copying full private data into .apk.')
-            tar_dirs.append(args.private)
-        for python_bundle_dir in 'private', '_python_bundle':
-            if exists(python_bundle_dir):
-                tar_dirs.append(python_bundle_dir)
-        if _get_bootstrap_name() == "webview":
-            tar_dirs.append('webview_includes')
-        if args.private or args.launcher:
-            make_tar(
-                join(assets_dir, 'private.mp3'), tar_dirs, args.ignore_path,
-                optimize_python=args.optimize_python)
-    finally:
-        for directory in _temp_dirs_to_clean:
-            shutil.rmtree(directory)
-
-    # Remove extra env vars tar-able directory:
+    if args.private:
+        print('No setup.py/pyproject.toml used, copying full private data into .apk.')
+        tar_dirs.append(args.private)
+    for python_bundle_dir in 'private', '_python_bundle':
+        if exists(python_bundle_dir):
+            tar_dirs.append(python_bundle_dir)
+    if _get_bootstrap_name() == "webview":
+        tar_dirs.append('webview_includes')
+    if args.private or args.launcher:
+        make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, optimize_python = args.optimize_python)
     shutil.rmtree(env_vars_tarpath)
 
     # Prepare some variables for templating process
