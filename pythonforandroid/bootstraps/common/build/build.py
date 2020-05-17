@@ -94,11 +94,8 @@ def _render(template, dest, **kwargs):
     with open(dest, 'wb') as f:
         f.write(text.encode('utf-8'))
 
-def is_whitelist(name):
-    return match_filename(WHITELIST_PATTERNS, name)
-
 def is_blacklist(name):
-    if is_whitelist(name):
+    if match_filename(WHITELIST_PATTERNS, name):
         return False
     return match_filename(BLACKLIST_PATTERNS, name)
 
