@@ -137,7 +137,7 @@ class Distribution:
                     req_recipes=', '.join(recipes),
                     dist_recipes=', '.join(folder_match_dist.recipes)))
         assert len(possible_dists) < 2
-        dist = Distribution(ctx)
+        dist = cls(ctx)
         dist.needs_build = True
         if not name:
             filen = 'unnamed_dist_{}'
