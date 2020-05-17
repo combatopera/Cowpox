@@ -183,7 +183,7 @@ def _compile_dir(dfn, optimize_python=True):
     subprocess.check_call(args)
 
 def _make_package(args, bootstrapname):
-    if bootstrapname != "sdl" or args.launcher is None) and bootstrapname != "webview":
+    if (bootstrapname != "sdl" or args.launcher is None) and bootstrapname != "webview":
         if args.private is None or (
                 not exists(join(realpath(args.private), 'main.py')) and
                 not exists(join(realpath(args.private), 'main.pyo'))):
