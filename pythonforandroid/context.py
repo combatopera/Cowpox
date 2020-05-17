@@ -332,9 +332,6 @@ class Context:
         self.toolchain_version = None
 
         self.local_recipes = None
-        self.copy_libs = False
-
-        # this list should contain all Archs, it is pruned later
         self.archs = (
             ArchARM(self),
             ArchARMv7_a(self),
@@ -676,66 +673,16 @@ def biglink(ctx, arch):
     info('Biglinking')
     info('target {}'.format(join(ctx.get_libs_dir(arch.arch),
                                  'libpymodules.so')))
-    do_biglink = copylibs_function if ctx.copy_libs else biglink_function
-
     # Move to the directory containing crtstart_so.o and crtend_so.o
     # This is necessary with newer NDKs? A gcc bug?
     with current_directory(join(ctx.ndk_platform, 'usr', 'lib')):
-        do_biglink(
+        copylibs_function(
             join(ctx.get_libs_dir(arch.arch), 'libpymodules.so'),
             obj_dir.split(' '),
             extra_link_dirs=[join(ctx.bootstrap.build_dir,
                                   'obj', 'local', arch.arch),
                              os.path.abspath('.')],
             env=env)
-
-
-def biglink_function(soname, objs_paths, extra_link_dirs=[], env=None):
-    print('objs_paths are', objs_paths)
-    sofiles = []
-
-    for directory in objs_paths:
-        for fn in os.listdir(directory):
-            fn = os.path.join(directory, fn)
-
-            if not fn.endswith(".so.o"):
-                continue
-            if not os.path.exists(fn[:-2] + ".libs"):
-                continue
-
-            sofiles.append(fn[:-2])
-
-    # The raw argument list.
-    args = []
-
-    for fn in sofiles:
-        afn = fn + ".o"
-        libsfn = fn + ".libs"
-
-        args.append(afn)
-        with open(libsfn) as fd:
-            data = fd.read()
-            args.extend(data.split(" "))
-
-    unique_args = []
-    while args:
-        a = args.pop()
-        if a in ('-L', ):
-            continue
-        if a not in unique_args:
-            unique_args.insert(0, a)
-
-    for dir in extra_link_dirs:
-        link = '-L{}'.format(dir)
-        if link not in unique_args:
-            unique_args.append(link)
-
-    cc_name = env['CC']
-    cc = sh.Command(cc_name.split()[0])
-    cc = cc.bake(*cc_name.split()[1:])
-
-    shprint(cc, '-shared', '-O3', '-o', soname, *unique_args, _env=env)
-
 
 def copylibs_function(soname, objs_paths, extra_link_dirs=[], env=None):
     print('objs_paths are', objs_paths)

@@ -71,7 +71,6 @@ def _createcontext(args):
     ctx = Context()
     ctx.setup_dirs(args.storage_dir)
     ctx.local_recipes = args.local_recipes
-    ctx.copy_libs = args.copy_libs
     ctx.set_archs(_split_argument_list(args.arch))
     ctx.prepare_build_environment(args.ndk_api)
     return ctx
@@ -123,7 +122,6 @@ class ToolchainCL:
             '--local-recipes', '--local_recipes',
             dest='local_recipes', default='./p4a-recipes',
             help='Directory to look for local recipes')
-        generic_parser.add_boolean_option('copy-libs', False, 'Copy libraries instead of using biglink (Android 4.3+)')
         parser = ArgumentParser(allow_abbrev = False)
         subparsers = parser.add_subparsers(dest = 'command')
         subparsers.add_parser('create', parents = [generic_parser])

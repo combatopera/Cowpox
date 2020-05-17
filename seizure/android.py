@@ -75,8 +75,6 @@ class TargetAndroid:
                 '--storage-dir', self.build_dir,
                 '--ndk-api', config.getdefault('app', 'android.ndk_api', self.android_minapi),
                 '--local-recipes', config.workspace / 'local_recipes']
-        if config.getbooldefault('app', 'android.copy_libs', True):
-            self.extra_p4a_args.append('--copy-libs')
         self.config = config
         self.state = state
         self.dirs = dirs
