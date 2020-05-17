@@ -143,14 +143,14 @@ def _make_python_zip(blacklist):
     zf.close()
     return python_files
 
-def _make_tar(tfn, source_dirs, optimize_python, blacklist, distinfo, python_files):
+def _make_tar(tfn, source_dirs, blacklist, distinfo, python_files):
     def select(fn):
         rfn = realpath(fn)
         return False if rfn in python_files else not blacklist.has(fn)
     files = []
     for sd in source_dirs:
         sd = realpath(sd)
-        _compile_dir(sd, optimize_python, distinfo)
+        _compile_dir(sd, distinfo)
         files.extend([x, relpath(realpath(x), sd)] for x in _listfiles(sd) if select(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = set()
@@ -171,11 +171,8 @@ def _make_tar(tfn, source_dirs, optimize_python, blacklist, distinfo, python_fil
                     tf.addfile(tinfo)
             tf.add(fn, afn)
 
-def _compile_dir(dfn, optimize_python, distinfo):
-    args = [distinfo.forkey('hostpython'), '-m', 'compileall', '-b', '-f', dfn]
-    if optimize_python:
-        args.insert(1, '-OO')
-    subprocess.check_call(args)
+def _compile_dir(dfn, distinfo):
+    subprocess.check_call([distinfo.forkey('hostpython'), '-OO', '-m', 'compileall', '-b', '-f', dfn])
 
 def _make_package(args, bootstrapname, blacklist, distinfo, render):
     if (bootstrapname != "sdl" or args.launcher is None) and bootstrapname != "webview":
@@ -205,7 +202,7 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
     if bootstrapname == "webview":
         tar_dirs.append('webview_includes')
     if args.private or args.launcher:
-        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.optimize_python, blacklist, distinfo, python_files)
+        _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo, python_files)
     shutil.rmtree(env_vars_tarpath)
     res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
@@ -492,10 +489,6 @@ def makeapkversion(args, distdir):
                     help='Set the launch mode of the main activity in the manifest.')
     ap.add_argument('--allow-backup', dest='allow_backup', default='true',
                     help="if set to 'false', then android won't backup the application.")
-    ap.add_argument('--no-optimize-python', dest='optimize_python',
-                    action='store_false', default=True,
-                    help=('Whether to compile to optimised .pyo files, using -OO '
-                          '(strips docstrings and asserts)'))
     ap.add_argument('--extra-manifest-xml', default='',
                     help=('Extra xml to write directly inside the <manifest> element of'
                           'AndroidManifest.xml'))
