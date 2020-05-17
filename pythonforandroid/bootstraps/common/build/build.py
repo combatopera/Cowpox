@@ -70,12 +70,8 @@ def get_python_version():
 def get_bootstrap_name():
     return _get_dist_info_for('bootstrap')
 
-if os.name == 'nt':
-    ANDROID = 'android.bat'
-    ANT = 'ant.bat'
-else:
-    ANDROID = 'android'
-    ANT = 'ant'
+ANDROID = 'android'
+ANT = 'ant'
 PYTHON = get_hostpython()
 PYTHON_VERSION = get_python_version()
 if PYTHON is not None and not exists(PYTHON):
