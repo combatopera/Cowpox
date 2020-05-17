@@ -557,9 +557,6 @@ def makeapkversion(args):
         ap.add_argument('--port',
                         help='The port on localhost that the WebView will access',
                         default='5000')
-    ap.add_argument('--try-system-python-compile', dest='try_system_python_compile',
-                    action='store_true',
-                    help='Use the system python during compileall if possible.')
     ap.add_argument('--sign', action='store_true',
                     help=('Try to sign the APK with your credentials. You must set '
                           'the appropriate environment variables.'))
@@ -615,17 +612,6 @@ def makeapkversion(args):
 
     if args.permissions and isinstance(args.permissions[0], list):
         args.permissions = [p for perm in args.permissions for p in perm]
-
-    if args.try_system_python_compile:
-        # Hardcoding python2.7 is okay for now, as python3 skips the
-        # compilation anyway
-        python_executable = 'python2.7'
-        try:
-            subprocess.call([python_executable, '--version'])
-        except (OSError, subprocess.CalledProcessError):
-            pass
-        else:
-            PYTHON = python_executable
     if args.blacklist:
         with open(args.blacklist) as fd:
             patterns = [x.strip() for x in fd.read().splitlines()
