@@ -85,8 +85,8 @@ def _ensure_dir(path):
     if not exists(path):
         makedirs(path)
 
-def render(template, dest, **kwargs):
-    '''Using jinja2, render `template` to the filename `dest`, supplying the
+def _render(template, dest, **kwargs):
+    '''Using jinja2, _render `template` to the filename `dest`, supplying the
 
     keyword arguments as template parameters.
     '''
@@ -96,7 +96,7 @@ def render(template, dest, **kwargs):
         makedirs(dest_dir)
 
     template = environment.get_template(template)
-    text = template.render(**kwargs)
+    text = template._render(**kwargs)
 
     f = open(dest, 'wb')
     f.write(text.encode('utf-8'))
@@ -386,7 +386,7 @@ main.py that loads it.''')
                 args.package.replace(".", "/"),
                 name.capitalize()
             )
-        render(
+        _render(
             'Service.tmpl.java',
             service_target_path,
             name=name,
@@ -433,7 +433,7 @@ main.py that loads it.''')
     }
     if _get_bootstrap_name() == "sdl2":
         render_args["url_scheme"] = url_scheme
-    render(
+    _render(
         'AndroidManifest.tmpl.xml',
         manifest_path,
         **render_args)
@@ -445,7 +445,7 @@ main.py that loads it.''')
     shutil.copy(manifest_path, 'AndroidManifest.xml')
 
     # gradle build templates
-    render(
+    _render(
         'build.tmpl.gradle',
         'build.gradle',
         args=args,
@@ -456,7 +456,7 @@ main.py that loads it.''')
         )
 
     # ant build templates
-    render(
+    _render(
         'build.tmpl.xml',
         'build.xml',
         args=args,
@@ -469,24 +469,24 @@ main.py that loads it.''')
     }
     if _get_bootstrap_name() == "sdl2":
         render_args["url_scheme"] = url_scheme
-    render(
+    _render(
         'strings.tmpl.xml',
         join(res_dir, 'values/strings.xml'),
         **render_args)
 
     if exists(join("templates", "custom_rules.tmpl.xml")):
-        render(
+        _render(
             'custom_rules.tmpl.xml',
             'custom_rules.xml',
             args=args)
 
     if _get_bootstrap_name() == "webview":
-        render('WebViewLoader.tmpl.java',
+        _render('WebViewLoader.tmpl.java',
                'src/main/java/org/kivy/android/WebViewLoader.java',
                args=args)
 
     if args.sign:
-        render('build.properties', 'build.properties')
+        _render('build.properties', 'build.properties')
     else:
         if exists('build.properties'):
             os.remove('build.properties')
