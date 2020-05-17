@@ -414,8 +414,8 @@ main.py that loads it.''')
                     raise e
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
-def makeapkversion(args, distdir):
-    render = Render(Path(__file__).parent)
+def makeapkversion(args, distdir, common_build):
+    render = Render(common_build)
     distinfo = DistInfo(distdir)
     ndk_api = default_min_api = int(distinfo.forkey('ndk_api'))
     bootstrapname = distinfo.forkey('bootstrap')
