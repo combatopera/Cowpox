@@ -191,7 +191,7 @@ def compile_dir(dfn, optimize_python=True):
         args.insert(1, '-OO')
     subprocess.check_call(args)
 
-def make_package(args):
+def _make_package(args):
     # If no launcher is specified, require a main.py/main.pyo:
     if (_get_bootstrap_name() != "sdl" or args.launcher is None) and \
             _get_bootstrap_name() != "webview":
@@ -731,7 +731,7 @@ tools directory of the Android SDK.
               '--launcher (SDL2 bootstrap only)' +
               'to have something to launch inside the .apk!')
         sys.exit(1)
-    make_package(args)
+    _make_package(args)
 
     return args
 
