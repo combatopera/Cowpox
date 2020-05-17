@@ -150,7 +150,7 @@ def _make_python_zip():
         zf.write(fn, fn[len(d):])
     zf.close()
 
-def _make_tar(tfn, source_dirs, ignore_path = [], optimize_python = True):
+def _make_tar(tfn, source_dirs, ignore_path, optimize_python):
     def select(fn):
         rfn = realpath(fn)
         for p in ignore_path:
@@ -224,7 +224,7 @@ main.py that loads it.''')
     if bootstrapname == "webview":
         tar_dirs.append('webview_includes')
     if args.private or args.launcher:
-        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, optimize_python = args.optimize_python)
+        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, args.optimize_python)
     shutil.rmtree(env_vars_tarpath)
     res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
