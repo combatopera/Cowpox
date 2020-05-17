@@ -561,8 +561,6 @@ def makeapkversion(args):
     ap.add_argument('--try-system-python-compile', dest='try_system_python_compile',
                     action='store_true',
                     help='Use the system python during compileall if possible.')
-    ap.add_argument('--no-compile-pyo', dest='no_compile_pyo', action='store_true',
-                    help='Do not optimise .py files to .pyo.')
     ap.add_argument('--sign', action='store_true',
                     help=('Try to sign the APK with your credentials. You must set '
                           'the appropriate environment variables.'))
@@ -629,11 +627,6 @@ def makeapkversion(args):
             pass
         else:
             PYTHON = python_executable
-
-    if args.no_compile_pyo:
-        PYTHON = None
-        BLACKLIST_PATTERNS.remove('*.py')
-
     if args.blacklist:
         with open(args.blacklist) as fd:
             patterns = [x.strip() for x in fd.read().splitlines()
