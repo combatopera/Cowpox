@@ -40,7 +40,7 @@
 
 from .logger import shprint, info, logger, debug
 from .recipe import Recipe
-from .util import current_directory, ensure_dir, temp_directory, BuildInterruptingException
+from .util import current_directory, ensure_dir, temp_directory
 from importlib import import_module
 from os import listdir, walk, sep
 from os.path import join, dirname, isdir, normpath, splitext, basename
@@ -108,11 +108,6 @@ class Bootstrap:
 
     @property
     def dist_dir(self):
-        '''The dist dir at which to place the finished distribution.'''
-        if self.distribution is None:
-            raise BuildInterruptingException(
-                'Internal error: tried to access {}.dist_dir, but {}.distribution '
-                'is None'.format(self, self))
         return self.distribution.dist_dir
 
     @property
@@ -345,12 +340,8 @@ class Bootstrap:
         strip = sh.Command(tokens[0])
         if len(tokens) > 1:
             strip = strip.bake(tokens[1:])
-
-        libs_dir = join(self.dist_dir, '_python_bundle',
-                        '_python_bundle', 'modules')
-        filens = shprint(sh.find, libs_dir, join(self.dist_dir, 'libs'),
-                         '-iname', '*.so', _env=env).stdout.decode('utf-8')
-
+        libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
+        filens = shprint(sh.find, libs_dir, self.dist_dir / 'libs', '-iname', '*.so', _env=env).stdout.decode('utf-8')
         logger.info('Stripping libraries in private dir')
         for filen in filens.split('\n'):
             if not filen:
