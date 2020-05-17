@@ -61,8 +61,6 @@ ANDROID = 'android'
 ANT = 'ant'
 PYTHON = _get_dist_info_for('hostpython')
 PYTHON_VERSION = _get_dist_info_for('python_version')
-if PYTHON is not None and not exists(PYTHON):
-    PYTHON = None
 BLACKLIST_PATTERNS = [
     '^*.hg/*',
     '^*.git/*',
@@ -71,9 +69,8 @@ BLACKLIST_PATTERNS = [
     '~',
     '*.bak',
     '*.swp',
+    '*.py',
 ]
-if PYTHON is not None:
-    BLACKLIST_PATTERNS.append('*.py')
 WHITELIST_PATTERNS = []
 if _get_bootstrap_name() in {'sdl2', 'webview', 'service_only'}:
     WHITELIST_PATTERNS.append('pyconfig.h')
