@@ -237,10 +237,10 @@ class ToolchainCL:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.signkeypw
             elif args.keystorepw and 'P4A_RELEASE_KEYALIAS_PASSWD' not in env:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.keystorepw
-        parse_args = imp.load_source('build', join(dist.dist_dir, 'build.py')).parse_args
+        makeapkversion = imp.load_source('build', join(dist.dist_dir, 'build.py')).makeapkversion
         with current_directory(dist.dist_dir):
             os.environ["ANDROID_API"] = str(ctx.android_api)
-            build_args = parse_args(args.unknown_args)
+            apkversion = makeapkversion(args.unknown_args)
             log.info('Selecting java build tool:')
             build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
             build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
@@ -301,7 +301,7 @@ class ToolchainCL:
             log.info('Add version number to APK')
             APK_SUFFIX = '.apk'
             apk_name = basename(apk_file)[:-len(APK_SUFFIX)]
-            apk_file_dest = f"{apk_name}-{build_args.version}-{APK_SUFFIX}" # XXX: This looks wrong?
+            apk_file_dest = f"{apk_name}-{apkversion}-{APK_SUFFIX}" # XXX: This looks wrong?
             log.info("APK renamed to %s", apk_file_dest)
             cp.print(apk_file, apk_file_dest)
         else:

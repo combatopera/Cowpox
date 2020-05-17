@@ -424,10 +424,8 @@ main.py that loads it.''')
                     raise e
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
-def parse_args(args=None):
+def makeapkversion(args):
     global BLACKLIST_PATTERNS, WHITELIST_PATTERNS, PYTHON
-
-    # Get the default minsdk, equal to the NDK API that this dist is built against
     try:
         with open('dist_info.json', 'r') as fileh:
             info = json.load(fileh)
@@ -674,4 +672,4 @@ tools directory of the Android SDK.
         log.error('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
         sys.exit(1)
     _make_package(args)
-    return args
+    return args.version
