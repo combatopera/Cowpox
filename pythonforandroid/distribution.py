@@ -190,9 +190,6 @@ class Distribution:
         return dists
 
     def save_info(self, dirn):
-        '''
-        Save information about the distribution in its dist_dir.
-        '''
         with current_directory(dirn):
             info('Saving distribution info')
             with open('dist_info.json', 'w') as fileh:

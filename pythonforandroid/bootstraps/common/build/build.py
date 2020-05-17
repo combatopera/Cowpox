@@ -278,10 +278,7 @@ main.py that loads it.''')
             f.write("P4A_ORIENTATION=" + str(args.orientation) + "\n")
         f.write("P4A_NUMERIC_VERSION=" + str(args.numeric_version) + "\n")
         f.write("P4A_MINSDK=" + str(args.min_sdk_version) + "\n")
-
-    # Package up the private data (public not supported).
-    use_setup_py = _get_dist_info_for("use_setup_py",
-                                     error_if_missing=False) is True
+    use_setup_py = False
     tar_dirs = [env_vars_tarpath]
     _temp_dirs_to_clean = []
     try:
