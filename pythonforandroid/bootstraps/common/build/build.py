@@ -76,27 +76,17 @@ PYTHON = get_hostpython()
 PYTHON_VERSION = get_python_version()
 if PYTHON is not None and not exists(PYTHON):
     PYTHON = None
-
 BLACKLIST_PATTERNS = [
-    # code versionning
     '^*.hg/*',
     '^*.git/*',
     '^*.bzr/*',
     '^*.svn/*',
-
-    # temp files
     '~',
     '*.bak',
     '*.swp',
 ]
-# pyc/py
 if PYTHON is not None:
     BLACKLIST_PATTERNS.append('*.py')
-    if PYTHON_VERSION and int(PYTHON_VERSION[0]) == 2:
-        # we only blacklist `.pyc` for python2 because in python3 the compiled
-        # extension is `.pyc` (.pyo files not exists for python >= 3.6)
-        BLACKLIST_PATTERNS.append('*.pyc')
-
 WHITELIST_PATTERNS = []
 if get_bootstrap_name() in ('sdl2', 'webview', 'service_only'):
     WHITELIST_PATTERNS.append('pyconfig.h')
