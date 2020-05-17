@@ -652,7 +652,7 @@ class Recipe(metaclass = RecipeMeta):
         return recipe_libs
 
     @classmethod
-    def recipe_dirs(cls, ctx):
+    def _recipe_dirs(cls, ctx):
         recipe_dirs = []
         if ctx.local_recipes is not None:
             recipe_dirs.append(realpath(ctx.local_recipes))
@@ -669,7 +669,7 @@ class Recipe(metaclass = RecipeMeta):
         if name in cls.recipes:
             return cls.recipes[name]
         recipe_file = None
-        for recipes_dir in cls.recipe_dirs(ctx):
+        for recipes_dir in cls._recipe_dirs(ctx):
             if not exists(recipes_dir):
                 continue
             # Find matching folder (may differ in case):
@@ -692,7 +692,7 @@ class Recipe(metaclass = RecipeMeta):
         cls.recipes[name.lower()] = recipe
         return recipe
 
-class IncludedFilesBehaviour(object):
+class IncludedFilesBehaviour:
     '''Recipe mixin class that will automatically unpack files included in
     the recipe directory.'''
     src_filename = None
