@@ -78,74 +78,15 @@ class Distribution:
         return str(self)
 
     @classmethod
-    def get_distribution(
-            cls,
-            ctx,
-            *,
-            arch_name,  # required keyword argument: there is no sensible default
-            name=None,
-            recipes=[],
-            ndk_api=None,
-            force_build=False,
-            extra_dist_dirs=[],
-            require_perfect_match=False,
-            allow_replace_dist=True
-    ):
-        '''Takes information about the distribution, and decides what kind of
-        distribution it will be.
-
-        If parameters conflict (e.g. a dist with that name already
-        exists, but doesn't have the right set of recipes),
-        an error is thrown.
-
-        Parameters
-        ----------
-        name : str
-            The name of the distribution. If a dist with this name already '
-            exists, it will be used.
-        ndk_api : int
-            The NDK API to compile against, included in the dist because it cannot
-            be changed later during APK packaging.
-        arch_name : str
-            The target architecture name to compile against, included in the dist because
-            it cannot be changed later during APK packaging.
-        recipes : list
-            The recipes that the distribution must contain.
-        force_download: bool
-            If True, only downloaded dists are considered.
-        force_build : bool
-            If True, the dist is forced to be built locally.
-        extra_dist_dirs : list
-            Any extra directories in which to search for dists.
-        require_perfect_match : bool
-            If True, will only match distributions with precisely the
-            correct set of recipes.
-        allow_replace_dist : bool
-            If True, will allow an existing dist with the specified
-            name but incompatible requirements to be overwritten by
-            a new one with the current requirements.
-        '''
-
+    def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api, force_build, require_perfect_match, allow_replace_dist, extra_dist_dirs = []):
         possible_dists = Distribution.get_distributions(ctx)
-
-        # Will hold dists that would be built in the same folder as an existing dist
         folder_match_dist = None
-
-        # 0) Check if a dist with that name and architecture already exists
         if name is not None and name:
             possible_dists = [
                 d for d in possible_dists if
                 (d.name == name) and (arch_name in d.archs)]
-
             if possible_dists:
-                # There should only be one folder with a given dist name *and* arch.
-                # We could check that here, but for compatibility let's let it slide
-                # and just record the details of one of them. We only use this data to
-                # possibly fail the build later, so it doesn't really matter if there
-                # was more than one clash.
                 folder_match_dist = possible_dists[0]
-
-        # 1) Check if any existing dists meet the requirements
         _possible_dists = []
         for dist in possible_dists:
             if (
