@@ -223,7 +223,8 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
         for i in args.version.split('.'):
             version_code *= 100
             version_code += int(i)
-        return f"{{'x86_64': 9, 'arm64-v8a': 8, 'armeabi-v7a': 7, 'x86': 6}.get(distinfo.forkey('archs')[0], 1)}{args.min_sdk_version}{version_code}"
+        lookup = {'x86_64': 9, 'arm64-v8a': 8, 'armeabi-v7a': 7, 'x86': 6}
+        return f"{lookup.get(distinfo.forkey('archs')[0], 1)}{args.min_sdk_version}{version_code}"
     args.numeric_version = numver() # TODO: Do not abuse args for this.
     if args.intent_filters:
         with open(args.intent_filters) as fd:
