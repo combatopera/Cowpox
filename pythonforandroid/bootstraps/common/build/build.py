@@ -53,9 +53,6 @@ def _get_dist_info_for(key):
     with (curdir / 'dist_info.json').open() as fileh:
         return json.load(fileh)[key]
 
-def _get_bootstrap_name():
-    return _get_dist_info_for('bootstrap')
-
 curdir = Path(__file__).parent
 ANDROID = 'android'
 ANT = 'ant'
@@ -427,7 +424,7 @@ def makeapkversion(args):
         log.warning('Failed to read ndk_api from dist info, defaulting to 12')
         default_min_api = 12  # The old default before ndk_api was introduced
         ndk_api = 12
-    bootstrapname = _get_bootstrap_name()
+    bootstrapname = _get_dist_info_for('bootstrap')
     blacklist = Blacklist(bootstrapname)
     ap = ArgumentParser()
     ap.add_argument('--private', required = bootstrapname != "sdl2")
