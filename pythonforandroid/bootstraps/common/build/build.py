@@ -46,14 +46,12 @@ from pathlib import Path
 from zipfile import ZipFile
 import jinja2, json, os, shlex, shutil, subprocess, sys, tarfile, tempfile, time
 
-def _get_dist_info_for(key, error_if_missing=True):
+def _get_dist_info_for(key):
     try:
         with (curdir / 'dist_info.json').open() as fileh:
             info = json.load(fileh)
         value = info[key]
     except (OSError, KeyError) as e:
-        if not error_if_missing:
-            return None
         print("BUILD FAILURE: Couldn't extract the key `" + key + "` " +
               "from dist_info.json: " + str(e))
         sys.exit(1)
