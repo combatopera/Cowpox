@@ -140,9 +140,6 @@ class Bootstrap:
     def get_dist_dir(self, name):
         return self.ctx.distsdir / name
 
-    def get_common_dir(self):
-        return os.path.abspath(join(self.bootstrap_dir, "..", 'common'))
-
     @property
     def name(self):
         modname = self.__class__.__module__
@@ -152,9 +149,8 @@ class Bootstrap:
         '''Ensure that a build dir exists for the recipe. This same single
         dir will be used for building all different archs.'''
         self.build_dir = self.get_build_dir()
-        self.common_dir = self.get_common_dir()
         copy_files(join(self.bootstrap_dir, 'build'), self.build_dir)
-        copy_files(join(self.common_dir, 'build'), self.build_dir,
+        copy_files(join(os.path.abspath(join(self.bootstrap_dir, "..", 'common')), 'build'), self.build_dir,
                    override=False)
         if self.ctx.symlink_java_src:
             info('Symlinking java src instead of copying')
