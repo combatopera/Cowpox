@@ -45,7 +45,7 @@ from os import listdir, makedirs, remove
 from os.path import dirname, join, isfile, realpath, relpath, split, exists, basename
 from pathlib import Path
 from zipfile import ZipFile
-import jinja2, json, logging, os, shlex, shutil, subprocess, sys, tarfile, tempfile, time
+import jinja2, json, logging, os, shutil, subprocess, sys, tarfile, tempfile, time
 
 log = logging.getLogger(__name__)
 
