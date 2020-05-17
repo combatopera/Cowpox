@@ -40,11 +40,14 @@
 
 from .logger import logger, Err_Fore
 from fnmatch import fnmatch
-from os import getcwd, chdir, makedirs, walk, uname
+from os import makedirs, walk, uname
 from os.path import exists, join
+from pathlib import Path
 from tempfile import mkdtemp
 from urllib.request import FancyURLopener
-import contextlib, sh, shutil
+import contextlib, logging, os, sh, shutil
+
+log = logging.getLogger(__name__)
 
 class WgetDownloader(FancyURLopener):
 
@@ -57,18 +60,14 @@ build_platform = '{system}-{machine}'.format(
 this string to define the right build system when compiling some recipes or
 to get the right path for clang compiler"""
 
-
 @contextlib.contextmanager
 def current_directory(new_dir):
-    cur_dir = getcwd()
-    logger.info(''.join((Err_Fore.CYAN, '-> directory context ', new_dir,
-                         Err_Fore.RESET)))
-    chdir(new_dir)
+    cur_dir = Path.cwd()
+    log.info("-> directory context %s", new_dir)
+    os.chdir(new_dir)
     yield
-    logger.info(''.join((Err_Fore.CYAN, '<- directory context ', cur_dir,
-                         Err_Fore.RESET)))
-    chdir(cur_dir)
-
+    log.info("<- directory context %s", cur_dir)
+    os.chdir(cur_dir)
 
 @contextlib.contextmanager
 def temp_directory():
