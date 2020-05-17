@@ -566,19 +566,14 @@ def makeapkversion(args, distdir, common_build):
     if args.sdk_version == -1:
         log.warning('WARNING: Received a --sdk argument, but this argument is deprecated and does nothing.')
         args.sdk_version = -1  # ensure it is not used
-
     if args.permissions and isinstance(args.permissions[0], list):
         args.permissions = [p for perm in args.permissions for p in perm]
     if args.blacklist:
-        with open(args.blacklist) as fd:
-            patterns = [x.strip() for x in fd.read().splitlines()
-                        if x.strip() and not x.strip().startswith('#')]
-        blacklist.BLACKLIST_PATTERNS += patterns
+        with open(args.blacklist) as f:
+            blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
     if args.whitelist:
-        with open(args.whitelist) as fd:
-            patterns = [x.strip() for x in fd.read().splitlines()
-                        if x.strip() and not x.strip().startswith('#')]
-        blacklist.WHITELIST_PATTERNS += patterns
+        with open(args.whitelist) as f:
+            blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
     if args.private is None and bootstrapname == 'sdl2' and args.launcher is None:
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
     _make_package(args, bootstrapname, blacklist, distinfo, render)
