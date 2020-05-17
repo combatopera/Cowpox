@@ -45,7 +45,7 @@ from os import listdir, makedirs, remove
 from os.path import dirname, join, isfile, realpath, relpath, split, exists, basename
 from pathlib import Path
 from zipfile import ZipFile
-import jinja2, json, logging, os, shutil, subprocess, sys, tarfile, tempfile, time
+import jinja2, json, logging, os, shutil, subprocess, tarfile, tempfile, time
 
 log = logging.getLogger(__name__)
 
@@ -182,11 +182,7 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
         if args.private is None or (
                 not exists(join(realpath(args.private), 'main.py')) and
                 not exists(join(realpath(args.private), 'main.pyo'))):
-            log.error('''BUILD FAILURE: No main.py(o) found in your app directory. This
-file must exist to act as the entry point for you app. If your app is
-started by a file with a different name, rename it to main.py or add a
-main.py that loads it.''')
-            sys.exit(1)
+            raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
     assets_dir = Path('src', 'main', 'assets')
     _try_unlink(assets_dir / 'public.mp3')
     _try_unlink(assets_dir / 'private.mp3')
@@ -222,8 +218,7 @@ main.py that loads it.''')
     if args.add_jar:
         for jarname in args.add_jar:
             if not exists(jarname):
-                log.error("Requested jar does not exist: %s", jarname)
-                sys.exit(-1)
+                raise Exception("Requested jar does not exist: %s" % jarname)
             shutil.copy(jarname, 'src/main/libs')
             jars.append(basename(jarname))
     aars = []
@@ -231,8 +226,7 @@ main.py that loads it.''')
         _ensure_dir("libs")
         for aarname in args.add_aar:
             if not exists(aarname):
-                log.error("Requested aar does not exists: %s", aarname)
-                sys.exit(-1)
+                raise Exception("Requested aar does not exists: %s" % aarname)
             shutil.copy(aarname, 'libs')
             aars.append(basename(aarname).rsplit('.', 1)[0])
 
