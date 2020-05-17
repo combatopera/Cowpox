@@ -93,8 +93,7 @@ def _build_dist_from_args(ctx, dist, args):
     log.info("Dist contains the following requirements as recipes: %s", ctx.recipe_build_order)
     log.info("Dist will also contain modules (%s) installed from pip", ', '.join(ctx.python_modules))
     ctx.prepare_bootstrap(bs)
-    if dist.needs_build:
-        ctx.prepare_dist()
+    ctx.prepare_dist()
     build_recipes(build_order, python_modules, ctx, getattr(args, "private", None))
     ctx.bootstrap.run_distribute()
     log.info('Your distribution was created successfully, exiting.')
