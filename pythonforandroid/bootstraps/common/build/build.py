@@ -394,7 +394,7 @@ main.py that loads it.''')
     if _get_bootstrap_name() == "sdl2":
         render_args["url_scheme"] = url_scheme
     _render('strings.tmpl.xml', res_dir / 'values' / 'strings.xml', **render_args)
-    if exists(join("templates", "custom_rules.tmpl.xml")):
+    if Path("templates", "custom_rules.tmpl.xml").exists():
         _render(
             'custom_rules.tmpl.xml',
             'custom_rules.xml',
@@ -410,32 +410,18 @@ main.py that loads it.''')
     else:
         if exists('build.properties'):
             os.remove('build.properties')
-
-    # Apply java source patches if any are present:
-    if exists(join('src', 'patches')):
+    src_patches = Path('src', 'patches')
+    if src_patches.exists():
         print("Applying Java source code patches...")
-        for patch_name in os.listdir(join('src', 'patches')):
-            patch_path = join('src', 'patches', patch_name)
+        for patch_name in os.listdir(src_patches):
+            patch_path = src_patches / patch_name
             print("Applying patch: " + str(patch_path))
             try:
-                subprocess.check_output([
-                    # -N: insist this is FORWARd patch, don't reverse apply
-                    # -p1: strip first path component
-                    # -t: batch mode, don't ask questions
-                    "patch", "-N", "-p1", "-t", "-i", patch_path
-                ])
+                subprocess.check_call(["patch", "-N", "-p1", "-t", "-i", patch_path])
             except subprocess.CalledProcessError as e:
-                if e.returncode == 1:
-                    # Return code 1 means it didn't apply, this will
-                    # usually mean it is already applied.
-                    print("Warning: failed to apply patch (" +
-                          "exit code 1), " +
-                          "assuming it is already applied: " +
-                          str(patch_path)
-                         )
-                else:
+                if e.returncode != 1:
                     raise e
-
+                print("Warning: failed to apply patch (exit code 1), assuming it is already applied: " + str(patch_path))
 
 def parse_args(args=None):
     global BLACKLIST_PATTERNS, WHITELIST_PATTERNS, PYTHON
