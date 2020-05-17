@@ -118,13 +118,10 @@ def _listfiles(d):
         for fn in _listfiles(subdir):
             yield fn
 
-python_files = []
-
 def _make_python_zip(blacklist):
     if not exists('private'):
         log.info('No compiled python is present to zip, skipping.')
         return
-    global python_files # FIXME: No!
     d = realpath(join('private', 'lib', 'python2.7'))
     def select(fn):
         if blacklist.has(fn):
@@ -144,8 +141,9 @@ def _make_python_zip(blacklist):
     for fn in python_files:
         zf.write(fn, fn[len(d):])
     zf.close()
+    return python_files
 
-def _make_tar(tfn, source_dirs, ignore_path, optimize_python, blacklist, distinfo):
+def _make_tar(tfn, source_dirs, ignore_path, optimize_python, blacklist, distinfo, python_files):
     def select(fn):
         rfn = realpath(fn)
         for p in ignore_path:
@@ -198,7 +196,7 @@ main.py that loads it.''')
     _try_unlink(assets_dir / 'public.mp3')
     _try_unlink(assets_dir / 'private.mp3')
     _ensure_dir(assets_dir)
-    _make_python_zip(blacklist)
+    python_files = _make_python_zip(blacklist)
     env_vars_tarpath = tempfile.mkdtemp(prefix = "p4a-extra-env-")
     with Path(env_vars_tarpath, "p4a_env_vars.txt").open("w") as f:
         if hasattr(args, "window"):
@@ -217,7 +215,7 @@ main.py that loads it.''')
     if bootstrapname == "webview":
         tar_dirs.append('webview_includes')
     if args.private or args.launcher:
-        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, args.optimize_python, blacklist, distinfo)
+        _make_tar(assets_dir / 'private.mp3', tar_dirs, args.ignore_path, args.optimize_python, blacklist, distinfo, python_files)
     shutil.rmtree(env_vars_tarpath)
     res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
