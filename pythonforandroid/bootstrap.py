@@ -42,7 +42,7 @@ from .logger import shprint, info, logger, debug
 from .recipe import Recipe
 from .util import current_directory, ensure_dir, temp_directory
 from importlib import import_module
-from lagoon import cp, ln, mkdir, mv, rm, unzip
+from lagoon import cp, find, ln, mkdir, mv, rm, unzip
 from os import listdir, walk, sep
 from os.path import join, dirname, isdir, normpath, splitext, basename
 from pathlib import Path
@@ -333,7 +333,7 @@ class Bootstrap:
         if len(tokens) > 1:
             strip = strip.bake(tokens[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
-        filens = shprint(sh.find, libs_dir, self.dist_dir / 'libs', '-iname', '*.so', _env=env).stdout.decode('utf-8')
+        filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so')
         logger.info('Stripping libraries in private dir')
         for filen in filens.split('\n'):
             if not filen:
