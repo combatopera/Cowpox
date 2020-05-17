@@ -119,7 +119,6 @@ class ToolchainCL:
                   'Python 3 with --use-setup-py'),
             default='')
         generic_parser.add_argument('--bootstrap')
-        generic_parser.add_boolean_option('force-build', False, 'Whether to force compilation of a new distribution')
         generic_parser.add_argument(
             '--local-recipes', '--local_recipes',
             dest='local_recipes', default='./p4a-recipes',
@@ -154,8 +153,7 @@ class ToolchainCL:
                 args.dist_name,
                 _split_argument_list(args.requirements),
                 args.arch,
-                args.ndk_api,
-                args.force_build)
+                args.ndk_api)
         ctx.distribution = dist
         if dist.needs_build:
             if dist.folder_exists():

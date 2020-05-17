@@ -79,7 +79,7 @@ class Distribution:
         return str(self)
 
     @classmethod
-    def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api, force_build, extra_dist_dirs = []):
+    def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api, extra_dist_dirs = []):
         possible_dists = cls._get_distributions(ctx)
         if name is not None and name:
             possible_dists = [d for d in possible_dists if (d.name == name) and (arch_name in d.archs)]
@@ -102,8 +102,6 @@ class Distribution:
             info('No existing dists meet the given requirements!')
         # If any dist has perfect recipes, arch and NDK API, return it
         for dist in possible_dists:
-            if force_build:
-                continue
             if ndk_api is not None and dist.ndk_api != ndk_api:
                 continue
             if arch_name is not None and arch_name not in dist.archs:
