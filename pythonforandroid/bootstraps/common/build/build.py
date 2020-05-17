@@ -86,7 +86,7 @@ def _ensure_dir(path):
     if not exists(path):
         makedirs(path)
 
-def Render:
+class Render:
 
     def __init__(self, curdir):
         self.environment = jinja2.Environment(loader = jinja2.FileSystemLoader(curdir / 'templates'))
