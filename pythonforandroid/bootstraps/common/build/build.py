@@ -278,51 +278,13 @@ main.py that loads it.''')
             f.write("P4A_ORIENTATION=" + str(args.orientation) + "\n")
         f.write("P4A_NUMERIC_VERSION=" + str(args.numeric_version) + "\n")
         f.write("P4A_MINSDK=" + str(args.min_sdk_version) + "\n")
-    use_setup_py = False
     tar_dirs = [env_vars_tarpath]
     _temp_dirs_to_clean = []
     try:
         if args.private:
-            if not use_setup_py or (
-                    not exists(join(args.private, "setup.py")) and
-                    not exists(join(args.private, "pyproject.toml"))
-                    ):
-                print('No setup.py/pyproject.toml used, copying '
-                      'full private data into .apk.')
-                tar_dirs.append(args.private)
-            else:
-                print("Copying main.py's ONLY, since other app data is "
-                      "expected in site-packages.")
-                main_py_only_dir = tempfile.mkdtemp()
-                _temp_dirs_to_clean.append(main_py_only_dir)
-
-                # Check all main.py files we need to copy:
-                copy_paths = ["main.py", join("service", "main.py")]
-                for copy_path in copy_paths:
-                    variants = [
-                        copy_path,
-                        copy_path.partition(".")[0] + ".pyc",
-                        copy_path.partition(".")[0] + ".pyo",
-                    ]
-                    # Check in all variants with all possible endings:
-                    for variant in variants:
-                        if exists(join(args.private, variant)):
-                            # Make sure surrounding directly exists:
-                            dir_path = os.path.dirname(variant)
-                            if (len(dir_path) > 0 and
-                                    not exists(
-                                        join(main_py_only_dir, dir_path)
-                                    )):
-                                os.mkdir(join(main_py_only_dir, dir_path))
-                            # Copy actual file:
-                            shutil.copyfile(
-                                join(args.private, variant),
-                                join(main_py_only_dir, variant),
-                            )
-
-                # Append directory with all main.py's to result apk paths:
-                tar_dirs.append(main_py_only_dir)
-        for python_bundle_dir in ('private', '_python_bundle'):
+            print('No setup.py/pyproject.toml used, copying full private data into .apk.')
+            tar_dirs.append(args.private)
+        for python_bundle_dir in 'private', '_python_bundle':
             if exists(python_bundle_dir):
                 tar_dirs.append(python_bundle_dir)
         if get_bootstrap_name() == "webview":
