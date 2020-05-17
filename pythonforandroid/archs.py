@@ -43,8 +43,8 @@ from .util import BuildInterruptingException, build_platform
 from distutils.spawn import find_executable
 from glob import glob
 from multiprocessing import cpu_count
-from os import environ
 from os.path import join, split
+import os
 
 class Arch:
 
@@ -199,22 +199,23 @@ class Arch:
 
         # CCACHE
         ccache = ''
-        if self.ctx.ccache and bool(int(environ.get('USE_CCACHE', '1'))):
+        if self.ctx.ccache and bool(int(os.environ.get('USE_CCACHE', '1'))):
             # print('ccache found, will optimize builds')
             ccache = self.ctx.ccache + ' '
             env['USE_CCACHE'] = '1'
             env['NDK_CCACHE'] = self.ctx.ccache
             env.update(
-                {k: v for k, v in environ.items() if k.startswith('CCACHE_')}
+                {k: v for k, v in os.environ.items() if k.startswith('CCACHE_')}
             )
 
         # Compiler: `CC` and `CXX` (and make sure that the compiler exists)
-        environ['PATH'] = '{clang_path}:{path}'.format(
-            clang_path=self.clang_path, path=environ['PATH']
+        # FIXME: No!
+        os.environ['PATH'] = '{clang_path}:{path}'.format(
+            clang_path=self.clang_path, path = os.environ['PATH']
         )
-        cc = find_executable(self.clang_exe, path=environ['PATH'])
+        cc = find_executable(self.clang_exe, path = os.environ['PATH'])
         if cc is None:
-            print('Searching path are: {!r}'.format(environ['PATH']))
+            print('Searching path are: {!r}'.format(os.environ['PATH']))
             raise BuildInterruptingException(
                 'Couldn\'t find executable for CC. This indicates a '
                 'problem locating the {} executable in the Android '
@@ -270,7 +271,7 @@ class Arch:
             ),
         )
 
-        env['PATH'] = environ['PATH']
+        env['PATH'] = os.environ['PATH']
 
         return env
 

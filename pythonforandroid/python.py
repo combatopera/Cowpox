@@ -43,11 +43,10 @@ from .recipe import Recipe, TargetPythonRecipe
 from .util import current_directory, ensure_dir, walk_valid_filens, BuildInterruptingException
 from lagoon import cp
 from multiprocessing import cpu_count
-from os import environ
 from os.path import dirname, exists, join, isfile
 from pathlib import Path
 from shutil import copy2
-import glob, sh, subprocess
+import glob, os, sh, subprocess
 
 class GuestPythonRecipe(TargetPythonRecipe):
     '''
@@ -135,7 +134,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         super().__init__(*args, **kwargs)
 
     def get_recipe_env(self, arch=None, with_flags_in_cc=True):
-        env = environ.copy()
+        env = os.environ.copy()
         env['HOSTARCH'] = arch.command_prefix
 
         env['CC'] = arch.get_clang_exe(with_target=True)

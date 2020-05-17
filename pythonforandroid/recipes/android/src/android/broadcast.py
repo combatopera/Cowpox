@@ -110,8 +110,8 @@ class BroadcastReceiver(object):
 
     @property
     def context(self):
-        from os import environ
-        if 'PYTHON_SERVICE_ARGUMENT' in environ:
+        import os
+        if 'PYTHON_SERVICE_ARGUMENT' in os.environ:
             PythonService = autoclass(JAVA_NAMESPACE + '.PythonService')
             return PythonService.mService
         PythonActivity = autoclass(JAVA_NAMESPACE + '.PythonActivity')

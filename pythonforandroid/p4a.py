@@ -143,7 +143,7 @@ class ToolchainCL:
         for requirement in _split_argument_list(args.requirements):
             if "==" in requirement:
                 requirement, version = requirement.split("==", 1)
-                os.environ[f"VERSION_{requirement}"] = version
+                os.environ[f"VERSION_{requirement}"] = version # FIXME: No!
                 log.info("""Recipe %s: version "%s" requested""", requirement, version)
             requirements.append(requirement)
         args.requirements = ','.join(requirements)
@@ -190,7 +190,7 @@ class ToolchainCL:
             elif args.keystorepw and 'P4A_RELEASE_KEYALIAS_PASSWD' not in env:
                 env['P4A_RELEASE_KEYALIAS_PASSWD'] = args.keystorepw
         with current_directory(dist.dist_dir):
-            os.environ["ANDROID_API"] = str(ctx.android_api)
+            os.environ["ANDROID_API"] = str(ctx.android_api) # FIXME: No!
             apkversion = makeapkversion(downstreamargs, dist.dist_dir)
             log.info('Selecting java build tool:')
             build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))

@@ -45,7 +45,6 @@ from .recipe import CythonRecipe, Recipe
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from .util import current_directory, ensure_dir, get_virtualenv_executable, BuildInterruptingException
 from lagoon.program import Program
-from os import environ
 from os.path import join, realpath, dirname, exists, split, isdir
 from pathlib import Path
 import copy, glob, logging, os, re, sh, shutil, subprocess, sys
@@ -105,7 +104,7 @@ def get_available_apis(sdk_dir):
 
 class Context:
 
-    env = environ.copy()
+    env = os.environ.copy()
     # the filepath of toolchain.py
     root_dir = None
     distribution = None
@@ -297,8 +296,8 @@ class Context:
 
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
-        # Modify the path so that sh finds modules appropriately
-        environ['PATH'] = (
+        # FIXME: No!
+        os.environ['PATH'] = (
             '{ndk_dir}/toolchains/{toolchain_prefix}-{toolchain_version}/'
             'prebuilt/{py_platform}-x86/bin/:{ndk_dir}/toolchains/'
             '{toolchain_prefix}-{toolchain_version}/prebuilt/'
@@ -307,8 +306,7 @@ class Context:
                 sdk_dir=self.sdk_dir, ndk_dir=self.ndk_dir,
                 toolchain_prefix=toolchain_prefix,
                 toolchain_version=toolchain_version,
-                py_platform=py_platform, path=environ.get('PATH'))
-
+                py_platform=py_platform, path = os.environ.get('PATH'))
         for executable in ("pkg-config", "autoconf", "automake", "libtoolize",
                            "tar", "bzip2", "unzip", "make", "gcc", "g++"):
             if not sh.which(executable):
@@ -631,8 +629,8 @@ def _run_pymodules_install(ctx, modules):
             with open('requirements.txt', 'w') as fileh:
                 for module in modules:
                     key = 'VERSION_' + module
-                    if key in environ:
-                        line = '{}=={}\n'.format(module, environ[key])
+                    if key in os.environ:
+                        line = '{}=={}\n'.format(module, os.environ[key])
                     else:
                         line = '{}\n'.format(module)
                     fileh.write(line)

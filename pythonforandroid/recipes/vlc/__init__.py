@@ -38,12 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from os import environ
 from os.path import join, isdir, isfile
 from pythonforandroid.logger import info, debug, shprint, warning
 from pythonforandroid.recipe import Recipe
 from pythonforandroid.util import current_directory
-import sh
+import os, sh
 
 class VlcRecipe(Recipe):
 
@@ -60,8 +59,8 @@ class VlcRecipe(Recipe):
         super(VlcRecipe, self).prebuild_arch(arch)
         build_dir = self.get_build_dir(arch.arch)
         port_dir = join(build_dir, 'vlc-port-android')
-        if self.ENV_LIBVLC_AAR in environ:
-            aar = environ.get(self.ENV_LIBVLC_AAR)
+        if self.ENV_LIBVLC_AAR in os.environ:
+            aar = os.environ.get(self.ENV_LIBVLC_AAR)
             if isdir(aar):
                 aar = join(aar, 'libvlc-{}.aar'.format(self.version))
             if not isfile(aar):
@@ -95,7 +94,7 @@ class VlcRecipe(Recipe):
         aar = self.aars[arch]
         if not isfile(aar):
             with current_directory(port_dir):
-                env = dict(environ)
+                env = dict(os.environ)
                 env.update({
                     'ANDROID_ABI': arch.arch,
                     'ANDROID_NDK': self.ctx.ndk_dir,

@@ -42,9 +42,7 @@ from pythonforandroid.util import current_directory, build_platform
 from pythonforandroid.recipe import Recipe
 from pythonforandroid.logger import shprint
 from os.path import join, exists
-from os import environ
-import shutil
-import sh
+import os, sh, shutil
 
 """
 This recipe bootstraps Boost from source to build Boost.Build
@@ -122,7 +120,7 @@ class BoostRecipe(Recipe):
     def get_recipe_env(self, arch):
         # We don't use the normal env because we
         # are building with a standalone toolchain
-        env = environ.copy()
+        env = os.environ.copy()
 
         # find user-config.jam
         env['BOOST_BUILD_PATH'] = self.get_build_dir(arch.arch)

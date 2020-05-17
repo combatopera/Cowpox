@@ -42,13 +42,13 @@ from .logger import logger, info, warning, debug, shprint, info_main
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
-from os import listdir, unlink, environ, mkdir, curdir, walk
+from os import listdir, unlink, mkdir, curdir, walk
 from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
 from pathlib import Path
 from re import match
 from shutil import rmtree
 from urllib.parse import urlparse
-import fnmatch, glob, hashlib, sh, shutil
+import fnmatch, glob, hashlib, os, sh, shutil
 
 def import_recipe(module, filename):
     spec = spec_from_file_location(module, filename)
@@ -180,12 +180,12 @@ class Recipe(metaclass = RecipeMeta):
     @property
     def version(self):
         key = 'VERSION_' + self.name
-        return environ.get(key, self._version)
+        return os.environ.get(key, self._version)
 
     @property
     def url(self):
         key = 'URL_' + self.name
-        return environ.get(key, self._url)
+        return os.environ.get(key, self._url)
 
     @property
     def versioned_url(self):
@@ -329,7 +329,7 @@ class Recipe(metaclass = RecipeMeta):
 
     def download_if_necessary(self):
         info_main('Downloading {}'.format(self.name))
-        user_dir = environ.get('P4A_{}_DIR'.format(self.name.lower()))
+        user_dir = os.environ.get('P4A_{}_DIR'.format(self.name.lower()))
         if user_dir is not None:
             info('P4A_{}_DIR is set, skipping download for {}'.format(
                 self.name, self.name))
@@ -399,8 +399,7 @@ class Recipe(metaclass = RecipeMeta):
         info_main('Unpacking {} for {}'.format(self.name, arch))
 
         build_dir = self.get_build_container_dir(arch)
-
-        user_dir = environ.get('P4A_{}_DIR'.format(self.name.lower()))
+        user_dir = os.environ.get('P4A_{}_DIR'.format(self.name.lower()))
         if user_dir is not None:
             info('P4A_{}_DIR exists, symlinking instead'.format(
                 self.name.lower()))
@@ -944,7 +943,7 @@ class PythonRecipe(Recipe):
                 self.install_hostpython_package(arch)
 
     def get_hostrecipe_env(self, arch):
-        env = environ.copy()
+        env = os.environ.copy()
         env['PYTHONPATH'] = join(dirname(self.real_hostpython_location), 'Lib', 'site-packages')
         return env
 
