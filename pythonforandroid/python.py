@@ -41,6 +41,7 @@
 from .logger import info, warning, shprint
 from .recipe import Recipe, TargetPythonRecipe
 from .util import current_directory, ensure_dir, walk_valid_filens, BuildInterruptingException
+from lagoon import cp
 from multiprocessing import cpu_count
 from os import environ
 from os.path import dirname, exists, join, isfile
@@ -286,10 +287,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
                 'INSTSONAME={lib_name}'.format(lib_name=self._libpython),
                 _env=env
             )
-
-            # todo: Look into passing the path to pyconfig.h in a
-            # better way, although this is probably acceptable
-            sh.cp('pyconfig.h', join(recipe_build_dir, 'Include'))
+            cp.print('pyconfig.h', join(recipe_build_dir, 'Include'))
 
     def include_root(self, arch_name):
         return join(self.get_build_dir(arch_name), 'Include')
@@ -373,7 +371,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         python_lib_name = 'libpython' + self.major_minor_version_string
         if self.major_minor_version_string[0] == '3':
             python_lib_name += 'm'
-        shprint(sh.cp, python_build_dir / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.arch)
+        cp.print(python_build_dir / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.arch)
         info('Renaming .so files to reflect cross-compile')
         self.reduce_object_file_names(join(dirn, 'site-packages'))
         return join(dirn, 'site-packages')
@@ -468,8 +466,7 @@ class HostPythonRecipe(Recipe):
             # after this the file with default options is already named "Setup"
             setup_dist_location = join('Modules', 'Setup.dist')
             if exists(setup_dist_location):
-                shprint(sh.cp, setup_dist_location,
-                        join(build_dir, 'Modules', 'Setup'))
+                cp.print(setup_dist_location, join(build_dir, 'Modules', 'Setup'))
             else:
                 # Check the expected file does exist
                 setup_location = join('Modules', 'Setup')
@@ -487,7 +484,6 @@ class HostPythonRecipe(Recipe):
             for exe_name in ['python.exe', 'python']:
                 exe = join(self.get_path_to_python(), exe_name)
                 if isfile(exe):
-                    shprint(sh.cp, exe, self.python_exe)
+                    cp.print(exe, self.python_exe)
                     break
-
         self.ctx.hostpython = self.python_exe
