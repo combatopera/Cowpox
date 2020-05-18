@@ -42,7 +42,7 @@ from .recipe import Recipe
 from .util import build_platform
 from glob import glob
 from multiprocessing import cpu_count
-from os.path import join, split
+from os.path import join
 import os
 
 class Arch:
@@ -114,46 +114,19 @@ class Arch:
 
     @property
     def clang_path(self):
-        """Full path of the clang compiler"""
-        llvm_dirname = split(
-            glob(join(self.ctx.ndk_dir, 'toolchains', 'llvm*'))[-1]
-        )[-1]
-        return join(
-            self.ctx.ndk_dir,
-            'toolchains',
-            llvm_dirname,
-            'prebuilt',
-            build_platform,
-            'bin',
-        )
+        llvm_dirname = os.path.basename(glob(str(self.ctx.ndk_dir / 'toolchains' / 'llvm*'))[-1])
+        return self.ctx.ndk_dir / 'toolchains' / llvm_dirname / 'prebuilt' / build_platform / 'bin'
 
     @property
     def clang_exe(self):
-        """Full path of the clang compiler depending on the android's ndk
-        version used."""
         return self.get_clang_exe()
 
     @property
     def clang_exe_cxx(self):
-        """Full path of the clang++ compiler depending on the android's ndk
-        version used."""
         return self.get_clang_exe(plus_plus=True)
 
-    def get_clang_exe(self, with_target=False, plus_plus=False):
-        """Returns the full path of the clang/clang++ compiler, supports two
-        kwargs:
-
-          - `with_target`: prepend `target` to clang
-          - `plus_plus`: will return the clang++ compiler (defaults to `False`)
-        """
-        compiler = 'clang'
-        if with_target:
-            compiler = '{target}-{compiler}'.format(
-                target=self.target, compiler=compiler
-            )
-        if plus_plus:
-            compiler += '++'
-        return join(self.clang_path, compiler)
+    def get_clang_exe(self, with_target = False, plus_plus = False):
+        return self.clang_path / f"""{f"{self.target}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
 
     def get_env(self, with_flags_in_cc=True):
         env = {}
