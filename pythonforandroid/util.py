@@ -40,7 +40,7 @@
 
 from .logger import logger, Err_Fore
 from fnmatch import fnmatch
-from os import makedirs, walk, uname
+from os import makedirs, walk
 from os.path import exists, join
 from pathlib import Path
 from tempfile import mkdtemp
@@ -54,11 +54,7 @@ class WgetDownloader(FancyURLopener):
     version = 'Wget/1.17.1'
 
 urlretrieve = WgetDownloader().retrieve
-build_platform = '{system}-{machine}'.format(
-    system=uname()[0], machine=uname()[-1]).lower()
-"""the build platform in the format `system-machine`. We use
-this string to define the right build system when compiling some recipes or
-to get the right path for clang compiler"""
+build_platform = f"{os.uname()[0]}-{os.uname()[-1]}"
 
 @contextlib.contextmanager
 def current_directory(new_dir):
