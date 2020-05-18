@@ -117,14 +117,6 @@ class ToolchainCL:
         parser_apk.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
         args, downstreamargs = parser.parse_known_args()
         setup_color(True)
-        requirements = []
-        for requirement in _split_argument_list(args.requirements):
-            if "==" in requirement:
-                requirement, version = requirement.split("==", 1)
-                os.environ[f"VERSION_{requirement}"] = version # FIXME: No!
-                log.info("""Recipe %s: version "%s" requested""", requirement, version)
-            requirements.append(requirement)
-        args.requirements = ','.join(requirements)
         ctx = _createcontext(args)
         getattr(self, args.command)(args, downstreamargs, ctx, self._require_prebuilt_dist(args, ctx))
 
