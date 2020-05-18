@@ -168,8 +168,6 @@ class Context:
 
     def prepare_build_environment(self, user_ndk_api):
         self.ensure_dirs()
-        if self._build_env_prepared:
-            return
         ok = True
         self.sdk_dir = Path(os.environ['ANDROIDSDK']).resolve()
         self.android_api = int(os.environ['ANDROIDAPI'])
@@ -231,8 +229,6 @@ class Context:
 
     def __init__(self):
         self.include_dirs = []
-
-        self._build_env_prepared = False
         self.ndk = None
 
         self.toolchain_prefix = None
