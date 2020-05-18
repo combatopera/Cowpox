@@ -254,12 +254,6 @@ class Context:
                 toolchain_prefix=toolchain_prefix,
                 toolchain_version=toolchain_version,
                 py_platform=py_platform, path = os.environ.get('PATH'))
-        for executable in ("pkg-config", "autoconf", "automake", "libtoolize",
-                           "tar", "bzip2", "unzip", "make", "gcc", "g++"):
-            if not sh.which(executable):
-                warning("Missing executable: {} is not installed".format(
-                    executable))
-
         if not ok:
             raise BuildInterruptingException(
                 'python-for-android cannot continue due to the missing executables above')
