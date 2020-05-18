@@ -309,9 +309,7 @@ class Recipe(metaclass = RecipeMeta):
         local_recipe_dir = join(self.ctx.local_recipes, self.name)
         if exists(local_recipe_dir):
             return local_recipe_dir
-        return join(self.ctx.root_dir, 'recipes', self.name)
-
-    # Public Recipe API to be subclassed if needed
+        return self.ctx.root_dir / 'recipes' / self.name
 
     def download_if_necessary(self):
         info_main('Downloading {}'.format(self.name))
@@ -638,7 +636,7 @@ class Recipe(metaclass = RecipeMeta):
         return [
             realpath(ctx.local_recipes),
             ctx.storage_dir / 'recipes',
-            join(ctx.root_dir, "recipes"),
+            ctx.root_dir / 'recipes',
         ]
 
     @classmethod

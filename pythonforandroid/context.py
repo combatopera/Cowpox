@@ -45,7 +45,7 @@ from .recipe import CythonRecipe, Recipe
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from .util import current_directory, ensure_dir, get_virtualenv_executable, BuildInterruptingException
 from lagoon.program import Program
-from os.path import join, realpath, dirname, exists, split, isdir
+from os.path import join, dirname, exists, split, isdir
 from pathlib import Path
 import copy, glob, logging, os, re, sh, shutil, subprocess, sys
 
@@ -106,7 +106,6 @@ class Context:
 
     env = os.environ.copy()
     # the filepath of toolchain.py
-    root_dir = None
     distribution = None
     libs_dir = None
     aars_dir = None
@@ -125,7 +124,7 @@ class Context:
 
     @property
     def templates_dir(self):
-        return join(self.root_dir, 'templates')
+        return self.root_dir / 'templates'
 
     @property
     def libs_dir(self):
@@ -280,9 +279,7 @@ class Context:
             Archx86_64(self),
             ArchAarch_64(self),
         )
-        self.root_dir = realpath(dirname(__file__))
-
-        # remove the most obvious flags that can break the compilation
+        self.root_dir = Path(__file__).parent.resolve()
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)

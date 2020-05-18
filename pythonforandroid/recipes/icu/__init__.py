@@ -84,7 +84,7 @@ class ICURecipe(Recipe):
         local_recipe_dir = join(self.ctx.local_recipes, 'icu')
         if exists(local_recipe_dir):
             return local_recipe_dir
-        return join(self.ctx.root_dir, 'recipes', 'icu')
+        return self.ctx.root_dir / 'recipes' / 'icu'
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch).copy()

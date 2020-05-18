@@ -45,7 +45,6 @@ from importlib import import_module
 from lagoon import cp, find, mv, rm, unzip
 from os import listdir, walk, sep
 from os.path import join, dirname, isdir, normpath, splitext, basename
-from pathlib import Path
 import functools, glob, os, sh, shlex, shutil
 
 def _copy_files(src_root, dest_root, override):
@@ -266,7 +265,7 @@ class Bootstrap:
     @classmethod
     def get_bootstrap(cls, name, ctx):
         bootstrap = import_module(f"pythonforandroid.bootstraps.{name}").bootstrap
-        bootstrap.bootstrap_dir = Path(ctx.root_dir, 'bootstraps', name)
+        bootstrap.bootstrap_dir = ctx.root_dir / 'bootstraps' / name
         bootstrap.ctx = ctx
         return bootstrap
 
