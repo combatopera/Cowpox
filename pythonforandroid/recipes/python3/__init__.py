@@ -99,7 +99,6 @@ class Python3Recipe(GuestPythonRecipe):
     #   - _lzma.so
     opt_depends = ['libbz2', 'liblzma']
     conflicts = ['python2']
-
     configure_args = (
         '--host={android_host}',
         '--build={android_build}',
@@ -110,15 +109,14 @@ class Python3Recipe(GuestPythonRecipe):
         '--without-ensurepip',
         'ac_cv_little_endian_double=yes',
         '--prefix={prefix}',
-        '--exec-prefix={exec_prefix}')
+        '--exec-prefix={exec_prefix}',
+    )
 
     def set_libs_flags(self, env, arch):
-        env = super(Python3Recipe, self).set_libs_flags(env, arch)
+        env = super().set_libs_flags(env, arch)
         if 'openssl' in self.ctx.recipe_build_order:
             recipe = Recipe.get_recipe('openssl', self.ctx)
-            self.configure_args += \
-                ('--with-openssl=' + recipe.get_build_dir(arch.arch),)
+            self.configure_args += (f"--with-openssl={recipe.get_build_dir(arch.arch)}",)
         return env
-
 
 recipe = Python3Recipe()
