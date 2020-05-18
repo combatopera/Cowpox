@@ -167,58 +167,6 @@ class Context:
         ensure_dir(self.buildsdir / 'bootstrap_builds')
         ensure_dir(self.buildsdir / 'other_builds')
 
-    @property
-    def android_api(self):
-        '''The Android API being targeted.'''
-        if self._android_api is None:
-            raise ValueError('Tried to access android_api but it has not '
-                             'been set - this should not happen, something '
-                             'went wrong!')
-        return self._android_api
-
-    @android_api.setter
-    def android_api(self, value):
-        self._android_api = value
-
-    @property
-    def ndk_api(self):
-        '''The API number compile against'''
-        if self._ndk_api is None:
-            raise ValueError('Tried to access ndk_api but it has not '
-                             'been set - this should not happen, something '
-                             'went wrong!')
-        return self._ndk_api
-
-    @ndk_api.setter
-    def ndk_api(self, value):
-        self._ndk_api = value
-
-    @property
-    def sdk_dir(self):
-        '''The path to the Android SDK.'''
-        if self._sdk_dir is None:
-            raise ValueError('Tried to access sdk_dir but it has not '
-                             'been set - this should not happen, something '
-                             'went wrong!')
-        return self._sdk_dir
-
-    @sdk_dir.setter
-    def sdk_dir(self, value):
-        self._sdk_dir = value
-
-    @property
-    def ndk_dir(self):
-        '''The path to the Android NDK.'''
-        if self._ndk_dir is None:
-            raise ValueError('Tried to access ndk_dir but it has not '
-                             'been set - this should not happen, something '
-                             'went wrong!')
-        return self._ndk_dir
-
-    @ndk_dir.setter
-    def ndk_dir(self, value):
-        self._ndk_dir = value
-
     def prepare_build_environment(self, user_ndk_api):
         self.ensure_dirs()
         if self._build_env_prepared:
@@ -321,11 +269,6 @@ class Context:
         self.include_dirs = []
 
         self._build_env_prepared = False
-
-        self._sdk_dir = None
-        self._ndk_dir = None
-        self._android_api = None
-        self._ndk_api = None
         self.ndk = None
 
         self.toolchain_prefix = None
