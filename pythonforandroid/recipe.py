@@ -42,7 +42,7 @@ from .logger import logger, info, warning, debug, shprint, info_main
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
-from lagoon import cp, mkdir, patch as patchexe, rm, rmdir
+from lagoon import cp, mkdir, mv, patch as patchexe, rm, rmdir
 from os import listdir, unlink, curdir, walk
 from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
 from pathlib import Path
@@ -415,14 +415,14 @@ class Recipe(metaclass = RecipeMeta):
                         fileh = zipfile.ZipFile(extraction_filename, 'r')
                         root_directory = fileh.filelist[0].filename.split('/')[0]
                         if root_directory != basename(directory_name):
-                            shprint(sh.mv, root_directory, directory_name)
+                            mv.print(root_directory, directory_name)
                     elif extraction_filename.endswith(
                             ('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
                         sh.tar('xf', extraction_filename)
                         root_directory = sh.tar('tf', extraction_filename).stdout.decode(
                                 'utf-8').split('\n')[0].split('/')[0]
                         if root_directory != basename(directory_name):
-                            shprint(sh.mv, root_directory, directory_name)
+                            mv.print(root_directory, directory_name)
                     else:
                         raise Exception(
                             'Could not extract {} download, it must be .zip, '
