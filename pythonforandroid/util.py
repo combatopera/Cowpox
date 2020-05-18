@@ -54,7 +54,7 @@ class WgetDownloader(FancyURLopener):
     version = 'Wget/1.17.1'
 
 urlretrieve = WgetDownloader().retrieve
-build_platform = f"{os.uname()[0]}-{os.uname()[-1]}"
+build_platform = f"{os.uname()[0]}-{os.uname()[-1]}".lower()
 
 @contextlib.contextmanager
 def current_directory(new_dir):
