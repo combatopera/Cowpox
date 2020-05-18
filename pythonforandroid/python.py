@@ -165,48 +165,28 @@ class GuestPythonRecipe(TargetPythonRecipe):
         return env
 
     def set_libs_flags(self, env, arch):
-        '''Takes care to properly link libraries with python depending on our
-        requirements and the attribute :attr:`opt_depends`.
-        '''
         def add_flags(include_flags, link_dirs, link_libs):
             env['CPPFLAGS'] = env.get('CPPFLAGS', '') + include_flags
             env['LDFLAGS'] = env.get('LDFLAGS', '') + link_dirs
             env['LIBS'] = env.get('LIBS', '') + link_libs
-
         if 'sqlite3' in self.ctx.recipe_build_order:
             info('Activating flags for sqlite3')
             recipe = Recipe.get_recipe('sqlite3', self.ctx)
-            add_flags(' -I' + recipe.get_build_dir(arch.arch),
-                      ' -L' + recipe.get_lib_dir(arch), ' -lsqlite3')
-
+            add_flags(f" -I{recipe.get_build_dir(arch.arch)}", f" -L{recipe.get_lib_dir(arch)}", ' -lsqlite3')
         if 'libffi' in self.ctx.recipe_build_order:
             info('Activating flags for libffi')
             recipe = Recipe.get_recipe('libffi', self.ctx)
-            # In order to force the correct linkage for our libffi library, we
-            # set the following variable to point where is our libffi.pc file,
-            # because the python build system uses pkg-config to configure it.
             env['PKG_CONFIG_PATH'] = recipe.get_build_dir(arch.arch)
-            add_flags(' -I' + ' -I'.join(recipe.get_include_dirs(arch)),
-                      ' -L' + join(recipe.get_build_dir(arch.arch), '.libs'),
-                      ' -lffi')
-
+            add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs(arch))), f" -L{recipe.get_build_dir(arch.arch) / '.libs'}", ' -lffi')
         if 'openssl' in self.ctx.recipe_build_order:
             info('Activating flags for openssl')
             recipe = Recipe.get_recipe('openssl', self.ctx)
-            add_flags(recipe.include_flags(arch),
-                      recipe.link_dirs_flags(arch), recipe.link_libs_flags())
-
-        for library_name in {'libbz2', 'liblzma'}:
+            add_flags(recipe.include_flags(arch), recipe.link_dirs_flags(arch), recipe.link_libs_flags())
+        for library_name in 'libbz2', 'liblzma':
             if library_name in self.ctx.recipe_build_order:
                 info(f'Activating flags for {library_name}')
                 recipe = Recipe.get_recipe(library_name, self.ctx)
-                add_flags(recipe.get_library_includes(arch),
-                          recipe.get_library_ldflags(arch),
-                          recipe.get_library_libs_flag())
-
-        # python build system contains hardcoded zlib version which prevents
-        # the build of zlib module, here we search for android's zlib version
-        # and sets the right flags, so python can be build with android's zlib
+                add_flags(recipe.get_library_includes(arch), recipe.get_library_ldflags(arch), recipe.get_library_libs_flag())
         info("Activating flags for android's zlib")
         zlib_lib_path = join(self.ctx.ndk_platform, 'usr', 'lib')
         zlib_includes = join(self.ctx.ndk_dir, 'sysroot', 'usr', 'include')
@@ -229,7 +209,6 @@ class GuestPythonRecipe(TargetPythonRecipe):
             )
         env['ZLIB_VERSION'] = line.replace('#define ZLIB_VERSION ', '')
         add_flags(' -I' + zlib_includes, ' -L' + zlib_lib_path, ' -lz')
-
         return env
 
     @property
