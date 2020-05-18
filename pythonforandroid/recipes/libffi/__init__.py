@@ -38,13 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from os.path import exists, join
+from lagoon import make
 from multiprocessing import cpu_count
+from pathlib import Path
 from pythonforandroid.recipe import Recipe
 from pythonforandroid.logger import shprint
 from pythonforandroid.util import current_directory
 import sh
-
 
 class LibffiRecipe(Recipe):
     """
@@ -76,18 +76,17 @@ class LibffiRecipe(Recipe):
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
-            if not exists('configure'):
-                shprint(sh.Command('./autogen.sh'), _env=env)
-            shprint(sh.Command('autoreconf'), '-vif', _env=env)
+            if not Path('configure').exists():
+                shprint(sh.Command('./autogen.sh'), _env = env)
+            shprint(sh.Command('autoreconf'), '-vif', _env = env)
             shprint(sh.Command('./configure'),
                     '--host=' + arch.command_prefix,
                     '--prefix=' + self.get_build_dir(arch.arch),
                     '--disable-builddir',
-                    '--enable-shared', _env=env)
-            shprint(sh.make, '-j', str(cpu_count()), 'libffi.la', _env=env)
+                    '--enable-shared', _env = env)
+            make.print('-j', cpu_count(), 'libffi.la', env = env)
 
     def get_include_dirs(self, arch):
-        return [join(self.get_build_dir(arch.arch), 'include')]
-
+        return [self.get_build_dir(arch.arch) / 'include']
 
 recipe = LibffiRecipe()
