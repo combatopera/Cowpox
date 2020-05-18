@@ -295,14 +295,7 @@ class Recipe(metaclass = RecipeMeta):
         return [recipe for recipe in recipes if recipe in self.opt_depends]
 
     def get_build_container_dir(self, arch):
-        '''Given the arch name, returns the directory where it will be
-        built.
-
-        This returns a different directory depending on what
-        alternative or optional dependencies are being built.
-        '''
-        dir_name = self.get_dir_name()
-        return self.ctx.buildsdir / 'other_builds' / dir_name / f'{arch}__ndk_target_{self.ctx.ndk_api}'
+        return self.ctx.buildsdir / 'other_builds' / self.get_dir_name() / f"{arch}__ndk_target_{self.ctx.ndk_api}"
 
     def get_dir_name(self):
         choices = self.check_recipe_choices()
@@ -310,10 +303,7 @@ class Recipe(metaclass = RecipeMeta):
         return dir_name
 
     def get_build_dir(self, arch):
-        '''Given the arch name, returns the directory where the
-        downloaded/copied package will be built.'''
-
-        return join(self.get_build_container_dir(arch), self.name)
+        return self.get_build_container_dir(arch) / self.name
 
     def get_recipe_dir(self):
         local_recipe_dir = join(self.ctx.local_recipes, self.name)
