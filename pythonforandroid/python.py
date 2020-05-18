@@ -41,7 +41,8 @@
 from .logger import info, warning, shprint
 from .recipe import Recipe, TargetPythonRecipe
 from .util import current_directory, ensure_dir, walk_valid_filens, BuildInterruptingException
-from lagoon import cp
+from lagoon import cp, make
+from lagoon.program import Program
 from multiprocessing import cpu_count
 from os.path import dirname, exists, join, isfile
 from pathlib import Path
@@ -227,44 +228,21 @@ class GuestPythonRecipe(TargetPythonRecipe):
         self.ctx.python_recipe = self
 
     def build_arch(self, arch):
-        if self.ctx.ndk_api < self.MIN_NDK_API:
-            raise BuildInterruptingException(
-                'Target ndk-api is {}, but the python3 recipe supports only'
-                ' {}+'.format(self.ctx.ndk_api, self.MIN_NDK_API))
-
+        assert self.ctx.ndk_api >= self.MIN_NDK_API
         recipe_build_dir = self.get_build_dir(arch.arch)
-
-        # Create a subdirectory to actually perform the build
-        build_dir = join(recipe_build_dir, 'android-build')
+        build_dir = recipe_build_dir / 'android-build'
         ensure_dir(build_dir)
-
-        # todo: Get these dynamically, like bpo-30386 does
         sys_prefix = '/usr/local'
         sys_exec_prefix = '/usr/local'
-
         with current_directory(build_dir):
             env = self.get_recipe_env(arch)
             env = self.set_libs_flags(env, arch)
-
-            android_build = sh.Command(
-                join(recipe_build_dir,
-                     'config.guess'))().stdout.strip().decode('utf-8')
-
+            android_build = Program.text(recipe_build_dir / 'config.guess')().strip()
             if not exists('config.status'):
-                shprint(
-                    sh.Command(join(recipe_build_dir, 'configure')),
-                    *(' '.join(self.configure_args).format(
-                                    android_host=env['HOSTARCH'],
-                                    android_build=android_build,
-                                    prefix=sys_prefix,
-                                    exec_prefix=sys_exec_prefix)).split(' '),
-                    _env=env)
-
-            shprint(
-                sh.make, 'all', '-j', str(cpu_count()),
-                'INSTSONAME={lib_name}'.format(lib_name=self._libpython),
-                _env=env
-            )
+                configureargs = ' '.join(self.configure_args).format(
+                        android_host = env['HOSTARCH'], android_build = android_build, prefix = sys_prefix, exec_prefix = sys_exec_prefix).split(' ')
+                Program.text(recipe_build_dir / 'configure').print(*configureargs, env = env)
+            make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env)
             cp.print('pyconfig.h', join(recipe_build_dir, 'Include'))
 
     def include_root(self, arch_name):
