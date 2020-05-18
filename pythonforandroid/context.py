@@ -219,16 +219,13 @@ class Context:
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
         # FIXME: No!
-        os.environ['PATH'] = (
-            '{ndk_dir}/toolchains/{toolchain_prefix}-{toolchain_version}/'
-            'prebuilt/{py_platform}-x86/bin/:{ndk_dir}/toolchains/'
-            '{toolchain_prefix}-{toolchain_version}/prebuilt/'
-            '{py_platform}-x86_64/bin/:{ndk_dir}:{sdk_dir}/'
-            'tools:{path}').format(
-                sdk_dir=self.sdk_dir, ndk_dir=self.ndk_dir,
-                toolchain_prefix=toolchain_prefix,
-                toolchain_version=toolchain_version,
-                py_platform=py_platform, path = os.environ.get('PATH'))
+        os.environ['PATH'] = os.pathsep.join(str(p) for p in [
+            self.ndk_dir / 'toolchains' / f"{toolchain_prefix}-{toolchain_version}" / 'prebuilt' / f"{py_platform}-x86" / 'bin',
+            self.ndk_dir / 'toolchains' / f"{toolchain_prefix}-{toolchain_version}" / 'prebuilt' / f"{py_platform}-x86_64" / 'bin',
+            self.ndk_dir,
+            self.sdk_dir / 'tools',
+            os.environ['PATH'],
+        ])
         if not ok:
             raise BuildInterruptingException('python-for-android cannot continue due to the missing executables above')
 
