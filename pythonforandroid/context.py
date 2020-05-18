@@ -176,12 +176,10 @@ class Context:
         log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
         check_target_api(self.android_api, self.archs[0].arch)
         apis = get_available_apis(self.sdk_dir)
-        info('Available Android APIs are ({})'.format(', '.join(map(str, apis))))
-        if self.android_api in apis:
-            log.info("Requested API target %s is available, continuing.", self.android_api)
-        else:
-            raise BuildInterruptingException(
-                'Requested API target {} is not available, install it with the SDK android tool.'.format(self.android_api))
+        log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
+        if self.android_api not in apis:
+            raise BuildInterruptingException("Requested API target %s is not available, install it with the SDK android tool." % self.android_api)
+        log.info("Requested API target %s is available, continuing.", self.android_api)
         self.ndk_dir = Path(os.environ['ANDROIDNDK']).resolve()
         log.info("Found NDK dir in $ANDROIDNDK: %s", self.ndk_dir)
         check_ndk_version(self.ndk_dir)
@@ -190,57 +188,34 @@ class Context:
         self.ndk_api = user_ndk_api
         virtualenv = get_virtualenv_executable()
         if virtualenv is None:
-            raise IOError('Couldn\'t find a virtualenv executable, '
-                          'you must install this to use p4a.')
+            raise IOError('Couldn\'t find a virtualenv executable, you must install this to use p4a.')
         self.virtualenv = virtualenv
-        info('Found virtualenv at {}'.format(virtualenv))
-
-        # path to some tools
+        log.info("Found virtualenv at %s", virtualenv)
         self.ccache = sh.which("ccache")
         if not self.ccache:
-            info('ccache is missing, the build will not be optimized in the '
-                 'future.')
+            log.info('ccache is missing, the build will not be optimized in the future.')
         try:
-            subprocess.check_output([
-                "python3", "-m", "cython", "--help",
-            ])
+            subprocess.check_call(['python3', '-m', 'cython', '--help'])
         except subprocess.CalledProcessError:
-            warning('Cython for python3 missing. If you are building for '
-                    ' a python 3 target (which is the default)'
-                    ' then THINGS WILL BREAK.')
-
-        # This would need to be changed if supporting multiarch APKs
+            log.warning('Cython for python3 missing. If you are building for  a python 3 target (which is the default) then THINGS WILL BREAK.')
         arch = self.archs[0]
         toolchain_prefix = arch.toolchain_prefix
-        self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(
-            self.ndk_dir, self.ndk_api, arch)
+        self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(self.ndk_dir, self.ndk_api, arch)
         ok = ok and ndk_platform_dir_exists
-
         py_platform = sys.platform
-        if py_platform in ['linux2', 'linux3']:
+        if py_platform in {'linux2', 'linux3'}:
             py_platform = 'linux'
-        toolchain_versions, toolchain_path_exists = get_toolchain_versions(
-            self.ndk_dir, arch)
+        toolchain_versions, toolchain_path_exists = get_toolchain_versions(self.ndk_dir, arch)
         ok = ok and toolchain_path_exists
         toolchain_versions.sort()
-
-        toolchain_versions_gcc = []
-        for toolchain_version in toolchain_versions:
-            if toolchain_version[0].isdigit():
-                # GCC toolchains begin with a number
-                toolchain_versions_gcc.append(toolchain_version)
-
+        toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
         if toolchain_versions:
-            info('Found the following toolchain versions: {}'.format(
-                toolchain_versions))
-            info('Picking the latest gcc toolchain, here {}'.format(
-                toolchain_versions_gcc[-1]))
+            log.info("Found the following toolchain versions: %s", toolchain_versions)
+            log.info("Picking the latest gcc toolchain, here %s", toolchain_versions_gcc[-1])
             toolchain_version = toolchain_versions_gcc[-1]
         else:
-            warning('Could not find any toolchain for {}!'.format(
-                toolchain_prefix))
+            log.warning("Could not find any toolchain for %s!", toolchain_prefix)
             ok = False
-
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
         # FIXME: No!
@@ -255,8 +230,7 @@ class Context:
                 toolchain_version=toolchain_version,
                 py_platform=py_platform, path = os.environ.get('PATH'))
         if not ok:
-            raise BuildInterruptingException(
-                'python-for-android cannot continue due to the missing executables above')
+            raise BuildInterruptingException('python-for-android cannot continue due to the missing executables above')
 
     def __init__(self):
         self.include_dirs = []
