@@ -42,14 +42,16 @@ from .logger import logger, info, warning, debug, shprint, info_main
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
-from lagoon import cp, mkdir, rm, rmdir
+from lagoon import cp, mkdir, patch as patchexe, rm, rmdir
 from os import listdir, unlink, curdir, walk
 from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
 from pathlib import Path
 from re import match
 from shutil import rmtree
 from urllib.parse import urlparse
-import fnmatch, glob, hashlib, os, sh, shutil
+import fnmatch, glob, hashlib, logging, os, sh, shutil
+
+log = logging.getLogger(__name__)
 
 def import_recipe(module, filename):
     spec = spec_from_file_location(module, filename)
@@ -226,19 +228,9 @@ class Recipe(metaclass = RecipeMeta):
                         shprint(sh.git, 'submodule', 'update', '--recursive')
             return target
 
-    def apply_patch(self, filename, arch, build_dir=None):
-        """
-        Apply a patch from the current recipe directory into the current
-        build directory.
-
-        .. versionchanged:: 0.6.0
-            Add ability to apply patch from any dir via kwarg `build_dir`'''
-        """
-        info("Applying patch {}".format(filename))
-        build_dir = build_dir if build_dir else self.get_build_dir(arch)
-        filename = join(self.get_recipe_dir(), filename)
-        shprint(sh.patch, "-t", "-d", build_dir, "-p1",
-                "-i", filename, _tail=10)
+    def apply_patch(self, filename, arch, build_dir = None):
+        log.info("Applying patch %s", filename)
+        patchexe._t._p1.print('-d', build_dir if build_dir else self.get_build_dir(arch), '-i', self.get_recipe_dir() / filename)
 
     def copy_file(self, filename, dest):
         info("Copy {} to {}".format(filename, dest))
@@ -681,7 +673,7 @@ class IncludedFilesBehaviour:
             raise BuildInterruptingException(
                 'IncludedFilesBehaviour failed: no src_filename specified')
         rm._rf.print(self.get_build_dir(arch))
-        cp._a.print(join(self.get_recipe_dir(), self.src_filename), self.get_build_dir(arch))
+        cp._a.print(self.get_recipe_dir() / self.src_filename, self.get_build_dir(arch))
 
 class BootstrapNDKRecipe(Recipe):
     '''A recipe class for recipes built in an Android project jni dir with
