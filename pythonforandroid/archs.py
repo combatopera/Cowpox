@@ -227,11 +227,8 @@ class Arch:
                 self.ctx.python_recipe.major_minor_version_string,
             ),
         )
-
-        env['PATH'] = os.environ['PATH']
-
+        env['PATH'] = f"{self.clang_path}{os.pathsep}{os.environ['PATH']}"
         return env
-
 
 class ArchARM(Arch):
     arch = "armeabi"
