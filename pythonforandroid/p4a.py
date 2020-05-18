@@ -154,7 +154,6 @@ class ToolchainCL:
                 downstreamargs[i + 1] = realpath(expanduser(downstreamargs[i + 1]))
         env = os.environ.copy()
         with current_directory(dist.dist_dir):
-            os.environ["ANDROID_API"] = str(ctx.android_api) # FIXME: No!
             apkversion = makeapkversion(downstreamargs, dist.dist_dir)
             log.info('Selecting java build tool:')
             build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
