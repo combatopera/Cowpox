@@ -75,7 +75,7 @@ def main():
     shutil.copytree('.', config.project, symlinks = True, dirs_exist_ok = True)
     soak.print(cwd = config.workspace)
     pipify.print('-f', config.workspace / 'bdozlib.arid', cwd = config.project)
-    os.chdir(config.workspace) # FIXME: Only include main.py in artifact.
+    os.chdir(config.workspace) # FIXME LATER: Only include main.py in artifact.
     di = DI()
     di.add(config)
     di.add(Config)
