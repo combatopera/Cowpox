@@ -39,8 +39,7 @@
 # THE SOFTWARE.
 
 from .recipe import Recipe
-from .util import BuildInterruptingException, build_platform
-from distutils.spawn import find_executable
+from .util import build_platform
 from glob import glob
 from multiprocessing import cpu_count
 from os.path import join, split
@@ -207,21 +206,6 @@ class Arch:
             env.update(
                 {k: v for k, v in os.environ.items() if k.startswith('CCACHE_')}
             )
-
-        # Compiler: `CC` and `CXX` (and make sure that the compiler exists)
-        # FIXME: No!
-        os.environ['PATH'] = '{clang_path}:{path}'.format(
-            clang_path=self.clang_path, path = os.environ['PATH']
-        )
-        cc = find_executable(self.clang_exe, path = os.environ['PATH'])
-        if cc is None:
-            print('Searching path are: {!r}'.format(os.environ['PATH']))
-            raise BuildInterruptingException(
-                'Couldn\'t find executable for CC. This indicates a '
-                'problem locating the {} executable in the Android '
-                'NDK, not that you don\'t have a normal compiler '
-                'installed. Exiting.'.format(self.clang_exe))
-
         if with_flags_in_cc:
             env['CC'] = '{ccache}{exe} {cflags}'.format(
                 exe=self.clang_exe,
