@@ -682,10 +682,8 @@ class IncludedFilesBehaviour:
         if self.src_filename is None:
             raise BuildInterruptingException(
                 'IncludedFilesBehaviour failed: no src_filename specified')
-        shprint(sh.rm, '-rf', self.get_build_dir(arch))
-        shprint(sh.cp, '-a', join(self.get_recipe_dir(), self.src_filename),
-                self.get_build_dir(arch))
-
+        rm._rf.print(self.get_build_dir(arch))
+        cp._a.print(join(self.get_recipe_dir(), self.src_filename), self.get_build_dir(arch))
 
 class BootstrapNDKRecipe(Recipe):
     '''A recipe class for recipes built in an Android project jni dir with
