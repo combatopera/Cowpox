@@ -79,11 +79,7 @@ class LibffiRecipe(Recipe):
             if not Path('configure').exists():
                 shprint(sh.Command('./autogen.sh'), _env = env)
             shprint(sh.Command('autoreconf'), '-vif', _env = env)
-            shprint(sh.Command('./configure'),
-                    '--host=' + arch.command_prefix,
-                    '--prefix=' + self.get_build_dir(arch.arch),
-                    '--disable-builddir',
-                    '--enable-shared', _env = env)
+            shprint(sh.Command('./configure'), f"--host={arch.command_prefix}", f"--prefix={self.get_build_dir(arch.arch)}", '--disable-builddir', '--enable-shared', _env = env)
             make.print('-j', cpu_count(), 'libffi.la', env = env)
 
     def get_include_dirs(self, arch):
