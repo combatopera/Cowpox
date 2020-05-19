@@ -90,7 +90,7 @@ def _require_prebuilt_dist(args, ctx):
     dist = Distribution.get_distribution(
             ctx,
             args.dist_name,
-            _split_argument_list(args.requirements),
+            args.requirements,
             args.arch,
             args.ndk_api)
     ctx.distribution = dist
@@ -189,7 +189,7 @@ def main():
     commonparser.add_argument('--storage-dir', type = lambda p: Path(p).expanduser())
     commonparser.add_argument('--arch', default = 'armeabi-v7a')
     commonparser.add_argument('--dist-name')
-    commonparser.add_argument('--requirements', default = '')
+    commonparser.add_argument('--requirements', default = '', type = _split_argument_list)
     commonparser.add_argument('--bootstrap')
     commonparser.add_argument('--local-recipes')
     parser = ArgumentParser(allow_abbrev = False)
