@@ -95,12 +95,11 @@ def get_targets(sdk_dir):
     return targets
 
 
-def get_available_apis(sdk_dir):
+def _apilevels(sdk_dir):
     targets = get_targets(sdk_dir)
     apis = [s for s in targets if re.match(r'^ *API level: ', s)]
     apis = [re.findall(r'[0-9]+', s) for s in apis]
-    apis = [int(s[0]) for s in apis if s]
-    return apis
+    return [int(s[0]) for s in apis if s]
 
 class Context:
 
@@ -172,7 +171,7 @@ class Context:
         self.android_api = int(os.environ['ANDROIDAPI'])
         log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
         check_target_api(self.android_api, self.archs[0].arch)
-        apis = get_available_apis(self.sdk_dir)
+        apis = _apilevels(self.sdk_dir)
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
         if self.android_api not in apis:
             raise BuildInterruptingException("Requested API target %s is not available, install it with the SDK android tool." % self.android_api)
