@@ -168,7 +168,6 @@ class Context:
 
     def prepare_build_environment(self, user_ndk_api):
         self.ensure_dirs()
-        ok = True
         self.sdk_dir = Path(os.environ['ANDROIDSDK']).resolve()
         self.android_api = int(os.environ['ANDROIDAPI'])
         log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
@@ -199,22 +198,21 @@ class Context:
         arch = self.archs[0]
         toolchain_prefix = arch.toolchain_prefix
         self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(self.ndk_dir, self.ndk_api, arch)
-        ok = ok and ndk_platform_dir_exists
         toolchain_versions, toolchain_path_exists = get_toolchain_versions(self.ndk_dir, arch)
-        ok = ok and toolchain_path_exists
         toolchain_versions.sort()
         toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
         if toolchain_versions:
             log.info("Found the following toolchain versions: %s", toolchain_versions)
             log.info("Picking the latest gcc toolchain, here %s", toolchain_versions_gcc[-1])
             toolchain_version = toolchain_versions_gcc[-1]
+            ok = ndk_platform_dir_exists and toolchain_path_exists
         else:
             log.warning("Could not find any toolchain for %s!", toolchain_prefix)
             ok = False
-        self.toolchain_prefix = toolchain_prefix
-        self.toolchain_version = toolchain_version
         if not ok:
             raise BuildInterruptingException('python-for-android cannot continue due to the missing executables above')
+        self.toolchain_prefix = toolchain_prefix
+        self.toolchain_version = toolchain_version
 
     def __init__(self):
         self.include_dirs = []
