@@ -56,12 +56,12 @@ import glob, logging, os, re, sh
 
 log = logging.getLogger(__name__)
 
-def _createcontext(args):
+def _createcontext(args, sdkpath, apilevel, ndkpath):
     ctx = Context()
     ctx.setup_dirs(args.storage_dir)
     ctx.local_recipes = args.local_recipes
     ctx.set_archs(_split_argument_list(args.arch))
-    ctx.prepare_build_environment(args.ndk_api)
+    ctx.prepare_build_environment(args.ndk_api, sdkpath, apilevel, ndkpath)
     return ctx
 
 def _build_dist_from_args(ctx, dist, args):
@@ -181,6 +181,9 @@ def apk(args, downstreamargs, ctx, dist):
 
 def main():
     setup_color(True)
+    sdkpath = Path(os.environ['ANDROIDSDK']).resolve()
+    apilevel = int(os.environ['ANDROIDAPI'])
+    ndkpath = Path(os.environ['ANDROIDNDK']).resolve()
     commonparser = ArgumentParser(add_help = False)
     commonparser.add_argument('--ndk-api', type = int)
     commonparser.add_argument('--storage-dir', type = lambda p: Path(p).expanduser())
@@ -196,7 +199,7 @@ def main():
     apkparser.add_argument('--private')
     apkparser.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
     args, downstreamargs = parser.parse_known_args()
-    ctx = _createcontext(args)
+    ctx = _createcontext(args, sdkpath, apilevel, ndkpath)
     globals()[args.command](args, downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
 
 if __name__ == "__main__": # TODO: Invoke module directly instead.

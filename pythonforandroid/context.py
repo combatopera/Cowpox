@@ -165,22 +165,22 @@ class Context:
         ensure_dir(self.buildsdir / 'bootstrap_builds')
         ensure_dir(self.buildsdir / 'other_builds')
 
-    def prepare_build_environment(self, user_ndk_api):
+    def prepare_build_environment(self, user_ndk_api, sdkpath, apilevel, ndkpath):
         self.ensure_dirs()
-        self.sdk_dir = Path(os.environ['ANDROIDSDK']).resolve()
-        self.android_api = int(os.environ['ANDROIDAPI'])
-        log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
-        check_target_api(self.android_api, self.archs[0].arch)
-        apis = _apilevels(self.sdk_dir)
+        self.sdk_dir = sdkpath
+        self.android_api = apilevel
+        log.info("Found Android API target in $ANDROIDAPI: %s", apilevel)
+        check_target_api(apilevel, self.archs[0].arch)
+        apis = _apilevels(sdkpath)
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
-        if self.android_api not in apis:
-            raise BuildInterruptingException("Requested API target %s is not available, install it with the SDK android tool." % self.android_api)
-        log.info("Requested API target %s is available, continuing.", self.android_api)
-        self.ndk_dir = Path(os.environ['ANDROIDNDK']).resolve()
-        log.info("Found NDK dir in $ANDROIDNDK: %s", self.ndk_dir)
-        check_ndk_version(self.ndk_dir)
+        if apilevel not in apis:
+            raise BuildInterruptingException("Requested API target %s is not available, install it with the SDK android tool." % apilevel)
+        log.info("Requested API target %s is available, continuing.", apilevel)
+        self.ndk_dir = ndkpath
+        log.info("Found NDK dir in $ANDROIDNDK: %s", ndkpath)
+        check_ndk_version(ndkpath)
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
-        check_ndk_api(user_ndk_api, self.android_api)
+        check_ndk_api(user_ndk_api, apilevel)
         self.ndk_api = user_ndk_api
         virtualenv = get_virtualenv_executable()
         if virtualenv is None:
@@ -196,8 +196,8 @@ class Context:
             log.warning('Cython for python3 missing. If you are building for  a python 3 target (which is the default) then THINGS WILL BREAK.')
         arch = self.archs[0]
         toolchain_prefix = arch.toolchain_prefix
-        self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(self.ndk_dir, self.ndk_api, arch)
-        toolchain_versions, toolchain_path_exists = get_toolchain_versions(self.ndk_dir, arch)
+        self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(ndkpath, self.ndk_api, arch)
+        toolchain_versions, toolchain_path_exists = get_toolchain_versions(ndkpath, arch)
         toolchain_versions.sort()
         toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
         if toolchain_versions:
