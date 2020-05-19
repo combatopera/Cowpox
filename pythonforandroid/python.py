@@ -134,35 +134,19 @@ class GuestPythonRecipe(TargetPythonRecipe):
         self._ctx = None
         super().__init__(*args, **kwargs)
 
-    def get_recipe_env(self, arch=None, with_flags_in_cc=True):
+    def get_recipe_env(self, arch = None, with_flags_in_cc = True):
         env = os.environ.copy()
         env['HOSTARCH'] = arch.command_prefix
-
         env['CC'] = arch.get_clang_exe(with_target=True)
-
-        env['PATH'] = (
-            '{hostpython_dir}:{old_path}').format(
-                hostpython_dir=self.get_recipe(
-                    'host' + self.name, self.ctx).get_path_to_python(),
-                old_path=env['PATH'])
-
-        env['CFLAGS'] = ' '.join(
-            [
-                '-fPIC',
-                '-DANDROID',
-                '-D__ANDROID_API__={}'.format(self.ctx.ndk_api),
-            ]
-        )
-
+        env['PATH'] = f"""{self.get_recipe(f"host{self.name}", self.ctx).get_path_to_python()}{os.pathsep}{env['PATH']}"""
+        env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ctx.ndk_api}"
         env['LDFLAGS'] = env.get('LDFLAGS', '')
         if sh.which('lld') is not None:
             # Note: The -L. is to fix a bug in python 3.7.
             # https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234409
             env['LDFLAGS'] += ' -L. -fuse-ld=lld'
         else:
-            warning('lld not found, linking without it. '
-                    'Consider installing lld if linker errors occur.')
-
+            warning('lld not found, linking without it. Consider installing lld if linker errors occur.')
         return env
 
     def set_libs_flags(self, env, arch):
@@ -235,8 +219,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         sys_prefix = '/usr/local'
         sys_exec_prefix = '/usr/local'
         with current_directory(build_dir):
-            env = self.get_recipe_env(arch)
-            env = self.set_libs_flags(env, arch)
+            env = self.set_libs_flags(self.get_recipe_env(arch), arch)
             android_build = Program.text(recipe_build_dir / 'config.guess')().strip()
             if not exists('config.status'):
                 configureargs = ' '.join(self.configure_args).format(
