@@ -38,10 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import shprint
+from lagoon.program import Program
 from pythonforandroid.recipe import BootstrapNDKRecipe
 from pythonforandroid.util import current_directory
-import sh
 
 class LibSDL2Recipe(BootstrapNDKRecipe):
 
@@ -60,6 +59,6 @@ class LibSDL2Recipe(BootstrapNDKRecipe):
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
         with current_directory(self.get_jni_dir()):
-            shprint(sh.ndk_build, "V=1", _env=env)
+            Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', env = env)
 
 recipe = LibSDL2Recipe()
