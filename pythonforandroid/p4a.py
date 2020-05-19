@@ -132,85 +132,85 @@ class ToolchainCL:
         parser_apk.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
         args, downstreamargs = parser.parse_known_args()
         ctx = _createcontext(args)
-        getattr(self, args.command)(args, downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
+        globals()[args.command](args, downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
 
-    def create(self, args, downstreamargs, ctx, dist):
-        pass
+def create(args, downstreamargs, ctx, dist):
+    pass
 
-    def apk(self, args, downstreamargs, ctx, dist):
-        if args.private is not None:
-            downstreamargs += ["--private", args.private]
-        for i, arg in enumerate(downstreamargs):
-            if arg in {'--dir', '--private', '--add-jar', '--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'}:
-                downstreamargs[i + 1] = realpath(expanduser(downstreamargs[i + 1]))
-        env = os.environ.copy()
-        with current_directory(dist.dist_dir):
-            apkversion = makeapkversion(downstreamargs, dist.dist_dir)
-            log.info('Selecting java build tool:')
-            build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
-            build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
-            build_tools_version = build_tools_versions[-1]
-            log.info("Detected highest available build tools version to be %s", build_tools_version)
-            if build_tools_version >= '25.0' and Path('gradlew').exists(): # TODO: Retire gradlew.
-                build_type = 'gradle'
-                log.info('    Building with gradle, as gradle executable is present')
-            else:
-                build_type = 'ant'
-                if build_tools_version < '25.0':
-                    log.info("    Building with ant, as the highest build-tools-version is only %s", build_tools_version)
-                else:
-                    log.info('    Building with ant, as no gradle executable detected')
-            if build_type == 'gradle':
-                env['ANDROID_NDK_HOME'] = str(ctx.ndk_dir)
-                env['ANDROID_HOME'] = str(ctx.sdk_dir)
-                gradlew = sh.Command('./gradlew')
-                if Path('/usr/bin/dos2unix').exists():
-                    # .../dists/bdisttest_python3/gradlew
-                    # .../build/bootstrap_builds/sdl2-python3/gradlew
-                    # if docker on windows, gradle contains CRLF
-                    shprint(sh.Command('dos2unix'), gradlew._path.decode('utf8'), _tail=20, _critical=True, _env=env)
-                output = shprint(gradlew, dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], _tail=20, _critical=True, _env=env)
-                apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
-                apk_glob = "*-{}.apk"
-                apk_add_version = True
-            else:
-                output = shprint(sh.Command('ant'), args.build_mode, _tail=20, _critical=True, _env=env)
-                apk_dir = dist.dist_dir / "bin"
-                apk_glob = "*-*-{}.apk"
-                apk_add_version = False
-        log.info('Copying APK to current directory')
-        apk_re = re.compile(r'.*Package: (.*\.apk)$')
-        apk_file = None
-        for line in reversed(output.splitlines()):
-            m = apk_re.match(line)
-            if m:
-                apk_file = m.groups()[0]
-                break
-        if not apk_file:
-            log.info('APK filename not found in build output. Guessing...')
-            if args.build_mode == "release":
-                suffixes = ("release", "release-unsigned")
-            else:
-                suffixes = ("debug", )
-            for suffix in suffixes:
-                apks = glob.glob(join(apk_dir, apk_glob.format(suffix)))
-                if apks:
-                    if len(apks) > 1:
-                        log.info("More than one built APK found... guessing you just built %s", apks[-1])
-                    apk_file = apks[-1]
-                    break
-            else:
-                raise BuildInterruptingException('Couldn\'t find the built APK')
-        log.info("Found APK file: %s", apk_file)
-        if apk_add_version:
-            log.info('Add version number to APK')
-            APK_SUFFIX = '.apk'
-            apk_name = basename(apk_file)[:-len(APK_SUFFIX)]
-            apk_file_dest = f"{apk_name}-{apkversion}-{APK_SUFFIX}" # XXX: This looks wrong?
-            log.info("APK renamed to %s", apk_file_dest)
-            cp.print(apk_file, apk_file_dest)
+def apk(args, downstreamargs, ctx, dist):
+    if args.private is not None:
+        downstreamargs += ["--private", args.private]
+    for i, arg in enumerate(downstreamargs):
+        if arg in {'--dir', '--private', '--add-jar', '--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'}:
+            downstreamargs[i + 1] = realpath(expanduser(downstreamargs[i + 1]))
+    env = os.environ.copy()
+    with current_directory(dist.dist_dir):
+        apkversion = makeapkversion(downstreamargs, dist.dist_dir)
+        log.info('Selecting java build tool:')
+        build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
+        build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
+        build_tools_version = build_tools_versions[-1]
+        log.info("Detected highest available build tools version to be %s", build_tools_version)
+        if build_tools_version >= '25.0' and Path('gradlew').exists(): # TODO: Retire gradlew.
+            build_type = 'gradle'
+            log.info('    Building with gradle, as gradle executable is present')
         else:
-            cp.print(apk_file, './')
+            build_type = 'ant'
+            if build_tools_version < '25.0':
+                log.info("    Building with ant, as the highest build-tools-version is only %s", build_tools_version)
+            else:
+                log.info('    Building with ant, as no gradle executable detected')
+        if build_type == 'gradle':
+            env['ANDROID_NDK_HOME'] = str(ctx.ndk_dir)
+            env['ANDROID_HOME'] = str(ctx.sdk_dir)
+            gradlew = sh.Command('./gradlew')
+            if Path('/usr/bin/dos2unix').exists():
+                # .../dists/bdisttest_python3/gradlew
+                # .../build/bootstrap_builds/sdl2-python3/gradlew
+                # if docker on windows, gradle contains CRLF
+                shprint(sh.Command('dos2unix'), gradlew._path.decode('utf8'), _tail=20, _critical=True, _env=env)
+            output = shprint(gradlew, dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], _tail=20, _critical=True, _env=env)
+            apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
+            apk_glob = "*-{}.apk"
+            apk_add_version = True
+        else:
+            output = shprint(sh.Command('ant'), args.build_mode, _tail=20, _critical=True, _env=env)
+            apk_dir = dist.dist_dir / "bin"
+            apk_glob = "*-*-{}.apk"
+            apk_add_version = False
+    log.info('Copying APK to current directory')
+    apk_re = re.compile(r'.*Package: (.*\.apk)$')
+    apk_file = None
+    for line in reversed(output.splitlines()):
+        m = apk_re.match(line)
+        if m:
+            apk_file = m.groups()[0]
+            break
+    if not apk_file:
+        log.info('APK filename not found in build output. Guessing...')
+        if args.build_mode == "release":
+            suffixes = ("release", "release-unsigned")
+        else:
+            suffixes = ("debug", )
+        for suffix in suffixes:
+            apks = glob.glob(join(apk_dir, apk_glob.format(suffix)))
+            if apks:
+                if len(apks) > 1:
+                    log.info("More than one built APK found... guessing you just built %s", apks[-1])
+                apk_file = apks[-1]
+                break
+        else:
+            raise BuildInterruptingException('Couldn\'t find the built APK')
+    log.info("Found APK file: %s", apk_file)
+    if apk_add_version:
+        log.info('Add version number to APK')
+        APK_SUFFIX = '.apk'
+        apk_name = basename(apk_file)[:-len(APK_SUFFIX)]
+        apk_file_dest = f"{apk_name}-{apkversion}-{APK_SUFFIX}" # XXX: This looks wrong?
+        log.info("APK renamed to %s", apk_file_dest)
+        cp.print(apk_file, apk_file_dest)
+    else:
+        cp.print(apk_file, './')
 
 def main():
     setup_color(True)
