@@ -43,6 +43,7 @@ from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
 from lagoon import cp, mkdir, mv, patch as patchexe, rm, rmdir
+from lagoon.program import Program
 from os import listdir, unlink, curdir, walk
 from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
 from pathlib import Path
@@ -739,14 +740,7 @@ class NDKRecipe(Recipe):
         super().build_arch(arch)
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
-            shprint(
-                sh.ndk_build,
-                'V=1',
-                'APP_PLATFORM=android-' + str(self.ctx.ndk_api),
-                'APP_ABI=' + arch.arch,
-                *extra_args, _env=env
-            )
-
+            Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ctx.ndk_api}", f"APP_ABI={arch.arch}", *extra_args, env = env)
 
 class PythonRecipe(Recipe):
     site_packages_name = None
