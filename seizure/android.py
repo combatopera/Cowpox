@@ -48,6 +48,7 @@ from lagoon import tar, unzip, yes
 from lagoon.program import Program
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
+from pythonforandroid.p4a import create
 import logging, os, shutil, sys
 
 log = logging.getLogger(__name__)
@@ -199,7 +200,18 @@ class TargetAndroid:
         self._install_android_packages()
 
     def compile_platform(self):
-        self._p4a('create', '--requirements', ','.join(self.config.getlist('app', 'requirements', '')))
+        create(
+            self.dirs.android_sdk_dir,
+            self.dirs.android_ndk_dir,
+            int(self.android_api),
+            self.dist_name,
+            self.bootstrapname,
+            self.arch,
+            self.build_dir,
+            int(self.config.getdefault('app', 'android.ndk_api', self.android_minapi)),
+            self.config.workspace / 'local_recipes',
+            self.config.getlist('app', 'requirements', ''),
+        )
 
     def _get_dist_dir(self):
         expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self.arch])

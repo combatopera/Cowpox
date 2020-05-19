@@ -52,6 +52,7 @@ from distutils.version import LooseVersion
 from lagoon import cp
 from os.path import join, realpath, expanduser, basename
 from pathlib import Path
+from types import SimpleNamespace
 import glob, logging, os, re, sh
 
 log = logging.getLogger(__name__)
@@ -100,9 +101,6 @@ def _require_prebuilt_dist(args, ctx):
         log.info('No dist exists that meets your requirements, so one will be built.')
         _build_dist_from_args(ctx, dist, args)
     return dist
-
-def create(args, downstreamargs, ctx, dist):
-    pass
 
 def apk(args, downstreamargs, ctx, dist):
     if args.private is not None:
@@ -179,6 +177,19 @@ def apk(args, downstreamargs, ctx, dist):
     else:
         cp.print(apk_file, './')
 
+def create(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, ndk_api, local_recipes, requirements):
+    args = SimpleNamespace(
+        dist_name = dist_name,
+        bootstrap = bootstrap,
+        arch = arch,
+        storage_dir = storage_dir,
+        ndk_api = ndk_api,
+        local_recipes = local_recipes,
+        requirements = requirements,
+    )
+    ctx = _createcontext(args, sdkpath, apilevel, ndkpath)
+    _require_prebuilt_dist(args, ctx)
+
 def main():
     setup_color(True)
     sdkpath = Path(os.environ['ANDROIDSDK']).resolve()
@@ -194,7 +205,6 @@ def main():
     commonparser.add_argument('--requirements', default = '', type = _split_argument_list)
     parser = ArgumentParser(allow_abbrev = False)
     subparsers = parser.add_subparsers(dest = 'command')
-    subparsers.add_parser('create', parents = [commonparser])
     apkparser = subparsers.add_parser('apk', parents = [commonparser])
     apkparser.add_argument('--private')
     apkparser.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
