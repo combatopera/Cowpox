@@ -116,7 +116,6 @@ class ToolchainCL:
         parser_apk.add_argument('--private')
         parser_apk.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
         args, downstreamargs = parser.parse_known_args()
-        setup_color(True)
         ctx = _createcontext(args)
         getattr(self, args.command)(args, downstreamargs, ctx, self._require_prebuilt_dist(args, ctx))
 
@@ -214,6 +213,7 @@ class ToolchainCL:
             cp.print(apk_file, './')
 
 def main():
+    setup_color(True)
     ToolchainCL()
 
 if __name__ == "__main__": # TODO: Invoke module directly instead.
