@@ -60,7 +60,7 @@ def _createcontext(args, sdkpath, apilevel, ndkpath):
     ctx = Context()
     ctx.setup_dirs(args.storage_dir)
     ctx.local_recipes = args.local_recipes
-    ctx.set_archs(_split_argument_list(args.arch))
+    ctx.set_archs([args.arch])
     ctx.prepare_build_environment(args.ndk_api, sdkpath, apilevel, ndkpath)
     return ctx
 
