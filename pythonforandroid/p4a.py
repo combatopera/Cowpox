@@ -102,38 +102,6 @@ def _require_prebuilt_dist(args, ctx):
         _build_dist_from_args(ctx, dist, args)
     return dist
 
-class ToolchainCL:
-
-    def __init__(self):
-        generic_parser = ArgumentParser(add_help = False)
-        generic_parser.add_argument(
-            '--ndk-api', type=int, default=None,
-            help=('The Android API level to compile against. This should be your '
-                  '*minimal supported* API, not normally the same as your --android-api. '
-                  'Defaults to min(ANDROID_API, {}) if not specified.').format(RECOMMENDED_NDK_API))
-        generic_parser.add_argument('--storage-dir', type = lambda p: Path(p).expanduser())
-        generic_parser.add_argument(
-            '--arch', help='The arch to build for.',
-            default='armeabi-v7a')
-        generic_parser.add_argument('--dist-name')
-        generic_parser.add_argument(
-            '--requirements',
-            help=('Dependencies of your app, should be recipe names or '
-                  'Python modules. NOT NECESSARY if you are using '
-                  'Python 3 with --use-setup-py'),
-            default='')
-        generic_parser.add_argument('--bootstrap')
-        generic_parser.add_argument('--local-recipes')
-        parser = ArgumentParser(allow_abbrev = False)
-        subparsers = parser.add_subparsers(dest = 'command')
-        subparsers.add_parser('create', parents = [generic_parser])
-        parser_apk = subparsers.add_parser('apk', parents = [generic_parser])
-        parser_apk.add_argument('--private')
-        parser_apk.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
-        args, downstreamargs = parser.parse_known_args()
-        ctx = _createcontext(args)
-        globals()[args.command](args, downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
-
 def create(args, downstreamargs, ctx, dist):
     pass
 
@@ -214,7 +182,34 @@ def apk(args, downstreamargs, ctx, dist):
 
 def main():
     setup_color(True)
-    ToolchainCL()
+    generic_parser = ArgumentParser(add_help = False)
+    generic_parser.add_argument(
+        '--ndk-api', type=int, default=None,
+        help=('The Android API level to compile against. This should be your '
+              '*minimal supported* API, not normally the same as your --android-api. '
+              'Defaults to min(ANDROID_API, {}) if not specified.').format(RECOMMENDED_NDK_API))
+    generic_parser.add_argument('--storage-dir', type = lambda p: Path(p).expanduser())
+    generic_parser.add_argument(
+        '--arch', help='The arch to build for.',
+        default='armeabi-v7a')
+    generic_parser.add_argument('--dist-name')
+    generic_parser.add_argument(
+        '--requirements',
+        help=('Dependencies of your app, should be recipe names or '
+              'Python modules. NOT NECESSARY if you are using '
+              'Python 3 with --use-setup-py'),
+        default='')
+    generic_parser.add_argument('--bootstrap')
+    generic_parser.add_argument('--local-recipes')
+    parser = ArgumentParser(allow_abbrev = False)
+    subparsers = parser.add_subparsers(dest = 'command')
+    subparsers.add_parser('create', parents = [generic_parser])
+    parser_apk = subparsers.add_parser('apk', parents = [generic_parser])
+    parser_apk.add_argument('--private')
+    parser_apk.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
+    args, downstreamargs = parser.parse_known_args()
+    ctx = _createcontext(args)
+    globals()[args.command](args, downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
 
 if __name__ == "__main__": # TODO: Invoke module directly instead.
     main()
