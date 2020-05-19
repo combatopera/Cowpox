@@ -87,6 +87,21 @@ def _build_dist_from_args(ctx, dist, args):
 def _split_argument_list(l):
     return re.split('[ ,]+', l) if l else []
 
+def _require_prebuilt_dist(args, ctx):
+    dist = Distribution.get_distribution(
+            ctx,
+            args.dist_name,
+            _split_argument_list(args.requirements),
+            args.arch,
+            args.ndk_api)
+    ctx.distribution = dist
+    if dist.needs_build:
+        if dist.folder_exists():
+            dist.delete()
+        log.info('No dist exists that meets your requirements, so one will be built.')
+        _build_dist_from_args(ctx, dist, args)
+    return dist
+
 class ToolchainCL:
 
     def __init__(self):
@@ -117,22 +132,7 @@ class ToolchainCL:
         parser_apk.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
         args, downstreamargs = parser.parse_known_args()
         ctx = _createcontext(args)
-        getattr(self, args.command)(args, downstreamargs, ctx, self._require_prebuilt_dist(args, ctx))
-
-    def _require_prebuilt_dist(self, args, ctx):
-        dist = Distribution.get_distribution(
-                ctx,
-                args.dist_name,
-                _split_argument_list(args.requirements),
-                args.arch,
-                args.ndk_api)
-        ctx.distribution = dist
-        if dist.needs_build:
-            if dist.folder_exists():
-                dist.delete()
-            log.info('No dist exists that meets your requirements, so one will be built.')
-            _build_dist_from_args(ctx, dist, args)
-        return dist
+        getattr(self, args.command)(args, downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
 
     def create(self, args, downstreamargs, ctx, dist):
         pass
