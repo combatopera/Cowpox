@@ -223,19 +223,6 @@ class TargetAndroid:
             return old_dist_dir
         return expected_dist_dir
 
-    def _execute_build_package(self, *build_cmd):
-        def cmd():
-            presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
-            if presplash_color:
-                yield from ['--presplash-color', presplash_color]
-            for service in self.config.getlist('app', 'services', []):
-                yield from ['--service', service]
-            for lib in self.config.getlist('app', 'android.uses_library', ''):
-                yield from ['--uses-library', lib]
-            for gradle_dependency in self.config.getlist('app', 'android.gradle_dependencies', []):
-                yield from ['--depend', gradle_dependency]
-        self._p4a('apk', *build_cmd, *cmd())
-
     def _get_release_mode(self):
         return 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'
 
@@ -328,7 +315,16 @@ class TargetAndroid:
                 yield '--release'
                 if self._check_p4a_sign_env(True):
                     yield '--sign'
-        self._execute_build_package(*build_cmd, *options())
+            presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
+            if presplash_color:
+                yield from ['--presplash-color', presplash_color]
+            for service in self.config.getlist('app', 'services', []):
+                yield from ['--service', service]
+            for lib in self.config.getlist('app', 'android.uses_library', ''):
+                yield from ['--uses-library', lib]
+            for gradle_dependency in self.config.getlist('app', 'android.gradle_dependencies', []):
+                yield from ['--depend', gradle_dependency]
+        self._p4a('apk', *build_cmd, *options())
         if self.config.build_mode == 'debug':
             mode_sign = mode = 'debug'
         else:
