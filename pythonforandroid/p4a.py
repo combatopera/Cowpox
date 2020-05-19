@@ -182,8 +182,8 @@ def apk(args, downstreamargs, ctx, dist):
 def main():
     setup_color(True)
     sdkpath = Path(os.environ['ANDROIDSDK']).resolve()
-    apilevel = int(os.environ['ANDROIDAPI'])
     ndkpath = Path(os.environ['ANDROIDNDK']).resolve()
+    apilevel = int(os.environ['ANDROIDAPI'])
     commonparser = ArgumentParser(add_help = False)
     commonparser.add_argument('--dist-name')
     commonparser.add_argument('--bootstrap')
