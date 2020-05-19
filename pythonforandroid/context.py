@@ -47,7 +47,7 @@ from .util import current_directory, ensure_dir, get_virtualenv_executable, Buil
 from lagoon.program import Program
 from os.path import join, dirname, exists, split, isdir
 from pathlib import Path
-import copy, glob, logging, os, re, sh, shutil, subprocess, sys
+import copy, glob, logging, os, re, sh, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -200,9 +200,6 @@ class Context:
         toolchain_prefix = arch.toolchain_prefix
         self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(self.ndk_dir, self.ndk_api, arch)
         ok = ok and ndk_platform_dir_exists
-        py_platform = sys.platform
-        if py_platform in {'linux2', 'linux3'}:
-            py_platform = 'linux'
         toolchain_versions, toolchain_path_exists = get_toolchain_versions(self.ndk_dir, arch)
         ok = ok and toolchain_path_exists
         toolchain_versions.sort()
@@ -218,8 +215,8 @@ class Context:
         self.toolchain_version = toolchain_version
         # FIXME: No!
         os.environ['PATH'] = os.pathsep.join(str(p) for p in [
-            self.ndk_dir / 'toolchains' / f"{toolchain_prefix}-{toolchain_version}" / 'prebuilt' / f"{py_platform}-x86" / 'bin',
-            self.ndk_dir / 'toolchains' / f"{toolchain_prefix}-{toolchain_version}" / 'prebuilt' / f"{py_platform}-x86_64" / 'bin',
+            self.ndk_dir / 'toolchains' / f"{toolchain_prefix}-{toolchain_version}" / 'prebuilt' / 'linux-x86' / 'bin',
+            self.ndk_dir / 'toolchains' / f"{toolchain_prefix}-{toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin',
             self.ndk_dir,
             self.sdk_dir / 'tools',
             os.environ['PATH'],
