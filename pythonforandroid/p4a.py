@@ -46,7 +46,6 @@ from .context import Context, build_recipes
 from .distribution import Distribution
 from .graph import get_recipe_order
 from .logger import setup_color, shprint
-from .recommendations import RECOMMENDED_NDK_API
 from .util import BuildInterruptingException, current_directory
 from argparse import ArgumentParser
 from distutils.version import LooseVersion
