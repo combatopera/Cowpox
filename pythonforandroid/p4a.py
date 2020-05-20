@@ -103,11 +103,11 @@ def _require_prebuilt_dist(args, ctx):
 
 def apk(args, downstreamargs, ctx, dist):
     for i, arg in enumerate(downstreamargs):
-        if arg in {'--dir', '--private', '--add-jar', '--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'}:
+        if arg in {'--add-jar', '--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'}:
             downstreamargs[i + 1] = realpath(expanduser(downstreamargs[i + 1]))
     env = os.environ.copy()
     with current_directory(dist.dist_dir):
-        apkversion = makeapkversion(downstreamargs, dist.dist_dir, args.private)
+        apkversion = makeapkversion(downstreamargs, dist.dist_dir, args.private.expanduser().resolve())
         log.info('Selecting java build tool:')
         build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
         build_tools_versions = sorted(build_tools_versions, key = LooseVersion)

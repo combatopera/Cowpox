@@ -252,7 +252,7 @@ class TargetAndroid:
                 '--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar'),
             )
             if not config.getbooldefault('app', 'android.private_storage', True):
-                yield from ["--dir", self.dirs.app_dir]
+                yield from ["--dir", self.dirs.app_dir.expanduser().resolve()]
             for permission in config.getlist('app', 'android.permissions', []):
                 permission = permission.split('.')
                 permission[-1] = permission[-1].upper()
