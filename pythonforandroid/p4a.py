@@ -47,7 +47,6 @@ from .distribution import Distribution
 from .graph import get_recipe_order
 from .logger import setup_color, shprint
 from .util import BuildInterruptingException, current_directory
-from distutils.version import LooseVersion
 from lagoon import cp
 from pathlib import Path
 from types import SimpleNamespace
@@ -103,34 +102,13 @@ def _require_prebuilt_dist(args, ctx):
 def apk(args, downstreamargs, ctx, dist):
     with current_directory(dist.dist_dir):
         apkversion = makeapkversion(downstreamargs, dist.dist_dir, args.private.expanduser().resolve())
-        log.info('Selecting java build tool:')
-        build_tools_versions = os.listdir(ctx.sdk_dir / 'build-tools')
-        build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
-        build_tools_version = build_tools_versions[-1]
-        log.info("Detected highest available build tools version to be %s", build_tools_version)
-        if build_tools_version >= '25.0' and Path('gradlew').exists(): # TODO: Retire gradlew.
-            build_type = 'gradle'
-            log.info('    Building with gradle, as gradle executable is present')
-        else:
-            build_type = 'ant'
-            if build_tools_version < '25.0':
-                log.info("    Building with ant, as the highest build-tools-version is only %s", build_tools_version)
-            else:
-                log.info('    Building with ant, as no gradle executable detected')
         env = os.environ.copy()
-        if build_type == 'gradle':
-            env['ANDROID_NDK_HOME'] = str(ctx.ndk_dir)
-            env['ANDROID_HOME'] = str(ctx.sdk_dir)
-            gradlew = sh.Command('./gradlew')
-            output = shprint(gradlew, dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], _tail=20, _critical=True, _env=env)
-            apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
-            apk_glob = "*-{}.apk"
-            apk_add_version = True
-        else:
-            output = shprint(sh.Command('ant'), args.build_mode, _tail=20, _critical=True, _env=env)
-            apk_dir = dist.dist_dir / "bin"
-            apk_glob = "*-*-{}.apk"
-            apk_add_version = False
+        env['ANDROID_NDK_HOME'] = str(ctx.ndk_dir)
+        env['ANDROID_HOME'] = str(ctx.sdk_dir)
+        gradlew = sh.Command('./gradlew')
+        output = shprint(gradlew, dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], _tail=20, _critical=True, _env=env)
+        apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
+        apk_glob = "*-{}.apk"
     log.info('Copying APK to current directory')
     apk_re = re.compile(r'.*Package: (.*\.apk)$')
     apk_file = None
@@ -155,15 +133,12 @@ def apk(args, downstreamargs, ctx, dist):
         else:
             raise BuildInterruptingException('Couldn\'t find the built APK')
     log.info("Found APK file: %s", apk_file)
-    if apk_add_version:
-        log.info('Add version number to APK')
-        APK_SUFFIX = '.apk'
-        apk_name = Path(apk_file).name[:-len(APK_SUFFIX)]
-        apk_file_dest = f"{apk_name}-{apkversion}-{APK_SUFFIX}" # XXX: This looks wrong?
-        log.info("APK renamed to %s", apk_file_dest)
-        cp.print(apk_file, apk_file_dest)
-    else:
-        cp.print(apk_file, './')
+    log.info('Add version number to APK')
+    APK_SUFFIX = '.apk'
+    apk_name = Path(apk_file).name[:-len(APK_SUFFIX)]
+    apk_file_dest = f"{apk_name}-{apkversion}-{APK_SUFFIX}" # XXX: This looks wrong?
+    log.info("APK renamed to %s", apk_file_dest)
+    cp.print(apk_file, apk_file_dest)
 
 def create(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, ndk_api, local_recipes, requirements):
     args = SimpleNamespace(

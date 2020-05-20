@@ -43,7 +43,6 @@ from .dirs import APACHE_ANT_VERSION, Dirs
 from .jsonstore import JsonStore
 from .libs.version import parse
 from diapyr import types
-from distutils.version import LooseVersion
 from lagoon import tar, unzip, yes
 from lagoon.program import Program
 from pythonforandroid.distribution import generate_dist_folder_name
@@ -323,26 +322,8 @@ class TargetAndroid:
         else:
             mode_sign = "release"
             mode = self._get_release_mode()
-        build_tools_versions = os.listdir(self.dirs.android_sdk_dir / "build-tools")
-        build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
-        build_tools_version = build_tools_versions[-1]
-        gradle_files = ["build.gradle", "gradle", "gradlew"]
-        is_gradle_build = build_tools_version >= "25.0" and any((dist_dir / x).exists() for x in gradle_files)
-        if is_gradle_build:
-            apk = f'{dist_dir.name}-{mode}.apk'
-            apk_dir = dist_dir / "build" / "outputs" / "apk" / mode_sign
-        else:
-            # on ant, the apk use the title, and have version
-            bl = u'\'" ,'
-            apptitle = config.get('app', 'title')
-            if hasattr(apptitle, 'decode'):
-                apptitle = apptitle.decode('utf-8')
-            apktitle = ''.join([x for x in apptitle if x not in bl])
-            apk = u'{title}-{version}-{mode}.apk'.format(
-                title=apktitle,
-                version=version,
-                mode=mode)
-            apk_dir = dist_dir / "bin"
+        apk = f'{dist_dir.name}-{mode}.apk'
+        apk_dir = dist_dir / "build" / "outputs" / "apk" / mode_sign
         apk_dest = f"{self.dist_name}-{version}-{self.config['app']['commit']}-{self.arch}-{mode}.apk"
         shutil.copyfile(apk_dir / apk, self.dirs.bin_dir / apk_dest)
         log.info('Android packaging done!')
