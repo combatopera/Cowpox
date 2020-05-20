@@ -45,7 +45,7 @@ RUN apt-get update && \
     add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-    build-essential ccache cmake gettext adoptopenjdk-8-hotspot zip
+    build-essential ccache cmake gettext adoptopenjdk-8-hotspot zip gradle
 WORKDIR /root/project
 COPY requirements.txt .
 RUN pip install --upgrade -r requirements.txt

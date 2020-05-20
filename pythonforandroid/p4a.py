@@ -45,12 +45,12 @@ from .build import makeapkversion
 from .context import Context, build_recipes
 from .distribution import Distribution
 from .graph import get_recipe_order
-from .logger import setup_color, shprint
+from .logger import setup_color
 from .util import BuildInterruptingException, current_directory
-from lagoon import cp
+from lagoon import cp, gradle
 from pathlib import Path
 from types import SimpleNamespace
-import glob, logging, os, re, sh
+import glob, logging, os, re
 
 log = logging.getLogger(__name__)
 
@@ -105,8 +105,7 @@ def apk(args, downstreamargs, ctx, dist):
         env = os.environ.copy()
         env['ANDROID_NDK_HOME'] = str(ctx.ndk_dir)
         env['ANDROID_HOME'] = str(ctx.sdk_dir)
-        gradlew = sh.Command('./gradlew')
-        output = shprint(gradlew, dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], _tail=20, _critical=True, _env=env)
+        output = gradle(dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], env = env)
         apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
         apk_glob = "*-{}.apk"
     log.info('Copying APK to current directory')
