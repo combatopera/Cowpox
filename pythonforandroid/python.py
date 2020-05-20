@@ -38,14 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info, warning, shprint
+from .logger import info, warning
 from .recipe import Recipe, TargetPythonRecipe
 from .util import current_directory, ensure_dir, walk_valid_filens, BuildInterruptingException
 from lagoon import cp, make, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from os.path import dirname, exists, join, isfile
-from pathlib import Path
 from shutil import copy2
 import glob, os, sh, subprocess
 
@@ -230,10 +229,10 @@ class GuestPythonRecipe(TargetPythonRecipe):
             cp.print('pyconfig.h', join(recipe_build_dir, 'Include'))
 
     def include_root(self, arch_name):
-        return join(self.get_build_dir(arch_name), 'Include')
+        return self.get_build_dir(arch_name) / 'Include'
 
     def link_root(self, arch_name):
-        return join(self.get_build_dir(arch_name), 'android-build')
+        return self.get_build_dir(arch_name) / 'android-build'
 
     def compile_python_files(self, dir):
         '''
@@ -271,7 +270,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         # Compile to *.pyc/*.pyo the python modules
         self.compile_python_files(modules_build_dir)
         # Compile to *.pyc/*.pyo the standard python library
-        self.compile_python_files(join(self.get_build_dir(arch.arch), 'Lib'))
+        self.compile_python_files(self.get_build_dir(arch.arch) / 'Lib')
         # Compile to *.pyc/*.pyo the other python packages (site-packages)
         self.compile_python_files(self.ctx.get_python_install_dir())
 
@@ -288,7 +287,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
 
         # zip up the standard library
         stdlib_zip = join(dirn, 'stdlib.zip')
-        with current_directory(join(self.get_build_dir(arch.arch), 'Lib')):
+        with current_directory(self.get_build_dir(arch.arch) / 'Lib'):
             stdlib_filens = list(walk_valid_filens(
                 '.', self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
             info("Zip {} files into the bundle".format(len(stdlib_filens)))
@@ -306,7 +305,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
                 info(" - copy {}".format(filen))
                 ensure_dir(join(dirn, 'site-packages', dirname(filen)))
                 copy2(filen, join(dirn, 'site-packages', filen))
-        python_build_dir = Path(self.get_build_dir(arch.arch), 'android-build')
+        python_build_dir = self.get_build_dir(arch.arch) / 'android-build'
         python_lib_name = 'libpython' + self.major_minor_version_string
         if self.major_minor_version_string[0] == '3':
             python_lib_name += 'm'
@@ -377,35 +376,27 @@ class HostPythonRecipe(Recipe):
         dir_name = '-'.join([self.name] + choices)
         return self.ctx.buildsdir / 'other_builds' / dir_name / 'desktop'
 
-    def get_build_dir(self, arch=None):
-        '''
-        .. note:: Unlike other recipes, the hostpython build dir doesn't
-            depend on the target arch
-        '''
-        return join(self.get_build_container_dir(), self.name)
+    def get_build_dir(self, arch = None):
+        return self.get_build_container_dir() / self.name
 
     def get_path_to_python(self):
-        return join(self.get_build_dir(), self.build_subdir)
+        return self.get_build_dir() / self.build_subdir
 
     def build_arch(self, arch):
         recipe_build_dir = self.get_build_dir(arch.arch)
-
-        # Create a subdirectory to actually perform the build
-        build_dir = join(recipe_build_dir, self.build_subdir)
+        build_dir = recipe_build_dir / self.build_subdir
         ensure_dir(build_dir)
-
         with current_directory(recipe_build_dir):
             # Configure the build
             with current_directory(build_dir):
                 if not exists('config.status'):
-                    shprint(sh.Command(join(recipe_build_dir, 'configure')))
-
+                    Program.text(recipe_build_dir / 'configure').print()
             # Create the Setup file. This copying from Setup.dist is
             # the normal and expected procedure before Python 3.8, but
             # after this the file with default options is already named "Setup"
             setup_dist_location = join('Modules', 'Setup.dist')
             if exists(setup_dist_location):
-                cp.print(setup_dist_location, join(build_dir, 'Modules', 'Setup'))
+                cp.print(setup_dist_location, build_dir / 'Modules' / 'Setup')
             else:
                 # Check the expected file does exist
                 setup_location = join('Modules', 'Setup')
@@ -418,8 +409,8 @@ class HostPythonRecipe(Recipe):
             # the fs being case-insensitive (Mac OS X, Cygwin...) or
             # case-sensitive (linux)...so this way we will have an unique name
             # for our hostpython, regarding the used fs
-            for exe_name in ['python.exe', 'python']:
-                exe = join(self.get_path_to_python(), exe_name)
+            for exe_name in 'python.exe', 'python':
+                exe = self.get_path_to_python() / exe_name
                 if isfile(exe):
                     cp.print(exe, self.python_exe)
                     break
