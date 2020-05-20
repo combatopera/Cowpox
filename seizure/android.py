@@ -48,8 +48,8 @@ from lagoon import tar, unzip, yes
 from lagoon.program import Program
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
-from pythonforandroid.p4a import create
-import logging, os, shutil, sys
+from pythonforandroid.p4a import create, makeapk
+import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
@@ -242,7 +242,7 @@ class TargetAndroid:
         version = self.config.get_version()
         self._update_libraries_references(dist_dir)
         self._generate_whitelist(dist_dir)
-        def options():
+        def downstreamargs():
             yield from (
                 "--name", config.get('app', 'title'),
                 "--version", version,
@@ -251,9 +251,7 @@ class TargetAndroid:
                 '--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity'),
                 '--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar'),
             )
-            if config.getbooldefault('app', 'android.private_storage', True):
-                yield from ["--private", self.dirs.app_dir]
-            else:
+            if not config.getbooldefault('app', 'android.private_storage', True):
                 yield from ["--dir", self.dirs.app_dir]
             for permission in config.getlist('app', 'android.permissions', []):
                 permission = permission.split('.')
@@ -295,10 +293,8 @@ class TargetAndroid:
                 yield from ["--orientation", orientation]
                 if not config.getbooldefault('app', 'fullscreen', True):
                     yield "--window"
-            if self.config.build_mode != 'debug':
-                yield '--release'
-                if self._check_p4a_sign_env(True):
-                    yield '--sign'
+            if self.config.build_mode != 'debug' and self._check_p4a_sign_env(True):
+                yield '--sign'
             presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
             if presplash_color:
                 yield from ['--presplash-color', presplash_color]
@@ -308,18 +304,20 @@ class TargetAndroid:
                 yield from ['--uses-library', lib]
             for gradle_dependency in self.config.getlist('app', 'android.gradle_dependencies', []):
                 yield from ['--depend', gradle_dependency]
-        Program.text(sys.executable).print('-m', 'pythonforandroid.p4a', 'apk', *options(),
-                '--dist-name', self.dist_name,
-                '--bootstrap', self.bootstrapname,
-                '--arch', self.arch,
-                '--storage-dir', self.build_dir,
-                '--ndk-api', config.getdefault('app', 'android.ndk_api', self.android_minapi),
-                '--local-recipes', config.workspace / 'local_recipes',
-                env = dict(
-                    ANDROIDSDK = self.dirs.android_sdk_dir,
-                    ANDROIDNDK = self.dirs.android_ndk_dir,
-                    ANDROIDAPI = self.android_api,
-                ))
+        makeapk(
+            self.dirs.android_sdk_dir,
+            self.dirs.android_ndk_dir,
+            int(self.android_api),
+            self.dist_name,
+            self.bootstrapname,
+            self.arch,
+            self.build_dir,
+            int(self.config.getdefault('app', 'android.ndk_api', self.android_minapi)),
+            self.config.workspace / 'local_recipes',
+            self.dirs.app_dir if config.getbooldefault('app', 'android.private_storage', True) else None,
+            self.config.build_mode != 'debug',
+            list(downstreamargs()),
+        )
         if self.config.build_mode == 'debug':
             mode_sign = mode = 'debug'
         else:

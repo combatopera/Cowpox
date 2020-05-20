@@ -47,7 +47,6 @@ from .distribution import Distribution
 from .graph import get_recipe_order
 from .logger import setup_color, shprint
 from .util import BuildInterruptingException, current_directory
-from argparse import ArgumentParser
 from distutils.version import LooseVersion
 from lagoon import cp
 from os.path import join, realpath, expanduser, basename
@@ -190,27 +189,18 @@ def create(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, 
     ctx = _createcontext(args, sdkpath, apilevel, ndkpath)
     _require_prebuilt_dist(args, ctx)
 
-def main():
+def makeapk(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, ndk_api, local_recipes, private, release, downstreamargs):
     setup_color(True)
-    sdkpath = Path(os.environ['ANDROIDSDK']).resolve()
-    ndkpath = Path(os.environ['ANDROIDNDK']).resolve()
-    apilevel = int(os.environ['ANDROIDAPI'])
-    commonparser = ArgumentParser(add_help = False)
-    commonparser.add_argument('--dist-name')
-    commonparser.add_argument('--bootstrap')
-    commonparser.add_argument('--arch', default = 'armeabi-v7a')
-    commonparser.add_argument('--storage-dir', type = lambda p: Path(p).expanduser())
-    commonparser.add_argument('--ndk-api', type = int)
-    commonparser.add_argument('--local-recipes')
-    commonparser.add_argument('--requirements', default = [], type = _split_argument_list)
-    parser = ArgumentParser(allow_abbrev = False)
-    subparsers = parser.add_subparsers(dest = 'command')
-    apkparser = subparsers.add_parser('apk', parents = [commonparser])
-    apkparser.add_argument('--private')
-    apkparser.add_argument('--release', dest = 'build_mode', action = 'store_const', const = 'release', default = 'debug')
-    args, downstreamargs = parser.parse_known_args()
+    args = SimpleNamespace(
+        dist_name = dist_name,
+        bootstrap = bootstrap,
+        arch = arch,
+        storage_dir = storage_dir,
+        ndk_api = ndk_api,
+        local_recipes = local_recipes,
+        requirements = [],
+        private = private,
+        build_mode = 'release' if release else 'debug',
+    )
     ctx = _createcontext(args, sdkpath, apilevel, ndkpath)
-    globals()[args.command](args, downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
-
-if __name__ == "__main__": # TODO: Invoke module directly instead.
-    main()
+    apk(args, downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
