@@ -102,9 +102,6 @@ def _require_prebuilt_dist(args, ctx):
     return dist
 
 def apk(args, downstreamargs, ctx, dist):
-    for i, arg in enumerate(downstreamargs):
-        if arg in {'--presplash', '--icon'}:
-            downstreamargs[i + 1] = realpath(expanduser(downstreamargs[i + 1]))
     env = os.environ.copy()
     with current_directory(dist.dist_dir):
         apkversion = makeapkversion(downstreamargs, dist.dist_dir, args.private.expanduser().resolve())

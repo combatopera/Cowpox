@@ -269,10 +269,10 @@ class TargetAndroid:
                 yield from ["--add-activity", activity]
             presplash = config.getdefault('app', 'presplash.filename', '')
             if presplash:
-                yield from ["--presplash", self.config.workspace / presplash]
+                yield from ["--presplash", (self.config.workspace / presplash).expanduser().resolve()]
             icon = config.getdefault('app', 'icon.filename', '')
             if icon:
-                yield from ["--icon", self.config.workspace / icon]
+                yield from ["--icon", (self.config.workspace / icon).expanduser().resolve()]
             ouya_category = config.getdefault('app', 'android.ouya.category', '').upper()
             if ouya_category:
                 if ouya_category not in {'GAME', 'APP'}:
