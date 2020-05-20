@@ -337,7 +337,7 @@ class Recipe(metaclass = RecipeMeta):
             marker_filename = '.mark-{}'.format(filename)
             if exists(filename) and isfile(filename):
                 if not exists(marker_filename):
-                    shprint(sh.rm, filename)
+                    rm.print(filename)
                 elif expected_md5:
                     current_md5 = md5sum(filename)
                     if current_md5 != expected_md5:
@@ -353,8 +353,7 @@ class Recipe(metaclass = RecipeMeta):
             # If we got this far, we will download
             if do_download:
                 debug('Downloading {} from {}'.format(self.name, url))
-
-                shprint(sh.rm, '-f', marker_filename)
+                rm._f.print(marker_filename)
                 self.download_file(self.versioned_url, filename)
                 shprint(sh.touch, marker_filename)
 
