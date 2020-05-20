@@ -367,14 +367,13 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
                     raise e
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
-def makeapkversion(args, distdir):
+def makeapkversion(args, distdir, private):
     render = Render(distdir)
     distinfo = DistInfo(distdir)
     ndk_api = default_min_api = int(distinfo.forkey('ndk_api'))
     bootstrapname = distinfo.forkey('bootstrap')
     blacklist = Blacklist(bootstrapname)
     ap = ArgumentParser()
-    ap.add_argument('--private', required = bootstrapname != "sdl2")
     ap.add_argument('--package', dest='package',
                     help=('The name of the java package the project will be'
                           ' packaged under.'),
@@ -507,7 +506,8 @@ def makeapkversion(args, distdir):
     if args.whitelist:
         with open(args.whitelist) as f:
             blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-    if args.private is None and bootstrapname == 'sdl2' and args.launcher is None:
+    if private is None and bootstrapname == 'sdl2' and args.launcher is None:
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
+    args.private = private
     _make_package(args, bootstrapname, blacklist, distinfo, render)
     return args.version # FIXME: We pass this in!
