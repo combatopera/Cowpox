@@ -202,7 +202,7 @@ def main():
     commonparser.add_argument('--storage-dir', type = lambda p: Path(p).expanduser())
     commonparser.add_argument('--ndk-api', type = int)
     commonparser.add_argument('--local-recipes')
-    commonparser.add_argument('--requirements', default = '', type = _split_argument_list)
+    commonparser.add_argument('--requirements', default = [], type = _split_argument_list)
     parser = ArgumentParser(allow_abbrev = False)
     subparsers = parser.add_subparsers(dest = 'command')
     apkparser = subparsers.add_parser('apk', parents = [commonparser])
