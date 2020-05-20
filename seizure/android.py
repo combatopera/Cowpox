@@ -80,9 +80,6 @@ class TargetAndroid:
         self.state = state
         self.dirs = dirs
 
-    def _p4a(self, *args):
-        self.p4a.print(*args, *self.extra_p4a_args)
-
     def _install_apache_ant(self):
         ant_dir = self.dirs.apache_ant_dir
         if ant_dir.exists():
@@ -324,7 +321,7 @@ class TargetAndroid:
                 yield from ['--uses-library', lib]
             for gradle_dependency in self.config.getlist('app', 'android.gradle_dependencies', []):
                 yield from ['--depend', gradle_dependency]
-        self._p4a('apk', *build_cmd, *options())
+        self.p4a.print('apk', *build_cmd, *options(), *self.extra_p4a_args)
         if self.config.build_mode == 'debug':
             mode_sign = mode = 'debug'
         else:
