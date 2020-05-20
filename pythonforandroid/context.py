@@ -44,6 +44,7 @@ from .pythonpackage import get_package_name
 from .recipe import CythonRecipe, Recipe
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from .util import current_directory, ensure_dir, get_virtualenv_executable, BuildInterruptingException
+from lagoon import cp
 from lagoon.program import Program
 from os.path import join, dirname, exists, split, isdir
 from pathlib import Path
@@ -445,8 +446,7 @@ def biglink(ctx, arch):
             continue
         info('{} recipe has object files, copying'.format(recipe.name))
         files.append(obj_dir)
-        shprint(sh.cp, '-r', *files)
-
+        cp._r.print(*files)
     env = arch.get_env()
     env['LDFLAGS'] = env['LDFLAGS'] + ' -L{}'.format(
         join(ctx.bootstrap.build_dir, 'obj', 'local', arch.arch))
@@ -594,7 +594,6 @@ def copylibs_function(soname, objs_paths, extra_link_dirs=[], env=None):
                     raise RuntimeError(
                             'Failed to locate needed libraries!\n\t' +
                             '\n\t'.join(needed_libs))
-
     print('Copying libraries')
     for lib in sofiles:
-        shprint(sh.cp, lib, dest)
+        cp.print(lib, dest)
