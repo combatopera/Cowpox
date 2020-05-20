@@ -432,9 +432,7 @@ class Recipe(metaclass = RecipeMeta):
                     Path(directory_name).mkdir()
                     for entry in listdir(extraction_filename):
                         if entry not in ('.git',):
-                            shprint(sh.cp, '-Rv',
-                                    join(extraction_filename, entry),
-                                    directory_name)
+                            cp._Rv.print(join(extraction_filename, entry), directory_name)
                 else:
                     raise Exception(
                         'Given path is neither a file nor a directory: {}'
@@ -598,7 +596,7 @@ class Recipe(metaclass = RecipeMeta):
             warning('install_libs called with no libraries to install!')
             return
         args = libs + (libs_dir,)
-        shprint(sh.cp, *args)
+        cp.print(*args)
 
     def has_libs(self, arch, *libs):
         return all(map(lambda l: self.ctx.has_lib(arch.arch, l), libs))
