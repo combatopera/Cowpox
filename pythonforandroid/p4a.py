@@ -101,7 +101,6 @@ def _require_prebuilt_dist(args, ctx):
     return dist
 
 def apk(args, downstreamargs, ctx, dist):
-    env = os.environ.copy()
     with current_directory(dist.dist_dir):
         apkversion = makeapkversion(downstreamargs, dist.dist_dir, args.private.expanduser().resolve())
         log.info('Selecting java build tool:')
@@ -118,6 +117,7 @@ def apk(args, downstreamargs, ctx, dist):
                 log.info("    Building with ant, as the highest build-tools-version is only %s", build_tools_version)
             else:
                 log.info('    Building with ant, as no gradle executable detected')
+        env = os.environ.copy()
         if build_type == 'gradle':
             env['ANDROID_NDK_HOME'] = str(ctx.ndk_dir)
             env['ANDROID_HOME'] = str(ctx.sdk_dir)
