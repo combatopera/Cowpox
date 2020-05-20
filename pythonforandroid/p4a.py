@@ -49,7 +49,6 @@ from .logger import setup_color, shprint
 from .util import BuildInterruptingException, current_directory
 from distutils.version import LooseVersion
 from lagoon import cp
-from os.path import join, basename
 from pathlib import Path
 from types import SimpleNamespace
 import glob, logging, os, re, sh
@@ -106,7 +105,7 @@ def apk(args, downstreamargs, ctx, dist):
     with current_directory(dist.dist_dir):
         apkversion = makeapkversion(downstreamargs, dist.dist_dir, args.private.expanduser().resolve())
         log.info('Selecting java build tool:')
-        build_tools_versions = os.listdir(join(ctx.sdk_dir, 'build-tools'))
+        build_tools_versions = os.listdir(ctx.sdk_dir / 'build-tools')
         build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
         build_tools_version = build_tools_versions[-1]
         log.info("Detected highest available build tools version to be %s", build_tools_version)
@@ -152,7 +151,7 @@ def apk(args, downstreamargs, ctx, dist):
         else:
             suffixes = ("debug", )
         for suffix in suffixes:
-            apks = glob.glob(join(apk_dir, apk_glob.format(suffix)))
+            apks = glob.glob(str(apk_dir / apk_glob.format(suffix)))
             if apks:
                 if len(apks) > 1:
                     log.info("More than one built APK found... guessing you just built %s", apks[-1])
@@ -164,7 +163,7 @@ def apk(args, downstreamargs, ctx, dist):
     if apk_add_version:
         log.info('Add version number to APK')
         APK_SUFFIX = '.apk'
-        apk_name = basename(apk_file)[:-len(APK_SUFFIX)]
+        apk_name = Path(apk_file).name[:-len(APK_SUFFIX)]
         apk_file_dest = f"{apk_name}-{apkversion}-{APK_SUFFIX}" # XXX: This looks wrong?
         log.info("APK renamed to %s", apk_file_dest)
         cp.print(apk_file, apk_file_dest)
