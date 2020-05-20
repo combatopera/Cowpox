@@ -173,12 +173,11 @@ class GuestPythonRecipe(TargetPythonRecipe):
                 recipe = Recipe.get_recipe(library_name, self.ctx)
                 add_flags(recipe.get_library_includes(arch), recipe.get_library_ldflags(arch), recipe.get_library_libs_flag())
         info("Activating flags for android's zlib")
-        zlib_lib_path = join(self.ctx.ndk_platform, 'usr', 'lib')
-        zlib_includes = join(self.ctx.ndk_dir, 'sysroot', 'usr', 'include')
-        zlib_h = join(zlib_includes, 'zlib.h')
+        zlib_lib_path = self.ctx.ndk_platform / 'usr' / 'lib'
+        zlib_includes = self.ctx.ndk_dir / 'sysroot' / 'usr' / 'include'
+        zlib_h = zlib_includes / 'zlib.h'
         try:
-            with open(zlib_h) as fileh:
-                zlib_data = fileh.read()
+            zlib_data = zlib_h.read_text()
         except IOError:
             raise BuildInterruptingException(
                 "Could not determine android's zlib version, no zlib.h ({}) in"
@@ -205,7 +204,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         return 'libpython{version}.so'.format(version=py_version)
 
     def should_build(self, arch):
-        return not isfile(join(self.link_root(arch.arch), self._libpython))
+        return not (self.link_root(arch.arch) / self._libpython).is_file()
 
     def prebuild_arch(self, arch):
         super(TargetPythonRecipe, self).prebuild_arch(arch)
@@ -226,7 +225,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
                         android_host = env['HOSTARCH'], android_build = android_build, prefix = sys_prefix, exec_prefix = sys_exec_prefix).split(' ')
                 Program.text(recipe_build_dir / 'configure').print(*configureargs, env = env)
             make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env)
-            cp.print('pyconfig.h', join(recipe_build_dir, 'Include'))
+            cp.print('pyconfig.h', recipe_build_dir / 'Include')
 
     def include_root(self, arch_name):
         return self.get_build_dir(arch_name) / 'Include'
