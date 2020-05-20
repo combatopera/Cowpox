@@ -122,11 +122,6 @@ def apk(args, downstreamargs, ctx, dist):
             env['ANDROID_NDK_HOME'] = str(ctx.ndk_dir)
             env['ANDROID_HOME'] = str(ctx.sdk_dir)
             gradlew = sh.Command('./gradlew')
-            if Path('/usr/bin/dos2unix').exists():
-                # .../dists/bdisttest_python3/gradlew
-                # .../build/bootstrap_builds/sdl2-python3/gradlew
-                # if docker on windows, gradle contains CRLF
-                shprint(sh.Command('dos2unix'), gradlew._path.decode('utf8'), _tail=20, _critical=True, _env=env)
             output = shprint(gradlew, dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], _tail=20, _critical=True, _env=env)
             apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
             apk_glob = "*-{}.apk"
