@@ -247,7 +247,6 @@ class TargetAndroid:
             "--version", version,
             "--package", self._get_package(),
             "--minsdk", config.getdefault('app', 'android.minapi', self.android_minapi),
-            "--ndk-api", config.getdefault('app', 'android.minapi', self.android_minapi),
             '--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity'),
             '--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar'),
         )
