@@ -226,18 +226,7 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
         args.add_activity = []
     if not args.activity_launch_mode:
         args.activity_launch_mode = ''
-    if args.extra_source_dirs:
-        esd = []
-        for spec in args.extra_source_dirs:
-            if ':' in spec:
-                specdir, specincludes = spec.split(':')
-            else:
-                specdir = spec
-                specincludes = '**'
-            esd.append((realpath(specdir), specincludes))
-        args.extra_source_dirs = esd
-    else:
-        args.extra_source_dirs = []
+    args.extra_source_dirs = []
     service = False
     if args.private:
         service_main = join(realpath(args.private), 'service', 'main.py')
@@ -461,8 +450,6 @@ def makeapkversion(args, distdir, private):
                           'filename containing xml. The filename should be '
                           'located relative to the python-for-android '
                           'directory'))
-    ap.add_argument('--add-source', dest='extra_source_dirs', action='append',
-                    help='Include additional source dirs in Java build')
     if bootstrapname == "webview":
         ap.add_argument('--port',
                         help='The port on localhost that the WebView will access',

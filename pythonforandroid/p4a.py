@@ -103,7 +103,7 @@ def _require_prebuilt_dist(args, ctx):
 
 def apk(args, downstreamargs, ctx, dist):
     for i, arg in enumerate(downstreamargs):
-        if arg in {'--add-source', '--whitelist', '--blacklist', '--presplash', '--icon'}:
+        if arg in {'--whitelist', '--blacklist', '--presplash', '--icon'}:
             downstreamargs[i + 1] = realpath(expanduser(downstreamargs[i + 1]))
     env = os.environ.copy()
     with current_directory(dist.dist_dir):
