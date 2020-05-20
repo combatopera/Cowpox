@@ -359,13 +359,9 @@ def build_recipes(build_order, python_modules, ctx):
         for recipe in recipes:
             info_main('Postbuilding {} for {}'.format(recipe.name, arch.arch))
             recipe.postbuild_arch(arch)
-
     info_main('# Installing pure Python modules')
-    _run_pymodules_install(ctx, python_modules)
-
-def _run_pymodules_install(ctx, modules):
     info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
-    modules = list(filter(ctx.not_has_package, modules))
+    modules = list(filter(ctx.not_has_package, python_modules))
     if not modules:
         info('No Python modules and no setup.py to process, skipping')
         return
