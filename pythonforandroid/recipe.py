@@ -50,7 +50,7 @@ from pathlib import Path
 from re import match
 from shutil import rmtree
 from urllib.parse import urlparse
-import fnmatch, glob, hashlib, logging, os, sh, shutil
+import fnmatch, glob, hashlib, logging, os, sh, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -978,33 +978,27 @@ class CythonRecipe(PythonRecipe):
 
     def build_cython_components(self, arch):
         info('Cythonizing anything necessary in {}'.format(self.name))
-
         env = self.get_recipe_env(arch)
-
         with current_directory(self.get_build_dir(arch.arch)):
-            hostpython = sh.Command(self.ctx.hostpython)
-            shprint(hostpython, '-c', 'import sys; print(sys.path)', _env=env)
+            hostpython = Program.text(self.ctx.hostpython)
+            hostpython._c.print('import sys; print(sys.path)', env = env)
             debug('cwd is {}'.format(realpath(curdir)))
-            info('Trying first build of {} to get cython files: this is '
-                 'expected to fail'.format(self.name))
-
+            info('Trying first build of {} to get cython files: this is expected to fail'.format(self.name))
             manually_cythonise = False
+            setup = hostpython.partial('setup.py', 'build_ext', '-v', *self.setup_extra_args, env = env)
             try:
-                shprint(hostpython, 'setup.py', 'build_ext', '-v', _env=env,
-                        *self.setup_extra_args)
-            except sh.ErrorReturnCode_1:
+                setup.print()
+            except subprocess.CalledProcessError as e:
+                if 1 != e.returncode:
+                    raise
                 print()
                 info('{} first build failed (as expected)'.format(self.name))
                 manually_cythonise = True
-
             if manually_cythonise:
                 self.cythonize_build(env=env)
-                shprint(hostpython, 'setup.py', 'build_ext', '-v', _env=env,
-                        _tail=20, _critical=True, *self.setup_extra_args)
+                setup.print()
             else:
-                info('First build appeared to complete correctly, skipping manual'
-                     'cythonising.')
-
+                info('First build appeared to complete correctly, skipping manualcythonising.')
             self.strip_object_files(arch, env)
 
     def strip_object_files(self, arch, env, build_dir=None):
