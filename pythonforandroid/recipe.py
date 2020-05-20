@@ -1113,8 +1113,7 @@ class TargetPythonRecipe(Recipe):
             parts = file_basename.split('.')
             if len(parts) <= 2:
                 continue
-            shprint(sh.mv, filen, join(file_dirname, parts[0] + '.so'))
-
+            mv.print(filen, join(file_dirname, parts[0] + '.so'))
 
 def md5sum(filen):
     '''Calculate the md5sum of a file.
