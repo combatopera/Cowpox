@@ -55,16 +55,11 @@ log = logging.getLogger(__name__)
 def get_ndk_platform_dir(ndk_dir, ndk_api, arch):
     ndk_platform_dir_exists = True
     platform_dir = arch.platform_dir
-    ndk_platform = join(
-        ndk_dir,
-        'platforms',
-        'android-{}'.format(ndk_api),
-        platform_dir)
-    if not exists(ndk_platform):
+    ndk_platform = ndk_dir / 'platforms' / f"android-{ndk_api}" / platform_dir
+    if not ndk_platform.exists():
         warning("ndk_platform doesn't exist: {}".format(ndk_platform))
         ndk_platform_dir_exists = False
     return ndk_platform, ndk_platform_dir_exists
-
 
 def get_toolchain_versions(ndk_dir, arch):
     toolchain_versions = []
