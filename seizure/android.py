@@ -242,15 +242,15 @@ class TargetAndroid:
         version = self.config.get_version()
         self._update_libraries_references(dist_dir)
         self._generate_whitelist(dist_dir)
-        build_cmd = (
-            "--name", config.get('app', 'title'),
-            "--version", version,
-            "--package", self._get_package(),
-            "--minsdk", config.getdefault('app', 'android.minapi', self.android_minapi),
-            '--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity'),
-            '--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar'),
-        )
         def options():
+            yield from (
+                "--name", config.get('app', 'title'),
+                "--version", version,
+                "--package", self._get_package(),
+                "--minsdk", config.getdefault('app', 'android.minapi', self.android_minapi),
+                '--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity'),
+                '--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar'),
+            )
             if config.getbooldefault('app', 'android.private_storage', True):
                 yield from ["--private", self.dirs.app_dir]
             else:
@@ -308,7 +308,7 @@ class TargetAndroid:
                 yield from ['--uses-library', lib]
             for gradle_dependency in self.config.getlist('app', 'android.gradle_dependencies', []):
                 yield from ['--depend', gradle_dependency]
-        Program.text(sys.executable).print('-m', 'pythonforandroid.p4a', 'apk', *build_cmd, *options(),
+        Program.text(sys.executable).print('-m', 'pythonforandroid.p4a', 'apk', *options(),
                 '--dist-name', self.dist_name,
                 '--bootstrap', self.bootstrapname,
                 '--arch', self.arch,
