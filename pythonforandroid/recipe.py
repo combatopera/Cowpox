@@ -42,7 +42,7 @@ from .logger import logger, info, warning, debug, shprint, info_main
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
-from lagoon import cp, mkdir, mv, patch as patchexe, rm, rmdir
+from lagoon import cp, git, mkdir, mv, patch as patchexe, rm, rmdir
 from lagoon.program import Program
 from os import listdir, unlink, curdir, walk
 from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
@@ -213,20 +213,20 @@ class Recipe(metaclass = RecipeMeta):
         elif parsed_url.scheme in {'git', 'git+file', 'git+ssh', 'git+http', 'git+https'}:
             if isdir(target):
                 with current_directory(target):
-                    shprint(sh.git, 'fetch', '--tags')
+                    git.fetch.__tags.print()
                     if self.version:
-                        shprint(sh.git, 'checkout', self.version)
-                    shprint(sh.git, 'pull')
-                    shprint(sh.git, 'pull', '--recurse-submodules')
-                    shprint(sh.git, 'submodule', 'update', '--recursive')
+                        git.checkout.print(self.version)
+                    git.pull.print()
+                    git.pull.__recurse_submodules.print()
+                    git.submodule.update.__recursive.print()
             else:
                 if url.startswith('git+'):
                     url = url[4:]
-                shprint(sh.git, 'clone', '--recursive', url, target)
+                git.clone.__recursive.print(url, target)
                 if self.version:
                     with current_directory(target):
-                        shprint(sh.git, 'checkout', self.version)
-                        shprint(sh.git, 'submodule', 'update', '--recursive')
+                        git.checkout.print(self.version)
+                        git.submodule.update.__recursive.print()
             return target
 
     def apply_patch(self, filename, arch, build_dir = None):
