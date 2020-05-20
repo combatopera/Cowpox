@@ -49,7 +49,7 @@ from .logger import setup_color, shprint
 from .util import BuildInterruptingException, current_directory
 from distutils.version import LooseVersion
 from lagoon import cp
-from os.path import join, realpath, expanduser, basename
+from os.path import join, basename
 from pathlib import Path
 from types import SimpleNamespace
 import glob, logging, os, re, sh

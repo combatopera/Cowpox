@@ -42,7 +42,7 @@ from argparse import ArgumentParser
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from os import listdir, makedirs, remove
-from os.path import dirname, join, isfile, realpath, relpath, split, exists, basename
+from os.path import dirname, join, isfile, realpath, relpath, split, exists
 from pathlib import Path
 from zipfile import ZipFile
 import jinja2, json, logging, os, shutil, subprocess, tarfile, tempfile, time
