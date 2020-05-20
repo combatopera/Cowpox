@@ -250,30 +250,10 @@ class GuestPythonRecipe(TargetPythonRecipe):
         subprocess.call(args)
 
     def create_python_bundle(self, dirn, arch):
-        """
-        Create a packaged python bundle in the target directory, by
-        copying all the modules and standard library to the right
-        place.
-        """
-        # Todo: find a better way to find the build libs folder
-        modules_build_dir = join(
-            self.get_build_dir(arch.arch),
-            'android-build',
-            'build',
-            'lib.linux{}-{}-{}'.format(
-                '2' if self.version[0] == '2' else '',
-                arch.command_prefix.split('-')[0],
-                self.major_minor_version_string
-            ))
-
-        # Compile to *.pyc/*.pyo the python modules
+        modules_build_dir = self.get_build_dir(arch.arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.major_minor_version_string}"
         self.compile_python_files(modules_build_dir)
-        # Compile to *.pyc/*.pyo the standard python library
         self.compile_python_files(self.get_build_dir(arch.arch) / 'Lib')
-        # Compile to *.pyc/*.pyo the other python packages (site-packages)
         self.compile_python_files(self.ctx.get_python_install_dir())
-
-        # Bundle compiled python modules to a folder
         modules_dir = join(dirn, 'modules')
         c_ext = self.compiled_extension
         ensure_dir(modules_dir)
