@@ -192,7 +192,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
                 'required by python build,'
             )
         env['ZLIB_VERSION'] = line.replace('#define ZLIB_VERSION ', '')
-        add_flags(' -I' + zlib_includes, ' -L' + zlib_lib_path, ' -lz')
+        add_flags(f" -I{zlib_includes}", f" -L{zlib_lib_path}", ' -lz')
         return env
 
     @property
