@@ -369,21 +369,12 @@ def build_recipes(build_order, python_modules, ctx):
     info('If this fails, it may mean that the module has compiled components and needs a recipe.')
     venv = sh.Command(ctx.virtualenv)
     with current_directory(ctx.buildsdir):
-        shprint(venv,
-                '--python=python{}'.format(
-                    ctx.python_recipe.major_minor_version_string.
-                    partition(".")[0]
-                    ),
-                'venv'
-               )
-
-        # Prepare base environment and upgrade pip:
+        shprint(venv, f"--python=python{ctx.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv')
         base_env = os.environ.copy()
         base_env["PYTHONPATH"] = ctx.get_site_packages_dir()
         info('Upgrade pip to latest version')
         pip = Program.text(Path('venv', 'bin', 'pip'))
         pip.install._U.print('pip', env = base_env)
-        # Install Cython in case modules need it to build:
         info('Install Cython in case one of the modules needs it to build')
         pip.install.print('Cython', env = base_env)
         # Get environment variables for build (with CC/compiler set):
