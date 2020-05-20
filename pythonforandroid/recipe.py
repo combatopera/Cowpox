@@ -42,7 +42,7 @@ from .logger import logger, info, warning, debug, shprint, info_main
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
-from lagoon import cp, git, mkdir, mv, patch as patchexe, rm, rmdir
+from lagoon import cp, git, mkdir, mv, patch as patchexe, rm, rmdir, touch
 from lagoon.program import Program
 from os import listdir, unlink, curdir, walk
 from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
@@ -355,8 +355,7 @@ class Recipe(metaclass = RecipeMeta):
                 debug('Downloading {} from {}'.format(self.name, url))
                 rm._f.print(marker_filename)
                 self.download_file(self.versioned_url, filename)
-                shprint(sh.touch, marker_filename)
-
+                touch.print(marker_filename)
                 if exists(filename) and isfile(filename) and expected_md5:
                     current_md5 = md5sum(filename)
                     if expected_md5 is not None:
@@ -499,8 +498,7 @@ class Recipe(metaclass = RecipeMeta):
                 self.apply_patch(
                         patch.format(version=self.version, arch=arch.arch),
                         arch.arch, build_dir=build_dir)
-
-            shprint(sh.touch, join(build_dir, '.patched'))
+            touch.print(join(build_dir, '.patched'))
 
     def should_build(self, arch):
         '''Should perform any necessary test and return True only if it needs
