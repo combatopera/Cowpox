@@ -41,7 +41,7 @@
 from .logger import info, warning, shprint
 from .recipe import Recipe, TargetPythonRecipe
 from .util import current_directory, ensure_dir, walk_valid_filens, BuildInterruptingException
-from lagoon import cp, make
+from lagoon import cp, make, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from os.path import dirname, exists, join, isfile
@@ -292,8 +292,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
             stdlib_filens = list(walk_valid_filens(
                 '.', self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
             info("Zip {} files into the bundle".format(len(stdlib_filens)))
-            shprint(sh.zip, stdlib_zip, *stdlib_filens)
-
+            zip.print(stdlib_zip, *stdlib_filens)
         # copy the site-packages into place
         ensure_dir(join(dirn, 'site-packages'))
         ensure_dir(self.ctx.get_python_install_dir())
@@ -413,9 +412,7 @@ class HostPythonRecipe(Recipe):
                 if not exists(setup_location):
                     raise BuildInterruptingException(
                         "Could not find Setup.dist or Setup in Python build")
-
-            shprint(sh.make, '-j', str(cpu_count()), '-C', build_dir)
-
+            make.print('-j', cpu_count(), '-C', build_dir)
             # make a copy of the python executable giving it the name we want,
             # because we got different python's executable names depending on
             # the fs being case-insensitive (Mac OS X, Cygwin...) or
