@@ -210,13 +210,6 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
     shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
     if bootstrapname != "service_only":
         shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
-    jars = []
-    if args.add_jar:
-        for jarname in args.add_jar:
-            if not exists(jarname):
-                raise Exception("Requested jar does not exist: %s" % jarname)
-            shutil.copy(jarname, 'src/main/libs')
-            jars.append(basename(jarname))
     versioned_name = args.name.replace(' ', '').replace('\'', '') + '-' + args.version
     def numver():
         version_code = 0
@@ -325,7 +318,7 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
         'build.gradle',
         args = args,
         aars = [],
-        jars = jars,
+        jars = [],
         android_api = android_api,
         build_tools_version = build_tools_version,
     )
@@ -455,10 +448,6 @@ def makeapkversion(args, distdir, private):
                     default = distdir / 'whitelist.txt',
                     help=('Use a whitelist file to prevent blacklisting of '
                           'file in the final APK'))
-    ap.add_argument('--add-jar', dest='add_jar', action='append',
-                    help=('Add a Java .jar to the libs, so you can access its '
-                          'classes with pyjnius. You can specify this '
-                          'argument more than once to include multiple jars'))
     ap.add_argument('--depend', dest='depends', action='append',
                     help=('Add a external dependency '
                           '(eg: com.android.support:appcompat-v7:19.0.1)'))
