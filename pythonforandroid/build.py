@@ -429,14 +429,6 @@ def makeapkversion(args, distdir, private):
     ap.add_argument('--wakelock', dest='wakelock', action='store_true',
                     help=('Indicate if the application needs the device '
                           'to stay on'))
-    ap.add_argument('--blacklist', dest='blacklist',
-                    default = distdir / 'blacklist.txt',
-                    help=('Use a blacklist file to match unwanted file in '
-                          'the final APK'))
-    ap.add_argument('--whitelist', dest='whitelist',
-                    default = distdir / 'whitelist.txt',
-                    help=('Use a whitelist file to prevent blacklisting of '
-                          'file in the final APK'))
     ap.add_argument('--depend', dest='depends', action='append',
                     help=('Add a external dependency '
                           '(eg: com.android.support:appcompat-v7:19.0.1)'))
@@ -476,12 +468,10 @@ def makeapkversion(args, distdir, private):
         raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
     if args.permissions and isinstance(args.permissions[0], list):
         args.permissions = [p for perm in args.permissions for p in perm]
-    if args.blacklist:
-        with open(args.blacklist) as f:
-            blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-    if args.whitelist:
-        with open(args.whitelist) as f:
-            blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
+    with (distdir / 'blacklist.txt').open() as f:
+        blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
+    with (distdir / 'whitelist.txt').open() as f:
+        blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
     if private is None and bootstrapname == 'sdl2' and args.launcher is None:
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
     args.private = private
