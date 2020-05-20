@@ -42,7 +42,7 @@ from .logger import logger, info, warning, debug, shprint, info_main
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
-from lagoon import cp, git, mkdir, mv, patch as patchexe, rm, rmdir, touch
+from lagoon import cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, touch
 from lagoon.program import Program
 from os import listdir, unlink, curdir, walk
 from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
@@ -1012,12 +1012,9 @@ class CythonRecipe(PythonRecipe):
             build_dir = self.get_build_dir(arch.arch)
         with current_directory(build_dir):
             info('Stripping object files')
-            shprint(sh.find, '.', '-iname', '*.so', '-exec',
-                    '/usr/bin/echo', '{}', ';', _env=env)
-            shprint(sh.find, '.', '-iname', '*.so', '-exec',
-                    env['STRIP'].split(' ')[0], '--strip-unneeded',
-                    # '/usr/bin/strip', '--strip-unneeded',
-                    '{}', ';', _env=env)
+            e = find.partial('.', '-iname', '*.so', '-exec', env = env)
+            e.print('/usr/bin/echo', '{}', ';')
+            e.print(env['STRIP'].split(' ')[0], '--strip-unneeded', '{}', ';')
 
     def cythonize_file(self, env, build_dir, filename):
         short_filename = filename
