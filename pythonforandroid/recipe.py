@@ -827,19 +827,17 @@ class PythonRecipe(Recipe):
             )
             if python_name == 'python3':
                 env['LDFLAGS'] += 'm'
-
             hppath = []
-            hppath.append(join(dirname(self.hostpython_location), 'Lib'))
-            hppath.append(join(hppath[0], 'site-packages'))
-            builddir = join(dirname(self.hostpython_location), 'build')
-            if exists(builddir):
-                hppath += [join(builddir, d) for d in listdir(builddir)
-                           if isdir(join(builddir, d))]
-            if len(hppath) > 0:
+            hppath.append(self.hostpython_location.parent / 'Lib')
+            hppath.append(hppath[0] / 'site-packages')
+            builddir = self.hostpython_location.parent / 'build'
+            if builddir.exists():
+                hppath += [builddir / d for d in listdir(builddir) if (builddir / d).is_dir()]
+            if hppath:
                 if 'PYTHONPATH' in env:
-                    env['PYTHONPATH'] = ':'.join(hppath + [env['PYTHONPATH']])
+                    env['PYTHONPATH'] = ':'.join(map(str, hppath + [env['PYTHONPATH']]))
                 else:
-                    env['PYTHONPATH'] = ':'.join(hppath)
+                    env['PYTHONPATH'] = ':'.join(map(str, hppath))
         return env
 
     def should_build(self, arch):
