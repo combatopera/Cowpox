@@ -412,8 +412,7 @@ class Recipe(metaclass = RecipeMeta):
                         root_directory = fileh.filelist[0].filename.split('/')[0]
                         if root_directory != basename(directory_name):
                             mv.print(root_directory, directory_name)
-                    elif extraction_filename.endswith(
-                            ('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
+                    elif extraction_filename.name.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
                         sh.tar('xf', extraction_filename)
                         root_directory = sh.tar('tf', extraction_filename).stdout.decode(
                                 'utf-8').split('\n')[0].split('/')[0]
