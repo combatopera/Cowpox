@@ -44,7 +44,7 @@ from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
 from lagoon import cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, touch
 from lagoon.program import Program
-from os import listdir, curdir, walk
+from os import listdir, walk
 from os.path import exists, join, realpath, split
 from pathlib import Path
 from shutil import rmtree
@@ -937,7 +937,7 @@ class CythonRecipe(PythonRecipe):
         with current_directory(self.get_build_dir(arch.arch)):
             hostpython = Program.text(self.ctx.hostpython)
             hostpython._c.print('import sys; print(sys.path)', env = env)
-            debug('cwd is {}'.format(realpath(curdir)))
+            log.debug("cwd is %s", os.getcwd())
             info('Trying first build of {} to get cython files: this is expected to fail'.format(self.name))
             manually_cythonise = False
             setup = hostpython.partial('setup.py', 'build_ext', '-v', *self.setup_extra_args, env = env)
