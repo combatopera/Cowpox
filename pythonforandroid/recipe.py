@@ -688,10 +688,10 @@ class BootstrapNDKRecipe(Recipe):
         if self.dir_name is None:
             raise ValueError('{} recipe doesn\'t define a dir_name, but '
                              'this is necessary'.format(self.name))
-        return join(self.get_build_container_dir(arch), self.dir_name)
+        return self.get_build_container_dir(arch) / self.dir_name
 
     def get_jni_dir(self):
-        return join(self.ctx.bootstrap.build_dir, 'jni')
+        return self.ctx.bootstrap.build_dir / 'jni'
 
     def get_recipe_env(self, arch=None, with_flags_in_cc=True, with_python=False):
         env = super().get_recipe_env(arch, with_flags_in_cc)
