@@ -896,11 +896,10 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         info('Building compiled components in {}'.format(self.name))
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
-            hostpython = sh.Command(self.hostpython_location)
+            hostpython = Program.text(self.hostpython_location)
             if self.install_in_hostpython:
-                shprint(hostpython, 'setup.py', 'clean', '--all', _env=env)
-            shprint(hostpython, 'setup.py', self.build_cmd, '-v',
-                    _env=env, *self.setup_extra_args)
+                hostpython.print('setup.py', 'clean', '--all', env = env)
+            hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args, env = env)
             build_dir = glob.glob('build/lib.*')[0]
             find.print(build_dir, '-name', '"*.o"', '-exec', env['STRIP'], '{}', ';', env = env)
 
