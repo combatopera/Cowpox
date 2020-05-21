@@ -376,7 +376,7 @@ class Recipe(metaclass = RecipeMeta):
         if user_dir is not None:
             info('P4A_{}_DIR exists, symlinking instead'.format(
                 self.name.lower()))
-            if exists(self.get_build_dir(arch)):
+            if self.get_build_dir(arch).exists():
                 return
             rm._rf.print(build_dir)
             mkdir._p.print(build_dir)
@@ -396,8 +396,7 @@ class Recipe(metaclass = RecipeMeta):
 
         with current_directory(build_dir):
             directory_name = self.get_build_dir(arch)
-
-            if not exists(directory_name) or not isdir(directory_name):
+            if not directory_name.exists() or not directory_name.is_dir():
                 extraction_filename = join(
                     self.ctx.packages_path, self.name, filename)
                 if isfile(extraction_filename):
@@ -473,7 +472,7 @@ class Recipe(metaclass = RecipeMeta):
 
     def is_patched(self, arch):
         build_dir = self.get_build_dir(arch.arch)
-        return exists(join(build_dir, '.patched'))
+        return (build_dir / '.patched').exists()
 
     def apply_patches(self, arch, build_dir=None):
         '''Apply any patches for the Recipe.
@@ -611,9 +610,9 @@ class Recipe(metaclass = RecipeMeta):
             return recipe_libs
         for lib, rel_path in self.built_libraries.items():
             if not in_context:
-                abs_path = join(self.get_build_dir(arch_name), rel_path, lib)
+                abs_path = self.get_build_dir(arch_name) / rel_path / lib
                 if rel_path in {".", "", None}:
-                    abs_path = join(self.get_build_dir(arch_name), lib)
+                    abs_path = self.get_build_dir(arch_name) / lib
             else:
                 abs_path = join(self.ctx.get_libs_dir(arch_name), lib)
             recipe_libs.add(abs_path)
@@ -710,7 +709,6 @@ class BootstrapNDKRecipe(Recipe):
             env['EXTRA_LDLIBS'] += 'm'
         return env
 
-
 class NDKRecipe(Recipe):
     '''A recipe class for any NDK project not included in the bootstrap.'''
 
@@ -718,18 +716,16 @@ class NDKRecipe(Recipe):
 
     def should_build(self, arch):
         lib_dir = self.get_lib_dir(arch)
-
         for lib in self.generated_libraries:
             if not exists(join(lib_dir, lib)):
                 return True
-
         return False
 
     def get_lib_dir(self, arch):
-        return join(self.get_build_dir(arch.arch), 'obj', 'local', arch.arch)
+        return self.get_build_dir(arch.arch) / 'obj' / 'local' / arch.arch
 
     def get_jni_dir(self, arch):
-        return join(self.get_build_dir(arch.arch), 'jni')
+        return self.get_build_dir(arch.arch) / 'jni'
 
     def build_arch(self, arch, *extra_args):
         super().build_arch(arch)
