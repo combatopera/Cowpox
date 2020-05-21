@@ -43,8 +43,8 @@ from .logger import info, warning, info_notify, info_main
 from .pythonpackage import get_package_name
 from .recipe import CythonRecipe, Recipe
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
-from .util import current_directory, ensure_dir, get_virtualenv_executable, BuildInterruptingException
-from lagoon import cp
+from .util import current_directory, ensure_dir, BuildInterruptingException
+from lagoon import cp, virtualenv
 from lagoon.program import Program
 from os.path import join, dirname, exists, split, isdir
 from pathlib import Path
@@ -178,11 +178,6 @@ class Context:
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
         check_ndk_api(user_ndk_api, apilevel)
         self.ndk_api = user_ndk_api
-        virtualenv = get_virtualenv_executable()
-        if virtualenv is None:
-            raise IOError('Couldn\'t find a virtualenv executable, you must install this to use p4a.')
-        self.virtualenv = virtualenv
-        log.info("Found virtualenv at %s", virtualenv)
         self.ccache = sh.which("ccache")
         if not self.ccache:
             log.info('ccache is missing, the build will not be optimized in the future.')
@@ -362,9 +357,8 @@ def build_recipes(build_order, python_modules, ctx):
         return
     info('The requirements ({}) don\'t have recipes, attempting to install them with pip'.format(', '.join(modules)))
     info('If this fails, it may mean that the module has compiled components and needs a recipe.')
-    venv = Program.text(ctx.virtualenv)
     with current_directory(ctx.buildsdir):
-        venv.print(f"--python=python{ctx.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv')
+        virtualenv.print(f"--python=python{ctx.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv')
         base_env = os.environ.copy()
         base_env["PYTHONPATH"] = ctx.get_site_packages_dir()
         info('Upgrade pip to latest version')

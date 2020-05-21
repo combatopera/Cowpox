@@ -45,7 +45,7 @@ from os.path import exists, join
 from pathlib import Path
 from tempfile import mkdtemp
 from urllib.request import FancyURLopener
-import contextlib, logging, os, sh, shutil
+import contextlib, logging, os, shutil
 
 log = logging.getLogger(__name__)
 
@@ -81,18 +81,6 @@ def temp_directory():
 def ensure_dir(filename):
     if not exists(filename):
         makedirs(filename)
-
-
-def get_virtualenv_executable():
-    virtualenv = None
-    if virtualenv is None:
-        virtualenv = sh.which('virtualenv2')
-    if virtualenv is None:
-        virtualenv = sh.which('virtualenv-2.7')
-    if virtualenv is None:
-        virtualenv = sh.which('virtualenv')
-    return virtualenv
-
 
 def walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
     """Recursively walks all the files and directories in ``dirn``,
