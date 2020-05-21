@@ -45,7 +45,7 @@ from importlib.util import module_from_spec, spec_from_file_location
 from lagoon import cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, touch
 from lagoon.program import Program
 from os import listdir, unlink, curdir, walk
-from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
+from os.path import basename, dirname, exists, isdir, join, realpath, split
 from pathlib import Path
 from re import match
 from shutil import rmtree
@@ -619,7 +619,7 @@ class Recipe(metaclass = RecipeMeta):
     @classmethod
     def _recipe_dirs(cls, ctx):
         return [
-            realpath(ctx.local_recipes),
+            ctx.local_recipes.resolve(),
             ctx.storage_dir / 'recipes',
             ctx.root_dir / 'recipes',
         ]
@@ -698,7 +698,6 @@ class BootstrapNDKRecipe(Recipe):
         env = super().get_recipe_env(arch, with_flags_in_cc)
         if not with_python:
             return env
-
         env['PYTHON_INCLUDE_ROOT'] = self.ctx.python_recipe.include_root(arch.arch)
         env['PYTHON_LINK_ROOT'] = self.ctx.python_recipe.link_root(arch.arch)
         env['EXTRA_LDLIBS'] = ' -lpython{}'.format(
@@ -771,29 +770,21 @@ class PythonRecipe(Recipe):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not any(
-            [
-                d
-                for d in {'python2', 'python3', ('python2', 'python3')}
-                if d in self.depends
-            ]
-        ):
+        if not any(d for d in {'python2', 'python3', ('python2', 'python3')} if d in self.depends):
             # We ensure here that the recipe depends on python even it overrode
             # `depends`. We only do this if it doesn't already depend on any
             # python, since some recipes intentionally don't depend on/work
             # with all python variants
             depends = self.depends
             depends.append(('python2', 'python3'))
-            depends = list(set(depends))
-            self.depends = depends
+            self.depends = list(set(depends))
 
-    def clean_build(self, arch=None):
+    def clean_build(self, arch = None):
         super().clean_build(arch = arch)
         name = self.folder_name
         python_install_dirs = glob.glob(join(self.ctx.python_installs_dir, '*'))
         for python_install in python_install_dirs:
-            site_packages_dir = glob.glob(join(python_install, 'lib', 'python*',
-                                               'site-packages'))
+            site_packages_dir = glob.glob(join(python_install, 'lib', 'python*', 'site-packages'))
             if site_packages_dir:
                 build_dir = join(site_packages_dir[0], name)
                 if exists(build_dir):
@@ -802,19 +793,15 @@ class PythonRecipe(Recipe):
 
     @property
     def real_hostpython_location(self):
-        host_name = 'host{}'.format(self.ctx.python_recipe.name)
-        if host_name in ['hostpython2', 'hostpython3']:
-            python_recipe = Recipe.get_recipe(host_name, self.ctx)
-            return python_recipe.python_exe
+        host_name = f"host{self.ctx.python_recipe.name}"
+        if host_name in {'hostpython2', 'hostpython3'}:
+            return Recipe.get_recipe(host_name, self.ctx).python_exe
         else:
-            python_recipe = self.ctx.python_recipe
-            return 'python{}'.format(python_recipe.version)
+            return f"python{self.ctx.python_recipe.version}"
 
     @property
     def hostpython_location(self):
-        if not self.call_hostpython_via_targetpython:
-            return self.real_hostpython_location
-        return self.ctx.hostpython
+        return self.ctx.hostpython if self.call_hostpython_via_targetpython else self.real_hostpython_location
 
     @property
     def folder_name(self):
