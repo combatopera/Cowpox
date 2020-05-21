@@ -299,8 +299,8 @@ class Recipe(metaclass = RecipeMeta):
         return self.get_build_container_dir(arch) / self.name
 
     def get_recipe_dir(self):
-        local_recipe_dir = join(self.ctx.local_recipes, self.name)
-        if exists(local_recipe_dir):
+        local_recipe_dir = self.ctx.local_recipes / self.name
+        if local_recipe_dir.exists():
             return local_recipe_dir
         return self.ctx.root_dir / 'recipes' / self.name
 
@@ -333,9 +333,9 @@ class Recipe(metaclass = RecipeMeta):
         with current_directory(self.ctx.packages_path / self.name):
             filename = Path(shprint(sh.basename, url).stdout[:-1].decode('utf-8'))
             do_download = True
-            marker_filename = '.mark-{}'.format(filename)
+            marker_filename = Path(f".mark-{filename}")
             if filename.exists() and filename.is_file():
-                if not exists(marker_filename):
+                if not marker_filename.exists():
                     rm.print(filename)
                 elif expected_md5:
                     current_md5 = md5sum(filename)
@@ -609,7 +609,7 @@ class Recipe(metaclass = RecipeMeta):
                 if rel_path in {".", "", None}:
                     abs_path = self.get_build_dir(arch_name) / lib
             else:
-                abs_path = join(self.ctx.get_libs_dir(arch_name), lib)
+                abs_path = self.ctx.get_libs_dir(arch_name) / lib
             recipe_libs.add(abs_path)
         return recipe_libs
 
@@ -711,7 +711,7 @@ class NDKRecipe(Recipe):
     def should_build(self, arch):
         lib_dir = self.get_lib_dir(arch)
         for lib in self.generated_libraries:
-            if not exists(join(lib_dir, lib)):
+            if not (lib_dir / lib).exists():
                 return True
         return False
 
