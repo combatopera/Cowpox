@@ -100,9 +100,9 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
             if e.errno != 17:
                 raise e
         info_notify("Will download into {dest_dir}".format(dest_dir=self.protoc_dir))
-        self.download_file(protoc_url, join(self.protoc_dir, filename))
+        self.download_file(protoc_url, self.protoc_dir / filename)
         with current_directory(self.protoc_dir):
-            shprint(sh.unzip, join(self.protoc_dir, filename))
+            shprint(sh.unzip, self.protoc_dir / filename)
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)

@@ -38,13 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
+from os.path import join
+from pathlib import Path
 from pythonforandroid.logger import info_notify
 from pythonforandroid.recipe import CppCompiledComponentsPythonRecipe
 from pythonforandroid.util import ensure_dir
-
-from os.path import join
-
 
 class MatplotlibRecipe(CppCompiledComponentsPythonRecipe):
 
@@ -127,11 +125,9 @@ class MatplotlibRecipe(CppCompiledComponentsPythonRecipe):
             'f8233674366ab36b2c34c577ec77a3d70cac75d2e387d8587f3836345c0f624d'
         )
         url = 'https://jqueryui.com/resources/download/jquery-ui-1.12.1.zip'
-        target_file = join(env['XDG_CACHE_HOME'], 'matplotlib', jquery_sha)
-
         info_notify(f'Will download into {env["XDG_CACHE_HOME"]}')
         ensure_dir(join(env['XDG_CACHE_HOME'], 'matplotlib'))
-        self.download_file(url, target_file)
+        self.download_file(url, Path(env['XDG_CACHE_HOME'], 'matplotlib', jquery_sha))
 
     def prebuild_arch(self, arch):
         with open(join(self.get_recipe_dir(), 'setup.cfg.template')) as fileh:

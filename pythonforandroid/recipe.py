@@ -44,8 +44,8 @@ from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
 from lagoon import cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, touch
 from lagoon.program import Program
-from os import listdir, unlink, curdir, walk
-from os.path import exists, isdir, join, realpath, split
+from os import listdir, curdir, walk
+from os.path import exists, join, realpath, split
 from pathlib import Path
 from re import match
 from shutil import rmtree
@@ -206,12 +206,12 @@ class Recipe(metaclass = RecipeMeta):
         info('Downloading {} from {}'.format(self.name, url))
         parsed_url = urlparse(url)
         if parsed_url.scheme in {'http', 'https'}:
-            if exists(target):
-                unlink(target)
-            Path(target).symlink_to(Mirror.download(url))
+            if target.exists():
+                target.unlink()
+            target.symlink_to(Mirror.download(url))
             return target
         elif parsed_url.scheme in {'git', 'git+file', 'git+ssh', 'git+http', 'git+https'}:
-            if isdir(target):
+            if target.is_dir():
                 with current_directory(target):
                     git.fetch.__tags.print()
                     if self.version:
