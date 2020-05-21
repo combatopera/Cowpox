@@ -45,7 +45,7 @@ from importlib.util import module_from_spec, spec_from_file_location
 from lagoon import cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, touch
 from lagoon.program import Program
 from os import listdir, unlink, curdir, walk
-from os.path import basename, dirname, exists, isdir, join, realpath, split
+from os.path import dirname, exists, isdir, join, realpath, split
 from pathlib import Path
 from re import match
 from shutil import rmtree
@@ -410,13 +410,13 @@ class Recipe(metaclass = RecipeMeta):
                         import zipfile
                         fileh = zipfile.ZipFile(extraction_filename, 'r')
                         root_directory = fileh.filelist[0].filename.split('/')[0]
-                        if root_directory != basename(directory_name):
+                        if root_directory != directory_name.name:
                             mv.print(root_directory, directory_name)
                     elif extraction_filename.name.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
                         sh.tar('xf', extraction_filename)
                         root_directory = sh.tar('tf', extraction_filename).stdout.decode(
                                 'utf-8').split('\n')[0].split('/')[0]
-                        if root_directory != basename(directory_name):
+                        if root_directory != directory_name.name:
                             mv.print(root_directory, directory_name)
                     else:
                         raise Exception(
