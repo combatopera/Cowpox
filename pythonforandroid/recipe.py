@@ -331,11 +331,10 @@ class Recipe(metaclass = RecipeMeta):
             expected_md5 = self.md5sum
         mkdir._p.print(self.ctx.packages_path / self.name)
         with current_directory(self.ctx.packages_path / self.name):
-            filename = shprint(sh.basename, url).stdout[:-1].decode('utf-8')
-
+            filename = Path(shprint(sh.basename, url).stdout[:-1].decode('utf-8'))
             do_download = True
             marker_filename = '.mark-{}'.format(filename)
-            if exists(filename) and isfile(filename):
+            if filename.exists() and filename.is_file():
                 if not exists(marker_filename):
                     rm.print(filename)
                 elif expected_md5:
@@ -356,7 +355,7 @@ class Recipe(metaclass = RecipeMeta):
                 rm._f.print(marker_filename)
                 self.download_file(self.versioned_url, filename)
                 touch.print(marker_filename)
-                if exists(filename) and isfile(filename) and expected_md5:
+                if filename.exists() and filename.is_file() and expected_md5:
                     current_md5 = md5sum(filename)
                     if expected_md5 is not None:
                         if current_md5 != expected_md5:
