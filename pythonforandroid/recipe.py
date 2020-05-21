@@ -45,7 +45,7 @@ from importlib.util import module_from_spec, spec_from_file_location
 from lagoon import cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, touch
 from lagoon.program import Program
 from os import listdir, unlink, curdir, walk
-from os.path import dirname, exists, isdir, join, realpath, split
+from os.path import exists, isdir, join, realpath, split
 from pathlib import Path
 from re import match
 from shutil import rmtree
