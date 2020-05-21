@@ -329,8 +329,8 @@ class Recipe(metaclass = RecipeMeta):
             expected_md5 = ma.group(2)
         else:
             expected_md5 = self.md5sum
-        mkdir._p.print(join(self.ctx.packages_path, self.name))
-        with current_directory(join(self.ctx.packages_path, self.name)):
+        mkdir._p.print(self.ctx.packages_path / self.name)
+        with current_directory(self.ctx.packages_path / self.name):
             filename = shprint(sh.basename, url).stdout[:-1].decode('utf-8')
 
             do_download = True
@@ -397,10 +397,9 @@ class Recipe(metaclass = RecipeMeta):
         with current_directory(build_dir):
             directory_name = self.get_build_dir(arch)
             if not directory_name.exists() or not directory_name.is_dir():
-                extraction_filename = join(
-                    self.ctx.packages_path, self.name, filename)
-                if isfile(extraction_filename):
-                    if extraction_filename.endswith('.zip'):
+                extraction_filename = self.ctx.packages_path / self.name / filename
+                if extraction_filename.is_file():
+                    if extraction_filename.name.endswith('.zip'):
                         try:
                             sh.unzip(extraction_filename)
                         except (sh.ErrorReturnCode_1, sh.ErrorReturnCode_2):
@@ -425,11 +424,11 @@ class Recipe(metaclass = RecipeMeta):
                         raise Exception(
                             'Could not extract {} download, it must be .zip, '
                             '.tar.gz or .tar.bz2 or .tar.xz'.format(extraction_filename))
-                elif isdir(extraction_filename):
+                elif extraction_filename.is_dir():
                     Path(directory_name).mkdir()
                     for entry in listdir(extraction_filename):
                         if entry not in ('.git',):
-                            cp._Rv.print(join(extraction_filename, entry), directory_name)
+                            cp._Rv.print(extraction_filename / entry, directory_name)
                 else:
                     raise Exception(
                         'Given path is neither a file nor a directory: {}'
