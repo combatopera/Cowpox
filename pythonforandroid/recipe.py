@@ -902,8 +902,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
             shprint(hostpython, 'setup.py', self.build_cmd, '-v',
                     _env=env, *self.setup_extra_args)
             build_dir = glob.glob('build/lib.*')[0]
-            shprint(sh.find, build_dir, '-name', '"*.o"', '-exec',
-                    env['STRIP'], '{}', ';', _env=env)
+            find.print(build_dir, '-name', '"*.o"', '-exec', env['STRIP'], '{}', ';', env = env)
 
     def install_hostpython_package(self, arch):
         env = self.get_hostrecipe_env(arch)
