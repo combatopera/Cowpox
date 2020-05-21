@@ -907,23 +907,18 @@ class PythonRecipe(Recipe):
                 '--install-lib=Lib/site-packages',
                 _env=env, *self.setup_extra_args)
 
-
 class CompiledComponentsPythonRecipe(PythonRecipe):
-    pre_build_ext = False
 
+    pre_build_ext = False
     build_cmd = 'build_ext'
 
     def build_arch(self, arch):
-        '''Build any cython components, then install the Python module by
-        calling setup.py install with the target Python dir.
-        '''
         Recipe.build_arch(self, arch)
         self.build_compiled_components(arch)
         self.install_python_package(arch)
 
     def build_compiled_components(self, arch):
         info('Building compiled components in {}'.format(self.name))
-
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
             hostpython = sh.Command(self.hostpython_location)
@@ -942,12 +937,9 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def rebuild_compiled_components(self, arch, env):
         info('Rebuilding compiled components in {}'.format(self.name))
-
-        hostpython = sh.Command(self.real_hostpython_location)
-        shprint(hostpython, 'setup.py', 'clean', '--all', _env=env)
-        shprint(hostpython, 'setup.py', self.build_cmd, '-v', _env=env,
-                *self.setup_extra_args)
-
+        hostpython = Program.text(self.real_hostpython_location)
+        hostpython.print('setup.py', 'clean', '--all', env = env)
+        hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args, env = env)
 
 class CppCompiledComponentsPythonRecipe(CompiledComponentsPythonRecipe):
     """ Extensions that require the cxx-stl """
