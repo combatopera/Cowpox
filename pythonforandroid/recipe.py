@@ -47,10 +47,9 @@ from lagoon.program import Program
 from os import listdir, curdir, walk
 from os.path import exists, join, realpath, split
 from pathlib import Path
-from re import match
 from shutil import rmtree
 from urllib.parse import urlparse
-import fnmatch, glob, hashlib, logging, os, sh, shutil, subprocess
+import fnmatch, glob, hashlib, logging, os, re, sh, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -319,7 +318,7 @@ class Recipe(metaclass = RecipeMeta):
             return
 
         url = self.versioned_url
-        ma = match(u'^(.+)#md5=([0-9a-f]{32})$', url)
+        ma = re.match('^(.+)#md5=([0-9a-f]{32})$', url)
         if ma:                  # fragmented URL?
             if self.md5sum:
                 raise ValueError(
@@ -389,7 +388,7 @@ class Recipe(metaclass = RecipeMeta):
 
         filename = shprint(
             sh.basename, self.versioned_url).stdout[:-1].decode('utf-8')
-        ma = match(u'^(.+)#md5=([0-9a-f]{32})$', filename)
+        ma = re.match('^(.+)#md5=([0-9a-f]{32})$', filename)
         if ma:                  # fragmented URL?
             filename = ma.group(1)
 
