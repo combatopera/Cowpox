@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from .archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
-from .logger import info, warning, info_notify, info_main, shprint
+from .logger import info, warning, info_notify, info_main
 from .pythonpackage import get_package_name
 from .recipe import CythonRecipe, Recipe
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
@@ -362,9 +362,9 @@ def build_recipes(build_order, python_modules, ctx):
         return
     info('The requirements ({}) don\'t have recipes, attempting to install them with pip'.format(', '.join(modules)))
     info('If this fails, it may mean that the module has compiled components and needs a recipe.')
-    venv = sh.Command(ctx.virtualenv)
+    venv = Program.text(ctx.virtualenv)
     with current_directory(ctx.buildsdir):
-        shprint(venv, f"--python=python{ctx.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv')
+        venv.print(f"--python=python{ctx.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv')
         base_env = os.environ.copy()
         base_env["PYTHONPATH"] = ctx.get_site_packages_dir()
         info('Upgrade pip to latest version')
@@ -384,7 +384,7 @@ def build_recipes(build_order, python_modules, ctx):
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
         env["PYTHONPATH"] += ":" + ctx.get_site_packages_dir()
-        env["PYTHONPATH"] = os.path.abspath(ctx.buildsdir / "venv" / "lib" / f"python{ctx.python_recipe.major_minor_version_string}" / "site-packages") + ":" + env["PYTHONPATH"]
+        env["PYTHONPATH"] = os.path.abspath(ctx.buildsdir / 'venv' / 'lib' / f"python{ctx.python_recipe.major_minor_version_string}" / 'site-packages') + ":" + env["PYTHONPATH"]
         # Install the manually specified requirements first:
         if not modules:
             info('There are no Python modules to install, skipping')
