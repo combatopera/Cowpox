@@ -1087,19 +1087,12 @@ class TargetPythonRecipe(Recipe):
         to "YYY.so", i.e. removing the erroneous architecture name
         coming from the local system.
         """
-        py_so_files = shprint(sh.find, dirn, '-iname', '*.so')
-        filens = py_so_files.stdout.decode('utf-8').split('\n')[:-1]
-        for filen in filens:
+        for filen in find(dirn, '-iname', '*.so').splitlines():
             file_dirname, file_basename = split(filen)
             parts = file_basename.split('.')
-            if len(parts) <= 2:
-                continue
-            mv.print(filen, join(file_dirname, parts[0] + '.so'))
+            if len(parts) > 2:
+                mv.print(filen, join(file_dirname, parts[0] + '.so'))
 
 def md5sum(filen):
-    '''Calculate the md5sum of a file.
-    '''
     with open(filen, 'rb') as fileh:
-        md5 = hashlib.md5(fileh.read())
-
-    return md5.hexdigest()
+        return hashlib.md5(fileh.read()).hexdigest()
