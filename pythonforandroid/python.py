@@ -340,8 +340,7 @@ class HostPythonRecipe(Recipe):
 
     @property
     def python_exe(self):
-        '''Returns the full path of the hostpython executable.'''
-        return join(self.get_path_to_python(), self._exe_name)
+        return self.get_path_to_python() / self._exe_name
 
     def should_build(self, arch):
         if exists(self.python_exe):

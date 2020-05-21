@@ -794,7 +794,7 @@ class PythonRecipe(Recipe):
         if host_name in {'hostpython2', 'hostpython3'}:
             return Recipe.get_recipe(host_name, self.ctx).python_exe
         else:
-            return f"python{self.ctx.python_recipe.version}"
+            return Path(f"python{self.ctx.python_recipe.version}")
 
     @property
     def hostpython_location(self):
@@ -874,16 +874,13 @@ class PythonRecipe(Recipe):
 
     def get_hostrecipe_env(self, arch):
         env = os.environ.copy()
-        env['PYTHONPATH'] = join(dirname(self.real_hostpython_location), 'Lib', 'site-packages')
+        env['PYTHONPATH'] = self.real_hostpython_location.parent / 'Lib' / 'site-packages'
         return env
 
     def install_hostpython_package(self, arch):
         env = self.get_hostrecipe_env(arch)
-        real_hostpython = sh.Command(self.real_hostpython_location)
-        shprint(real_hostpython, 'setup.py', 'install', '-O2',
-                '--root={}'.format(dirname(self.real_hostpython_location)),
-                '--install-lib=Lib/site-packages',
-                _env=env, *self.setup_extra_args)
+        real_hostpython = Program.text(self.real_hostpython_location)
+        real_hostpython.print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', *self.setup_extra_args, env = env)
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
