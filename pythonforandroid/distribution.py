@@ -170,7 +170,7 @@ class Distribution:
                            'archs': [arch.arch for arch in self.ctx.archs],
                            'ndk_api': self.ctx.ndk_api,
                            'recipes': self.ctx.recipe_build_order + self.ctx.python_modules,
-                           'hostpython': self.ctx.hostpython,
+                           'hostpython': str(self.ctx.hostpython),
                            'python_version': self.ctx.python_recipe.major_minor_version_string},
                           fileh)
 
