@@ -41,7 +41,7 @@
 from os.path import join
 from p4a import CythonRecipe, IncludedFilesBehaviour
 from pythonforandroid.util import current_directory
-from pythonforandroid.patching import will_build
+from p4a.patch import will_build
 import logging
 
 log = logging.getLogger(__name__)

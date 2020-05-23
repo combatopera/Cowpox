@@ -41,7 +41,7 @@
 import sh
 from pythonforandroid.python import GuestPythonRecipe
 from p4a import Recipe
-from pythonforandroid.patching import version_starts_with
+from p4a.patch import version_starts_with
 
 
 class Python3Recipe(GuestPythonRecipe):

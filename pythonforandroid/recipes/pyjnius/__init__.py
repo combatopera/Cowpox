@@ -40,7 +40,7 @@
 
 from lagoon import cp
 from pathlib import Path
-from pythonforandroid.patching import will_build
+from p4a.patch import will_build
 from p4a import CythonRecipe
 from pythonforandroid.util import current_directory
 import logging

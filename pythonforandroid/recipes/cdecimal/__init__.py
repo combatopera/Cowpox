@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from p4a import CompiledComponentsPythonRecipe
-from pythonforandroid.patching import is_darwin
+from p4a.patch import is_darwin
 
 
 class CdecimalRecipe(CompiledComponentsPythonRecipe):
