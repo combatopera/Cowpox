@@ -82,8 +82,7 @@ debug = logger.debug
 warning = logger.warning
 error = logger.error
 
-
-class colorama_shim(object):
+class colorama_shim:
 
     def __init__(self, real):
         self._dict = defaultdict(str)
@@ -96,23 +95,12 @@ class colorama_shim(object):
     def enable(self, enable):
         self._enabled = enable
 
-
 Out_Style = colorama_shim(Colo_Style)
 Out_Fore = colorama_shim(Colo_Fore)
 Err_Style = colorama_shim(Colo_Style)
 Err_Fore = colorama_shim(Colo_Fore)
 
-def info_main(*args):
-    logger.info(''.join([Err_Style.BRIGHT, Err_Fore.GREEN] + list(args) +
-                        [Err_Style.RESET_ALL, Err_Fore.RESET]))
-
-
-def info_notify(s):
-    info('{}{}{}{}'.format(Err_Style.BRIGHT, Err_Fore.LIGHTBLUE_EX, s,
-                           Err_Style.RESET_ALL))
-
-
-def shorten_string(string, max_width):
+def _shorten_string(string, max_width):
     ''' make limited length string in form:
       "the string is very lo...(and 15 more)"
     '''
@@ -127,7 +115,7 @@ def shorten_string(string, max_width):
         visstring = string[:visible]
     return u''.join((visstring, u'...(and ', str(string_len - visible), u' more)'))
 
-def get_console_width():
+def _get_console_width():
     try:
         cols = int(os.environ['COLUMNS'])
     except (KeyError, ValueError):
@@ -135,16 +123,13 @@ def get_console_width():
     else:
         if cols >= 25:
             return cols
-
     try:
         cols = max(25, int(os.popen('stty size', 'r').read().split()[1]))
     except Exception:
         pass
     else:
         return cols
-
     return 100
-
 
 def shprint(command, *args, **kwargs):
     '''Runs the command (which should be an sh.Command instance), while
@@ -163,20 +148,18 @@ def shprint(command, *args, **kwargs):
     filter_out = kwargs.pop('_filterout', None)
     if len(logger.handlers) > 1:
         logger.removeHandler(logger.handlers[1])
-    columns = get_console_width()
+    columns = _get_console_width()
     command_path = str(command).split('/')
     command_string = command_path[-1]
     string = ' '.join(['{}->{} running'.format(Out_Fore.LIGHTBLACK_EX,
                                                Out_Style.RESET_ALL),
                        command_string] + list(args))
-
     # If logging is not in DEBUG mode, trim the command if necessary
     if logger.level > logging.DEBUG:
-        logger.info('{}{}'.format(shorten_string(string, columns - 12),
+        logger.info('{}{}'.format(_shorten_string(string, columns - 12),
                                   Err_Style.RESET_ALL))
     else:
         logger.debug('{}{}'.format(string, Err_Style.RESET_ALL))
-
     need_closing_newline = False
     try:
         msg_hdr = '           working: '
@@ -198,7 +181,7 @@ def shprint(command, *args, **kwargs):
                     if "CI" not in os.environ:
                         stdout.write(u'{}\r{}{:<{width}}'.format(
                             Err_Style.RESET_ALL, msg_hdr,
-                            shorten_string(msg, msg_width), width=msg_width))
+                            _shorten_string(msg, msg_width), width=msg_width))
                         stdout.flush()
                         need_closing_newline = True
             else:
@@ -246,5 +229,4 @@ def shprint(command, *args, **kwargs):
             exit(1)
         else:
             raise
-
     return output
