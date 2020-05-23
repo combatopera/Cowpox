@@ -40,9 +40,11 @@
 
 from copy import deepcopy
 from itertools import product
-from pythonforandroid.logger import info
 from pythonforandroid.recipe import Recipe
 from pythonforandroid.util import BuildInterruptingException
+import logging
+
+log = logging.getLogger(__name__)
 
 def fix_deplist(deps):
     """ Turn a dependency list into lowercase, and make sure all entries
@@ -318,8 +320,7 @@ def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
         try:
             order = find_order(possible_order)
         except ValueError:  # a circular dependency was found
-            info('Circular dependency found in graph {}, skipping it.'.format(
-                possible_order))
+            log.info("Circular dependency found in graph %s, skipping it.", possible_order)
             continue
         orders.append(list(order))
 
@@ -338,12 +339,12 @@ def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
     # and can be resolved by specifying more parameters
     chosen_order = orders[0]
     if len(orders) > 1:
-        info('Found multiple valid dependency orders:')
+        log.info('Found multiple valid dependency orders:')
         for order in orders:
-            info('    {}'.format(order))
-        info('Using the first of these: {}'.format(chosen_order))
+            log.info("    %s", order)
+        log.info("Using the first of these: %s", chosen_order)
     else:
-        info('Found a single valid recipe set: {}'.format(chosen_order))
+        log.info("Found a single valid recipe set: %s", chosen_order)
     recipes = []
     python_modules = []
     for name in chosen_order:
