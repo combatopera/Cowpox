@@ -38,9 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from lagoon import mkdir
 from pythonforandroid.recipe import NDKRecipe
-from os.path import join
-import sh, shutil
+import shutil
 
 class Sqlite3Recipe(NDKRecipe):
 
@@ -53,20 +53,16 @@ class Sqlite3Recipe(NDKRecipe):
         return not self.has_libs(arch, 'libsqlite3.so')
 
     def prebuild_arch(self, arch):
-        super(Sqlite3Recipe, self).prebuild_arch(arch)
-        # Copy the Android make file
-        sh.mkdir('-p', join(self.get_build_dir(arch.arch), 'jni'))
-        shutil.copyfile(join(self.get_recipe_dir(), 'Android.mk'),
-                        join(self.get_build_dir(arch.arch), 'jni/Android.mk'))
+        super().prebuild_arch(arch)
+        mkdir._p.print(self.get_build_dir(arch.arch) / 'jni')
+        shutil.copyfile(self.get_recipe_dir() / 'Android.mk', self.get_build_dir(arch.arch) / 'jni' / 'Android.mk')
 
     def build_arch(self, arch, *extra_args):
-        super(Sqlite3Recipe, self).build_arch(arch)
-        # Copy the shared library
-        shutil.copyfile(join(self.get_build_dir(arch.arch), 'libs', arch.arch, 'libsqlite3.so'),
-                        join(self.ctx.get_libs_dir(arch.arch), 'libsqlite3.so'))
+        super().build_arch(arch)
+        shutil.copyfile(self.get_build_dir(arch.arch) / 'libs' / arch.arch / 'libsqlite3.so', self.ctx.get_libs_dir(arch.arch) / 'libsqlite3.so')
 
     def get_recipe_env(self, arch):
-        env = super(Sqlite3Recipe, self).get_recipe_env(arch)
+        env = super().get_recipe_env(arch)
         env['NDK_PROJECT_PATH'] = str(self.get_build_dir(arch.arch))
         return env
 
