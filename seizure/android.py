@@ -109,16 +109,11 @@ class TargetAndroid:
         log.info('Android NDK installation done.')
 
     def _android_list_build_tools_versions(self):
-        lines = self.sdkmanager.__list().split('\n')
-        build_tools_versions = []
-        for line in lines:
-            if not line.strip().startswith('build-tools;'):
-                continue
-            package_name = line.strip().split(' ')[0]
-            assert package_name.count(';') == 1, f'could not parse package "{package_name}"'
-            version = package_name.split(';')[1]
-            build_tools_versions.append(parse(version))
-        return build_tools_versions
+        for line in (l.strip() for l in self.sdkmanager.__list().split('\n')):
+            if line.startswith('build-tools;'):
+                package_name = line.split(' ')[0]
+                assert package_name.count(';') == 1, f'could not parse package "{package_name}"'
+                yield parse(package_name.split(';')[1])
 
     def _android_update_sdk(self, *args):
         if self.config.getbooldefault('app', 'android.accept_sdk_license', False):
@@ -159,7 +154,7 @@ class TargetAndroid:
             log.info('Skipping Android SDK update due to spec file setting')
             log.info('Note: this also prevents installing missing SDK components')
         log.info('Updating SDK build tools if necessary')
-        available_v_build_tools = self._android_list_build_tools_versions()
+        available_v_build_tools = list(self._android_list_build_tools_versions())
         if not available_v_build_tools:
             log.error('Did not find any build tools available to download')
         latest_v_build_tools = max(available_v_build_tools)
