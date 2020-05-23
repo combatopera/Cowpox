@@ -169,7 +169,7 @@ class Distribution:
                            'python_version': self.ctx.python_recipe.major_minor_version_string},
                           fileh)
 
-def _pretty_log_dists(dists, log_func=info):
+def _pretty_log_dists(dists):
     infos = []
     for dist in dists:
         ndk_api = 'unknown' if dist.ndk_api is None else dist.ndk_api
@@ -182,7 +182,7 @@ def _pretty_log_dists(dists, log_func=info):
                          archs=', '.join(dist.archs) if dist.archs else 'UNKNOWN',
                          Fore=Err_Fore, Style=Err_Style))
     for line in infos:
-        log_func('\t' + line)
+        info('\t' + line)
 
 def generate_dist_folder_name(base_dist_name, arch_names = None):
     return f"{base_dist_name}__{'no_arch_specified' if arch_names is None else '_'.join(arch_names)}"
