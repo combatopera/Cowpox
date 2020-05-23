@@ -443,10 +443,8 @@ def makeapkversion(args, distdir, private):
                     help='Set the launch mode of the main activity in the manifest.')
     ap.add_argument('--allow-backup', default='true',
                     help="if set to 'false', then android won't backup the application.")
-    ap.add_argument('--extra-manifest-xml', default='',
-                    help=('Extra xml to write directly inside the <manifest> element of'
-                          'AndroidManifest.xml'))
     args = ap.parse_args(args)
+    args.extra_manifest_xml = ''
     if args.name and args.name[0] == '"' and args.name[-1] == '"':
         args.name = args.name[1:-1]
     if ndk_api != args.min_sdk_version:
