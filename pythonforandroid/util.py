@@ -42,16 +42,9 @@ from fnmatch import fnmatch
 from os import makedirs, walk
 from os.path import exists, join
 from pathlib import Path
-from urllib.request import FancyURLopener
 import contextlib, logging, os
 
 log = logging.getLogger(__name__)
-
-class WgetDownloader(FancyURLopener):
-
-    version = 'Wget/1.17.1'
-
-urlretrieve = WgetDownloader().retrieve
 build_platform = f"{os.uname()[0]}-{os.uname()[-1]}".lower()
 
 @contextlib.contextmanager

@@ -41,7 +41,7 @@
 from diapyr.util import singleton
 from hashlib import md5
 from pathlib import Path
-from pythonforandroid.util import urlretrieve
+from urllib.request import FancyURLopener
 import logging, os, sys, time
 
 log = logging.getLogger(__name__)
@@ -49,6 +49,11 @@ log = logging.getLogger(__name__)
 @singleton
 class Mirror:
 
+    class WgetDownloader(FancyURLopener):
+
+        version = 'Wget/1.17.1'
+
+    urlretrieve = WgetDownloader().retrieve
     mirror = Path('/mirror') # TODO: Make configurable.
 
     @staticmethod
@@ -70,7 +75,7 @@ class Mirror:
             attempts = 0
             while True:
                 try:
-                    urlretrieve(url, partialpath, self.report_hook)
+                    self.urlretrieve(url, partialpath, self.report_hook)
                     break
                 except OSError:
                     attempts += 1
