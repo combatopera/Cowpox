@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Copyright 2020 Andrzej Cichocki
 
 # This file is part of Cowpox.
@@ -40,13 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .bootstrap import Bootstrap
-from .build import makeapkversion
-from .context import Context, build_recipes
-from .distribution import Distribution
-from .graph import get_recipe_order
-from .logger import setup_color
-from .util import BuildInterruptingException, current_directory
+from pythonforandroid.bootstrap import Bootstrap
+from pythonforandroid.build import makeapkversion
+from pythonforandroid.context import Context, build_recipes
+from pythonforandroid.distribution import Distribution
+from pythonforandroid.graph import get_recipe_order
+from pythonforandroid.logger import setup_color
+from pythonforandroid.util import BuildInterruptingException, current_directory
 from lagoon import cp, gradle
 from pathlib import Path
 from types import SimpleNamespace
