@@ -39,12 +39,11 @@
 # THE SOFTWARE.
 
 from lagoon import autoreconf, make
+from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
 from pythonforandroid.recipe import Recipe
-from pythonforandroid.logger import shprint
 from pythonforandroid.util import current_directory
-import sh
 
 class LibffiRecipe(Recipe):
     """
@@ -75,9 +74,10 @@ class LibffiRecipe(Recipe):
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
             if not Path('configure').exists():
-                shprint(sh.Command('./autogen.sh'), _env = env)
+                Program.text(f".{os.sep}autogen.sh").print(env = env)
             autoreconf._vif.print(env = env)
-            shprint(sh.Command('./configure'), f"--host={arch.command_prefix}", f"--prefix={self.get_build_dir(arch.arch)}", '--disable-builddir', '--enable-shared', _env = env)
+            Program.text(f".{os.sep}configure").print(
+                    f"--host={arch.command_prefix}", f"--prefix={self.get_build_dir(arch.arch)}", '--disable-builddir', '--enable-shared', env = env)
             make.print('-j', cpu_count(), 'libffi.la', env = env)
 
     def get_include_dirs(self, arch):
