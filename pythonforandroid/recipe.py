@@ -41,7 +41,7 @@
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from distutils.version import LooseVersion
-from importlib.util import module_from_spec, spec_from_file_location
+from importlib import import_module
 from lagoon import basename, cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
 from lagoon.program import Program
 from os import listdir, walk
@@ -52,12 +52,6 @@ from zipfile import ZipFile
 import fnmatch, glob, hashlib, logging, os, re, shutil, subprocess
 
 log = logging.getLogger(__name__)
-
-def import_recipe(module, filename):
-    spec = spec_from_file_location(module, filename)
-    mod = module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
 
 class RecipeMeta(type):
 
@@ -564,41 +558,9 @@ class Recipe(metaclass = RecipeMeta):
         return recipe_libs
 
     @classmethod
-    def _recipe_dirs(cls, ctx):
-        return [
-            ctx.local_recipes.resolve(),
-            ctx.storage_dir / 'recipes',
-            ctx.root_dir / 'recipes',
-        ]
-
-    @classmethod
     def get_recipe(cls, name, ctx):
-        '''Returns the Recipe with the given name, if it exists.'''
-        name = name.lower()
-        if not hasattr(cls, "recipes"):
-            cls.recipes = {}
-        if name in cls.recipes:
-            return cls.recipes[name]
-        recipe_file = None
-        for recipes_dir in cls._recipe_dirs(ctx):
-            if not exists(recipes_dir):
-                continue
-            # Find matching folder (may differ in case):
-            for subfolder in listdir(recipes_dir):
-                if subfolder.lower() == name:
-                    recipe_file = join(recipes_dir, subfolder, '__init__.py')
-                    if exists(recipe_file):
-                        name = subfolder  # adapt to actual spelling
-                        break
-                    recipe_file = None
-            if recipe_file is not None:
-                break
-        if not recipe_file:
-            raise ValueError('Recipe does not exist: {}'.format(name))
-        mod = import_recipe('pythonforandroid.recipes.{}'.format(name), recipe_file)
-        recipe = mod.recipe
-        recipe.ctx = ctx
-        cls.recipes[name.lower()] = recipe
+        recipe = import_module(f"pythonforandroid.recipes.{name.lower()}").recipe
+        recipe.ctx = ctx # TODO: Pass in.
         return recipe
 
 class IncludedFilesBehaviour:
