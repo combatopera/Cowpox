@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info
 from .recipe import Recipe
 from .util import current_directory, ensure_dir
 from importlib import import_module
@@ -179,7 +178,7 @@ class Bootstrap:
     def _get_usable_bootstraps_for_recipes(cls, recipes, ctx):
         '''Returns all bootstrap whose recipe requirements do not conflict
         with the given recipes, in no particular order.'''
-        info('Trying to find a bootstrap that matches the given recipes.')
+        log.info('Trying to find a bootstrap that matches the given recipes.')
         bootstraps = [cls.get_bootstrap(name, ctx)
                       for name in cls.all_bootstraps()]
         acceptable_bootstraps = set()
@@ -212,56 +211,38 @@ class Bootstrap:
                         break
                 if ok and bs not in acceptable_bootstraps:
                     acceptable_bootstraps.add(bs)
-
-        info('Found {} acceptable bootstraps: {}'.format(
-            len(acceptable_bootstraps),
-            [bs.name for bs in acceptable_bootstraps]))
+        log.info("Found %s acceptable bootstraps: %s", len(acceptable_bootstraps), [bs.name for bs in acceptable_bootstraps])
         return acceptable_bootstraps
 
     @classmethod
     def get_bootstrap_from_recipes(cls, recipes, ctx):
-        '''Picks a single recommended default bootstrap out of
-           all_usable_bootstraps_from_recipes() for the given reicpes,
-           and returns it.'''
-
-        known_web_packages = {"flask"}  # to pick webview over service_only
+        known_web_packages = {'flask'}  # to pick webview over service_only
         recipes_with_deps_lists = expand_dependencies(recipes, ctx)
-        acceptable_bootstraps = cls._get_usable_bootstraps_for_recipes(
-            recipes, ctx
-        )
-
+        acceptable_bootstraps = cls._get_usable_bootstraps_for_recipes(recipes, ctx)
         def have_dependency_in_recipes(dep):
             for dep_list in recipes_with_deps_lists:
                 if dep in dep_list:
                     return True
             return False
-
         # Special rule: return SDL2 bootstrap if there's an sdl2 dep:
         if (have_dependency_in_recipes("sdl2") and
                 "sdl2" in [b.name for b in acceptable_bootstraps]
                 ):
-            info('Using sdl2 bootstrap since it is in dependencies')
+            log.info('Using sdl2 bootstrap since it is in dependencies')
             return cls.get_bootstrap("sdl2", ctx)
-
         # Special rule: return "webview" if we depend on common web recipe:
         for possible_web_dep in known_web_packages:
             if have_dependency_in_recipes(possible_web_dep):
                 # We have a web package dep!
                 if "webview" in [b.name for b in acceptable_bootstraps]:
-                    info('Using webview bootstrap since common web packages '
-                         'were found {}'.format(
-                             known_web_packages.intersection(recipes)
-                         ))
+                    log.info("Using webview bootstrap since common web packages were found %s", known_web_packages.intersection(recipes))
                     return cls.get_bootstrap("webview", ctx)
-
         prioritized_acceptable_bootstraps = sorted(
             list(acceptable_bootstraps),
             key=functools.cmp_to_key(_cmp_bootstraps_by_priority)
         )
-
         if prioritized_acceptable_bootstraps:
-            info('Using the highest ranked/first of these: {}'
-                 .format(prioritized_acceptable_bootstraps[0].name))
+            log.info("Using the highest ranked/first of these: %s", prioritized_acceptable_bootstraps[0].name)
             return prioritized_acceptable_bootstraps[0]
         return None
 
@@ -274,7 +255,7 @@ class Bootstrap:
 
     def distribute_libs(self, arch, src_dirs, wildcard='*', dest_dir="libs"):
         '''Copy existing arch libs from build dirs to current dist dir.'''
-        info('Copying libs')
+        log.info('Copying libs')
         tgt_dir = join(dest_dir, arch.arch)
         ensure_dir(tgt_dir)
         for src_dir in src_dirs:
@@ -283,14 +264,14 @@ class Bootstrap:
 
     def distribute_javaclasses(self, javaclass_dir, dest_dir="src"):
         '''Copy existing javaclasses from build dir to current dist dir.'''
-        info('Copying java files')
+        log.info('Copying java files')
         ensure_dir(dest_dir)
         for filename in glob.glob(str(javaclass_dir)):
             cp._a.print(filename, dest_dir)
 
     def distribute_aars(self, arch):
         '''Process existing .aar bundles and copy to current dist dir.'''
-        info('Unpacking aars')
+        log.info('Unpacking aars')
         for aar in glob.glob(join(self.ctx.aars_dir, '*.aar')):
             self._unpack_aar(aar, arch)
 
@@ -299,7 +280,7 @@ class Bootstrap:
         with TemporaryDirectory() as temp_dir:
             name = splitext(basename(aar))[0]
             jar_name = name + '.jar'
-            info("unpack {} aar".format(name))
+            log.info("unpack %s aar", name)
             log.debug("  from %s", aar)
             log.debug("  to %s", temp_dir)
             unzip._o.print(aar, '-d', temp_dir)
@@ -321,7 +302,7 @@ class Bootstrap:
                 cp._a.print(f, so_tgt_dir)
 
     def strip_libraries(self, arch):
-        info('Stripping libraries')
+        log.info('Stripping libraries')
         env = arch.get_env()
         tokens = shlex.split(env['STRIP'])
         strip = sh.Command(str(self.ctx.ndk_dir / 'toolchains' / f"{self.ctx.toolchain_prefix}-{self.ctx.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]))
@@ -337,11 +318,11 @@ class Bootstrap:
                 log.debug("Failed to strip %s", filen)
 
     def fry_eggs(self, sitepackages):
-        info('Frying eggs in {}'.format(sitepackages))
+        log.info("Frying eggs in %s", sitepackages)
         for d in listdir(sitepackages):
             rd = join(sitepackages, d)
             if isdir(rd) and d.endswith('.egg'):
-                info('  ' + d)
+                log.info("  %s", d)
                 files = [join(rd, f) for f in listdir(rd) if f != 'EGG-INFO']
                 if files:
                     mv._t.print(sitepackages, *files)
