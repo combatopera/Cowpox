@@ -270,11 +270,6 @@ class TargetAndroid:
             icon = config.getdefault('app', 'icon.filename', '')
             if icon:
                 yield from ["--icon", (self.config.workspace / icon).expanduser().resolve()]
-            ouya_category = config.getdefault('app', 'android.ouya.category', '').upper()
-            if ouya_category:
-                if ouya_category not in {'GAME', 'APP'}:
-                    raise SystemError(f'Invalid android.ouya.category: "{ouya_category}" must be one of GAME or APP')
-                yield from ["--ouya-category", ouya_category, "--ouya-icon", self.config.workspace / config.getdefault('app', 'android.ouya.icon.filename', '')]
             if config.getbooldefault('app', 'android.wakelock', False):
                 yield "--wakelock"
             intent_filters = config.getdefault('app', 'android.manifest.intent_filters', '')
