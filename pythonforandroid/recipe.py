@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import debug
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
@@ -337,8 +336,8 @@ class Recipe(metaclass = RecipeMeta):
                 elif expected_md5:
                     current_md5 = md5sum(filename)
                     if current_md5 != expected_md5:
-                        debug('* Generated md5sum: {}'.format(current_md5))
-                        debug('* Expected md5sum: {}'.format(expected_md5))
+                        log.debug("Generated md5sum: %s", current_md5)
+                        log.debug("Expected md5sum: %s", expected_md5)
                         raise ValueError(
                             ('Generated md5sum does not match expected md5sum '
                              'for {} recipe').format(self.name))
@@ -348,7 +347,7 @@ class Recipe(metaclass = RecipeMeta):
 
             # If we got this far, we will download
             if do_download:
-                debug('Downloading {} from {}'.format(self.name, url))
+                log.debug("Downloading %s from %s", self.name, url)
                 rm._f.print(marker_filename)
                 self.download_file(self.versioned_url, filename)
                 touch.print(marker_filename)
@@ -356,8 +355,8 @@ class Recipe(metaclass = RecipeMeta):
                     current_md5 = md5sum(filename)
                     if expected_md5 is not None:
                         if current_md5 != expected_md5:
-                            debug('* Generated md5sum: {}'.format(current_md5))
-                            debug('* Expected md5sum: {}'.format(expected_md5))
+                            log.debug("Generated md5sum: %s", current_md5)
+                            log.debug("Expected md5sum: %s", expected_md5)
                             raise ValueError(
                                 ('Generated md5sum does not match expected md5sum '
                                  'for {} recipe').format(self.name))
