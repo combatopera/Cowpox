@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from argparse import ArgumentParser
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from os import listdir, makedirs, remove
@@ -355,35 +354,6 @@ def makeapkversion(args, distdir, private):
     ndk_api = int(distinfo.forkey('ndk_api'))
     bootstrapname = distinfo.forkey('bootstrap')
     blacklist = Blacklist(bootstrapname)
-    ap = ArgumentParser()
-    ap.add_argument('--package', required=True)
-    ap.add_argument('--name', required=True)
-    ap.add_argument('--version', required = True)
-    ap.add_argument('--permissions', action='append', default=[])
-    ap.add_argument('--meta-data', action='append', default=[])
-    ap.add_argument('--android_used_libs', action='append', default=[])
-    ap.add_argument('--icon')
-    ap.add_argument('--services', action='append', default=[])
-    if bootstrapname != "service_only":
-        ap.add_argument('--presplash')
-        ap.add_argument('--presplash-color')
-        ap.add_argument('--window', type = eval)
-        ap.add_argument('--orientation')
-    ap.add_argument('--android-entrypoint')
-    ap.add_argument('--android-apptheme')
-    ap.add_argument('--compile_options', default=[], action='append')
-    ap.add_argument('--gradle_repositories', default=[], action='append')
-    ap.add_argument('--packaging_options', default=[], action='append')
-    ap.add_argument('--wakelock', type = eval)
-    ap.add_argument('--depends', action='append')
-    ap.add_argument('--min_sdk_version', type=int)
-    ap.add_argument('--intent-filters')
-    if bootstrapname == "webview":
-        ap.add_argument('--port')
-    ap.add_argument('--sign', type = eval)
-    ap.add_argument('--add-activity', action='append')
-    ap.add_argument('--activity-launch-mode')
-    args = ap.parse_args(args)
     args.allow_backup = 'true'
     args.extra_manifest_xml = ''
     if ndk_api != args.min_sdk_version:

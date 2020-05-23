@@ -48,6 +48,7 @@ from lagoon.program import Program
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
 from pythonforandroid.p4a import create, makeapk
+from types import SimpleNamespace
 import logging, os, shutil
 
 log = logging.getLogger(__name__)
@@ -256,52 +257,40 @@ class TargetAndroid:
         self._update_libraries_references(dist_dir)
         self._generate_whitelist(dist_dir)
         def downstreamargs():
-            yield from (
-                '--name', config.get('app', 'title'),
-                '--version', version,
-                '--package', self._get_package(),
-                '--min_sdk_version', config.getdefault('app', 'android.minapi', self.android_minapi),
-                '--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity'),
-                '--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar'),
-            )
-            for permission in self._permissions():
-                yield from ["--permissions", permission]
-            for option in config.getlist('app', 'android.add_compile_options', []):
-                yield from ['--compile_options', option]
-            for repo in config.getlist('app','android.add_gradle_repositories', []):
-                yield from ['--gradle_repositories', repo]
-            for pkgoption in config.getlist('app','android.add_packaging_options', []):
-                yield from ['--packaging_options', pkgoption]
-            for meta in self._meta_data():
-                yield from ['--meta-data', meta]
-            for activity in config.getlist('app', 'android.add_activities', []):
-                yield from ["--add-activity", activity]
+            yield 'name', config.get('app', 'title')
+            yield 'version', version
+            yield 'package', self._get_package()
+            yield 'min_sdk_version', int(config.getdefault('app', 'android.minapi', self.android_minapi))
+            yield 'android_entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
+            yield 'android_apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar')
+            yield 'permissions', list(self._permissions())
+            yield 'compile_options', config.getlist('app', 'android.add_compile_options', [])
+            yield 'gradle_repositories', config.getlist('app','android.add_gradle_repositories', [])
+            yield 'packaging_options', config.getlist('app','android.add_packaging_options', [])
+            yield 'meta_data', list(self._meta_data())
+            add_activity = config.getlist('app', 'android.add_activities', [])
+            yield 'add_activity', add_activity if add_activity else None
             icon = config.getdefault('app', 'icon.filename', '')
-            if icon:
-                yield from ["--icon", (self.config.workspace / icon).expanduser().resolve()]
-            yield from ['--wakelock', repr(True if config.getbooldefault('app', 'android.wakelock', False) else None)]
+            yield 'icon', (self.config.workspace / icon).expanduser().resolve() if icon else None
+            yield 'wakelock', True if config.getbooldefault('app', 'android.wakelock', False) else None
             intent_filters = config.getdefault('app', 'android.manifest.intent_filters', '')
-            if intent_filters:
-                yield from ["--intent-filters", self.config.workspace / intent_filters]
+            yield 'intent_filters', self.config.workspace / intent_filters if intent_filters else None
             launch_mode = config.getdefault('app', 'android.manifest.launch_mode', '')
-            yield from ["--activity-launch-mode", launch_mode if launch_mode else 'singleTask']
+            yield 'activity_launch_mode', launch_mode if launch_mode else 'singleTask'
             if self.bootstrapname != 'service_only':
-                yield from ["--orientation", self._orientation()]
-                yield from ['--window', repr(not config.getbooldefault('app', 'fullscreen', True))]
+                yield 'orientation', self._orientation()
+                yield 'window', not config.getbooldefault('app', 'fullscreen', True)
                 presplash = config.getdefault('app', 'presplash.filename', '')
-                if presplash:
-                    yield from ["--presplash", (self.config.workspace / presplash).expanduser().resolve()]
+                yield 'presplash', (self.config.workspace / presplash).expanduser().resolve() if presplash else None
                 presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
-                yield from ['--presplash-color', presplash_color if presplash_color else '#000000']
-            yield from ['--sign', repr(True if self.config.build_mode != 'debug' and self._check_p4a_sign_env(True) else None)]
-            for service in self.config.getlist('app', 'services', []):
-                yield from ['--services', service]
-            for lib in self.config.getlist('app', 'android.uses_library', ''):
-                yield from ['--android_used_libs', lib]
-            for gradle_dependency in self.config.getlist('app', 'android.gradle_dependencies', []):
-                yield from ['--depends', gradle_dependency]
+                yield 'presplash_color', presplash_color if presplash_color else '#000000'
+            yield 'sign', True if self.config.build_mode != 'debug' and self._check_p4a_sign_env(True) else None
+            yield 'services', self.config.getlist('app', 'services', [])
+            yield 'android_used_libs', self.config.getlist('app', 'android.uses_library', [])
+            depends = self.config.getlist('app', 'android.gradle_dependencies', [])
+            yield 'depends', depends if depends else None
             if self.bootstrapname == 'webview':
-                yield from ['--port', '5000']
+                yield 'port', '5000'
         makeapk(
             self.dirs.android_sdk_dir,
             self.dirs.android_ndk_dir,
@@ -314,7 +303,7 @@ class TargetAndroid:
             self.config.workspace / 'local_recipes',
             self.dirs.app_dir,
             self.config.build_mode != 'debug',
-            list(downstreamargs()),
+            SimpleNamespace(**dict(downstreamargs())),
         )
         if self.config.build_mode == 'debug':
             mode_sign = mode = 'debug'
