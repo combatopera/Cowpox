@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info, warning
 from .util import urlretrieve
 from diapyr.util import singleton
 from hashlib import md5
@@ -65,7 +64,7 @@ class Mirror:
     def download(self, url):
         mirrorpath = self.mirror / md5(url.encode('ascii')).hexdigest()
         if mirrorpath.exists():
-            info("Already downloaded: %s", url) # XXX: How to enable debug?
+            log.info("Already downloaded: %s", url)
         else:
             partialpath = mirrorpath.with_name(mirrorpath.name + '.part')
             attempts = 0
@@ -77,7 +76,7 @@ class Mirror:
                     attempts += 1
                     if attempts >= 5:
                         raise
-                warning('Download failed retrying in a second...')
+                log.warning('Download failed retrying in a second...')
                 time.sleep(1)
             partialpath.rename(mirrorpath)
         return mirrorpath
