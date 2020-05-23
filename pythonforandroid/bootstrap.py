@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info, logger, debug
+from .logger import info, debug
 from .recipe import Recipe
 from .util import current_directory, ensure_dir
 from importlib import import_module
@@ -46,7 +46,9 @@ from lagoon import cp, find, mv, rm, unzip
 from os import listdir, walk, sep
 from os.path import join, dirname, isdir, normpath, splitext, basename
 from tempfile import TemporaryDirectory
-import functools, glob, os, sh, shlex, shutil
+import functools, glob, logging, os, sh, shlex, shutil
+
+log = logging.getLogger(__name__)
 
 def _copy_files(src_root, dest_root, override):
     for root, dirnames, filenames in walk(src_root):
@@ -327,12 +329,12 @@ class Bootstrap:
             strip = strip.bake(tokens[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
         filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so').splitlines()
-        logger.info('Stripping libraries in private dir')
+        log.info('Stripping libraries in private dir')
         for filen in filens:
             try:
                 strip(filen, _env=env)
             except sh.ErrorReturnCode_1:
-                logger.debug('Failed to strip ' + filen)
+                log.debug("Failed to strip %s", filen)
 
     def fry_eggs(self, sitepackages):
         info('Frying eggs in {}'.format(sitepackages))
