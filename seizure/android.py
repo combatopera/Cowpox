@@ -246,7 +246,7 @@ class TargetAndroid:
         return 'sensor' if orientation == 'all' else orientation
 
     def _meta_data(self):
-        for meta in config.getlistvalues('app', 'android.meta_data', []):
+        for meta in self.config.getlistvalues('app', 'android.meta_data', []):
             yield '='.join(korv.strip() for korv in meta.split('=', 1))
 
     def build_package(self):
