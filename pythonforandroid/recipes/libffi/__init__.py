@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from lagoon import make
+from lagoon import autoreconf, make
 from multiprocessing import cpu_count
 from pathlib import Path
 from pythonforandroid.recipe import Recipe
@@ -68,9 +68,7 @@ class LibffiRecipe(Recipe):
     # Version pinned to post `v3.3RC0`
     version = '8fa8837'
     url = 'https://github.com/libffi/libffi/archive/{version}.tar.gz'
-
     patches = ['remove-version-info.patch']
-
     built_libraries = {'libffi.so': '.libs'}
 
     def build_arch(self, arch):
@@ -78,7 +76,7 @@ class LibffiRecipe(Recipe):
         with current_directory(self.get_build_dir(arch.arch)):
             if not Path('configure').exists():
                 shprint(sh.Command('./autogen.sh'), _env = env)
-            shprint(sh.Command('autoreconf'), '-vif', _env = env)
+            autoreconf._vif.print(env = env)
             shprint(sh.Command('./configure'), f"--host={arch.command_prefix}", f"--prefix={self.get_build_dir(arch.arch)}", '--disable-builddir', '--enable-shared', _env = env)
             make.print('-j', cpu_count(), 'libffi.la', env = env)
 
