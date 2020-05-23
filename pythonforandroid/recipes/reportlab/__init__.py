@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from pythonforandroid.logger import shprint
-from pythonforandroid.recipe import CompiledComponentsPythonRecipe
+from p4a import CompiledComponentsPythonRecipe
 from pythonforandroid.util import current_directory, ensure_dir
 import logging, os, sh
 

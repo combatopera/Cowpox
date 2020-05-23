@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from lagoon.program import Program
-from pythonforandroid.recipe import BootstrapNDKRecipe
+from p4a import BootstrapNDKRecipe
 from pythonforandroid.util import current_directory
 
 class LibSDL2Recipe(BootstrapNDKRecipe):

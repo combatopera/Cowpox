@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from pythonforandroid.logger import shprint
 from pythonforandroid.util import current_directory
 from os.path import join, exists

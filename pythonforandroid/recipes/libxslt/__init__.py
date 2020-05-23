@@ -41,7 +41,7 @@
 from lagoon import autoreconf, gcc, make
 from os.path import join
 from pathlib import Path
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from pythonforandroid.util import current_directory
 from pythonforandroid.logger import shprint
 import sh

@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 import os
-from pythonforandroid.recipe import PythonRecipe
+from p4a import PythonRecipe
 
 
 # todo: CompiledComponentsPythonRecipe

@@ -40,7 +40,7 @@
 
 from os.path import join
 import sh
-from pythonforandroid.recipe import NDKRecipe
+from p4a import NDKRecipe
 from pythonforandroid.util import current_directory
 from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count

@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.recipe import CythonRecipe, Recipe
+from p4a import CythonRecipe, Recipe
 from os.path import join
 
 class FFPyPlayerRecipe(CythonRecipe):

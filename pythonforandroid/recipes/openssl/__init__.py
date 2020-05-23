@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from lagoon import make, perl
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from pythonforandroid.util import current_directory
 
 class OpenSSLRecipe(Recipe):

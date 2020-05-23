@@ -40,7 +40,7 @@
 
 from os.path import join
 from pythonforandroid.logger import shprint
-from pythonforandroid.recipe import NDKRecipe
+from p4a import NDKRecipe
 from pythonforandroid.util import current_directory
 import os, sh
 

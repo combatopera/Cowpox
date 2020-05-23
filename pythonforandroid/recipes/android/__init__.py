@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from os.path import join
-from pythonforandroid.recipe import CythonRecipe, IncludedFilesBehaviour
+from p4a import CythonRecipe, IncludedFilesBehaviour
 from pythonforandroid.util import current_directory
 from pythonforandroid.patching import will_build
 import logging

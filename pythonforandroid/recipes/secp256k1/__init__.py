@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 import os
-from pythonforandroid.recipe import CppCompiledComponentsPythonRecipe
+from p4a import CppCompiledComponentsPythonRecipe
 
 
 class Secp256k1Recipe(CppCompiledComponentsPythonRecipe):

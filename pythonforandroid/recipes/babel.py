@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.recipe import PythonRecipe
+from p4a import PythonRecipe
 
 
 class BabelRecipe(PythonRecipe):

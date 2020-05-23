@@ -40,7 +40,7 @@
 
 from copy import deepcopy
 from itertools import product
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from pythonforandroid.util import BuildInterruptingException
 import logging
 

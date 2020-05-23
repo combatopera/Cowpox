@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from pythonforandroid.util import current_directory, build_platform
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from pythonforandroid.logger import shprint
 from os.path import join, exists
 import os, sh, shutil

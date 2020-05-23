@@ -40,7 +40,7 @@
 
 import sh
 from pythonforandroid.python import GuestPythonRecipe
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from pythonforandroid.patching import version_starts_with
 
 
@@ -67,8 +67,8 @@ class Python3Recipe(GuestPythonRecipe):
     .. note:: This recipe can be built only against API 21+.
 
     .. versionchanged:: 2019.10.06.post0
-        Added optional dependencies: :mod:`~pythonforandroid.recipes.libbz2`
-        and :mod:`~pythonforandroid.recipes.liblzma`
+        Added optional dependencies: :mod:`~p4as.libbz2`
+        and :mod:`~p4as.liblzma`
     .. versionchanged:: 0.6.0
         Refactored into class
         :class:`~pythonforandroid.python.GuestPythonRecipe`

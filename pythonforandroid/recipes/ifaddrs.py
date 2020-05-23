@@ -40,7 +40,7 @@
 
 from os.path import join, exists
 from pythonforandroid.logger import shprint
-from pythonforandroid.recipe import CompiledComponentsPythonRecipe
+from p4a import CompiledComponentsPythonRecipe
 from pythonforandroid.util import current_directory
 import logging, sh
 

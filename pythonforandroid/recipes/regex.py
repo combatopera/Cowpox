@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.recipe import CompiledComponentsPythonRecipe
+from p4a import CompiledComponentsPythonRecipe
 
 
 class RegexRecipe(CompiledComponentsPythonRecipe):

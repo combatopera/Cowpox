@@ -38,8 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .mirror import Mirror
-from .util import current_directory, ensure_dir, BuildInterruptingException
 from distutils.version import LooseVersion
 from importlib import import_module
 from lagoon import basename, cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
@@ -47,6 +45,8 @@ from lagoon.program import Program
 from os import listdir, walk
 from os.path import exists, join, split
 from pathlib import Path
+from pythonforandroid.mirror import Mirror
+from pythonforandroid.util import current_directory, ensure_dir, BuildInterruptingException
 from urllib.parse import urlparse
 from zipfile import ZipFile
 import fnmatch, glob, hashlib, logging, os, re, shutil, subprocess

@@ -38,11 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .recipe import Recipe
 from .util import build_platform
 from glob import glob
 from multiprocessing import cpu_count
 from os.path import join
+from p4a import Recipe
 import os
 
 class Arch:

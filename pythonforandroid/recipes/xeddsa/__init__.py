@@ -40,7 +40,7 @@
 
 from os.path import join
 from pythonforandroid.logger import shprint
-from pythonforandroid.recipe import CythonRecipe
+from p4a import CythonRecipe
 from pythonforandroid.util import current_directory
 import sh
 

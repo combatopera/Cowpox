@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 import os
-from pythonforandroid.recipe import CompiledComponentsPythonRecipe
+from p4a import CompiledComponentsPythonRecipe
 
 
 class CffiRecipe(CompiledComponentsPythonRecipe):

@@ -42,7 +42,7 @@ from os import makedirs, remove
 from os.path import exists, join
 import sh
 
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from pythonforandroid.logger import shprint
 
 
@@ -51,8 +51,8 @@ class LibRt(Recipe):
     This is a dumb recipe. We may need this because some recipes inserted some
     flags `-lrt` without our control, case of:
 
-        - :class:`~pythonforandroid.recipes.gevent.GeventRecipe`
-        - :class:`~pythonforandroid.recipes.lxml.LXMLRecipe`
+        - :class:`~p4as.gevent.GeventRecipe`
+        - :class:`~p4as.lxml.LXMLRecipe`
 
     .. note:: the librt doesn't exist in android but it is integrated into
         libc, so we create a symbolic link which we will remove when our build

@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from os.path import join
-from pythonforandroid.recipe import PythonRecipe
+from p4a import PythonRecipe
 from pythonforandroid.util import current_directory
 import sh
 

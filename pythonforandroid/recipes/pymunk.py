@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from os.path import join
-from pythonforandroid.recipe import CompiledComponentsPythonRecipe
+from p4a import CompiledComponentsPythonRecipe
 
 
 class PymunkRecipe(CompiledComponentsPythonRecipe):

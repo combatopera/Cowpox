@@ -42,7 +42,7 @@ from lagoon import autoreconf, make
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from pythonforandroid.util import current_directory
 import os
 

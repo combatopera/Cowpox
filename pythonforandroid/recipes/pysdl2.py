@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 
-from pythonforandroid.recipe import PythonRecipe
+from p4a import PythonRecipe
 
 
 class PySDL2Recipe(PythonRecipe):

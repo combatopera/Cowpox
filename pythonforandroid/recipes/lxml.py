@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.recipe import Recipe, CompiledComponentsPythonRecipe
+from p4a import Recipe, CompiledComponentsPythonRecipe
 from os.path import exists, join
 from os import uname
 

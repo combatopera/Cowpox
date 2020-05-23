@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from os.path import join, exists
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from pythonforandroid.python import GuestPythonRecipe
 from pythonforandroid.logger import shprint
 import logging, sh

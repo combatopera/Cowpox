@@ -40,7 +40,7 @@
 
 from os.path import join
 from pathlib import Path
-from pythonforandroid.recipe import CppCompiledComponentsPythonRecipe
+from p4a import CppCompiledComponentsPythonRecipe
 from pythonforandroid.util import ensure_dir
 import logging
 

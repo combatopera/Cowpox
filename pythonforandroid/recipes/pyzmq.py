@@ -40,7 +40,7 @@
 
 # coding=utf-8
 
-from pythonforandroid.recipe import CythonRecipe, Recipe
+from p4a import CythonRecipe, Recipe
 from os.path import join
 from pythonforandroid.util import current_directory
 import sh

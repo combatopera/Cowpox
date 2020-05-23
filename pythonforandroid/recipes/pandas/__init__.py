@@ -40,7 +40,7 @@
 
 from os.path import join
 
-from pythonforandroid.recipe import CppCompiledComponentsPythonRecipe
+from p4a import CppCompiledComponentsPythonRecipe
 
 
 class PandasRecipe(CppCompiledComponentsPythonRecipe):

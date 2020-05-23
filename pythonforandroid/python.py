@@ -38,12 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .recipe import Recipe, TargetPythonRecipe
 from .util import current_directory, ensure_dir, walk_valid_filens, BuildInterruptingException
 from lagoon import cp, make, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from os.path import dirname, exists, join, isfile
+from p4a import Recipe, TargetPythonRecipe
 from shutil import copy2
 import glob, logging, os, sh, subprocess
 

@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 
-from pythonforandroid.recipe import CythonRecipe
+from p4a import CythonRecipe
 from os.path import join
 
 

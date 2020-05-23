@@ -40,7 +40,7 @@
 
 from os.path import exists, join, basename
 from pythonforandroid.logger import shprint
-from pythonforandroid.recipe import CythonRecipe
+from p4a import CythonRecipe
 from pythonforandroid.util import current_directory
 import glob, sh
 

@@ -44,7 +44,7 @@ from multiprocessing import cpu_count
 
 from pythonforandroid.archs import Arch
 from pythonforandroid.logger import shprint
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from pythonforandroid.util import current_directory
 
 

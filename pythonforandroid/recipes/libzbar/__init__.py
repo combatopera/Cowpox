@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 import os
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from pythonforandroid.util import current_directory
 from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count

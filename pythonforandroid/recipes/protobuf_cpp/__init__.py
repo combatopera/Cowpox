@@ -41,7 +41,7 @@
 from multiprocessing import cpu_count
 from os.path import exists, join
 from pythonforandroid.logger import shprint
-from pythonforandroid.recipe import CppCompiledComponentsPythonRecipe
+from p4a import CppCompiledComponentsPythonRecipe
 from pythonforandroid.util import current_directory
 import logging, os, sh, sys
 

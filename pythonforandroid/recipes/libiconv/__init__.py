@@ -40,7 +40,7 @@
 
 from pythonforandroid.logger import shprint
 from pythonforandroid.util import current_directory
-from pythonforandroid.recipe import Recipe
+from p4a import Recipe
 from multiprocessing import cpu_count
 import sh
 
