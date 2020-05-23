@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info, debug, info_main
+from .logger import info, debug
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
@@ -304,7 +304,7 @@ class Recipe(metaclass = RecipeMeta):
         return self.ctx.root_dir / 'recipes' / self.name
 
     def download_if_necessary(self):
-        info_main('Downloading {}'.format(self.name))
+        log.info("Downloading %s", self.name)
         user_dir = os.environ.get('P4A_{}_DIR'.format(self.name.lower()))
         if user_dir is not None:
             info('P4A_{}_DIR is set, skipping download for {}'.format(
@@ -367,7 +367,7 @@ class Recipe(metaclass = RecipeMeta):
                 info('{} download already cached, skipping'.format(self.name))
 
     def unpack(self, arch):
-        info_main('Unpacking {} for {}'.format(self.name, arch))
+        log.info("Unpacking %s for %s", self.name, arch)
         build_dir = self.get_build_container_dir(arch)
         user_dir = os.environ.get('P4A_{}_DIR'.format(self.name.lower()))
         if user_dir is not None:
@@ -472,13 +472,10 @@ class Recipe(metaclass = RecipeMeta):
         .. versionchanged:: 0.6.0
             Add ability to apply patches from any dir via kwarg `build_dir`'''
         if self.patches:
-            info_main('Applying patches for {}[{}]'
-                      .format(self.name, arch.arch))
-
+            log.info("Applying patches for %s[%s]", self.name, arch.arch)
             if self.is_patched(arch):
-                info_main('{} already patched, skipping'.format(self.name))
+                log.info("%s already patched, skipping", self.name)
                 return
-
             build_dir = build_dir if build_dir else self.get_build_dir(arch.arch)
             for patch in self.patches:
                 if isinstance(patch, (tuple, list)):
