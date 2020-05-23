@@ -356,46 +356,45 @@ def makeapkversion(args, distdir, private):
     bootstrapname = distinfo.forkey('bootstrap')
     blacklist = Blacklist(bootstrapname)
     ap = ArgumentParser()
-    ap.add_argument('--package', dest='package',
+    ap.add_argument('--package',
                     help=('The name of the java package the project will be'
                           ' packaged under.'),
                     required=True)
-    ap.add_argument('--name', dest='name',
+    ap.add_argument('--name',
                     help=('The human-readable name of the project.'),
                     required=True)
     ap.add_argument('--version', required = True)
     if bootstrapname == "sdl2":
-        ap.add_argument('--launcher', dest='launcher', action='store_true',
+        ap.add_argument('--launcher', action='store_true',
                         help=('Provide this argument to build a multi-app '
                               'launcher, rather than a single app.'))
     ap.add_argument('--permission', dest='permissions', action='append', default=[],
                     help='The permissions to give this app.', nargs='+')
-    ap.add_argument('--meta-data', dest='meta_data', action='append', default=[],
+    ap.add_argument('--meta-data', action='append', default=[],
                     help='Custom key=value to add in application metadata')
     ap.add_argument('--uses-library', dest='android_used_libs', action='append', default=[],
                     help='Used shared libraries included using <uses-library> tag in AndroidManifest.xml')
-    ap.add_argument('--icon', dest='icon',
+    ap.add_argument('--icon',
                     help=('A png file to use as the icon for '
                           'the application.'))
     ap.add_argument('--service', dest='services', action='append', default=[],
                     help='Declare a new service entrypoint: '
                          'NAME:PATH_TO_PY[:foreground]')
     if bootstrapname != "service_only":
-        ap.add_argument('--presplash', dest='presplash',
+        ap.add_argument('--presplash',
                         help=('A jpeg file to use as a screen while the '
                               'application is loading.'))
         ap.add_argument('--presplash-color',
-                        dest='presplash_color',
                         default='#000000',
                         help=('A string to set the loading screen '
                               'background color. '
                               'Supported formats are: '
                               '#RRGGBB #AARRGGBB or color names '
                               'like red, green, blue, etc.'))
-        ap.add_argument('--window', dest='window', action='store_true',
+        ap.add_argument('--window', action='store_true',
                         default=False,
                         help='Indicate if the application will be windowed')
-        ap.add_argument('--orientation', dest='orientation',
+        ap.add_argument('--orientation',
                         default='portrait',
                         help=('The orientation that the game will '
                               'display in. '
@@ -408,11 +407,10 @@ def makeapkversion(args, distdir, private):
                               'https://developer.android.com/guide/'
                               'topics/manifest/'
                               'activity-element.html'))
-
-    ap.add_argument('--android-entrypoint', dest='android_entrypoint',
+    ap.add_argument('--android-entrypoint',
                     default='org.kivy.android.PythonActivity',
                     help='Defines which java class will be used for startup, usually a subclass of PythonActivity')
-    ap.add_argument('--android-apptheme', dest='android_apptheme',
+    ap.add_argument('--android-apptheme',
                     default='@android:style/Theme.NoTitleBar',
                     help='Defines which app theme should be selected for the main activity')
     ap.add_argument('--add-compile-option', dest='compile_options', default=[],
@@ -426,7 +424,7 @@ def makeapkversion(args, distdir, private):
                     action='append',
                     help='Dndroid packaging options')
 
-    ap.add_argument('--wakelock', dest='wakelock', action='store_true',
+    ap.add_argument('--wakelock', action='store_true',
                     help=('Indicate if the application needs the device '
                           'to stay on'))
     ap.add_argument('--depend', dest='depends', action='append',
@@ -436,7 +434,7 @@ def makeapkversion(args, distdir, private):
                     default=default_min_api, type=int,
                     help=('Minimum Android SDK version that the app supports. '
                           'Defaults to {}.'.format(default_min_api)))
-    ap.add_argument('--intent-filters', dest='intent_filters',
+    ap.add_argument('--intent-filters',
                     help=('Add intent-filters xml rules to the '
                           'AndroidManifest.xml file. The argument is a '
                           'filename containing xml. The filename should be '
@@ -449,13 +447,12 @@ def makeapkversion(args, distdir, private):
     ap.add_argument('--sign', action='store_true',
                     help=('Try to sign the APK with your credentials. You must set '
                           'the appropriate environment variables.'))
-    ap.add_argument('--add-activity', dest='add_activity', action='append',
+    ap.add_argument('--add-activity', action='append',
                     help='Add this Java class as an Activity to the manifest.')
     ap.add_argument('--activity-launch-mode',
-                    dest='activity_launch_mode',
                     default='singleTask',
                     help='Set the launch mode of the main activity in the manifest.')
-    ap.add_argument('--allow-backup', dest='allow_backup', default='true',
+    ap.add_argument('--allow-backup', default='true',
                     help="if set to 'false', then android won't backup the application.")
     ap.add_argument('--extra-manifest-xml', default='',
                     help=('Extra xml to write directly inside the <manifest> element of'
