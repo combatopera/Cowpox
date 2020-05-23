@@ -359,7 +359,7 @@ def makeapkversion(args, distdir, private):
     ap.add_argument('--package', required=True)
     ap.add_argument('--name', required=True)
     ap.add_argument('--version', required = True)
-    ap.add_argument('--permissions', action='append', default=[], nargs='+')
+    ap.add_argument('--permissions', action='append', default=[])
     ap.add_argument('--meta-data', action='append', default=[])
     ap.add_argument('--android_used_libs', action='append', default=[])
     ap.add_argument('--icon')
