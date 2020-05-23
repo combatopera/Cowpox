@@ -180,22 +180,11 @@ class Arch:
                 {k: v for k, v in os.environ.items() if k.startswith('CCACHE_')}
             )
         if with_flags_in_cc:
-            env['CC'] = '{ccache}{exe} {cflags}'.format(
-                exe=self.clang_exe,
-                ccache=ccache,
-                cflags=env['CFLAGS'])
-            env['CXX'] = '{ccache}{execxx} {cxxflags}'.format(
-                execxx=self.clang_exe_cxx,
-                ccache=ccache,
-                cxxflags=env['CXXFLAGS'])
+            env['CC'] = f"{ccache}{self.clang_exe} {env['CFLAGS']}"
+            env['CXX'] = f"{ccache}{self.clang_exe_cxx} {env['CXXFLAGS']}"
         else:
-            env['CC'] = '{ccache}{exe}'.format(
-                exe=self.clang_exe,
-                ccache=ccache)
-            env['CXX'] = '{ccache}{execxx}'.format(
-                execxx=self.clang_exe_cxx,
-                ccache=ccache)
-
+            env['CC'] = f"{ccache}{self.clang_exe}"
+            env['CXX'] = f"{ccache}{self.clang_exe_cxx}"
         # Android's binaries
         command_prefix = self.command_prefix
         env['AR'] = '{}-ar'.format(command_prefix)
