@@ -38,16 +38,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
-from .logger import info, warning, info_notify, info_main
-from .pythonpackage import get_package_name
-from .recipe import CythonRecipe, Recipe
-from .recommendations import check_ndk_version, check_target_api, check_ndk_api
-from .util import current_directory, ensure_dir, BuildInterruptingException
 from lagoon import cp, virtualenv
 from lagoon.program import Program
 from os.path import join, dirname, exists, split, isdir
 from pathlib import Path
+from pythonforandroid.archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
+from pythonforandroid.logger import info, warning, info_notify, info_main
+from pythonforandroid.pythonpackage import get_package_name
+from pythonforandroid.recipe import CythonRecipe, Recipe
+from pythonforandroid.recommendations import check_ndk_version, check_target_api, check_ndk_api
+from pythonforandroid.util import current_directory, ensure_dir, BuildInterruptingException
 import copy, glob, logging, os, re, sh, subprocess
 
 log = logging.getLogger(__name__)
