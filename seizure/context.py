@@ -43,7 +43,7 @@ from lagoon.program import Program
 from os.path import join, dirname, exists, split, isdir
 from pathlib import Path
 from pythonforandroid.archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
-from pythonforandroid.logger import info, warning, info_notify, info_main
+from pythonforandroid.logger import info, info_notify, info_main
 from pythonforandroid.pythonpackage import get_package_name
 from pythonforandroid.recipe import CythonRecipe, Recipe
 from pythonforandroid.recommendations import check_ndk_version, check_target_api, check_ndk_api
@@ -57,7 +57,7 @@ def get_ndk_platform_dir(ndk_dir, ndk_api, arch):
     platform_dir = arch.platform_dir
     ndk_platform = ndk_dir / 'platforms' / f"android-{ndk_api}" / platform_dir
     if not ndk_platform.exists():
-        warning("ndk_platform doesn't exist: {}".format(ndk_platform))
+        log.warning("ndk_platform doesn't exist: %s", ndk_platform)
         ndk_platform_dir_exists = False
     return ndk_platform, ndk_platform_dir_exists
 
@@ -72,7 +72,7 @@ def get_toolchain_versions(ndk_dir, arch):
         toolchain_versions = [split(path)[-1][len(toolchain_prefix) + 1:]
                               for path in toolchain_contents]
     else:
-        warning('Could not find toolchain subdirectory!')
+        log.warning('Could not find toolchain subdirectory!')
         toolchain_path_exists = False
     return toolchain_versions, toolchain_path_exists
 
@@ -300,29 +300,23 @@ def build_recipes(build_order, python_modules, ctx):
         info_notify(
             ('The requirements ({}) were not found as recipes, they will be '
              'installed with pip.').format(', '.join(python_modules)))
-
     recipes = [Recipe.get_recipe(name, ctx) for name in build_order]
-
     # download is arch independent
     info_main('# Downloading recipes ')
     for recipe in recipes:
         recipe.download_if_necessary()
-
     for arch in ctx.archs:
         info_main('# Building all recipes for arch {}'.format(arch.arch))
-
         info_main('# Unpacking recipes')
         for recipe in recipes:
             ensure_dir(recipe.get_build_container_dir(arch.arch))
             recipe.prepare_build_dir(arch.arch)
-
         info_main('# Prebuilding recipes')
         # 2) prebuild packages
         for recipe in recipes:
             info_main('Prebuilding {} for {}'.format(recipe.name, arch.arch))
             recipe.prebuild_arch(arch)
             recipe.apply_patches(arch)
-
         # 3) build packages
         info_main('# Building recipes')
         for recipe in recipes:
@@ -333,17 +327,12 @@ def build_recipes(build_order, python_modules, ctx):
             else:
                 info('{} said it is already built, skipping'
                      .format(recipe.name))
-
         # 4) biglink everything
         info_main('# Biglinking object files')
         if not ctx.python_recipe:
             biglink(ctx, arch)
         else:
-            warning(
-                "Context's python recipe found, "
-                "skipping biglink (will this work?)"
-            )
-
+            log.warning('''Context's python recipe found, skipping biglink (will this work?)''')
         # 5) postbuild packages
         info_main('# Postbuilding recipes')
         for recipe in recipes:
