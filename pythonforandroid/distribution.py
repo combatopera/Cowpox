@@ -171,14 +171,7 @@ class Distribution:
 def _pretty_log_dists(dists):
     infos = []
     for dist in dists:
-        ndk_api = 'unknown' if dist.ndk_api is None else dist.ndk_api
-        infos.append('{name}: min API {ndk_api}, '
-                     'includes recipes ({recipes}'
-                     '), built for archs ('
-                     '{archs})'.format(
-                         ndk_api=ndk_api,
-                         name=dist.name, recipes=', '.join(dist.recipes),
-                         archs=', '.join(dist.archs) if dist.archs else 'UNKNOWN'))
+        infos.append(f"{dist.name}: min API {'unknown' if dist.ndk_api is None else dist.ndk_api}, includes recipes ({', '.join(dist.recipes)}), built for archs ({', '.join(dist.archs) if dist.archs else 'UNKNOWN'})")
     for line in infos:
         log.info("\t%s", line)
 
