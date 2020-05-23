@@ -38,14 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from __future__ import unicode_literals
+from os.path import join
 from pythonforandroid.recipe import CythonRecipe, IncludedFilesBehaviour
 from pythonforandroid.util import current_directory
 from pythonforandroid.patching import will_build
 from pythonforandroid import logger
-
-from os.path import join
-
 
 class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
     # name = 'android'
@@ -123,6 +120,5 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
                 fh.write(
                     '#define SDL_ANDROID_GetJNIEnv SDL_AndroidGetJNIEnv\n'
                 )
-
 
 recipe = AndroidRecipe()
