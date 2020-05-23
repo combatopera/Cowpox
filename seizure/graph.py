@@ -38,11 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info
-from .recipe import Recipe
-from .util import BuildInterruptingException
 from copy import deepcopy
 from itertools import product
+from pythonforandroid.logger import info
+from pythonforandroid.recipe import Recipe
+from pythonforandroid.util import BuildInterruptingException
 
 def fix_deplist(deps):
     """ Turn a dependency list into lowercase, and make sure all entries
