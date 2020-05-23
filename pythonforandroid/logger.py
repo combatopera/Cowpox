@@ -148,11 +148,7 @@ def shprint(command, *args, **kwargs):
     string = ' '.join(['{}->{} running'.format(Out_Fore.LIGHTBLACK_EX,
                                                Out_Style.RESET_ALL),
                        command_string] + list(args))
-    # If logging is not in DEBUG mode, trim the command if necessary
-    if logger.level > logging.DEBUG:
-        log.info("%s%s", _shorten_string(string, columns - 12), Err_Style.RESET_ALL)
-    else:
-        log.debug("%s%s", string, Err_Style.RESET_ALL)
+    log.debug("%s%s", string, Err_Style.RESET_ALL)
     need_closing_newline = False
     try:
         msg_hdr = '           working: '
@@ -161,24 +157,7 @@ def shprint(command, *args, **kwargs):
         for line in output:
             if isinstance(line, bytes):
                 line = line.decode('utf-8', errors='replace')
-            if logger.level > logging.DEBUG:
-                if full_debug:
-                    stdout.write(line)
-                    stdout.flush()
-                    continue
-                msg = line.replace(
-                    '\n', ' ').replace(
-                        '\t', ' ').replace(
-                            '\b', ' ').rstrip()
-                if msg:
-                    if "CI" not in os.environ:
-                        stdout.write(u'{}\r{}{:<{width}}'.format(
-                            Err_Style.RESET_ALL, msg_hdr,
-                            _shorten_string(msg, msg_width), width=msg_width))
-                        stdout.flush()
-                        need_closing_newline = True
-            else:
-                log.debug("\t%s", line.rstrip())
+            log.debug("\t%s", line.rstrip())
         if need_closing_newline:
             stdout.write('{}\r{:>{width}}\r'.format(
                 Err_Style.RESET_ALL, ' ', width=(columns - 1)))
