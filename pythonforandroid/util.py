@@ -38,14 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import logger, Err_Fore
 from fnmatch import fnmatch
 from os import makedirs, walk
 from os.path import exists, join
 from pathlib import Path
-from tempfile import mkdtemp
 from urllib.request import FancyURLopener
-import contextlib, logging, os, shutil
+import contextlib, logging, os
 
 log = logging.getLogger(__name__)
 
@@ -64,19 +62,6 @@ def current_directory(new_dir):
     yield
     log.info("<- directory context %s", cur_dir)
     os.chdir(cur_dir)
-
-@contextlib.contextmanager
-def temp_directory():
-    temp_dir = mkdtemp()
-    try:
-        logger.debug(''.join((Err_Fore.CYAN, ' + temp directory used ',
-                              temp_dir, Err_Fore.RESET)))
-        yield temp_dir
-    finally:
-        shutil.rmtree(temp_dir)
-        logger.debug(''.join((Err_Fore.CYAN, ' - temp directory deleted ',
-                              temp_dir, Err_Fore.RESET)))
-
 
 def ensure_dir(filename):
     if not exists(filename):

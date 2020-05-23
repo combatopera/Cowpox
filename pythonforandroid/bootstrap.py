@@ -40,11 +40,12 @@
 
 from .logger import info, logger, debug
 from .recipe import Recipe
-from .util import current_directory, ensure_dir, temp_directory
+from .util import current_directory, ensure_dir
 from importlib import import_module
 from lagoon import cp, find, mv, rm, unzip
 from os import listdir, walk, sep
 from os.path import join, dirname, isdir, normpath, splitext, basename
+from tempfile import TemporaryDirectory
 import functools, glob, os, sh, shlex, shutil
 
 def _copy_files(src_root, dest_root, override):
@@ -293,7 +294,7 @@ class Bootstrap:
 
     def _unpack_aar(self, aar, arch):
         '''Unpack content of .aar bundle and copy to current dist dir.'''
-        with temp_directory() as temp_dir:
+        with TemporaryDirectory() as temp_dir:
             name = splitext(basename(aar))[0]
             jar_name = name + '.jar'
             info("unpack {} aar".format(name))
