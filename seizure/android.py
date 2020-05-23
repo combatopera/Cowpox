@@ -278,8 +278,7 @@ class TargetAndroid:
             icon = config.getdefault('app', 'icon.filename', '')
             if icon:
                 yield from ["--icon", (self.config.workspace / icon).expanduser().resolve()]
-            if config.getbooldefault('app', 'android.wakelock', False):
-                yield "--wakelock"
+            yield from ['--wakelock', repr(True if config.getbooldefault('app', 'android.wakelock', False) else None)]
             intent_filters = config.getdefault('app', 'android.manifest.intent_filters', '')
             if intent_filters:
                 yield from ["--intent-filters", self.config.workspace / intent_filters]
@@ -288,10 +287,8 @@ class TargetAndroid:
                 yield from ["--activity-launch-mode", launch_mode]
             if self.bootstrapname != 'service_only':
                 yield from ["--orientation", self._orientation()]
-                if not config.getbooldefault('app', 'fullscreen', True):
-                    yield "--window"
-            if self.config.build_mode != 'debug' and self._check_p4a_sign_env(True):
-                yield '--sign'
+                yield from ['--window', repr(not config.getbooldefault('app', 'fullscreen', True))]
+            yield from ['--sign', repr(True if self.config.build_mode != 'debug' and self._check_p4a_sign_env(True) else None)]
             presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
             if presplash_color:
                 yield from ['--presplash-color', presplash_color]

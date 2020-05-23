@@ -387,8 +387,7 @@ def makeapkversion(args, distdir, private):
                               'Supported formats are: '
                               '#RRGGBB #AARRGGBB or color names '
                               'like red, green, blue, etc.'))
-        ap.add_argument('--window', action='store_true',
-                        default=False,
+        ap.add_argument('--window', type = eval,
                         help='Indicate if the application will be windowed')
         ap.add_argument('--orientation',
                         default='portrait',
@@ -419,8 +418,7 @@ def makeapkversion(args, distdir, private):
                     default=[],
                     action='append',
                     help='Dndroid packaging options')
-
-    ap.add_argument('--wakelock', action='store_true',
+    ap.add_argument('--wakelock', type = eval,
                     help=('Indicate if the application needs the device '
                           'to stay on'))
     ap.add_argument('--depends', action='append',
@@ -440,7 +438,7 @@ def makeapkversion(args, distdir, private):
         ap.add_argument('--port',
                         help='The port on localhost that the WebView will access',
                         default='5000')
-    ap.add_argument('--sign', action='store_true',
+    ap.add_argument('--sign', type = eval,
                     help=('Try to sign the APK with your credentials. You must set '
                           'the appropriate environment variables.'))
     ap.add_argument('--add-activity', action='append',
