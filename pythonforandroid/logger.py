@@ -136,10 +136,8 @@ def shprint(command, *args, **kwargs):
     kwargs["_bg"] = True
     is_critical = kwargs.pop('_critical', False)
     tail_n = kwargs.pop('_tail', None)
-    full_debug = False
     if "P4A_FULL_DEBUG" in os.environ:
         tail_n = 0
-        full_debug = True
     filter_in = kwargs.pop('_filter', None)
     filter_out = kwargs.pop('_filterout', None)
     columns = _get_console_width()
@@ -151,8 +149,6 @@ def shprint(command, *args, **kwargs):
     log.debug("%s%s", string, Err_Style.RESET_ALL)
     need_closing_newline = False
     try:
-        msg_hdr = '           working: '
-        msg_width = columns - len(msg_hdr) - 1
         output = command(*args, **kwargs)
         for line in output:
             if isinstance(line, bytes):
