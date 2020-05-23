@@ -703,9 +703,8 @@ class NDKRecipe(Recipe):
 
     def build_arch(self, arch, *extra_args):
         super().build_arch(arch)
-        env = self.get_recipe_env(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
-            Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ctx.ndk_api}", f"APP_ABI={arch.arch}", *extra_args, env = env)
+        Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ctx.ndk_api}", f"APP_ABI={arch.arch}", *extra_args,
+                env = self.get_recipe_env(arch), cwd = self.get_build_dir(arch.arch))
 
 class PythonRecipe(Recipe):
     site_packages_name = None
