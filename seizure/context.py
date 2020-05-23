@@ -344,8 +344,7 @@ def build_recipes(build_order, python_modules, ctx):
         env.update(recipe_env)
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
-        env["PYTHONPATH"] += ":" + ctx.get_site_packages_dir()
-        env["PYTHONPATH"] = os.path.abspath(ctx.buildsdir / 'venv' / 'lib' / f"python{ctx.python_recipe.major_minor_version_string}" / 'site-packages') + ":" + env["PYTHONPATH"]
+        env['PYTHONPATH'] = f"""{(ctx.buildsdir / 'venv' / 'lib' / f"python{ctx.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{ctx.get_site_packages_dir()}"""
         # Install the manually specified requirements first:
         if not modules:
             log.info('There are no Python modules to install, skipping')
