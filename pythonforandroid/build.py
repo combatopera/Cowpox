@@ -439,7 +439,6 @@ def makeapkversion(args, distdir, private):
     ap.add_argument('--add-activity', action='append',
                     help='Add this Java class as an Activity to the manifest.')
     ap.add_argument('--activity-launch-mode',
-                    default='singleTask',
                     help='Set the launch mode of the main activity in the manifest.')
     args = ap.parse_args(args)
     args.allow_backup = 'true'

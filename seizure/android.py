@@ -280,8 +280,7 @@ class TargetAndroid:
             if intent_filters:
                 yield from ["--intent-filters", self.config.workspace / intent_filters]
             launch_mode = config.getdefault('app', 'android.manifest.launch_mode', '')
-            if launch_mode:
-                yield from ["--activity-launch-mode", launch_mode]
+            yield from ["--activity-launch-mode", launch_mode if launch_mode else 'singleTask']
             if self.bootstrapname != 'service_only':
                 yield from ["--orientation", self._orientation()]
                 yield from ['--window', repr(not config.getbooldefault('app', 'fullscreen', True))]
