@@ -169,11 +169,8 @@ class Distribution:
                           fileh)
 
 def _pretty_log_dists(dists):
-    infos = []
     for dist in dists:
-        infos.append(f"{dist.name}: min API {'unknown' if dist.ndk_api is None else dist.ndk_api}, includes recipes ({', '.join(dist.recipes)}), built for archs ({', '.join(dist.archs) if dist.archs else 'UNKNOWN'})")
-    for line in infos:
-        log.info("\t%s", line)
+        log.info(f"\t%s: min API %s, includes recipes (%s), built for archs (%s)", dist.name, 'unknown' if dist.ndk_api is None else dist.ndk_api, ', '.join(dist.recipes), ', '.join(dist.archs) if dist.archs else 'UNKNOWN')
 
 def generate_dist_folder_name(base_dist_name, arch_names = None):
     return f"{base_dist_name}__{'no_arch_specified' if arch_names is None else '_'.join(arch_names)}"
