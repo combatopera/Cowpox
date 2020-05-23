@@ -250,8 +250,6 @@ class TargetAndroid:
                 '--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity'),
                 '--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar'),
             )
-            if not config.getbooldefault('app', 'android.private_storage', True):
-                yield from ["--dir", self.dirs.app_dir.expanduser().resolve()]
             for permission in config.getlist('app', 'android.permissions', []):
                 permission = permission.split('.')
                 permission[-1] = permission[-1].upper()
@@ -313,7 +311,7 @@ class TargetAndroid:
             self.build_dir,
             int(self.config.getdefault('app', 'android.ndk_api', self.android_minapi)),
             self.config.workspace / 'local_recipes',
-            self.dirs.app_dir if config.getbooldefault('app', 'android.private_storage', True) else None,
+            self.dirs.app_dir,
             self.config.build_mode != 'debug',
             list(downstreamargs()),
         )
