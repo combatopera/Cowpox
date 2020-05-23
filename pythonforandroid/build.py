@@ -442,8 +442,6 @@ def makeapkversion(args, distdir, private):
     args = ap.parse_args(args)
     args.allow_backup = 'true'
     args.extra_manifest_xml = ''
-    if args.name and args.name[0] == '"' and args.name[-1] == '"':
-        args.name = args.name[1:-1]
     if ndk_api != args.min_sdk_version:
         log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
         raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
