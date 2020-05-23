@@ -170,7 +170,7 @@ class Distribution:
 
 def _pretty_log_dists(dists):
     for dist in dists:
-        log.info(f"\t%s: min API %s, includes recipes (%s), built for archs (%s)", dist.name, 'unknown' if dist.ndk_api is None else dist.ndk_api, ', '.join(dist.recipes), ', '.join(dist.archs) if dist.archs else 'UNKNOWN')
+        log.info("\t%s: min API %s, includes recipes (%s), built for archs (%s)", dist.name, 'unknown' if dist.ndk_api is None else dist.ndk_api, ', '.join(dist.recipes), ', '.join(dist.archs) if dist.archs else 'UNKNOWN')
 
 def generate_dist_folder_name(base_dist_name, arch_names = None):
     return f"{base_dist_name}__{'no_arch_specified' if arch_names is None else '_'.join(arch_names)}"
