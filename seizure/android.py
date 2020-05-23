@@ -288,8 +288,7 @@ class TargetAndroid:
                 if presplash:
                     yield from ["--presplash", (self.config.workspace / presplash).expanduser().resolve()]
                 presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
-                if presplash_color:
-                    yield from ['--presplash-color', presplash_color]
+                yield from ['--presplash-color', presplash_color if presplash_color else '#000000']
             yield from ['--sign', repr(True if self.config.build_mode != 'debug' and self._check_p4a_sign_env(True) else None)]
             for service in self.config.getlist('app', 'services', []):
                 yield from ['--services', service]

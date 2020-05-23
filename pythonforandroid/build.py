@@ -381,7 +381,6 @@ def makeapkversion(args, distdir, private):
                         help=('A jpeg file to use as a screen while the '
                               'application is loading.'))
         ap.add_argument('--presplash-color',
-                        default='#000000',
                         help=('A string to set the loading screen '
                               'background color. '
                               'Supported formats are: '
