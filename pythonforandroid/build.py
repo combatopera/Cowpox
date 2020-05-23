@@ -390,7 +390,6 @@ def makeapkversion(args, distdir, private):
         ap.add_argument('--window', type = eval,
                         help='Indicate if the application will be windowed')
         ap.add_argument('--orientation',
-                        default='portrait',
                         help=('The orientation that the game will '
                               'display in. '
                               'Usually one of "landscape", "portrait", '
@@ -403,10 +402,8 @@ def makeapkversion(args, distdir, private):
                               'topics/manifest/'
                               'activity-element.html'))
     ap.add_argument('--android-entrypoint',
-                    default='org.kivy.android.PythonActivity',
                     help='Defines which java class will be used for startup, usually a subclass of PythonActivity')
     ap.add_argument('--android-apptheme',
-                    default='@android:style/Theme.NoTitleBar',
                     help='Defines which app theme should be selected for the main activity')
     ap.add_argument('--compile_options', default=[],
                     action='append', help='add compile options to gradle.build')
@@ -425,7 +422,7 @@ def makeapkversion(args, distdir, private):
                     help=('Add a external dependency '
                           '(eg: com.android.support:appcompat-v7:19.0.1)'))
     ap.add_argument('--min_sdk_version',
-                    default=default_min_api, type=int,
+                    type=int,
                     help=('Minimum Android SDK version that the app supports. '
                           'Defaults to {}.'.format(default_min_api)))
     ap.add_argument('--intent-filters',
