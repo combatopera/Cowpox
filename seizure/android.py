@@ -245,6 +245,10 @@ class TargetAndroid:
         orientation = self.config.getdefault('app', 'orientation', 'landscape')
         return 'sensor' if orientation == 'all' else orientation
 
+    def _meta_data(self):
+        for meta in config.getlistvalues('app', 'android.meta_data', []):
+            yield '='.join(korv.strip() for korv in meta.split('=', 1))
+
     def build_package(self):
         dist_dir = self._get_dist_dir()
         config = self.config
@@ -268,8 +272,8 @@ class TargetAndroid:
                 yield from ['--gradle_repositories', repo]
             for pkgoption in config.getlist('app','android.add_packaging_options', []):
                 yield from ['--packaging_options', pkgoption]
-            for meta in config.getlistvalues('app', 'android.meta_data', []):
-                yield from ["--meta-data", '='.join(korv.strip() for korv in meta.split('=', 1))]
+            for meta in self._meta_data():
+                yield from ['--meta-data', meta]
             for activity in config.getlist('app', 'android.add_activities', []):
                 yield from ["--add-activity", activity]
             icon = config.getdefault('app', 'icon.filename', '')
