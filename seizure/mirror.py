@@ -38,10 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .util import urlretrieve
 from diapyr.util import singleton
 from hashlib import md5
 from pathlib import Path
+from pythonforandroid.util import urlretrieve
 import logging, os, sys, time
 
 log = logging.getLogger(__name__)
