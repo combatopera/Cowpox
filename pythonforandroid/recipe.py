@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import logger, info, debug, shprint, info_main
+from .logger import info, debug, shprint, info_main
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
@@ -643,8 +643,6 @@ class Recipe(metaclass = RecipeMeta):
         if not recipe_file:
             raise ValueError('Recipe does not exist: {}'.format(name))
         mod = import_recipe('pythonforandroid.recipes.{}'.format(name), recipe_file)
-        if len(logger.handlers) > 1:
-            logger.removeHandler(logger.handlers[1])
         recipe = mod.recipe
         recipe.ctx = ctx
         cls.recipes[name.lower()] = recipe
