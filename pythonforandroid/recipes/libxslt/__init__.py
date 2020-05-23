@@ -38,12 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from lagoon import autoreconf, gcc, make
+from os.path import join
+from pathlib import Path
 from pythonforandroid.recipe import Recipe
 from pythonforandroid.util import current_directory
 from pythonforandroid.logger import shprint
-from os.path import exists, join
 import sh
-
 
 class LibxsltRecipe(Recipe):
     version = '1.1.32'
@@ -54,7 +55,6 @@ class LibxsltRecipe(Recipe):
         'libxslt.a': 'libxslt/.libs',
         'libexslt.a': 'libexslt/.libs'
     }
-
     call_hostpython_via_targetpython = False
 
     def build_arch(self, arch):
@@ -65,12 +65,10 @@ class LibxsltRecipe(Recipe):
             # try really hard to use bash
             libxml2_recipe = Recipe.get_recipe('libxml2', self.ctx)
             libxml2_build_dir = libxml2_recipe.get_build_dir(arch.arch)
-            build_arch = shprint(sh.gcc, '-dumpmachine').stdout.decode(
-                'utf-8').split('\n')[0]
-
-            if not exists('configure'):
+            build_arch = gcc._dumpmachine().split('\n')[0]
+            if not Path('configure').exists():
                 shprint(sh.Command('./autogen.sh'), _env=env)
-            shprint(sh.Command('autoreconf'), '-vif', _env=env)
+            autoreconf._vif.print(env = env)
             shprint(sh.Command('./configure'),
                     '--build=' + build_arch,
                     '--host=' + arch.command_prefix,
@@ -82,17 +80,15 @@ class LibxsltRecipe(Recipe):
                     '--with-libxml-src=' + libxml2_build_dir,
                     '--disable-shared',
                     _env=env)
-            shprint(sh.make, "V=1", _env=env)
+            make.print('V=1', env = env)
 
     def get_recipe_env(self, arch):
         env = super(LibxsltRecipe, self).get_recipe_env(arch)
         env['CONFIG_SHELL'] = '/bin/bash'
         env['SHELL'] = '/bin/bash'
-
         libxml2_recipe = Recipe.get_recipe('libxml2', self.ctx)
         libxml2_build_dir = libxml2_recipe.get_build_dir(arch.arch)
         libxml2_libs_dir = join(libxml2_build_dir, '.libs')
-
         env['CFLAGS'] = ' '.join([
             env['CFLAGS'],
             '-I' + libxml2_build_dir,
@@ -101,8 +97,6 @@ class LibxsltRecipe(Recipe):
         ])
         env['LDFLAGS'] += ' -L' + libxml2_libs_dir
         env['LIBS'] = '-lxml2 -lz -lm'
-
         return env
-
 
 recipe = LibxsltRecipe()
