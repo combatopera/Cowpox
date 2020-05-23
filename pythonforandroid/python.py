@@ -258,37 +258,29 @@ class GuestPythonRecipe(TargetPythonRecipe):
         modules_dir = join(dirn, 'modules')
         c_ext = self.compiled_extension
         ensure_dir(modules_dir)
-        module_filens = (glob.glob(join(modules_build_dir, '*.so')) +
-                         glob.glob(join(modules_build_dir, '*' + c_ext)))
+        module_filens = glob.glob(join(modules_build_dir, '*.so')) + glob.glob(join(modules_build_dir, f"*{c_ext}"))
         log.info("Copy %s files into the bundle", len(module_filens))
         for filen in module_filens:
             log.info(" - copy %s", filen)
             copy2(filen, modules_dir)
-        # zip up the standard library
         stdlib_zip = join(dirn, 'stdlib.zip')
         with current_directory(self.get_build_dir(arch.arch) / 'Lib'):
-            stdlib_filens = list(walk_valid_filens(
-                '.', self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
+            stdlib_filens = list(walk_valid_filens('.', self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
             log.info("Zip %s files into the bundle", len(stdlib_filens))
             zip.print(stdlib_zip, *stdlib_filens)
-        # copy the site-packages into place
         ensure_dir(join(dirn, 'site-packages'))
         ensure_dir(self.ctx.get_python_install_dir())
-        # todo: Improve the API around walking and copying the files
         with current_directory(self.ctx.get_python_install_dir()):
-            filens = list(walk_valid_filens(
-                '.', self.site_packages_dir_blacklist,
-                self.site_packages_filen_blacklist))
+            filens = list(walk_valid_filens('.', self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
             log.info("Copy %s files into the site-packages", len(filens))
             for filen in filens:
                 log.info(" - copy %s", filen)
                 ensure_dir(join(dirn, 'site-packages', dirname(filen)))
                 copy2(filen, join(dirn, 'site-packages', filen))
-        python_build_dir = self.get_build_dir(arch.arch) / 'android-build'
-        python_lib_name = 'libpython' + self.major_minor_version_string
+        python_lib_name = f"libpython{self.major_minor_version_string}"
         if self.major_minor_version_string[0] == '3':
             python_lib_name += 'm'
-        cp.print(python_build_dir / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.arch)
+        cp.print(self.get_build_dir(arch.arch) / 'android-build' / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.arch)
         log.info('Renaming .so files to reflect cross-compile')
         self.reduce_object_file_names(join(dirn, 'site-packages'))
         return join(dirn, 'site-packages')
