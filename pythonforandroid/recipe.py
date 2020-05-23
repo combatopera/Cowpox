@@ -532,37 +532,6 @@ class Recipe(metaclass = RecipeMeta):
         '''
         self.unpack(arch)
 
-    def clean_build(self, arch=None):
-        '''Deletes all the build information of the recipe.
-
-        If arch is not None, only this arch dir is deleted. Otherwise
-        (the default) all builds for all archs are deleted.
-
-        By default, this just deletes the main build dir. If the
-        recipe has e.g. object files biglinked, or .so files stored
-        elsewhere, you should override this method.
-
-        This method is intended for testing purposes, it may have
-        strange results. Rebuild everything if this seems to happen.
-
-        '''
-        if arch is None:
-            base_dir = self.ctx.buildsdir / 'other_builds' / self.name
-        else:
-            base_dir = self.get_build_container_dir(arch)
-        dirs = glob.glob(base_dir + '-*')
-        if exists(base_dir):
-            dirs.append(base_dir)
-        if not dirs:
-            log.warning("Attempted to clean build for %s but found no existing build dirs", self.name)
-        for directory in dirs:
-            if exists(directory):
-                log.info("Deleting %s", directory)
-                shutil.rmtree(directory)
-        # Delete any Python distributions to ensure the recipe build
-        # doesn't persist in site-packages
-        shutil.rmtree(self.ctx.python_installs_dir)
-
     def install_libs(self, arch, *libs):
         libs_dir = self.ctx.get_libs_dir(arch.arch)
         if not libs:
@@ -754,18 +723,6 @@ class PythonRecipe(Recipe):
             depends = self.depends
             depends.append(('python2', 'python3'))
             self.depends = list(set(depends))
-
-    def clean_build(self, arch = None):
-        super().clean_build(arch = arch)
-        name = self.folder_name
-        python_install_dirs = glob.glob(join(self.ctx.python_installs_dir, '*'))
-        for python_install in python_install_dirs:
-            site_packages_dir = glob.glob(join(python_install, 'lib', 'python*', 'site-packages'))
-            if site_packages_dir:
-                build_dir = join(site_packages_dir[0], name)
-                if exists(build_dir):
-                    log.info("Deleted %s", build_dir)
-                    rmtree(build_dir)
 
     @property
     def real_hostpython_location(self):
