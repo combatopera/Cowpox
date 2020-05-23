@@ -272,9 +272,6 @@ class TargetAndroid:
                 yield from ["--meta-data", '='.join(korv.strip() for korv in meta.split('=', 1))]
             for activity in config.getlist('app', 'android.add_activities', []):
                 yield from ["--add-activity", activity]
-            presplash = config.getdefault('app', 'presplash.filename', '')
-            if presplash:
-                yield from ["--presplash", (self.config.workspace / presplash).expanduser().resolve()]
             icon = config.getdefault('app', 'icon.filename', '')
             if icon:
                 yield from ["--icon", (self.config.workspace / icon).expanduser().resolve()]
@@ -288,10 +285,13 @@ class TargetAndroid:
             if self.bootstrapname != 'service_only':
                 yield from ["--orientation", self._orientation()]
                 yield from ['--window', repr(not config.getbooldefault('app', 'fullscreen', True))]
+                presplash = config.getdefault('app', 'presplash.filename', '')
+                if presplash:
+                    yield from ["--presplash", (self.config.workspace / presplash).expanduser().resolve()]
+                presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
+                if presplash_color:
+                    yield from ['--presplash-color', presplash_color]
             yield from ['--sign', repr(True if self.config.build_mode != 'debug' and self._check_p4a_sign_env(True) else None)]
-            presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
-            if presplash_color:
-                yield from ['--presplash-color', presplash_color]
             for service in self.config.getlist('app', 'services', []):
                 yield from ['--services', service]
             for lib in self.config.getlist('app', 'android.uses_library', ''):
