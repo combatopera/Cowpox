@@ -352,7 +352,7 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
 def makeapkversion(args, distdir, private):
     render = Render(distdir)
     distinfo = DistInfo(distdir)
-    ndk_api = default_min_api = int(distinfo.forkey('ndk_api'))
+    ndk_api = int(distinfo.forkey('ndk_api'))
     bootstrapname = distinfo.forkey('bootstrap')
     blacklist = Blacklist(bootstrapname)
     ap = ArgumentParser()
