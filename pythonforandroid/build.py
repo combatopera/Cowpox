@@ -445,8 +445,6 @@ def makeapkversion(args, distdir, private):
     if ndk_api != args.min_sdk_version:
         log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
         raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
-    if args.permissions and isinstance(args.permissions[0], list):
-        args.permissions = [p for perm in args.permissions for p in perm]
     with (distdir / 'blacklist.txt').open() as f:
         blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
     with (distdir / 'whitelist.txt').open() as f:
