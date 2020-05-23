@@ -40,7 +40,6 @@
 
 from collections import defaultdict
 from colorama import Style as Colo_Style, Fore as Colo_Fore
-from math import log10
 from sys import stdout
 import logging, os, re, sh
 
@@ -65,21 +64,6 @@ Out_Style = colorama_shim(Colo_Style)
 Out_Fore = colorama_shim(Colo_Fore)
 Err_Style = colorama_shim(Colo_Style)
 Err_Fore = colorama_shim(Colo_Fore)
-
-def _shorten_string(string, max_width):
-    ''' make limited length string in form:
-      "the string is very lo...(and 15 more)"
-    '''
-    string_len = len(string)
-    if string_len <= max_width:
-        return string
-    visible = max_width - 16 - int(log10(string_len))
-    # expected suffix len "...(and YYYYY more)"
-    if not isinstance(string, str):
-        visstring = str(string[:visible], errors='ignore')
-    else:
-        visstring = string[:visible]
-    return u''.join((visstring, u'...(and ', str(string_len - visible), u' more)'))
 
 def _get_console_width():
     try:
