@@ -971,12 +971,7 @@ class CythonRecipe(PythonRecipe):
 
     def get_recipe_env(self, arch, with_flags_in_cc=True):
         env = super().get_recipe_env(arch, with_flags_in_cc)
-        env['LDFLAGS'] = env['LDFLAGS'] + ' -L{} '.format(
-            self.ctx.get_libs_dir(arch.arch) +
-            ' -L{} '.format(self.ctx.libs_dir) +
-            ' -L{}'.format(join(self.ctx.bootstrap.build_dir, 'obj', 'local',
-                                arch.arch)))
-
+        env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch.arch)} -L{self.ctx.libs_dir}  -L{self.ctx.bootstrap.build_dir / 'obj' / 'local' / arch.arch} "
         env['LDSHARED'] = env['CC'] + ' -shared'
         # shprint(sh.whereis, env['LDSHARED'], _env=env)
         env['LIBLINK'] = 'NOTNONE'
@@ -984,13 +979,10 @@ class CythonRecipe(PythonRecipe):
         env['COPYLIBS'] = '1'
         # Every recipe uses its own liblink path, object files are
         # collected and biglinked later
-        liblink_path = join(self.get_build_container_dir(arch.arch),
-                            'objects_{}'.format(self.name))
+        liblink_path = join(self.get_build_container_dir(arch.arch), 'objects_{}'.format(self.name))
         env['LIBLINK_PATH'] = liblink_path
         ensure_dir(liblink_path)
-
         return env
-
 
 class TargetPythonRecipe(Recipe):
     '''Class for target python recipes. Sets ctx.python_recipe to point to
