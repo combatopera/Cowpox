@@ -45,7 +45,6 @@ from lagoon import cp, gradle
 from pathlib import Path
 from pythonforandroid.bootstrap import Bootstrap
 from pythonforandroid.distribution import Distribution
-from pythonforandroid.logger import setup_color
 from pythonforandroid.util import BuildInterruptingException, current_directory
 from types import SimpleNamespace
 import glob, logging, os, re
@@ -151,7 +150,6 @@ def create(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, 
     _require_prebuilt_dist(args, ctx)
 
 def makeapk(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, ndk_api, local_recipes, private, release, downstreamargs):
-    setup_color(True)
     args = SimpleNamespace(
         dist_name = dist_name,
         bootstrap = bootstrap,
