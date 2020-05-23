@@ -117,10 +117,6 @@ class Context:
         return self.storage_dir / 'packages'
 
     @property
-    def templates_dir(self):
-        return self.root_dir / 'templates'
-
-    @property
     def libs_dir(self):
         dir = self.buildsdir / 'libs_collections' / self.bootstrap.distribution.name
         ensure_dir(dir)
@@ -216,7 +212,7 @@ class Context:
             Archx86_64(self),
             ArchAarch_64(self),
         )
-        self.root_dir = Path(__file__).parent.resolve()
+        self.root_dir = (Path(__file__).parent.parent / 'pythonforandroid').resolve()
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
