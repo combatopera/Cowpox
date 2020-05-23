@@ -356,89 +356,33 @@ def makeapkversion(args, distdir, private):
     bootstrapname = distinfo.forkey('bootstrap')
     blacklist = Blacklist(bootstrapname)
     ap = ArgumentParser()
-    ap.add_argument('--package',
-                    help=('The name of the java package the project will be'
-                          ' packaged under.'),
-                    required=True)
-    ap.add_argument('--name',
-                    help=('The human-readable name of the project.'),
-                    required=True)
+    ap.add_argument('--package', required=True)
+    ap.add_argument('--name', required=True)
     ap.add_argument('--version', required = True)
-    ap.add_argument('--permissions', action='append', default=[],
-                    help='The permissions to give this app.', nargs='+')
-    ap.add_argument('--meta-data', action='append', default=[],
-                    help='Custom key=value to add in application metadata')
-    ap.add_argument('--android_used_libs', action='append', default=[],
-                    help='Used shared libraries included using <uses-library> tag in AndroidManifest.xml')
-    ap.add_argument('--icon',
-                    help=('A png file to use as the icon for '
-                          'the application.'))
-    ap.add_argument('--services', action='append', default=[],
-                    help='Declare a new service entrypoint: '
-                         'NAME:PATH_TO_PY[:foreground]')
+    ap.add_argument('--permissions', action='append', default=[], nargs='+')
+    ap.add_argument('--meta-data', action='append', default=[])
+    ap.add_argument('--android_used_libs', action='append', default=[])
+    ap.add_argument('--icon')
+    ap.add_argument('--services', action='append', default=[])
     if bootstrapname != "service_only":
-        ap.add_argument('--presplash',
-                        help=('A jpeg file to use as a screen while the '
-                              'application is loading.'))
-        ap.add_argument('--presplash-color',
-                        help=('A string to set the loading screen '
-                              'background color. '
-                              'Supported formats are: '
-                              '#RRGGBB #AARRGGBB or color names '
-                              'like red, green, blue, etc.'))
-        ap.add_argument('--window', type = eval,
-                        help='Indicate if the application will be windowed')
-        ap.add_argument('--orientation',
-                        help=('The orientation that the game will '
-                              'display in. '
-                              'Usually one of "landscape", "portrait", '
-                              '"sensor", or "user" (the same as "sensor" '
-                              'but obeying the '
-                              'user\'s Android rotation setting). '
-                              'The full list of options is given under '
-                              'android_screenOrientation at '
-                              'https://developer.android.com/guide/'
-                              'topics/manifest/'
-                              'activity-element.html'))
-    ap.add_argument('--android-entrypoint',
-                    help='Defines which java class will be used for startup, usually a subclass of PythonActivity')
-    ap.add_argument('--android-apptheme',
-                    help='Defines which app theme should be selected for the main activity')
-    ap.add_argument('--compile_options', default=[],
-                    action='append', help='add compile options to gradle.build')
-    ap.add_argument('--gradle_repositories',
-                    default=[],
-                    action='append',
-                    help='Ddd a repository for gradle')
-    ap.add_argument('--packaging_options',
-                    default=[],
-                    action='append',
-                    help='Dndroid packaging options')
-    ap.add_argument('--wakelock', type = eval,
-                    help=('Indicate if the application needs the device '
-                          'to stay on'))
-    ap.add_argument('--depends', action='append',
-                    help=('Add a external dependency '
-                          '(eg: com.android.support:appcompat-v7:19.0.1)'))
-    ap.add_argument('--min_sdk_version',
-                    type=int,
-                    help=('Minimum Android SDK version that the app supports. '
-                          'Defaults to {}.'.format(default_min_api)))
-    ap.add_argument('--intent-filters',
-                    help=('Add intent-filters xml rules to the '
-                          'AndroidManifest.xml file. The argument is a '
-                          'filename containing xml. The filename should be '
-                          'located relative to the python-for-android '
-                          'directory'))
+        ap.add_argument('--presplash')
+        ap.add_argument('--presplash-color')
+        ap.add_argument('--window', type = eval)
+        ap.add_argument('--orientation')
+    ap.add_argument('--android-entrypoint')
+    ap.add_argument('--android-apptheme')
+    ap.add_argument('--compile_options', default=[], action='append')
+    ap.add_argument('--gradle_repositories', default=[], action='append')
+    ap.add_argument('--packaging_options', default=[], action='append')
+    ap.add_argument('--wakelock', type = eval)
+    ap.add_argument('--depends', action='append')
+    ap.add_argument('--min_sdk_version', type=int)
+    ap.add_argument('--intent-filters')
     if bootstrapname == "webview":
         ap.add_argument('--port')
-    ap.add_argument('--sign', type = eval,
-                    help=('Try to sign the APK with your credentials. You must set '
-                          'the appropriate environment variables.'))
-    ap.add_argument('--add-activity', action='append',
-                    help='Add this Java class as an Activity to the manifest.')
-    ap.add_argument('--activity-launch-mode',
-                    help='Set the launch mode of the main activity in the manifest.')
+    ap.add_argument('--sign', type = eval)
+    ap.add_argument('--add-activity', action='append')
+    ap.add_argument('--activity-launch-mode')
     args = ap.parse_args(args)
     args.allow_backup = 'true'
     args.extra_manifest_xml = ''
