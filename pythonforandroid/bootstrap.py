@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info, debug
+from .logger import info
 from .recipe import Recipe
 from .util import current_directory, ensure_dir
 from importlib import import_module
@@ -300,21 +300,21 @@ class Bootstrap:
             name = splitext(basename(aar))[0]
             jar_name = name + '.jar'
             info("unpack {} aar".format(name))
-            debug("  from {}".format(aar))
-            debug("  to {}".format(temp_dir))
+            log.debug("  from %s", aar)
+            log.debug("  to %s", temp_dir)
             unzip._o.print(aar, '-d', temp_dir)
             jar_src = join(temp_dir, 'classes.jar')
             jar_tgt = join('libs', jar_name)
-            debug("copy {} jar".format(name))
-            debug("  from {}".format(jar_src))
-            debug("  to {}".format(jar_tgt))
+            log.debug("copy %s jar", name)
+            log.debug("  from %s", jar_src)
+            log.debug("  to %s", jar_tgt)
             ensure_dir('libs')
             cp._a.print(jar_src, jar_tgt)
             so_src_dir = join(temp_dir, 'jni', arch.arch)
             so_tgt_dir = join('libs', arch.arch)
-            debug("copy {} .so".format(name))
-            debug("  from {}".format(so_src_dir))
-            debug("  to {}".format(so_tgt_dir))
+            log.debug("copy %s .so", name)
+            log.debug("  from %s", so_src_dir)
+            log.debug("  to %s", so_tgt_dir)
             ensure_dir(so_tgt_dir)
             so_files = glob.glob(join(so_src_dir, '*.so'))
             for f in so_files:
