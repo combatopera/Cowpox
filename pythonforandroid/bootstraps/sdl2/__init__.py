@@ -41,8 +41,10 @@
 from lagoon import cp, rm
 from pathlib import Path
 from pythonforandroid.bootstrap import Bootstrap
-from pythonforandroid.logger import info, info_main
 from pythonforandroid.util import current_directory, ensure_dir
+import logging
+
+log = logging.getLogger(__name__)
 
 class SDL2GradleBootstrap(Bootstrap):
 
@@ -50,22 +52,18 @@ class SDL2GradleBootstrap(Bootstrap):
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'sdl2'})
 
     def run_distribute(self):
-        info_main("# Creating Android project ({})".format(self.name))
-
+        log.info("Creating Android project (%s)", self.name)
         arch = self.ctx.archs[0]
-
         if len(self.ctx.archs) > 1:
             raise ValueError("SDL2/gradle support only one arch")
-
-        info("Copying SDL2/gradle build for {}".format(arch))
+        log.info("Copying SDL2/gradle build for %s", arch)
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
         with current_directory(self.dist_dir):
             with open('local.properties', 'w') as fileh:
                 fileh.write('sdk.dir={}'.format(self.ctx.sdk_dir))
-
         with current_directory(self.dist_dir):
-            info("Copying Python distribution")
+            log.info('Copying Python distribution')
             python_bundle_dir = Path('_python_bundle', '_python_bundle')
             self.distribute_libs(arch, [self.ctx.get_libs_dir(arch.arch)])
             self.distribute_javaclasses(self.ctx.javaclass_dir, dest_dir = Path("src", "main", "java"))
@@ -74,7 +72,6 @@ class SDL2GradleBootstrap(Bootstrap):
             if 'sqlite3' not in self.ctx.recipe_build_order:
                 with open('blacklist.txt', 'a') as fileh:
                     fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
-
         self.strip_libraries(arch)
         self.fry_eggs(site_packages_dir)
         super().run_distribute()
