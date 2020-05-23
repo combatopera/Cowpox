@@ -441,9 +441,8 @@ def makeapkversion(args, distdir, private):
     ap.add_argument('--activity-launch-mode',
                     default='singleTask',
                     help='Set the launch mode of the main activity in the manifest.')
-    ap.add_argument('--allow-backup', default='true',
-                    help="if set to 'false', then android won't backup the application.")
     args = ap.parse_args(args)
+    args.allow_backup = 'true'
     args.extra_manifest_xml = ''
     if args.name and args.name[0] == '"' and args.name[-1] == '"':
         args.name = args.name[1:-1]
