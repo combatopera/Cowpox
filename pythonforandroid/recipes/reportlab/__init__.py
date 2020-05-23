@@ -38,14 +38,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import os
-import sh
+from pythonforandroid.logger import shprint
 from pythonforandroid.recipe import CompiledComponentsPythonRecipe
-from pythonforandroid.util import (current_directory, ensure_dir)
-from pythonforandroid.logger import (info, shprint)
+from pythonforandroid.util import current_directory, ensure_dir
+import logging, os, sh
 
+log = logging.getLogger(__name__)
 
 class ReportLabRecipe(CompiledComponentsPythonRecipe):
+
     version = 'c088826211ca'
     url = 'https://bitbucket.org/rptlab/reportlab/get/{version}.tar.gz'
     depends = ['freetype']
@@ -55,7 +56,6 @@ class ReportLabRecipe(CompiledComponentsPythonRecipe):
         if not self.is_patched(arch):
             super(ReportLabRecipe, self).prebuild_arch(arch)
             recipe_dir = self.get_build_dir(arch.arch)
-
             # Some versions of reportlab ship with a GPL-licensed font.
             # Remove it, since this is problematic in .apks unless the
             # entire app is GPL:
@@ -65,7 +65,6 @@ class ReportLabRecipe(CompiledComponentsPythonRecipe):
                 for l in os.listdir(font_dir):
                     if l.lower().startswith('darkgarden'):
                         os.remove(os.path.join(font_dir, l))
-
             # Apply patches:
             self.apply_patch('patches/fix-setup.patch', arch.arch)
             shprint(sh.touch, os.path.join(recipe_dir, '.patched'))
@@ -74,11 +73,11 @@ class ReportLabRecipe(CompiledComponentsPythonRecipe):
             ft_lib_dir = os.environ.get('_FT_LIB_', os.path.join(ft_dir, 'objs', '.libs'))
             ft_inc_dir = os.environ.get('_FT_INC_', os.path.join(ft_dir, 'include'))
             tmp_dir = os.path.normpath(os.path.join(recipe_dir, "..", "..", "tmp"))
-            info('reportlab recipe: recipe_dir={}'.format(recipe_dir))
-            info('reportlab recipe: tmp_dir={}'.format(tmp_dir))
-            info('reportlab recipe: ft_dir={}'.format(ft_dir))
-            info('reportlab recipe: ft_lib_dir={}'.format(ft_lib_dir))
-            info('reportlab recipe: ft_inc_dir={}'.format(ft_inc_dir))
+            log.info("reportlab recipe: recipe_dir=%s", recipe_dir)
+            log.info("reportlab recipe: tmp_dir=%s", tmp_dir)
+            log.info("reportlab recipe: ft_dir=%s", ft_dir)
+            log.info("reportlab recipe: ft_lib_dir=%s", ft_lib_dir)
+            log.info("reportlab recipe: ft_inc_dir=%s", ft_inc_dir)
             with current_directory(recipe_dir):
                 ensure_dir(tmp_dir)
                 pfbfile = os.path.join(tmp_dir, "pfbfer-20070710.zip")
@@ -90,6 +89,5 @@ class ReportLabRecipe(CompiledComponentsPythonRecipe):
                         text = f.read().replace('_FT_LIB_', ft_lib_dir).replace('_FT_INC_', ft_inc_dir)
                     with open('setup.py', 'w') as f:
                         f.write(text)
-
 
 recipe = ReportLabRecipe()

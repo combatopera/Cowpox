@@ -42,7 +42,9 @@ from os.path import join
 from pythonforandroid.recipe import CythonRecipe, IncludedFilesBehaviour
 from pythonforandroid.util import current_directory
 from pythonforandroid.patching import will_build
-from pythonforandroid import logger
+import logging
+
+log = logging.getLogger(__name__)
 
 class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
     # name = 'android'
@@ -84,12 +86,8 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
             java_ns = u'org.kivy.android'
             jni_ns = u'org/kivy/android'
         else:
-            logger.error((
-                'unsupported bootstrap for android recipe: {}'
-                ''.format(bootstrap_name)
-            ))
+            log.error("unsupported bootstrap for android recipe: %s", bootstrap_name)
             exit(1)
-
         config = {
             'BOOTSTRAP': bootstrap,
             'IS_SDL2': int(is_sdl2),

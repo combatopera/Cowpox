@@ -39,9 +39,11 @@
 # THE SOFTWARE.
 
 from pythonforandroid.recipe import CompiledComponentsPythonRecipe
-from pythonforandroid.logger import shprint, info
+from pythonforandroid.logger import shprint
 from pythonforandroid.util import current_directory
-import glob, sh
+import glob, logging, sh
+
+log = logging.getLogger(__name__)
 
 class M2CryptoRecipe(CompiledComponentsPythonRecipe):
 
@@ -52,8 +54,7 @@ class M2CryptoRecipe(CompiledComponentsPythonRecipe):
     call_hostpython_via_targetpython = False
 
     def build_compiled_components(self, arch):
-        info('Building compiled components in {}'.format(self.name))
-
+        log.info("Building compiled components in %s", self.name)
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
             # Build M2Crypto

@@ -40,9 +40,11 @@
 
 from os.path import join
 from pathlib import Path
-from pythonforandroid.logger import info_notify
 from pythonforandroid.recipe import CppCompiledComponentsPythonRecipe
 from pythonforandroid.util import ensure_dir
+import logging
+
+log = logging.getLogger(__name__)
 
 class MatplotlibRecipe(CppCompiledComponentsPythonRecipe):
 
@@ -117,15 +119,14 @@ class MatplotlibRecipe(CppCompiledComponentsPythonRecipe):
         """
 
         env = self.get_recipe_env(arch)
-
-        info_notify('Downloading jquery-ui for matplatlib web backend')
+        log.info('Downloading jquery-ui for matplatlib web backend')
         # We use the same jquery-ui version than mpl's setup.py script,
         # inside function `_download_jquery_to`
         jquery_sha = (
             'f8233674366ab36b2c34c577ec77a3d70cac75d2e387d8587f3836345c0f624d'
         )
         url = 'https://jqueryui.com/resources/download/jquery-ui-1.12.1.zip'
-        info_notify(f'Will download into {env["XDG_CACHE_HOME"]}')
+        log.info("Will download into %s", env['XDG_CACHE_HOME'])
         ensure_dir(join(env['XDG_CACHE_HOME'], 'matplotlib'))
         self.download_file(url, Path(env['XDG_CACHE_HOME'], 'matplotlib', jquery_sha))
 

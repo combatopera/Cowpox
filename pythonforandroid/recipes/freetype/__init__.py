@@ -39,12 +39,13 @@
 # THE SOFTWARE.
 
 from pythonforandroid.recipe import Recipe
-from pythonforandroid.logger import shprint, info
+from pythonforandroid.logger import shprint
 from pythonforandroid.util import current_directory
 from os.path import join, exists
 from multiprocessing import cpu_count
-import sh
+import logging, sh
 
+log = logging.getLogger(__name__)
 
 class FreetypeRecipe(Recipe):
     """The freetype library it's special, because has cyclic dependencies with
@@ -111,12 +112,12 @@ class FreetypeRecipe(Recipe):
             '--with-png=no',
         }
         if not harfbuzz_in_recipes:
-            info('Build freetype (without harfbuzz)')
+            log.info('Build freetype (without harfbuzz)')
             config_args = config_args.union(
                 {'--disable-static', '--enable-shared', '--with-harfbuzz=no'}
             )
         elif not with_harfbuzz:
-            info('Build freetype for First time (without harfbuzz)')
+            log.info('Build freetype for First time (without harfbuzz)')
             # This time we will build our freetype library as static because we
             # want that the harfbuzz library to have the necessary freetype
             # symbols/functions, so we avoid to have two freetype shared
@@ -125,20 +126,18 @@ class FreetypeRecipe(Recipe):
                 {'--disable-shared', '--with-harfbuzz=no'}
             )
         else:
-            info('Build freetype for Second time (with harfbuzz)')
+            log.info('Build freetype for Second time (with harfbuzz)')
             config_args = config_args.union(
                 {'--disable-static', '--enable-shared', '--with-harfbuzz=yes'}
             )
-        info('Configure args are:\n\t-{}'.format('\n\t-'.join(config_args)))
-
+        log.info("Configure args are:\n\t-%s", '\n\t-'.join(config_args))
         # Build freetype library
         with current_directory(self.get_build_dir(arch.arch)):
             configure = sh.Command('./configure')
             shprint(configure, *config_args, _env=env)
             shprint(sh.make, '-j', str(cpu_count()), _env=env)
-
             if not with_harfbuzz and harfbuzz_in_recipes:
-                info('Installing freetype (first time build without harfbuzz)')
+                log.info('Installing freetype (first time build without harfbuzz)')
                 # First build, install the compiled lib, and clean build env
                 shprint(sh.make, 'install', _env=env)
                 shprint(sh.make, 'distclean', _env=env)
