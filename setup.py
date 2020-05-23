@@ -61,4 +61,5 @@ setup(
     package_data = package_data,
     install_requires = Path('requirements.txt').read_text().splitlines(),
     entry_points = dict(console_scripts = ['Seizure=seizure.seizure:main']),
+    py_modules = ['p4a'],
 )
