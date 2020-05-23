@@ -40,15 +40,17 @@
 
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
+from distutils.version import LooseVersion
 from importlib.util import module_from_spec, spec_from_file_location
-from lagoon import basename, cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, touch
+from lagoon import basename, cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
 from lagoon.program import Program
 from os import listdir, walk
 from os.path import exists, join, split
 from pathlib import Path
 from shutil import rmtree
 from urllib.parse import urlparse
-import fnmatch, glob, hashlib, logging, os, re, sh, shutil, subprocess
+from zipfile import ZipFile
+import fnmatch, glob, hashlib, logging, os, re, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -391,22 +393,21 @@ class Recipe(metaclass = RecipeMeta):
                 if extraction_filename.is_file():
                     if extraction_filename.name.endswith('.zip'):
                         try:
-                            sh.unzip(extraction_filename)
-                        except (sh.ErrorReturnCode_1, sh.ErrorReturnCode_2):
+                            unzip.print(extraction_filename)
+                        except subprocess.CalledProcessError as e:
                             # return code 1 means unzipping had
                             # warnings but did complete,
                             # apparently happens sometimes with
                             # github zips
-                            pass
-                        import zipfile
-                        fileh = zipfile.ZipFile(extraction_filename, 'r')
+                            if e.returncode not in {1, 2}:
+                                raise
+                        fileh = ZipFile(extraction_filename, 'r')
                         root_directory = fileh.filelist[0].filename.split('/')[0]
                         if root_directory != directory_name.name:
                             mv.print(root_directory, directory_name)
                     elif extraction_filename.name.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
-                        sh.tar('xf', extraction_filename)
-                        root_directory = sh.tar('tf', extraction_filename).stdout.decode(
-                                'utf-8').split('\n')[0].split('/')[0]
+                        tar.xf.print(extraction_filename)
+                        root_directory = tar.tf(extraction_filename).split('\n')[0].split('/')[0]
                         if root_directory != directory_name.name:
                             mv.print(root_directory, directory_name)
                     else:
@@ -1016,7 +1017,6 @@ class TargetPythonRecipe(Recipe):
 
     @property
     def major_minor_version_string(self):
-        from distutils.version import LooseVersion
         return '.'.join([str(v) for v in LooseVersion(self.version).version[:2]])
 
     def create_python_bundle(self, dirn, arch):
