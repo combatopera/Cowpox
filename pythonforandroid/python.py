@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info, warning
 from .recipe import Recipe, TargetPythonRecipe
 from .util import current_directory, ensure_dir, walk_valid_filens, BuildInterruptingException
 from lagoon import cp, make, zip
@@ -46,7 +45,9 @@ from lagoon.program import Program
 from multiprocessing import cpu_count
 from os.path import dirname, exists, join, isfile
 from shutil import copy2
-import glob, os, sh, subprocess
+import glob, logging, os, sh, subprocess
+
+log = logging.getLogger(__name__)
 
 class GuestPythonRecipe(TargetPythonRecipe):
     '''
@@ -146,7 +147,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
             # https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234409
             env['LDFLAGS'] += ' -L. -fuse-ld=lld'
         else:
-            warning('lld not found, linking without it. Consider installing lld if linker errors occur.')
+            log.warning('lld not found, linking without it. Consider installing lld if linker errors occur.')
         return env
 
     def set_libs_flags(self, env, arch):
@@ -155,24 +156,24 @@ class GuestPythonRecipe(TargetPythonRecipe):
             env['LDFLAGS'] = env.get('LDFLAGS', '') + link_dirs
             env['LIBS'] = env.get('LIBS', '') + link_libs
         if 'sqlite3' in self.ctx.recipe_build_order:
-            info('Activating flags for sqlite3')
+            log.info('Activating flags for sqlite3')
             recipe = Recipe.get_recipe('sqlite3', self.ctx)
             add_flags(f" -I{recipe.get_build_dir(arch.arch)}", f" -L{recipe.get_lib_dir(arch)}", ' -lsqlite3')
         if 'libffi' in self.ctx.recipe_build_order:
-            info('Activating flags for libffi')
+            log.info('Activating flags for libffi')
             recipe = Recipe.get_recipe('libffi', self.ctx)
             env['PKG_CONFIG_PATH'] = recipe.get_build_dir(arch.arch)
             add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs(arch))), f" -L{recipe.get_build_dir(arch.arch) / '.libs'}", ' -lffi')
         if 'openssl' in self.ctx.recipe_build_order:
-            info('Activating flags for openssl')
+            log.info('Activating flags for openssl')
             recipe = Recipe.get_recipe('openssl', self.ctx)
             add_flags(recipe.include_flags(arch), recipe.link_dirs_flags(arch), recipe.link_libs_flags())
         for library_name in 'libbz2', 'liblzma':
             if library_name in self.ctx.recipe_build_order:
-                info(f'Activating flags for {library_name}')
+                log.info("Activating flags for %s", library_name)
                 recipe = Recipe.get_recipe(library_name, self.ctx)
                 add_flags(recipe.get_library_includes(arch), recipe.get_library_ldflags(arch), recipe.get_library_libs_flag())
-        info("Activating flags for android's zlib")
+        log.info('''Activating flags for android's zlib''')
         zlib_lib_path = self.ctx.ndk_platform / 'usr' / 'lib'
         zlib_includes = self.ctx.ndk_dir / 'sysroot' / 'usr' / 'include'
         zlib_h = zlib_includes / 'zlib.h'
@@ -259,17 +260,16 @@ class GuestPythonRecipe(TargetPythonRecipe):
         ensure_dir(modules_dir)
         module_filens = (glob.glob(join(modules_build_dir, '*.so')) +
                          glob.glob(join(modules_build_dir, '*' + c_ext)))
-        info("Copy {} files into the bundle".format(len(module_filens)))
+        log.info("Copy %s files into the bundle", len(module_filens))
         for filen in module_filens:
-            info(" - copy {}".format(filen))
+            log.info(" - copy %s", filen)
             copy2(filen, modules_dir)
-
         # zip up the standard library
         stdlib_zip = join(dirn, 'stdlib.zip')
         with current_directory(self.get_build_dir(arch.arch) / 'Lib'):
             stdlib_filens = list(walk_valid_filens(
                 '.', self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
-            info("Zip {} files into the bundle".format(len(stdlib_filens)))
+            log.info("Zip %s files into the bundle", len(stdlib_filens))
             zip.print(stdlib_zip, *stdlib_filens)
         # copy the site-packages into place
         ensure_dir(join(dirn, 'site-packages'))
@@ -279,9 +279,9 @@ class GuestPythonRecipe(TargetPythonRecipe):
             filens = list(walk_valid_filens(
                 '.', self.site_packages_dir_blacklist,
                 self.site_packages_filen_blacklist))
-            info("Copy {} files into the site-packages".format(len(filens)))
+            log.info("Copy %s files into the site-packages", len(filens))
             for filen in filens:
-                info(" - copy {}".format(filen))
+                log.info(" - copy %s", filen)
                 ensure_dir(join(dirn, 'site-packages', dirname(filen)))
                 copy2(filen, join(dirn, 'site-packages', filen))
         python_build_dir = self.get_build_dir(arch.arch) / 'android-build'
@@ -289,7 +289,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         if self.major_minor_version_string[0] == '3':
             python_lib_name += 'm'
         cp.print(python_build_dir / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.arch)
-        info('Renaming .so files to reflect cross-compile')
+        log.info('Renaming .so files to reflect cross-compile')
         self.reduce_object_file_names(join(dirn, 'site-packages'))
         return join(dirn, 'site-packages')
 
