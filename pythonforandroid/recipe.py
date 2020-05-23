@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import logger, info, warning, debug, shprint, info_main
+from .logger import logger, info, debug, shprint, info_main
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
@@ -568,9 +568,7 @@ class Recipe(metaclass = RecipeMeta):
         if exists(base_dir):
             dirs.append(base_dir)
         if not dirs:
-            warning('Attempted to clean build for {} but found no existing '
-                    'build dirs'.format(self.name))
-
+            log.warning("Attempted to clean build for %s but found no existing build dirs", self.name)
         for directory in dirs:
             if exists(directory):
                 info('Deleting {}'.format(directory))
@@ -583,7 +581,7 @@ class Recipe(metaclass = RecipeMeta):
     def install_libs(self, arch, *libs):
         libs_dir = self.ctx.get_libs_dir(arch.arch)
         if not libs:
-            warning('install_libs called with no libraries to install!')
+            log.warning('install_libs called with no libraries to install!')
             return
         args = libs + (libs_dir,)
         cp.print(*args)
