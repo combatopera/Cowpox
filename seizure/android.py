@@ -241,6 +241,10 @@ class TargetAndroid:
             words[-1] = words[-1].upper()
             yield '.'.join(words)
 
+    def _orientation(self):
+        orientation = self.config.getdefault('app', 'orientation', 'landscape')
+        return 'sensor' if orientation == 'all' else orientation
+
     def build_package(self):
         dist_dir = self._get_dist_dir()
         config = self.config
@@ -283,10 +287,7 @@ class TargetAndroid:
             if launch_mode:
                 yield from ["--activity-launch-mode", launch_mode]
             if self.bootstrapname != 'service_only':
-                orientation = config.getdefault('app', 'orientation', 'landscape')
-                if orientation == 'all':
-                    orientation = 'sensor'
-                yield from ["--orientation", orientation]
+                yield from ["--orientation", self._orientation()]
                 if not config.getbooldefault('app', 'fullscreen', True):
                     yield "--window"
             if self.config.build_mode != 'debug' and self._check_p4a_sign_env(True):
