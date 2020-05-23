@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info, debug
+from .logger import debug
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
@@ -202,7 +202,7 @@ class Recipe(metaclass = RecipeMeta):
     def download_file(self, url, target):
         if not url:
             return
-        info('Downloading {} from {}'.format(self.name, url))
+        log.info("Downloading %s from %s", self.name, url)
         parsed_url = urlparse(url)
         if parsed_url.scheme in {'http', 'https'}:
             if target.exists():
@@ -233,13 +233,13 @@ class Recipe(metaclass = RecipeMeta):
         patchexe._t._p1.print('-d', build_dir if build_dir else self.get_build_dir(arch), '-i', self.get_recipe_dir() / filename)
 
     def copy_file(self, filename, dest):
-        info("Copy {} to {}".format(filename, dest))
+        log.info("Copy %s to %s", filename, dest)
         filename = join(self.get_recipe_dir(), filename)
         dest = join(self.build_dir, dest)
         shutil.copy(filename, dest)
 
     def append_file(self, filename, dest):
-        info("Append {} to {}".format(filename, dest))
+        log.info("Append %s to %s", filename, dest)
         filename = join(self.get_recipe_dir(), filename)
         dest = join(self.build_dir, dest)
         with open(filename, "rb") as fd:
@@ -307,16 +307,14 @@ class Recipe(metaclass = RecipeMeta):
         log.info("Downloading %s", self.name)
         user_dir = os.environ.get('P4A_{}_DIR'.format(self.name.lower()))
         if user_dir is not None:
-            info('P4A_{}_DIR is set, skipping download for {}'.format(
-                self.name, self.name))
+            log.info("P4A_%s_DIR is set, skipping download for %s", self.name, self.name)
             return
         self.download()
 
     def download(self):
         if self.url is None:
-            info('Skipping {} download as no URL is set'.format(self.name))
+            log.info("Skipping %s download as no URL is set", self.name)
             return
-
         url = self.versioned_url
         ma = re.match('^(.+)#md5=([0-9a-f]{32})$', url)
         if ma:                  # fragmented URL?
@@ -364,15 +362,14 @@ class Recipe(metaclass = RecipeMeta):
                                 ('Generated md5sum does not match expected md5sum '
                                  'for {} recipe').format(self.name))
             else:
-                info('{} download already cached, skipping'.format(self.name))
+                log.info("%s download already cached, skipping", self.name)
 
     def unpack(self, arch):
         log.info("Unpacking %s for %s", self.name, arch)
         build_dir = self.get_build_container_dir(arch)
         user_dir = os.environ.get('P4A_{}_DIR'.format(self.name.lower()))
         if user_dir is not None:
-            info('P4A_{}_DIR exists, symlinking instead'.format(
-                self.name.lower()))
+            log.info("P4A_%s_DIR exists, symlinking instead", self.name.lower())
             if self.get_build_dir(arch).exists():
                 return
             rm._rf.print(build_dir)
@@ -382,7 +379,7 @@ class Recipe(metaclass = RecipeMeta):
             cp._a.print(user_dir, self.get_build_dir(arch))
             return
         if self.url is None:
-            info('Skipping {} unpack as no URL is set'.format(self.name))
+            log.info("Skipping %s unpack as no URL is set", self.name)
             return
         filename = basename(self.versioned_url)[:-1]
         ma = re.match('^(.+)#md5=([0-9a-f]{32})$', filename)
@@ -426,9 +423,8 @@ class Recipe(metaclass = RecipeMeta):
                     raise Exception(
                         'Given path is neither a file nor a directory: {}'
                         .format(extraction_filename))
-
             else:
-                info('{} is already unpacked, skipping'.format(self.name))
+                log.info("%s is already unpacked, skipping", self.name)
 
     def get_recipe_env(self, arch=None, with_flags_in_cc=True):
         """Return the env specialized for the recipe
@@ -460,7 +456,7 @@ class Recipe(metaclass = RecipeMeta):
         if hasattr(self, prebuild):
             getattr(self, prebuild)()
         else:
-            info('{} has no {}, skipping'.format(self.name, prebuild))
+            log.info("%s has no %s, skipping", self.name, prebuild)
 
     def is_patched(self, arch):
         build_dir = self.get_build_dir(arch.arch)
@@ -564,9 +560,8 @@ class Recipe(metaclass = RecipeMeta):
             log.warning("Attempted to clean build for %s but found no existing build dirs", self.name)
         for directory in dirs:
             if exists(directory):
-                info('Deleting {}'.format(directory))
+                log.info("Deleting %s", directory)
                 shutil.rmtree(directory)
-
         # Delete any Python distributions to ensure the recipe build
         # doesn't persist in site-packages
         shutil.rmtree(self.ctx.python_installs_dir)
@@ -773,7 +768,7 @@ class PythonRecipe(Recipe):
             if site_packages_dir:
                 build_dir = join(site_packages_dir[0], name)
                 if exists(build_dir):
-                    info('Deleted {}'.format(build_dir))
+                    log.info("Deleted %s", build_dir)
                     rmtree(build_dir)
 
     @property
@@ -831,9 +826,9 @@ class PythonRecipe(Recipe):
     def should_build(self, arch):
         name = self.folder_name
         if self.ctx.has_package(name):
-            info('Python package already exists in site-packages')
+            log.info('Python package already exists in site-packages')
             return False
-        info('{} apparently isn\'t already in site-packages'.format(name))
+        log.info("%s apparently isn't already in site-packages", name)
         return True
 
     def build_arch(self, arch):
@@ -850,7 +845,7 @@ class PythonRecipe(Recipe):
             name = self.name
         if env is None:
             env = self.get_recipe_env(arch)
-        info('Installing {} into site-packages'.format(self.name))
+        log.info("Installing %s into site-packages", self.name)
         with current_directory(self.get_build_dir(arch.arch)):
             hostpython = Program.text(self.hostpython_location)
             hpenv = env.copy()
@@ -879,7 +874,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         self.install_python_package(arch)
 
     def build_compiled_components(self, arch):
-        info('Building compiled components in {}'.format(self.name))
+        log.info("Building compiled components in %s", self.name)
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
             hostpython = Program.text(self.hostpython_location)
@@ -895,7 +890,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         super().install_hostpython_package(arch)
 
     def rebuild_compiled_components(self, arch, env):
-        info('Rebuilding compiled components in {}'.format(self.name))
+        log.info("Rebuilding compiled components in %s", self.name)
         hostpython = Program.text(self.real_hostpython_location)
         hostpython.print('setup.py', 'clean', '--all', env = env)
         hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args, env = env)
@@ -921,13 +916,13 @@ class CythonRecipe(PythonRecipe):
         self.install_python_package(arch)
 
     def build_cython_components(self, arch):
-        info('Cythonizing anything necessary in {}'.format(self.name))
+        log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
             hostpython = Program.text(self.ctx.hostpython)
             hostpython._c.print('import sys; print(sys.path)', env = env)
             log.debug("cwd is %s", os.getcwd())
-            info('Trying first build of {} to get cython files: this is expected to fail'.format(self.name))
+            log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
             manually_cythonise = False
             setup = hostpython.partial('setup.py', 'build_ext', '-v', *self.setup_extra_args, env = env)
             try:
@@ -936,20 +931,20 @@ class CythonRecipe(PythonRecipe):
                 if 1 != e.returncode:
                     raise
                 print()
-                info('{} first build failed (as expected)'.format(self.name))
+                log.info("%s first build failed (as expected)", self.name)
                 manually_cythonise = True
             if manually_cythonise:
                 self.cythonize_build(env=env)
                 setup.print()
             else:
-                info('First build appeared to complete correctly, skipping manualcythonising.')
+                log.info('First build appeared to complete correctly, skipping manualcythonising.')
             self.strip_object_files(arch, env)
 
     def strip_object_files(self, arch, env, build_dir=None):
         if build_dir is None:
             build_dir = self.get_build_dir(arch.arch)
         with current_directory(build_dir):
-            info('Stripping object files')
+            log.info('Stripping object files')
             e = find.partial('.', '-iname', '*.so', '-exec', env = env)
             e.print('/usr/bin/echo', '{}', ';')
             e.print(env['STRIP'].split(' ')[0], '--strip-unneeded', '{}', ';')
@@ -958,7 +953,7 @@ class CythonRecipe(PythonRecipe):
         short_filename = filename
         if filename.startswith(build_dir):
             short_filename = filename[len(build_dir) + 1:]
-        info(u"Cythonize {}".format(short_filename))
+        log.info("Cythonize %s", short_filename)
         cyenv = env.copy()
         if 'CYTHONPATH' in cyenv:
             cyenv['PYTHONPATH'] = cyenv['CYTHONPATH']
@@ -971,9 +966,9 @@ class CythonRecipe(PythonRecipe):
 
     def cythonize_build(self, env, build_dir="."):
         if not self.cythonize:
-            info('Running cython cancelled per recipe setting')
+            log.info('Running cython cancelled per recipe setting')
             return
-        info('Running cython where appropriate')
+        log.info('Running cython where appropriate')
         for root, dirnames, filenames in walk("."):
             for filename in fnmatch.filter(filenames, "*.pyx"):
                 self.cythonize_file(env, build_dir, join(root, filename))
