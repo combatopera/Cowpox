@@ -47,7 +47,6 @@ from lagoon.program import Program
 from os import listdir, walk
 from os.path import exists, join, split
 from pathlib import Path
-from shutil import rmtree
 from urllib.parse import urlparse
 from zipfile import ZipFile
 import fnmatch, glob, hashlib, logging, os, re, shutil, subprocess
