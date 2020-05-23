@@ -38,15 +38,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .build import makeapkversion
+from lagoon import cp, gradle
+from pathlib import Path
 from pythonforandroid.bootstrap import Bootstrap
-from pythonforandroid.build import makeapkversion
 from pythonforandroid.context import Context, build_recipes
 from pythonforandroid.distribution import Distribution
 from pythonforandroid.graph import get_recipe_order
 from pythonforandroid.logger import setup_color
 from pythonforandroid.util import BuildInterruptingException, current_directory
-from lagoon import cp, gradle
-from pathlib import Path
 from types import SimpleNamespace
 import glob, logging, os, re
 
