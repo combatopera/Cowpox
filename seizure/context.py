@@ -43,7 +43,7 @@ from lagoon.program import Program
 from os.path import join, dirname, exists, split, isdir
 from pathlib import Path
 from pythonforandroid.archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
-from pythonforandroid.logger import info, info_main
+from pythonforandroid.logger import info
 from pythonforandroid.pythonpackage import get_package_name
 from pythonforandroid.recipe import CythonRecipe, Recipe
 from pythonforandroid.recommendations import check_ndk_version, check_target_api, check_ndk_api
@@ -300,25 +300,25 @@ def build_recipes(build_order, python_modules, ctx):
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(python_modules))
     recipes = [Recipe.get_recipe(name, ctx) for name in build_order]
     # download is arch independent
-    info_main('# Downloading recipes ')
+    log.info('Downloading recipes')
     for recipe in recipes:
         recipe.download_if_necessary()
     for arch in ctx.archs:
-        info_main('# Building all recipes for arch {}'.format(arch.arch))
-        info_main('# Unpacking recipes')
+        log.info("Building all recipes for arch %s", arch.arch)
+        log.info('Unpacking recipes')
         for recipe in recipes:
             ensure_dir(recipe.get_build_container_dir(arch.arch))
             recipe.prepare_build_dir(arch.arch)
-        info_main('# Prebuilding recipes')
+        log.info('Prebuilding recipes')
         # 2) prebuild packages
         for recipe in recipes:
-            info_main('Prebuilding {} for {}'.format(recipe.name, arch.arch))
+            log.info("Prebuilding %s for %s", recipe.name, arch.arch)
             recipe.prebuild_arch(arch)
             recipe.apply_patches(arch)
         # 3) build packages
-        info_main('# Building recipes')
+        log.info('Building recipes')
         for recipe in recipes:
-            info_main('Building {} for {}'.format(recipe.name, arch.arch))
+            log.info("Building {} for {}", recipe.name, arch.arch)
             if recipe.should_build(arch):
                 recipe.build_arch(arch)
                 recipe.install_libraries(arch)
@@ -326,17 +326,17 @@ def build_recipes(build_order, python_modules, ctx):
                 info('{} said it is already built, skipping'
                      .format(recipe.name))
         # 4) biglink everything
-        info_main('# Biglinking object files')
+        log.info('Biglinking object files')
         if not ctx.python_recipe:
             biglink(ctx, arch)
         else:
             log.warning('''Context's python recipe found, skipping biglink (will this work?)''')
         # 5) postbuild packages
-        info_main('# Postbuilding recipes')
+        log.info('Postbuilding recipes')
         for recipe in recipes:
-            info_main('Postbuilding {} for {}'.format(recipe.name, arch.arch))
+            log.info("Postbuilding %s for %s", recipe.name, arch.arch)
             recipe.postbuild_arch(arch)
-    info_main('# Installing pure Python modules')
+    log.info('Installing pure Python modules')
     info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
     modules = list(filter(ctx.not_has_package, python_modules))
     if not modules:
