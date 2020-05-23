@@ -44,9 +44,9 @@ from math import log10
 from sys import stdout, stderr
 import logging, os, re, sh
 
+log = logging.getLogger(__name__)
 # monkey patch to show full output
 sh.ErrorReturnCode.truncate_cap = 999999
-
 
 class LevelDifferentiatingFormatter(logging.Formatter):
     def format(self, record):
@@ -77,10 +77,6 @@ if not hasattr(logger, 'touched'):
     formatter = LevelDifferentiatingFormatter('%(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
-info = logger.info
-debug = logger.debug
-warning = logger.warning
-error = logger.error
 
 class colorama_shim:
 
@@ -146,8 +142,6 @@ def shprint(command, *args, **kwargs):
         full_debug = True
     filter_in = kwargs.pop('_filter', None)
     filter_out = kwargs.pop('_filterout', None)
-    if len(logger.handlers) > 1:
-        logger.removeHandler(logger.handlers[1])
     columns = _get_console_width()
     command_path = str(command).split('/')
     command_string = command_path[-1]
@@ -156,10 +150,9 @@ def shprint(command, *args, **kwargs):
                        command_string] + list(args))
     # If logging is not in DEBUG mode, trim the command if necessary
     if logger.level > logging.DEBUG:
-        logger.info('{}{}'.format(_shorten_string(string, columns - 12),
-                                  Err_Style.RESET_ALL))
+        log.info("%s%s", _shorten_string(string, columns - 12), Err_Style.RESET_ALL)
     else:
-        logger.debug('{}{}'.format(string, Err_Style.RESET_ALL))
+        log.debug("%s%s", string, Err_Style.RESET_ALL)
     need_closing_newline = False
     try:
         msg_hdr = '           working: '
@@ -185,7 +178,7 @@ def shprint(command, *args, **kwargs):
                         stdout.flush()
                         need_closing_newline = True
             else:
-                logger.debug(''.join(['\t', line.rstrip()]))
+                log.debug("\t%s", line.rstrip())
         if need_closing_newline:
             stdout.write('{}\r{:>{width}}\r'.format(
                 Err_Style.RESET_ALL, ' ', width=(columns - 1)))
@@ -204,13 +197,9 @@ def shprint(command, *args, **kwargs):
                 if re_filter_out is not None:
                     lines = [l for l in lines if not re_filter_out.search(l)]
                 if tail_n == 0 or len(lines) <= tail_n:
-                    info('{}:\n{}\t{}{}'.format(
-                        name, forecolor, '\t\n'.join(lines), Out_Fore.RESET))
+                    log.info("%s:\n%s\t%s%s", name, forecolor, '\t\n'.join(lines), Out_Fore.RESET)
                 else:
-                    info('{} (last {} lines of {}):\n{}\t{}{}'.format(
-                        name, tail_n, len(lines),
-                        forecolor, '\t\n'.join([s for s in lines[-tail_n:]]),
-                        Out_Fore.RESET))
+                    log.info("%s (last %s lines of %s):\n%s\t%s%s", name, tail_n, len(lines), forecolor, '\t\n'.join(lines[-tail_n:]), Out_Fore.RESET)
             printtail(err.stdout.decode('utf-8'), 'STDOUT', Out_Fore.YELLOW, tail_n,
                       re.compile(filter_in) if filter_in else None,
                       re.compile(filter_out) if filter_out else None)
@@ -218,14 +207,9 @@ def shprint(command, *args, **kwargs):
         if is_critical:
             env = kwargs.get("env")
             if env is not None:
-                info("{}ENV:{}\n{}\n".format(
-                    Err_Fore.YELLOW, Err_Fore.RESET, "\n".join(
-                        "set {}={}".format(n, v) for n, v in env.items())))
-            info("{}COMMAND:{}\ncd {} && {} {}\n".format(
-                Err_Fore.YELLOW, Err_Fore.RESET, os.getcwd(), command,
-                ' '.join(args)))
-            warning("{}ERROR: {} failed!{}".format(
-                Err_Fore.RED, command, Err_Fore.RESET))
+                log.info("%sENV:%s\n%s\n", Err_Fore.YELLOW, Err_Fore.RESET, "\n".join(f"set {n}={v}" for n, v in env.items()))
+            log.info("%sCOMMAND:%s\ncd %s && %s %s\n", Err_Fore.YELLOW, Err_Fore.RESET, os.getcwd(), command, ' '.join(args))
+            log.warning("%sERROR: %s failed!%s", Err_Fore.RED, command, Err_Fore.RESET)
             exit(1)
         else:
             raise
