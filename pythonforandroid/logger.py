@@ -41,42 +41,12 @@
 from collections import defaultdict
 from colorama import Style as Colo_Style, Fore as Colo_Fore
 from math import log10
-from sys import stdout, stderr
+from sys import stdout
 import logging, os, re, sh
 
 log = logging.getLogger(__name__)
 # monkey patch to show full output
 sh.ErrorReturnCode.truncate_cap = 999999
-
-class LevelDifferentiatingFormatter(logging.Formatter):
-    def format(self, record):
-        if record.levelno > 30:
-            record.msg = '{}{}[ERROR]{}{}:   '.format(
-                Err_Style.BRIGHT, Err_Fore.RED, Err_Fore.RESET,
-                Err_Style.RESET_ALL) + record.msg
-        elif record.levelno > 20:
-            record.msg = '{}{}[WARNING]{}{}: '.format(
-                Err_Style.BRIGHT, Err_Fore.RED, Err_Fore.RESET,
-                Err_Style.RESET_ALL) + record.msg
-        elif record.levelno > 10:
-            record.msg = '{}[INFO]{}:    '.format(
-                Err_Style.BRIGHT, Err_Style.RESET_ALL) + record.msg
-        else:
-            record.msg = '{}{}[DEBUG]{}{}:   '.format(
-                Err_Style.BRIGHT, Err_Fore.LIGHTBLACK_EX, Err_Fore.RESET,
-                Err_Style.RESET_ALL) + record.msg
-        return super().format(record)
-
-logger = logging.getLogger('p4a')
-# Necessary as importlib reloads this,
-# which would add a second handler and reset the level
-if not hasattr(logger, 'touched'):
-    logger.setLevel(logging.DEBUG)
-    logger.touched = True
-    ch = logging.StreamHandler(stderr)
-    formatter = LevelDifferentiatingFormatter('%(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
 
 class colorama_shim:
 
