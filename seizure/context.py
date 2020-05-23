@@ -43,7 +43,7 @@ from lagoon.program import Program
 from os.path import join, dirname, exists, split, isdir
 from pathlib import Path
 from pythonforandroid.archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
-from pythonforandroid.logger import info, info_notify, info_main
+from pythonforandroid.logger import info, info_main
 from pythonforandroid.pythonpackage import get_package_name
 from pythonforandroid.recipe import CythonRecipe, Recipe
 from pythonforandroid.recommendations import check_ndk_version, check_target_api, check_ndk_api
@@ -294,12 +294,10 @@ class Context:
 
 def build_recipes(build_order, python_modules, ctx):
     # Put recipes in correct build order
-    info_notify("Recipe build order is {}".format(build_order))
+    log.info("Recipe build order is %s", build_order)
     if python_modules:
         python_modules = sorted(set(python_modules))
-        info_notify(
-            ('The requirements ({}) were not found as recipes, they will be '
-             'installed with pip.').format(', '.join(python_modules)))
+        log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(python_modules))
     recipes = [Recipe.get_recipe(name, ctx) for name in build_order]
     # download is arch independent
     info_main('# Downloading recipes ')
