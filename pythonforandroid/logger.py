@@ -40,7 +40,6 @@
 
 from collections import defaultdict
 from colorama import Style as Colo_Style, Fore as Colo_Fore
-from sys import stdout
 import logging, os, re, sh
 
 log = logging.getLogger(__name__)
@@ -65,22 +64,6 @@ Out_Fore = colorama_shim(Colo_Fore)
 Err_Style = colorama_shim(Colo_Style)
 Err_Fore = colorama_shim(Colo_Fore)
 
-def _get_console_width():
-    try:
-        cols = int(os.environ['COLUMNS'])
-    except (KeyError, ValueError):
-        pass
-    else:
-        if cols >= 25:
-            return cols
-    try:
-        cols = max(25, int(os.popen('stty size', 'r').read().split()[1]))
-    except Exception:
-        pass
-    else:
-        return cols
-    return 100
-
 def shprint(command, *args, **kwargs):
     '''Runs the command (which should be an sh.Command instance), while
     logging the output.'''
@@ -94,29 +77,19 @@ def shprint(command, *args, **kwargs):
         tail_n = 0
     filter_in = kwargs.pop('_filter', None)
     filter_out = kwargs.pop('_filterout', None)
-    columns = _get_console_width()
     command_path = str(command).split('/')
     command_string = command_path[-1]
     string = ' '.join(['{}->{} running'.format(Out_Fore.LIGHTBLACK_EX,
                                                Out_Style.RESET_ALL),
                        command_string] + list(args))
     log.debug("%s%s", string, Err_Style.RESET_ALL)
-    need_closing_newline = False
     try:
         output = command(*args, **kwargs)
         for line in output:
             if isinstance(line, bytes):
                 line = line.decode('utf-8', errors='replace')
             log.debug("\t%s", line.rstrip())
-        if need_closing_newline:
-            stdout.write('{}\r{:>{width}}\r'.format(
-                Err_Style.RESET_ALL, ' ', width=(columns - 1)))
-            stdout.flush()
     except sh.ErrorReturnCode as err:
-        if need_closing_newline:
-            stdout.write('{}\r{:>{width}}\r'.format(
-                Err_Style.RESET_ALL, ' ', width=(columns - 1)))
-            stdout.flush()
         if tail_n is not None or filter_in or filter_out:
             def printtail(out, name, forecolor, tail_n=0,
                           re_filter_in=None, re_filter_out=None):
