@@ -43,7 +43,6 @@ from lagoon.program import Program
 from os.path import join, dirname, exists, split, isdir
 from pathlib import Path
 from pythonforandroid.archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
-from pythonforandroid.logger import info
 from pythonforandroid.pythonpackage import get_package_name
 from pythonforandroid.recipe import CythonRecipe, Recipe
 from pythonforandroid.recommendations import check_ndk_version, check_target_api, check_ndk_api
@@ -234,8 +233,7 @@ class Context:
         self.archs = list(new_archs)
         if not self.archs:
             raise BuildInterruptingException('Asked to compile for no Archs, so failing.')
-        info('Will compile for the following archs: {}'.format(
-            ', '.join([arch.arch for arch in self.archs])))
+        log.info("Will compile for the following archs: %s", ', '.join(arch.arch for arch in self.archs))
 
     def prepare_bootstrap(self, bs):
         bs.ctx = self
@@ -323,8 +321,7 @@ def build_recipes(build_order, python_modules, ctx):
                 recipe.build_arch(arch)
                 recipe.install_libraries(arch)
             else:
-                info('{} said it is already built, skipping'
-                     .format(recipe.name))
+                log.info("%s said it is already built, skipping", recipe.name)
         # 4) biglink everything
         log.info('Biglinking object files')
         if not ctx.python_recipe:
@@ -337,21 +334,21 @@ def build_recipes(build_order, python_modules, ctx):
             log.info("Postbuilding %s for %s", recipe.name, arch.arch)
             recipe.postbuild_arch(arch)
     log.info('Installing pure Python modules')
-    info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
+    log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
     modules = list(filter(ctx.not_has_package, python_modules))
     if not modules:
-        info('No Python modules and no setup.py to process, skipping')
+        log.info('No Python modules and no setup.py to process, skipping')
         return
-    info('The requirements ({}) don\'t have recipes, attempting to install them with pip'.format(', '.join(modules)))
-    info('If this fails, it may mean that the module has compiled components and needs a recipe.')
+    log.info("The requirements (%s) don't have recipes, attempting to install them with pip", ', '.join(modules))
+    log.info('If this fails, it may mean that the module has compiled components and needs a recipe.')
     with current_directory(ctx.buildsdir):
         virtualenv.print(f"--python=python{ctx.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv')
         base_env = os.environ.copy()
         base_env["PYTHONPATH"] = ctx.get_site_packages_dir()
-        info('Upgrade pip to latest version')
+        log.info('Upgrade pip to latest version')
         pip = Program.text(Path('venv', 'bin', 'pip'))
         pip.install._U.print('pip', env = base_env)
-        info('Install Cython in case one of the modules needs it to build')
+        log.info('Install Cython in case one of the modules needs it to build')
         pip.install.print('Cython', env = base_env)
         # Get environment variables for build (with CC/compiler set):
         standard_recipe = CythonRecipe()
@@ -368,9 +365,9 @@ def build_recipes(build_order, python_modules, ctx):
         env["PYTHONPATH"] = os.path.abspath(ctx.buildsdir / 'venv' / 'lib' / f"python{ctx.python_recipe.major_minor_version_string}" / 'site-packages') + ":" + env["PYTHONPATH"]
         # Install the manually specified requirements first:
         if not modules:
-            info('There are no Python modules to install, skipping')
+            log.info('There are no Python modules to install, skipping')
         else:
-            info('Creating a requirements.txt file for the Python modules')
+            log.info('Creating a requirements.txt file for the Python modules')
             with open('requirements.txt', 'w') as fileh:
                 for module in modules:
                     key = 'VERSION_' + module
@@ -379,19 +376,13 @@ def build_recipes(build_order, python_modules, ctx):
                     else:
                         line = '{}\n'.format(module)
                     fileh.write(line)
-
-            info('Installing Python modules with pip')
-            info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. '
-                 'A reason for this is often modules compiling '
-                 'native code that is unaware of Android cross-compilation '
-                 'and does not work without additional '
-                 'changes / workarounds.')
+            log.info('Installing Python modules with pip')
+            log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
             pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env)
         standard_recipe.strip_object_files(ctx.archs[0], env, build_dir = ctx.buildsdir)
 
 def biglink(ctx, arch):
-    # First, collate object files from each recipe
-    info('Collating object files from each recipe')
+    log.info('Collating object files from each recipe')
     obj_dir = join(ctx.bootstrap.build_dir, 'collated_objects')
     ensure_dir(obj_dir)
     recipes = [Recipe.get_recipe(name, ctx) for name in ctx.recipe_build_order]
@@ -399,27 +390,23 @@ def biglink(ctx, arch):
         recipe_obj_dir = join(recipe.get_build_container_dir(arch.arch),
                               'objects_{}'.format(recipe.name))
         if not exists(recipe_obj_dir):
-            info('{} recipe has no biglinkable files dir, skipping'
-                 .format(recipe.name))
+            log.info("%s recipe has no biglinkable files dir, skipping", recipe.name)
             continue
         files = glob.glob(join(recipe_obj_dir, '*'))
         if not len(files):
-            info('{} recipe has no biglinkable files, skipping'
-                 .format(recipe.name))
+            log.info("%s recipe has no biglinkable files, skipping", recipe.name)
             continue
-        info('{} recipe has object files, copying'.format(recipe.name))
+        log.info("%s recipe has object files, copying", recipe.name)
         files.append(obj_dir)
         cp._r.print(*files)
     env = arch.get_env()
     env['LDFLAGS'] = env['LDFLAGS'] + ' -L{}'.format(
         join(ctx.bootstrap.build_dir, 'obj', 'local', arch.arch))
-
     if not len(glob.glob(join(obj_dir, '*'))):
-        info('There seem to be no libraries to biglink, skipping.')
+        log.info('There seem to be no libraries to biglink, skipping.')
         return
-    info('Biglinking')
-    info('target {}'.format(join(ctx.get_libs_dir(arch.arch),
-                                 'libpymodules.so')))
+    log.info('Biglinking')
+    log.info("target %s", join(ctx.get_libs_dir(arch.arch), 'libpymodules.so'))
     # Move to the directory containing crtstart_so.o and crtend_so.o
     # This is necessary with newer NDKs? A gcc bug?
     with current_directory(join(ctx.ndk_platform, 'usr', 'lib')):
