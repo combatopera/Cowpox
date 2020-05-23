@@ -40,7 +40,7 @@
 
 from lagoon import cp, virtualenv
 from lagoon.program import Program
-from os.path import join, dirname, exists, split, isdir
+from os.path import join, dirname, exists, split
 from pathlib import Path
 from pythonforandroid.archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
 from pythonforandroid.pythonpackage import get_package_name
