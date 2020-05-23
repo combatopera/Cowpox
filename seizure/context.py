@@ -64,12 +64,10 @@ def get_toolchain_versions(ndk_dir, arch):
     toolchain_versions = []
     toolchain_path_exists = True
     toolchain_prefix = arch.toolchain_prefix
-    toolchain_path = join(ndk_dir, 'toolchains')
-    if isdir(toolchain_path):
-        toolchain_contents = glob.glob('{}/{}-*'.format(toolchain_path,
-                                                        toolchain_prefix))
-        toolchain_versions = [split(path)[-1][len(toolchain_prefix) + 1:]
-                              for path in toolchain_contents]
+    toolchain_path = ndk_dir / 'toolchains'
+    if toolchain_path.is_dir():
+        toolchain_contents = glob.glob(f"{toolchain_path}/{toolchain_prefix}-*")
+        toolchain_versions = [split(path)[-1][len(toolchain_prefix) + 1:] for path in toolchain_contents]
     else:
         log.warning('Could not find toolchain subdirectory!')
         toolchain_path_exists = False
@@ -79,9 +77,9 @@ def get_targets(sdk_dir):
     avdmanagerpath = sdk_dir / 'tools' / 'bin' / 'avdmanager'
     if avdmanagerpath.exists():
         return Program.text(avdmanagerpath)('list', 'target').split('\n')
-    if exists(join(sdk_dir, 'tools', 'android')):
-        android = sh.Command(join(sdk_dir, 'tools', 'android'))
-        return android('list').stdout.decode('utf-8').split('\n')
+    if (sdk_dir / 'tools' / 'android').exists():
+        android = Program.text(sdk_dir / 'tools' / 'android')
+        return android.list().split('\n')
     raise BuildInterruptingException('Could not find `android` or `sdkmanager` binaries in Android SDK', instructions = 'Make sure the path to the Android SDK is correct')
 
 def _apilevels(sdk_dir):
@@ -237,9 +235,9 @@ class Context:
         return self.get_python_install_dir()
 
     def get_libs_dir(self, arch):
-        '''The libs dir for a given arch.'''
-        ensure_dir(join(self.libs_dir, arch))
-        return join(self.libs_dir, arch)
+        libsdir = self.libs_dir / arch
+        ensure_dir(libsdir)
+        return libsdir
 
     def has_lib(self, arch, lib):
         return exists(join(self.get_libs_dir(arch), lib))
