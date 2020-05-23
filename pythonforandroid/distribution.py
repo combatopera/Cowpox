@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import Err_Style, Err_Fore
 from .util import current_directory
 from os.path import exists, join
 from pathlib import Path
@@ -173,14 +172,13 @@ def _pretty_log_dists(dists):
     infos = []
     for dist in dists:
         ndk_api = 'unknown' if dist.ndk_api is None else dist.ndk_api
-        infos.append('{Fore.GREEN}{Style.BRIGHT}{name}{Style.RESET_ALL}: min API {ndk_api}, '
-                     'includes recipes ({Fore.GREEN}{recipes}'
-                     '{Style.RESET_ALL}), built for archs ({Fore.BLUE}'
-                     '{archs}{Style.RESET_ALL})'.format(
+        infos.append('{name}: min API {ndk_api}, '
+                     'includes recipes ({recipes}'
+                     '), built for archs ('
+                     '{archs})'.format(
                          ndk_api=ndk_api,
                          name=dist.name, recipes=', '.join(dist.recipes),
-                         archs=', '.join(dist.archs) if dist.archs else 'UNKNOWN',
-                         Fore=Err_Fore, Style=Err_Style))
+                         archs=', '.join(dist.archs) if dist.archs else 'UNKNOWN'))
     for line in infos:
         log.info("\t%s", line)
 
