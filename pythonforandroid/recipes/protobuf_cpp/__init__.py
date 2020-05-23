@@ -39,11 +39,13 @@
 # THE SOFTWARE.
 
 from multiprocessing import cpu_count
-from pythonforandroid.logger import info, info_notify, shprint
+from os.path import exists, join
+from pythonforandroid.logger import shprint
 from pythonforandroid.recipe import CppCompiledComponentsPythonRecipe
 from pythonforandroid.util import current_directory
-from os.path import exists, join
-import os, sh, sys
+import logging, os, sh, sys
+
+log = logging.getLogger(__name__)
 
 class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
     """This is a two-in-one recipe:
@@ -73,25 +75,21 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
         # Because protoc is compiled for target (i.e. Android), we need an other binary
         # which can be run by host.
         # To make it easier, we download prebuild protoc binary adapted to the platform
-
-        info_notify("Downloading protoc compiler for your platform")
+        log.info('Downloading protoc compiler for your platform')
         url_prefix = "https://github.com/protocolbuffers/protobuf/releases/download/v{version}".format(version=self.version)
         if sys.platform.startswith('linux'):
-            info_notify("GNU/Linux detected")
+            log.info('GNU/Linux detected')
             filename = "protoc-{version}-linux-x86_64.zip".format(version=self.version)
         elif sys.platform.startswith('darwin'):
-            info_notify("Mac OS X detected")
+            log.info('Mac OS X detected')
             filename = "protoc-{version}-osx-x86_64.zip".format(version=self.version)
         else:
-            info_notify("Your platform is not supported, but recipe can still "
-                        "be built if you have a valid protoc (<={version}) in "
-                        "your path".format(version=self.version))
+            log.info("Your platform is not supported, but recipe can still be built if you have a valid protoc (<=%s) in your path", self.version)
             return
-
         protoc_url = join(url_prefix, filename)
         self.protoc_dir = self.ctx.buildsdir / "tools" / "protoc"
         if (self.protoc_dir / "bin" / "protoc").exists():
-            info_notify("protoc found, no download needed")
+            log.info('protoc found, no download needed')
             return
         try:
             os.makedirs(self.protoc_dir)
@@ -99,7 +97,7 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
             # if dir already exists (errno 17), we ignore the error
             if e.errno != 17:
                 raise e
-        info_notify("Will download into {dest_dir}".format(dest_dir=self.protoc_dir))
+        log.info("Will download into %s", self.protoc_dir)
         self.download_file(protoc_url, self.protoc_dir / filename)
         with current_directory(self.protoc_dir):
             shprint(sh.unzip, self.protoc_dir / filename)
@@ -143,9 +141,7 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
 
     def install_python_package(self, arch):
         env = self.get_recipe_env(arch)
-
-        info('Installing {} into site-packages'.format(self.name))
-
+        log.info("Installing %s into site-packages", self.name)
         with current_directory(join(self.get_build_dir(arch.arch), 'python')):
             hostpython = sh.Command(self.hostpython_location)
 

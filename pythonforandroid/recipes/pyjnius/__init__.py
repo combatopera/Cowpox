@@ -40,10 +40,12 @@
 
 from lagoon import cp
 from pathlib import Path
-from pythonforandroid.logger import info
 from pythonforandroid.patching import will_build
 from pythonforandroid.recipe import CythonRecipe
 from pythonforandroid.util import current_directory
+import logging
+
+log = logging.getLogger(__name__)
 
 class PyjniusRecipe(CythonRecipe):
     # "6553ad4" is one commit after last release (1.2.0)
@@ -58,7 +60,7 @@ class PyjniusRecipe(CythonRecipe):
 
     def postbuild_arch(self, arch):
         super().postbuild_arch(arch)
-        info('Copying pyjnius java class to classes build dir')
+        log.info('Copying pyjnius java class to classes build dir')
         with current_directory(self.get_build_dir(arch.arch)):
             cp._a.print(Path('jnius', 'src', 'org'), self.ctx.javaclass_dir)
 

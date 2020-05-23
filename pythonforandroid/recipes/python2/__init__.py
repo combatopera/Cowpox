@@ -41,9 +41,10 @@
 from os.path import join, exists
 from pythonforandroid.recipe import Recipe
 from pythonforandroid.python import GuestPythonRecipe
-from pythonforandroid.logger import shprint, warning
-import sh
+from pythonforandroid.logger import shprint
+import logging, sh
 
+log = logging.getLogger(__name__)
 
 class Python2Recipe(GuestPythonRecipe):
     '''
@@ -59,10 +60,8 @@ class Python2Recipe(GuestPythonRecipe):
     version = "2.7.15"
     url = 'https://www.python.org/ftp/python/{version}/Python-{version}.tgz'
     name = 'python2'
-
     depends = ['hostpython2', 'libffi']
     conflicts = ['python3']
-
     patches = [
                # new 2.7.15 patches
                # ('patches/fix-api-minor-than-21.patch',
@@ -76,7 +75,6 @@ class Python2Recipe(GuestPythonRecipe):
                'patches/fix-interpreter-version.patch',
                'patches/fix-zlib-version.patch',
     ]
-
     configure_args = ('--host={android_host}',
                       '--build={android_build}',
                       '--enable-shared',
@@ -90,7 +88,6 @@ class Python2Recipe(GuestPythonRecipe):
                       'ac_cv_header_langinfo_h=no',
                       '--prefix={prefix}',
                       '--exec-prefix={exec_prefix}')
-
     compiled_extension = '.pyo'
 
     def prebuild_arch(self, arch):
@@ -101,8 +98,7 @@ class Python2Recipe(GuestPythonRecipe):
             shprint(sh.touch, patch_mark)
 
     def build_arch(self, arch):
-        warning('DEPRECATION: Support for the Python 2 recipe will be '
-                'removed in 2020, please upgrade to Python 3.')
+        log.warning('DEPRECATION: Support for the Python 2 recipe will be removed in 2020, please upgrade to Python 3.')
         super().build_arch(arch)
 
     def set_libs_flags(self, env, arch):
@@ -111,13 +107,11 @@ class Python2Recipe(GuestPythonRecipe):
             # For python2 we need to tell configure that we want to use our
             # compiled libffi, this step is not necessary for python3.
             self.configure_args += ('--with-system-ffi',)
-
         if 'openssl' in self.ctx.recipe_build_order:
             recipe = Recipe.get_recipe('openssl', self.ctx)
             openssl_build = recipe.get_build_dir(arch.arch)
             env['OPENSSL_BUILD'] = openssl_build
             env['OPENSSL_VERSION'] = recipe.version
         return env
-
 
 recipe = Python2Recipe()

@@ -38,10 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import info, shprint
+from pythonforandroid.logger import shprint
 from pythonforandroid.recipe import CompiledComponentsPythonRecipe, Recipe
 from pythonforandroid.util import current_directory
-import sh
+import logging, sh
+
+log = logging.getLogger(__name__)
 
 class PyCryptoRecipe(CompiledComponentsPythonRecipe):
 
@@ -65,13 +67,13 @@ class PyCryptoRecipe(CompiledComponentsPythonRecipe):
         return env
 
     def build_compiled_components(self, arch):
-        info('Configuring compiled components in {}'.format(self.name))
+        log.info("Configuring compiled components in %s", self.name)
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
             configure = sh.Command('./configure')
             shprint(configure, '--host=arm-eabi',
                     '--prefix={}'.format(self.ctx.get_python_install_dir()),
                     '--enable-shared', _env=env)
-        super(PyCryptoRecipe, self).build_compiled_components(arch)
+        super().build_compiled_components(arch)
 
 recipe = PyCryptoRecipe()
