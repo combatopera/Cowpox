@@ -298,6 +298,8 @@ class TargetAndroid:
                 yield from ['--android_used_libs', lib]
             for gradle_dependency in self.config.getlist('app', 'android.gradle_dependencies', []):
                 yield from ['--depends', gradle_dependency]
+            if self.bootstrapname == 'webview':
+                yield from ['--port', '5000']
         makeapk(
             self.dirs.android_sdk_dir,
             self.dirs.android_ndk_dir,

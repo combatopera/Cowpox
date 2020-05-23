@@ -432,9 +432,7 @@ def makeapkversion(args, distdir, private):
                           'located relative to the python-for-android '
                           'directory'))
     if bootstrapname == "webview":
-        ap.add_argument('--port',
-                        help='The port on localhost that the WebView will access',
-                        default='5000')
+        ap.add_argument('--port')
     ap.add_argument('--sign', type = eval,
                     help=('Try to sign the APK with your credentials. You must set '
                           'the appropriate environment variables.'))
