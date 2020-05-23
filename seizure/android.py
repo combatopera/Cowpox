@@ -235,6 +235,12 @@ class TargetAndroid:
             for wl in p4a_whitelist:
                 fd.write(wl + '\n')
 
+    def _permissions(self):
+        for permission in self.config.getlist('app', 'android.permissions', []):
+            words = permission.split('.')
+            words[-1] = words[-1].upper()
+            yield '.'.join(words)
+
     def build_package(self):
         dist_dir = self._get_dist_dir()
         config = self.config
@@ -250,10 +256,8 @@ class TargetAndroid:
                 '--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity'),
                 '--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar'),
             )
-            for permission in config.getlist('app', 'android.permissions', []):
-                permission = permission.split('.')
-                permission[-1] = permission[-1].upper()
-                yield from ["--permission", '.'.join(permission)]
+            for permission in self._permissions():
+                yield from ["--permission", permission]
             for option in config.getlist('app', 'android.add_compile_options', []):
                 yield from ['--add-compile-option', option]
             for repo in config.getlist('app','android.add_gradle_repositories', []):
