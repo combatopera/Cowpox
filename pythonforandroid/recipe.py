@@ -38,11 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info, debug, shprint, info_main
+from .logger import info, debug, info_main
 from .mirror import Mirror
 from .util import current_directory, ensure_dir, BuildInterruptingException
 from importlib.util import module_from_spec, spec_from_file_location
-from lagoon import cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, touch
+from lagoon import basename, cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, touch
 from lagoon.program import Program
 from os import listdir, walk
 from os.path import exists, join, split
@@ -330,7 +330,7 @@ class Recipe(metaclass = RecipeMeta):
             expected_md5 = self.md5sum
         mkdir._p.print(self.ctx.packages_path / self.name)
         with current_directory(self.ctx.packages_path / self.name):
-            filename = Path(shprint(sh.basename, url).stdout[:-1].decode('utf-8'))
+            filename = Path(basename(url)[:-1])
             do_download = True
             marker_filename = Path(f".mark-{filename}")
             if filename.exists() and filename.is_file():
@@ -368,7 +368,6 @@ class Recipe(metaclass = RecipeMeta):
 
     def unpack(self, arch):
         info_main('Unpacking {} for {}'.format(self.name, arch))
-
         build_dir = self.get_build_container_dir(arch)
         user_dir = os.environ.get('P4A_{}_DIR'.format(self.name.lower()))
         if user_dir is not None:
@@ -385,13 +384,10 @@ class Recipe(metaclass = RecipeMeta):
         if self.url is None:
             info('Skipping {} unpack as no URL is set'.format(self.name))
             return
-
-        filename = shprint(
-            sh.basename, self.versioned_url).stdout[:-1].decode('utf-8')
+        filename = basename(self.versioned_url)[:-1]
         ma = re.match('^(.+)#md5=([0-9a-f]{32})$', filename)
         if ma:                  # fragmented URL?
             filename = ma.group(1)
-
         with current_directory(build_dir):
             directory_name = self.get_build_dir(arch)
             if not directory_name.exists() or not directory_name.is_dir():
