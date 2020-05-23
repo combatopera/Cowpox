@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info, info_notify, Err_Style, Err_Fore
+from .logger import info, Err_Style, Err_Fore
 from .util import current_directory
 from os.path import exists, join
 from pathlib import Path
@@ -109,7 +109,7 @@ class Distribution:
             if arch_name is not None and arch_name not in dist.archs:
                 continue
             if set(recipes).issubset(set(dist.recipes)):
-                info_notify('{} has compatible recipes, using this one'.format(dist.name))
+                log.info("%s has compatible recipes, using this one", dist.name)
                 return dist
         assert len(possible_dists) < 2
         dist = cls(ctx)
