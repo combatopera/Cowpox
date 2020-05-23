@@ -891,7 +891,6 @@ class CythonRecipe(PythonRecipe):
         env = super().get_recipe_env(arch, with_flags_in_cc)
         env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch.arch)} -L{self.ctx.libs_dir}  -L{self.ctx.bootstrap.build_dir / 'obj' / 'local' / arch.arch} "
         env['LDSHARED'] = env['CC'] + ' -shared'
-        # shprint(sh.whereis, env['LDSHARED'], _env=env)
         env['LIBLINK'] = 'NOTNONE'
         env['NDKPLATFORM'] = self.ctx.ndk_platform
         env['COPYLIBS'] = '1'
