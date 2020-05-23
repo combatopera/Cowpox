@@ -329,7 +329,7 @@ class Recipe(metaclass = RecipeMeta):
                 if not marker_filename.exists():
                     rm.print(filename)
                 elif expected_md5:
-                    current_md5 = md5sum(filename)
+                    current_md5 = _md5sum(filename)
                     if current_md5 != expected_md5:
                         log.debug("Generated md5sum: %s", current_md5)
                         log.debug("Expected md5sum: %s", expected_md5)
@@ -347,7 +347,7 @@ class Recipe(metaclass = RecipeMeta):
                 self.download_file(self.versioned_url, filename)
                 touch.print(marker_filename)
                 if filename.exists() and filename.is_file() and expected_md5:
-                    current_md5 = md5sum(filename)
+                    current_md5 = _md5sum(filename)
                     if expected_md5 is not None:
                         if current_md5 != expected_md5:
                             log.debug("Generated md5sum: %s", current_md5)
@@ -943,6 +943,6 @@ class TargetPythonRecipe(Recipe):
             if len(parts) > 2:
                 mv.print(filen, join(file_dirname, parts[0] + '.so'))
 
-def md5sum(filen):
+def _md5sum(filen):
     with open(filen, 'rb') as fileh:
         return hashlib.md5(fileh.read()).hexdigest()
