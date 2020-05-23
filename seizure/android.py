@@ -42,12 +42,12 @@ from .config import Config
 from .dirs import APACHE_ANT_VERSION, Dirs
 from .jsonstore import JsonStore
 from .libs.version import parse
+from .p4a import create, makeapk
 from diapyr import types
 from lagoon import tar, unzip, yes
 from lagoon.program import Program
 from pythonforandroid.distribution import generate_dist_folder_name
 from pythonforandroid.mirror import download
-from pythonforandroid.p4a import create, makeapk
 from types import SimpleNamespace
 import logging, os, shutil
 
