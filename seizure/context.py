@@ -312,7 +312,7 @@ def build_recipes(build_order, python_modules, ctx):
         # 3) build packages
         log.info('Building recipes')
         for recipe in recipes:
-            log.info("Building {} for {}", recipe.name, arch.arch)
+            log.info("Building %s for %s", recipe.name, arch.arch)
             if recipe.should_build(arch):
                 recipe.build_arch(arch)
                 recipe.install_libraries(arch)
