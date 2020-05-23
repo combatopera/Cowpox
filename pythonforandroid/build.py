@@ -368,16 +368,16 @@ def makeapkversion(args, distdir, private):
         ap.add_argument('--launcher', action='store_true',
                         help=('Provide this argument to build a multi-app '
                               'launcher, rather than a single app.'))
-    ap.add_argument('--permission', dest='permissions', action='append', default=[],
+    ap.add_argument('--permissions', action='append', default=[],
                     help='The permissions to give this app.', nargs='+')
     ap.add_argument('--meta-data', action='append', default=[],
                     help='Custom key=value to add in application metadata')
-    ap.add_argument('--uses-library', dest='android_used_libs', action='append', default=[],
+    ap.add_argument('--android_used_libs', action='append', default=[],
                     help='Used shared libraries included using <uses-library> tag in AndroidManifest.xml')
     ap.add_argument('--icon',
                     help=('A png file to use as the icon for '
                           'the application.'))
-    ap.add_argument('--service', dest='services', action='append', default=[],
+    ap.add_argument('--services', action='append', default=[],
                     help='Declare a new service entrypoint: '
                          'NAME:PATH_TO_PY[:foreground]')
     if bootstrapname != "service_only":
@@ -413,13 +413,13 @@ def makeapkversion(args, distdir, private):
     ap.add_argument('--android-apptheme',
                     default='@android:style/Theme.NoTitleBar',
                     help='Defines which app theme should be selected for the main activity')
-    ap.add_argument('--add-compile-option', dest='compile_options', default=[],
+    ap.add_argument('--compile_options', default=[],
                     action='append', help='add compile options to gradle.build')
-    ap.add_argument('--add-gradle-repository', dest='gradle_repositories',
+    ap.add_argument('--gradle_repositories',
                     default=[],
                     action='append',
                     help='Ddd a repository for gradle')
-    ap.add_argument('--add-packaging-option', dest='packaging_options',
+    ap.add_argument('--packaging_options',
                     default=[],
                     action='append',
                     help='Dndroid packaging options')
@@ -427,10 +427,10 @@ def makeapkversion(args, distdir, private):
     ap.add_argument('--wakelock', action='store_true',
                     help=('Indicate if the application needs the device '
                           'to stay on'))
-    ap.add_argument('--depend', dest='depends', action='append',
+    ap.add_argument('--depends', action='append',
                     help=('Add a external dependency '
                           '(eg: com.android.support:appcompat-v7:19.0.1)'))
-    ap.add_argument('--minsdk', dest='min_sdk_version',
+    ap.add_argument('--min_sdk_version',
                     default=default_min_api, type=int,
                     help=('Minimum Android SDK version that the app supports. '
                           'Defaults to {}.'.format(default_min_api)))

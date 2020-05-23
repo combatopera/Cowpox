@@ -253,21 +253,21 @@ class TargetAndroid:
         self._generate_whitelist(dist_dir)
         def downstreamargs():
             yield from (
-                "--name", config.get('app', 'title'),
-                "--version", version,
-                "--package", self._get_package(),
-                "--minsdk", config.getdefault('app', 'android.minapi', self.android_minapi),
+                '--name', config.get('app', 'title'),
+                '--version', version,
+                '--package', self._get_package(),
+                '--min_sdk_version', config.getdefault('app', 'android.minapi', self.android_minapi),
                 '--android-entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity'),
                 '--android-apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar'),
             )
             for permission in self._permissions():
-                yield from ["--permission", permission]
+                yield from ["--permissions", permission]
             for option in config.getlist('app', 'android.add_compile_options', []):
-                yield from ['--add-compile-option', option]
+                yield from ['--compile_options', option]
             for repo in config.getlist('app','android.add_gradle_repositories', []):
-                yield from ['--add-gradle-repository', repo]
+                yield from ['--gradle_repositories', repo]
             for pkgoption in config.getlist('app','android.add_packaging_options', []):
-                yield from ['--add-packaging-option', pkgoption]
+                yield from ['--packaging_options', pkgoption]
             for meta in config.getlistvalues('app', 'android.meta_data', []):
                 yield from ["--meta-data", '='.join(korv.strip() for korv in meta.split('=', 1))]
             for activity in config.getlist('app', 'android.add_activities', []):
@@ -296,11 +296,11 @@ class TargetAndroid:
             if presplash_color:
                 yield from ['--presplash-color', presplash_color]
             for service in self.config.getlist('app', 'services', []):
-                yield from ['--service', service]
+                yield from ['--services', service]
             for lib in self.config.getlist('app', 'android.uses_library', ''):
-                yield from ['--uses-library', lib]
+                yield from ['--android_used_libs', lib]
             for gradle_dependency in self.config.getlist('app', 'android.gradle_dependencies', []):
-                yield from ['--depend', gradle_dependency]
+                yield from ['--depends', gradle_dependency]
         makeapk(
             self.dirs.android_sdk_dir,
             self.dirs.android_ndk_dir,
