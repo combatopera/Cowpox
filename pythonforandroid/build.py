@@ -175,7 +175,7 @@ def _compile_dir(dfn, distinfo):
     subprocess.check_call([distinfo.forkey('hostpython'), '-OO', '-m', 'compileall', '-b', '-f', dfn])
 
 def _make_package(args, bootstrapname, blacklist, distinfo, render):
-    if (bootstrapname != "sdl" or args.launcher is None) and bootstrapname != "webview":
+    if bootstrapname != "webview":
         if args.private is None or (
                 not exists(join(realpath(args.private), 'main.py')) and
                 not exists(join(realpath(args.private), 'main.pyo'))):
@@ -201,7 +201,7 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
             tar_dirs.append(python_bundle_dir)
     if bootstrapname == "webview":
         tar_dirs.append('webview_includes')
-    if args.private or args.launcher:
+    if args.private:
         _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo, python_files)
     shutil.rmtree(env_vars_tarpath)
     res_dir = Path('src', 'main', 'res')
@@ -364,10 +364,6 @@ def makeapkversion(args, distdir, private):
                     help=('The human-readable name of the project.'),
                     required=True)
     ap.add_argument('--version', required = True)
-    if bootstrapname == "sdl2":
-        ap.add_argument('--launcher', action='store_true',
-                        help=('Provide this argument to build a multi-app '
-                              'launcher, rather than a single app.'))
     ap.add_argument('--permissions', action='append', default=[],
                     help='The permissions to give this app.', nargs='+')
     ap.add_argument('--meta-data', action='append', default=[],
@@ -469,7 +465,7 @@ def makeapkversion(args, distdir, private):
         blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
     with (distdir / 'whitelist.txt').open() as f:
         blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-    if private is None and bootstrapname == 'sdl2' and args.launcher is None:
+    if private is None and bootstrapname == 'sdl2':
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
     args.private = private
     _make_package(args, bootstrapname, blacklist, distinfo, render)
