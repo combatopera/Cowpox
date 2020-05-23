@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info, Err_Style, Err_Fore
+from .logger import Err_Style, Err_Fore
 from .util import current_directory
 from os.path import exists, join
 from pathlib import Path
@@ -98,10 +98,10 @@ class Distribution:
                 _possible_dists.append(dist)
         possible_dists = _possible_dists
         if possible_dists:
-            info('Of the existing distributions, the following meet the given requirements:')
+            log.info('Of the existing distributions, the following meet the given requirements:')
             _pretty_log_dists(possible_dists)
         else:
-            info('No existing dists meet the given requirements!')
+            log.info('No existing dists meet the given requirements!')
         # If any dist has perfect recipes, arch and NDK API, return it
         for dist in possible_dists:
             if ndk_api is not None and dist.ndk_api != ndk_api:
@@ -158,7 +158,7 @@ class Distribution:
 
     def save_info(self, dirn):
         with current_directory(dirn):
-            info('Saving distribution info')
+            log.info('Saving distribution info')
             with open('dist_info.json', 'w') as fileh:
                 json.dump({'dist_name': self.name,
                            'bootstrap': self.ctx.bootstrap.name,
@@ -182,7 +182,7 @@ def _pretty_log_dists(dists):
                          archs=', '.join(dist.archs) if dist.archs else 'UNKNOWN',
                          Fore=Err_Fore, Style=Err_Style))
     for line in infos:
-        info('\t' + line)
+        log.info("\t%s", line)
 
 def generate_dist_folder_name(base_dist_name, arch_names = None):
     return f"{base_dist_name}__{'no_arch_specified' if arch_names is None else '_'.join(arch_names)}"
