@@ -66,9 +66,9 @@ def disablegradledaemon():
         print(line, file = f)
 
 def main():
-    console = StreamHandler()
+    console = logging.StreamHandler()
     console.setLevel(logging.INFO)
-    logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG, handlers = [FileHandler('/workspace/bin/Seizure.log'), console])
+    logging.basicConfig(format = "[%(levelname)s] %(message)s", level = logging.DEBUG, handlers = [logging.FileHandler('/workspace/bin/Seizure.log'), console])
     parser = ArgumentParser()
     parser.add_argument('workspace', type = Path)
     parser.add_argument('project', type = Path)
