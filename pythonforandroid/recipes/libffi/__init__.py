@@ -44,6 +44,7 @@ from multiprocessing import cpu_count
 from pathlib import Path
 from pythonforandroid.recipe import Recipe
 from pythonforandroid.util import current_directory
+import os
 
 class LibffiRecipe(Recipe):
     """
