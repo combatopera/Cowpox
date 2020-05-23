@@ -60,8 +60,8 @@ def fix_deplist(deps):
     ]
     return deps
 
-
 class RecipeOrder(dict):
+
     def __init__(self, ctx):
         self.ctx = ctx
 
@@ -70,13 +70,11 @@ class RecipeOrder(dict):
             try:
                 recipe = Recipe.get_recipe(name, self.ctx)
                 conflicts = [dep.lower() for dep in recipe.conflicts]
-            except ValueError:
+            except ModuleNotFoundError:
                 conflicts = []
-
             if any([c in self for c in conflicts]):
                 return True
         return False
-
 
 def get_dependency_tuple_list_for_recipe(recipe, blacklist=None):
     """ Get the dependencies of a recipe with filtered out blacklist, and
@@ -115,27 +113,22 @@ def recursively_collect_orders(
         blacklist = set()
     try:
         recipe = Recipe.get_recipe(name, ctx)
-        dependencies = get_dependency_tuple_list_for_recipe(
-            recipe, blacklist=blacklist
-        )
-
+        dependencies = get_dependency_tuple_list_for_recipe(recipe, blacklist = blacklist)
         # handle opt_depends: these impose requirements on the build
         # order only if already present in the list of recipes to build
         dependencies.extend(fix_deplist(
             [[d] for d in recipe.get_opt_depends_in_list(all_inputs)
              if d.lower() not in blacklist]
         ))
-
         if recipe.conflicts is None:
             conflicts = []
         else:
             conflicts = [dep.lower() for dep in recipe.conflicts]
-    except ValueError:
+    except ModuleNotFoundError:
         # The recipe does not exist, so we assume it can be installed
         # via pip with no extra dependencies
         dependencies = []
         conflicts = []
-
     new_orders = []
     # for each existing recipe order, see if we can add the new recipe name
     for order in orders:
@@ -217,7 +210,7 @@ def obvious_conflict_checker(ctx, name_tuples, blacklist=None):
                 recipe_dependencies = get_dependency_tuple_list_for_recipe(
                     recipe, blacklist=blacklist
                 )
-            except ValueError:
+            except ModuleNotFoundError:
                 pass
             adder_first_recipe_name = adding_recipe or name
 
@@ -238,7 +231,7 @@ def obvious_conflict_checker(ctx, name_tuples, blacklist=None):
                     continue
                 try:
                     dep_recipe = Recipe.get_recipe(dep_tuple_list[0], ctx)
-                except ValueError:
+                except ModuleNotFoundError:
                     continue
                 conflicts = [c.lower() for c in dep_recipe.conflicts]
                 if name in conflicts:
@@ -351,7 +344,7 @@ def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
         try:
             recipe = Recipe.get_recipe(name, ctx)
             python_modules += recipe.python_depends
-        except ValueError:
+        except ModuleNotFoundError:
             python_modules.append(name)
         else:
             recipes.append(name)

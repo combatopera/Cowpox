@@ -254,11 +254,9 @@ class Context:
             except ValueError:
                 # Failed to look up any meaningful name.
                 return False
-
-        # Try to look up recipe by name:
         try:
             recipe = Recipe.get_recipe(name, self)
-        except ValueError:
+        except ModuleNotFoundError:
             pass
         else:
             name = getattr(recipe, 'site_packages_name', None) or name
