@@ -38,11 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .logger import info, info_notify, warning, Err_Style, Err_Fore
+from .logger import info, info_notify, Err_Style, Err_Fore
 from .util import current_directory
 from os.path import exists, join
 from pathlib import Path
-import glob, json, shutil
+import glob, json, logging, shutil
+
+log = logging.getLogger(__name__)
 
 class Distribution:
     '''State container for information about a distribution (i.e. an
@@ -150,14 +152,7 @@ class Distribution:
                     dist.ndk_api = dist_info['ndk_api']
                 else:
                     dist.ndk_api = None
-                    warning(
-                        "Distribution {distname}: ({distdir}) has been "
-                        "built with an unknown api target, ignoring it, "
-                        "you might want to delete it".format(
-                            distname=dist.name,
-                            distdir=dist.dist_dir
-                        )
-                    )
+                    log.warning("Distribution %s: (%s) has been built with an unknown api target, ignoring it, you might want to delete it", dist.name, dist.dist_dir)
                 dists.append(dist)
         return dists
 
