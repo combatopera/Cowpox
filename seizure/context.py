@@ -135,8 +135,7 @@ class Context:
         return dir
 
     def get_python_install_dir(self):
-        dir = join(self.python_installs_dir, self.bootstrap.distribution.name)
-        return dir
+        return self.python_installs_dir / self.bootstrap.distribution.name
 
     def setup_dirs(self, storage_dir):
         self.buildsdir = storage_dir / 'build'
@@ -235,9 +234,6 @@ class Context:
         self.bootstrap.prepare_dist_dir()
 
     def get_site_packages_dir(self, arch=None):
-        '''Returns the location of site-packages in the python-install build
-        dir.
-        '''
         return self.get_python_install_dir()
 
     def get_libs_dir(self, arch):
@@ -331,15 +327,15 @@ def build_recipes(build_order, python_modules, ctx):
         return
     log.info("The requirements (%s) don't have recipes, attempting to install them with pip", ', '.join(modules))
     log.info('If this fails, it may mean that the module has compiled components and needs a recipe.')
+    virtualenv.print(f"--python=python{ctx.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv', cwd = ctx.buildsdir)
+    base_env = os.environ.copy()
+    base_env["PYTHONPATH"] = ctx.get_site_packages_dir() # XXX: Really?
+    log.info('Upgrade pip to latest version')
+    pip = Program.text(Path('venv', 'bin', 'pip'))
+    pip.install._U.print('pip', env = base_env, cwd = ctx.buildsdir)
+    log.info('Install Cython in case one of the modules needs it to build')
+    pip.install.print('Cython', env = base_env, cwd = ctx.buildsdir)
     with current_directory(ctx.buildsdir):
-        virtualenv.print(f"--python=python{ctx.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv')
-        base_env = os.environ.copy()
-        base_env["PYTHONPATH"] = ctx.get_site_packages_dir()
-        log.info('Upgrade pip to latest version')
-        pip = Program.text(Path('venv', 'bin', 'pip'))
-        pip.install._U.print('pip', env = base_env)
-        log.info('Install Cython in case one of the modules needs it to build')
-        pip.install.print('Cython', env = base_env)
         # Get environment variables for build (with CC/compiler set):
         standard_recipe = CythonRecipe()
         standard_recipe.ctx = ctx
@@ -348,7 +344,6 @@ def build_recipes(build_order, python_modules, ctx):
         recipe_env = standard_recipe.get_recipe_env(ctx.archs[0])
         env = copy.copy(base_env)
         env.update(recipe_env)
-
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
         env["PYTHONPATH"] += ":" + ctx.get_site_packages_dir()
