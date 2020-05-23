@@ -368,7 +368,7 @@ class Recipe(metaclass = RecipeMeta):
     def unpack(self, arch):
         log.info("Unpacking %s for %s", self.name, arch)
         build_dir = self.get_build_container_dir(arch)
-        user_dir = os.environ.get('P4A_{}_DIR'.format(self.name.lower()))
+        user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
         if user_dir is not None:
             log.info("P4A_%s_DIR exists, symlinking instead", self.name.lower())
             if self.get_build_dir(arch).exists():
@@ -382,6 +382,7 @@ class Recipe(metaclass = RecipeMeta):
         if self.url is None:
             log.info("Skipping %s unpack as no URL is set", self.name)
             return
+        # TODO: Parse the URL instead.
         filename = basename(self.versioned_url)[:-1]
         ma = re.match('^(.+)#md5=([0-9a-f]{32})$', filename)
         if ma:                  # fragmented URL?
@@ -401,8 +402,8 @@ class Recipe(metaclass = RecipeMeta):
                             # github zips
                             if e.returncode not in {1, 2}:
                                 raise
-                        fileh = ZipFile(extraction_filename, 'r')
-                        root_directory = fileh.filelist[0].filename.split('/')[0]
+                        zf = ZipFile(extraction_filename, 'r')
+                        root_directory = zf.filelist[0].filename.split('/')[0]
                         if root_directory != directory_name.name:
                             mv.print(root_directory, directory_name)
                     elif extraction_filename.name.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
@@ -411,18 +412,14 @@ class Recipe(metaclass = RecipeMeta):
                         if root_directory != directory_name.name:
                             mv.print(root_directory, directory_name)
                     else:
-                        raise Exception(
-                            'Could not extract {} download, it must be .zip, '
-                            '.tar.gz or .tar.bz2 or .tar.xz'.format(extraction_filename))
+                        raise Exception(f"Could not extract {extraction_filename} download, it must be .zip, .tar.gz or .tar.bz2 or .tar.xz")
                 elif extraction_filename.is_dir():
-                    Path(directory_name).mkdir()
+                    directory_name.mkdir()
                     for entry in listdir(extraction_filename):
-                        if entry not in ('.git',):
+                        if entry not in {'.git'}:
                             cp._Rv.print(extraction_filename / entry, directory_name)
                 else:
-                    raise Exception(
-                        'Given path is neither a file nor a directory: {}'
-                        .format(extraction_filename))
+                    raise Exception(f"Given path is neither a file nor a directory: {extraction_filename}")
             else:
                 log.info("%s is already unpacked, skipping", self.name)
 
