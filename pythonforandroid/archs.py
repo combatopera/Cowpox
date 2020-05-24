@@ -189,7 +189,7 @@ class Arch:
         command_prefix = self.command_prefix
         env['AR'] = '{}-ar'.format(command_prefix)
         env['RANLIB'] = '{}-ranlib'.format(command_prefix)
-        env['STRIP'] = '{}-strip --strip-unneeded'.format(command_prefix)
+        env['STRIP'] = f"{command_prefix}-strip --strip-unneeded"
         env['MAKE'] = 'make -j{}'.format(str(cpu_count()))
         env['READELF'] = '{}-readelf'.format(command_prefix)
         env['NM'] = '{}-nm'.format(command_prefix)
