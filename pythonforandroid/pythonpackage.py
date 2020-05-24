@@ -556,19 +556,8 @@ def parse_as_folder_reference(dep):
 def _extract_info_from_package(dependency):
     output_folder = tempfile.mkdtemp(prefix="pythonpackage-metafolder-")
     try:
-        extract_metainfo_files_from_package(
-            dependency, output_folder, debug=False
-        )
-
-        # Extract the type of data source we used to get the metadata:
-        with open(os.path.join(output_folder,
-                               "metadata_source"), "r") as f:
-            metadata_source_type = f.read().strip()
-
-        # Extract main METADATA file:
-        with open(os.path.join(output_folder, "METADATA"),
-                  "r", encoding="utf-8"
-                 ) as f:
+        extract_metainfo_files_from_package(dependency, output_folder, debug=False)
+        with open(os.path.join(output_folder, "METADATA"), "r", encoding="utf-8") as f:
             # Get metadata and cut away description (is after 2 linebreaks)
             metadata_entries = f.read().partition("\n\n")[0].splitlines()
         name = None
