@@ -38,8 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .util import BuildInterruptingException
 from distutils.version import LooseVersion
+from pythonforandroid.util import BuildInterruptingException
 import logging
 
 log = logging.getLogger(__name__)
