@@ -41,6 +41,7 @@
 from pep517.envbuild import BuildEnvironment
 from pep517.wrappers import Pep517HookCaller
 from urllib.parse import urlparse, unquote as urlunquote
+from tempfile import TemporaryDirectory
 import functools, os, pytoml, shutil, subprocess, sys, tarfile, tempfile, textwrap, time, zipfile
 
 def transform_dep_for_pip(dependency):
@@ -554,8 +555,7 @@ def parse_as_folder_reference(dep):
     return None
 
 def _extract_info_from_package(dependency):
-    output_folder = tempfile.mkdtemp(prefix="pythonpackage-metafolder-")
-    try:
+    with TemporaryDirectory() as output_folder:
         extract_metainfo_files_from_package(dependency, output_folder, debug=False)
         with open(os.path.join(output_folder, "METADATA"), "r", encoding="utf-8") as f:
             # Get metadata and cut away description (is after 2 linebreaks)
@@ -564,10 +564,8 @@ def _extract_info_from_package(dependency):
             if meta_entry.lower().startswith("name:"):
                 return meta_entry.partition(":")[2].strip()
         raise ValueError("failed to obtain package name")
-    finally:
-        shutil.rmtree(output_folder)
 
-package_name_cache = dict()
+package_name_cache = {}
 
 def get_package_name(dependency, use_cache=True):
     def timestamp():
