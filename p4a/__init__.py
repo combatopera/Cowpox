@@ -697,14 +697,6 @@ class PythonRecipe(Recipe):
     def hostpython_location(self):
         return self.ctx.hostpython if self.call_hostpython_via_targetpython else self.real_hostpython_location
 
-    @property
-    def folder_name(self):
-        '''The name of the build folders containing this recipe.'''
-        name = self.site_packages_name
-        if name is None:
-            name = self.name
-        return name
-
     def get_recipe_env(self, arch=None, with_flags_in_cc=True):
         env = super().get_recipe_env(arch, with_flags_in_cc)
         env['PYTHONNOUSERSITE'] = '1'
@@ -738,7 +730,9 @@ class PythonRecipe(Recipe):
         return env
 
     def should_build(self, arch):
-        name = self.folder_name
+        name = self.site_packages_name
+        if name is None:
+            name = self.name
         if self.ctx.has_package(name):
             log.info('Python package already exists in site-packages')
             return False
