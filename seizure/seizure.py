@@ -51,20 +51,6 @@ import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
-def disablegradledaemon():
-    path = Path.home() / '.gradle' / 'gradle.properties'
-    line = 'org.gradle.daemon=false'
-    try:
-        with path.open() as f:
-            if line == f.read().splitlines()[-1]:
-                log.debug('Gradle Daemon already disabled.')
-                return
-    except FileNotFoundError:
-        pass
-    log.info('Disabling Gradle Daemon.')
-    with path.open('a') as f:
-        print(line, file = f)
-
 def main():
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
@@ -73,7 +59,6 @@ def main():
     parser.add_argument('workspace', type = Path)
     parser.add_argument('project', type = Path)
     config = parser.parse_args()
-    disablegradledaemon()
     shutil.copytree('.', config.project, symlinks = True, dirs_exist_ok = True)
     soak.print(cwd = config.workspace)
     pipify.print('-f', config.workspace / 'bdozlib.arid', cwd = config.project)

@@ -102,7 +102,7 @@ def apk(args, downstreamargs, ctx, dist):
         env = os.environ.copy()
         env['ANDROID_NDK_HOME'] = str(ctx.ndk_dir)
         env['ANDROID_HOME'] = str(ctx.sdk_dir)
-        output = gradle.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], env = env)
+        output = gradle.__no_daemon.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], env = env)
         apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
         apk_glob = "*-{}.apk"
     log.info('Copying APK to current directory')
