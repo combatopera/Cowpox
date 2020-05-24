@@ -88,6 +88,7 @@ def _extract_metainfo_files_from_package(package, output_folder):
             package = os.path.join(temp_folder, "package")
         # Because PEP517 can be noisy and contextlib.redirect_* fails to
         # contain it, we will run the actual analysis in a separate process:
+        log.info("Extract metadata for package: %s", package)
         try:
             subprocess.check_output([
                 sys.executable,
