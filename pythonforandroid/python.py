@@ -358,14 +358,14 @@ class HostPythonRecipe(Recipe):
         ensure_dir(build_dir)
         if not (build_dir / 'config.status').exists():
             Program.text(recipe_build_dir / 'configure').print(cwd = build_dir)
+        setup_dist_location = recipe_build_dir / 'Modules' / 'Setup.dist'
+        if setup_dist_location.exists():
+            cp.print(setup_dist_location, build_dir / 'Modules' / 'Setup')
+        else:
+            setup_location = recipe_build_dir / 'Modules' / 'Setup'
+            if not setup_location.exists():
+                raise BuildInterruptingException('Could not find Setup.dist or Setup in Python build')
         with current_directory(recipe_build_dir):
-            setup_dist_location = join('Modules', 'Setup.dist')
-            if exists(setup_dist_location):
-                cp.print(setup_dist_location, build_dir / 'Modules' / 'Setup')
-            else:
-                setup_location = join('Modules', 'Setup')
-                if not exists(setup_location):
-                    raise BuildInterruptingException('Could not find Setup.dist or Setup in Python build')
             make.print('-j', cpu_count(), '-C', build_dir)
             for exe_name in 'python.exe', 'python':
                 exe = self.get_path_to_python() / exe_name
