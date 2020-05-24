@@ -40,7 +40,7 @@
 
 from distutils.version import LooseVersion
 from importlib import import_module
-from lagoon import basename, cp, find, git, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
+from lagoon import basename, cp, find, sysgit, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
 from lagoon.program import Program
 from os import listdir, walk
 from os.path import exists, join, split
@@ -205,21 +205,21 @@ class Recipe(metaclass = RecipeMeta):
             return target
         elif parsed_url.scheme in {'git', 'git+file', 'git+ssh', 'git+http', 'git+https'}:
             if target.is_dir():
-                with current_directory(target):
-                    git.fetch.__tags.print()
-                    if self.version:
-                        git.checkout.print(self.version)
-                    git.pull.print()
-                    git.pull.__recurse_submodules.print()
-                    git.submodule.update.__recursive.print()
+                git = sysgit.partial(cwd = target)
+                git.fetch.__tags.print()
+                if self.version:
+                    git.checkout.print(self.version)
+                git.pull.print()
+                git.pull.__recurse_submodules.print()
+                git.submodule.update.__recursive.print()
             else:
                 if url.startswith('git+'):
                     url = url[4:]
-                git.clone.__recursive.print(url, target)
+                sysgit.clone.__recursive.print(url, target)
                 if self.version:
-                    with current_directory(target):
-                        git.checkout.print(self.version)
-                        git.submodule.update.__recursive.print()
+                    git = sysgit.partial(cwd = target)
+                    git.checkout.print(self.version)
+                    git.submodule.update.__recursive.print()
             return target
 
     def apply_patch(self, filename, arch, build_dir = None):
