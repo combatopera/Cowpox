@@ -40,11 +40,11 @@
 
 from .build import makeapkversion
 from .context import Context, build_recipes
+from .distribution import Distribution
 from .graph import get_recipe_order
 from lagoon import cp, gradle
 from pathlib import Path
 from pythonforandroid.bootstrap import Bootstrap
-from pythonforandroid.distribution import Distribution
 from pythonforandroid.util import BuildInterruptingException, current_directory
 from types import SimpleNamespace
 import glob, logging, os, re
