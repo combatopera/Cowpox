@@ -38,9 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .util import current_directory
 from os.path import exists, join
 from pathlib import Path
+from pythonforandroid.util import current_directory
 import glob, json, logging, shutil
 
 log = logging.getLogger(__name__)
