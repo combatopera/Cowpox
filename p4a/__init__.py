@@ -40,7 +40,7 @@
 
 from distutils.version import LooseVersion
 from importlib import import_module
-from lagoon import basename, cp, find, sysgit, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
+from lagoon import basename, cp, find, git as sysgit, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
 from lagoon.program import Program
 from os import listdir, walk
 from os.path import exists, join, split
