@@ -38,10 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .recommendations import RECOMMENDED_NDK_VERSION
 from argparse import Namespace
 from configparser import SafeConfigParser
 from diapyr import types
-from pythonforandroid.recommendations import RECOMMENDED_NDK_VERSION
 import logging, re
 
 log = logging.getLogger(__name__)
