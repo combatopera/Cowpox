@@ -295,7 +295,7 @@ class Recipe(metaclass = RecipeMeta):
         local_recipe_dir = self.ctx.local_recipes / self.name
         if local_recipe_dir.exists():
             return local_recipe_dir
-        return self.ctx.root_dir / 'recipes' / self.name
+        return self.ctx.contribroot / 'recipes' / self.name
 
     def download_if_necessary(self):
         log.info("Downloading %s", self.name)

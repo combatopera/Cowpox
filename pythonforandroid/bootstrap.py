@@ -249,7 +249,7 @@ class Bootstrap:
     @classmethod
     def get_bootstrap(cls, name, ctx):
         bootstrap = import_module(f"pythonforandroid.bootstraps.{name}").bootstrap
-        bootstrap.bootstrap_dir = ctx.root_dir / 'bootstraps' / name
+        bootstrap.bootstrap_dir = ctx.contribroot / 'bootstraps' / name
         bootstrap.ctx = ctx
         return bootstrap
 

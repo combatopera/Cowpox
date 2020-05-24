@@ -50,6 +50,6 @@ class ZopeRecipe(PythonRecipe):
     def get_recipe_env(self, arch):
         env = super().get_recipe_env(arch)
         env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch.arch)}"
-        env['LDSHARED'] = str(self.ctx.root_dir / 'tools' / 'liblink')
+        env['LDSHARED'] = str(self.ctx.contribroot / 'tools' / 'liblink')
 
 recipe = ZopeRecipe()

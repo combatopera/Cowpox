@@ -193,7 +193,6 @@ class Context:
     def __init__(self):
         self.include_dirs = []
         self.ndk = None
-
         self.toolchain_prefix = None
         self.toolchain_version = None
         self.archs = (
@@ -203,11 +202,10 @@ class Context:
             Archx86_64(self),
             ArchAarch_64(self),
         )
-        self.root_dir = (Path(__file__).parent.parent / 'pythonforandroid').resolve()
+        self.contribroot = (Path(__file__).parent.parent / 'pythonforandroid').resolve()
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
-
         self.python_recipe = None  # Set by TargetPythonRecipe
 
     def set_archs(self, arch_names):
