@@ -560,13 +560,10 @@ def _extract_info_from_package(dependency):
         with open(os.path.join(output_folder, "METADATA"), "r", encoding="utf-8") as f:
             # Get metadata and cut away description (is after 2 linebreaks)
             metadata_entries = f.read().partition("\n\n")[0].splitlines()
-        name = None
         for meta_entry in metadata_entries:
             if meta_entry.lower().startswith("name:"):
                 return meta_entry.partition(":")[2].strip()
-        if name is None:
-            raise ValueError("failed to obtain package name")
-        return name
+        raise ValueError("failed to obtain package name")
     finally:
         shutil.rmtree(output_folder)
 
