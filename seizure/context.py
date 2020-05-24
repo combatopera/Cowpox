@@ -38,9 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from lagoon import cp, virtualenv
+from lagoon import virtualenv
 from lagoon.program import Program
-from os.path import join, dirname, exists, split
+from os.path import join, exists, split
 from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
@@ -303,13 +303,6 @@ def build_recipes(build_order, python_modules, ctx):
                 recipe.install_libraries(arch)
             else:
                 log.info("%s said it is already built, skipping", recipe.name)
-        # 4) biglink everything
-        log.info('Biglinking object files')
-        if not ctx.python_recipe:
-            biglink(ctx, arch)
-        else:
-            log.warning('''Context's python recipe found, skipping biglink (will this work?)''')
-        # 5) postbuild packages
         log.info('Postbuilding recipes')
         for recipe in recipes:
             log.info("Postbuilding %s for %s", recipe.name, arch.arch)
@@ -359,170 +352,3 @@ def build_recipes(build_order, python_modules, ctx):
             log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
             pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env)
         standard_recipe.strip_object_files(ctx.archs[0], env, build_dir = ctx.buildsdir)
-
-def biglink(ctx, arch):
-    log.info('Collating object files from each recipe')
-    obj_dir = join(ctx.bootstrap.build_dir, 'collated_objects')
-    ensure_dir(obj_dir)
-    recipes = [Recipe.get_recipe(name, ctx) for name in ctx.recipe_build_order]
-    for recipe in recipes:
-        recipe_obj_dir = join(recipe.get_build_container_dir(arch.arch),
-                              'objects_{}'.format(recipe.name))
-        if not exists(recipe_obj_dir):
-            log.info("%s recipe has no biglinkable files dir, skipping", recipe.name)
-            continue
-        files = glob.glob(join(recipe_obj_dir, '*'))
-        if not len(files):
-            log.info("%s recipe has no biglinkable files, skipping", recipe.name)
-            continue
-        log.info("%s recipe has object files, copying", recipe.name)
-        files.append(obj_dir)
-        cp._r.print(*files)
-    env = arch.get_env()
-    env['LDFLAGS'] = env['LDFLAGS'] + ' -L{}'.format(
-        join(ctx.bootstrap.build_dir, 'obj', 'local', arch.arch))
-    if not len(glob.glob(join(obj_dir, '*'))):
-        log.info('There seem to be no libraries to biglink, skipping.')
-        return
-    log.info('Biglinking')
-    log.info("target %s", join(ctx.get_libs_dir(arch.arch), 'libpymodules.so'))
-    # Move to the directory containing crtstart_so.o and crtend_so.o
-    # This is necessary with newer NDKs? A gcc bug?
-    with current_directory(join(ctx.ndk_platform, 'usr', 'lib')):
-        copylibs_function(
-            join(ctx.get_libs_dir(arch.arch), 'libpymodules.so'),
-            obj_dir.split(' '),
-            extra_link_dirs=[join(ctx.bootstrap.build_dir,
-                                  'obj', 'local', arch.arch),
-                             os.path.abspath('.')],
-            env=env)
-
-def copylibs_function(soname, objs_paths, extra_link_dirs=[], env=None):
-    print('objs_paths are', objs_paths)
-
-    re_needso = re.compile(r'^.*\(NEEDED\)\s+Shared library: \[lib(.*)\.so\]\s*$')
-    blacklist_libs = (
-        'c',
-        'stdc++',
-        'dl',
-        'python2.7',
-        'sdl',
-        'sdl_image',
-        'sdl_ttf',
-        'z',
-        'm',
-        'GLESv2',
-        'jpeg',
-        'png',
-        'log',
-
-        # bootstrap takes care of sdl2 libs (if applicable)
-        'SDL2',
-        'SDL2_ttf',
-        'SDL2_image',
-        'SDL2_mixer',
-    )
-    found_libs = []
-    sofiles = []
-    if env and 'READELF' in env:
-        readelf = env['READELF']
-    elif 'READELF' in os.environ:
-        readelf = os.environ['READELF']
-    else:
-        readelf = sh.which('readelf').strip()
-    readelf = sh.Command(readelf).bake('-d')
-
-    dest = dirname(soname)
-
-    for directory in objs_paths:
-        for fn in os.listdir(directory):
-            fn = join(directory, fn)
-
-            if not fn.endswith('.libs'):
-                continue
-
-            dirfn = fn[:-1] + 'dirs'
-            if not exists(dirfn):
-                continue
-
-            with open(fn) as f:
-                libs = f.read().strip().split(' ')
-                needed_libs = [lib for lib in libs
-                               if lib and
-                               lib not in blacklist_libs and
-                               lib not in found_libs]
-
-            while needed_libs:
-                print('need libs:\n\t' + '\n\t'.join(needed_libs))
-
-                start_needed_libs = needed_libs[:]
-                found_sofiles = []
-
-                with open(dirfn) as f:
-                    libdirs = f.read().split()
-                    for libdir in libdirs:
-                        if not needed_libs:
-                            break
-
-                        if libdir == dest:
-                            # don't need to copy from dest to dest!
-                            continue
-
-                        libdir = libdir.strip()
-                        print('scanning', libdir)
-                        for lib in needed_libs[:]:
-                            if lib in found_libs:
-                                continue
-
-                            if lib.endswith('.a'):
-                                needed_libs.remove(lib)
-                                found_libs.append(lib)
-                                continue
-
-                            lib_a = 'lib' + lib + '.a'
-                            libpath_a = join(libdir, lib_a)
-                            lib_so = 'lib' + lib + '.so'
-                            libpath_so = join(libdir, lib_so)
-                            plain_so = lib + '.so'
-                            plainpath_so = join(libdir, plain_so)
-
-                            sopath = None
-                            if exists(libpath_so):
-                                sopath = libpath_so
-                            elif exists(plainpath_so):
-                                sopath = plainpath_so
-
-                            if sopath:
-                                print('found', lib, 'in', libdir)
-                                found_sofiles.append(sopath)
-                                needed_libs.remove(lib)
-                                found_libs.append(lib)
-                                continue
-
-                            if exists(libpath_a):
-                                print('found', lib, '(static) in', libdir)
-                                needed_libs.remove(lib)
-                                found_libs.append(lib)
-                                continue
-
-                for sofile in found_sofiles:
-                    print('scanning dependencies for', sofile)
-                    out = readelf(sofile)
-                    for line in out.splitlines():
-                        needso = re_needso.match(line)
-                        if needso:
-                            lib = needso.group(1)
-                            if (lib not in needed_libs
-                                    and lib not in found_libs
-                                    and lib not in blacklist_libs):
-                                needed_libs.append(needso.group(1))
-
-                sofiles += found_sofiles
-
-                if needed_libs == start_needed_libs:
-                    raise RuntimeError(
-                            'Failed to locate needed libraries!\n\t' +
-                            '\n\t'.join(needed_libs))
-    print('Copying libraries')
-    for lib in sofiles:
-        cp.print(lib, dest)
