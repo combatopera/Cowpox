@@ -41,6 +41,7 @@
 from .config import Config
 from diapyr import types
 from pathlib import Path
+from pkg_resources import resource_stream
 import logging, shutil
 
 log = logging.getLogger(__name__)
@@ -68,7 +69,8 @@ class Dirs:
             path.mkdir(parents = True, exist_ok = True)
 
     def add_sitecustomize(self):
-        shutil.copyfile(Path(__file__).parent / 'sitecustomize.py', self.app_dir / 'sitecustomize.py')
+        with resource_stream(__name__, 'sitecustomize.py') as f, (self.app_dir / 'sitecustomize.py').open('wb') as g:
+            shutil.copyfileobj(f, g)
         main_py = self.app_dir / 'service' / 'main.py'
         if not main_py.exists():
             return
