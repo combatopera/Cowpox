@@ -42,7 +42,9 @@ from pep517.envbuild import BuildEnvironment
 from pep517.wrappers import Pep517HookCaller
 from urllib.parse import urlparse, unquote as urlunquote
 from tempfile import TemporaryDirectory
-import functools, os, pytoml, shutil, subprocess, sys, tarfile, tempfile, textwrap, time, zipfile
+import functools, logging, os, pytoml, shutil, subprocess, sys, tarfile, tempfile, textwrap, time, zipfile
+
+log = logging.getLogger(__name__)
 
 def transform_dep_for_pip(dependency):
     if dependency.find("@") > 0 and (
@@ -536,4 +538,5 @@ def get_package_name(dependency):
         pass
     result = _extract_info_from_package(dependency)
     package_name_cache[dependency] = (timestamp(), result)
+    log.info("Package name for %s is: %s", dependency, result)
     return result
