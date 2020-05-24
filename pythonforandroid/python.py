@@ -356,29 +356,17 @@ class HostPythonRecipe(Recipe):
         recipe_build_dir = self.get_build_dir(arch.arch)
         build_dir = recipe_build_dir / self.build_subdir
         ensure_dir(build_dir)
+        if not (build_dir / 'config.status').exists():
+            Program.text(recipe_build_dir / 'configure').print(cwd = build_dir)
         with current_directory(recipe_build_dir):
-            # Configure the build
-            with current_directory(build_dir):
-                if not exists('config.status'):
-                    Program.text(recipe_build_dir / 'configure').print()
-            # Create the Setup file. This copying from Setup.dist is
-            # the normal and expected procedure before Python 3.8, but
-            # after this the file with default options is already named "Setup"
             setup_dist_location = join('Modules', 'Setup.dist')
             if exists(setup_dist_location):
                 cp.print(setup_dist_location, build_dir / 'Modules' / 'Setup')
             else:
-                # Check the expected file does exist
                 setup_location = join('Modules', 'Setup')
                 if not exists(setup_location):
-                    raise BuildInterruptingException(
-                        "Could not find Setup.dist or Setup in Python build")
+                    raise BuildInterruptingException('Could not find Setup.dist or Setup in Python build')
             make.print('-j', cpu_count(), '-C', build_dir)
-            # make a copy of the python executable giving it the name we want,
-            # because we got different python's executable names depending on
-            # the fs being case-insensitive (Mac OS X, Cygwin...) or
-            # case-sensitive (linux)...so this way we will have an unique name
-            # for our hostpython, regarding the used fs
             for exe_name in 'python.exe', 'python':
                 exe = self.get_path_to_python() / exe_name
                 if isfile(exe):
