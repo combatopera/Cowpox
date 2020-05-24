@@ -42,7 +42,7 @@ from .util import current_directory, ensure_dir
 from importlib import import_module
 from lagoon import cp, find, mv, rm, unzip
 from os import listdir, walk, sep
-from os.path import join, dirname, isdir, normpath, splitext, basename
+from os.path import join, isdir, normpath, splitext, basename
 from p4a import Recipe
 from tempfile import TemporaryDirectory
 import functools, glob, logging, os, sh, shlex, shutil
@@ -161,16 +161,11 @@ class Bootstrap:
         self.distribution.save_info(self.dist_dir)
 
     @classmethod
-    def all_bootstraps(cls):
-        '''Find all the available bootstraps and return them.'''
-        forbidden_dirs = ('__pycache__', 'common')
-        bootstraps_dir = join(dirname(__file__), 'bootstraps')
+    def _all_bootstraps(cls, ctx):
+        bootstraps_dir = ctx.contribroot / 'bootstraps'
         result = set()
         for name in listdir(bootstraps_dir):
-            if name in forbidden_dirs:
-                continue
-            filen = join(bootstraps_dir, name)
-            if isdir(filen):
+            if name not in {'__pycache__', 'common'} and (bootstraps_dir / name).is_dir():
                 result.add(name)
         return result
 
@@ -179,10 +174,8 @@ class Bootstrap:
         '''Returns all bootstrap whose recipe requirements do not conflict
         with the given recipes, in no particular order.'''
         log.info('Trying to find a bootstrap that matches the given recipes.')
-        bootstraps = [cls.get_bootstrap(name, ctx)
-                      for name in cls.all_bootstraps()]
+        bootstraps = [cls.get_bootstrap(name, ctx) for name in cls._all_bootstraps(ctx)]
         acceptable_bootstraps = set()
-
         # Find out which bootstraps are acceptable:
         for bs in bootstraps:
             if not bs.can_be_chosen_automatically:
