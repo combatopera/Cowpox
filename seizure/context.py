@@ -43,6 +43,7 @@ from lagoon.program import Program
 from os.path import join, dirname, exists, split
 from p4a import CythonRecipe, Recipe
 from pathlib import Path
+from pkg_resources import resource_filename
 from pythonforandroid.archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
 from pythonforandroid.pythonpackage import get_package_name
 from pythonforandroid.recommendations import check_ndk_version, check_target_api, check_ndk_api
@@ -202,7 +203,7 @@ class Context:
             Archx86_64(self),
             ArchAarch_64(self),
         )
-        self.contribroot = (Path(__file__).parent.parent / 'pythonforandroid').resolve()
+        self.contribroot = Path(resource_filename('pythonforandroid', '.'))
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
