@@ -556,7 +556,6 @@ def parse_as_folder_reference(dep):
 
 def _extract_info_from_package(dependency,
                                extract_type=None,
-                               include_build_requirements=False
                                ):
     """ Internal function to extract metainfo from a package.
         Currently supported info types:
@@ -594,28 +593,8 @@ def _extract_info_from_package(dependency,
             # First, make sure we don't attempt to return build requirements
             # for wheels since they usually come without pyproject.toml
             # and we haven't implemented another way to get them:
-            if include_build_requirements and \
-                    metadata_source_type == "wheel":
-                raise NotImplementedError(
-                    "fetching build requirements for "
-                    "wheels is not implemented"
-                )
-
             # Get build requirements from pyproject.toml if requested:
             requirements = []
-            if os.path.exists(os.path.join(output_folder,
-                                           'pyproject.toml')
-                              ) and include_build_requirements:
-                # Read build system from pyproject.toml file: (PEP518)
-                with open(os.path.join(output_folder, 'pyproject.toml')) as f:
-                    build_sys = pytoml.load(f)['build-system']
-                    if "requires" in build_sys:
-                        requirements += build_sys["requires"]
-            elif include_build_requirements:
-                # For legacy packages with no pyproject.toml, we have to
-                # add setuptools as default build system.
-                requirements.append("setuptools")
-
             # Add requirements from metadata:
             requirements += [
                 entry.rpartition("Requires-Dist:")[2].strip()
