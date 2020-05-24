@@ -158,7 +158,7 @@ class Bootstrap:
         ensure_dir(self.dist_dir)
 
     def run_distribute(self):
-        self.distribution.save_info(self.dist_dir)
+        self.distribution.save_info()
 
     @classmethod
     def _all_bootstraps(cls, ctx):

@@ -154,9 +154,9 @@ class Distribution:
                 dists.append(dist)
         return dists
 
-    def save_info(self, dirn):
+    def save_info(self):
         log.info('Saving distribution info')
-        with (dirn / 'dist_info.json').open('w') as f:
+        with (self.dist_dir / 'dist_info.json').open('w') as f:
             json.dump(dict(
                 dist_name = self.name,
                 bootstrap = self.ctx.bootstrap.name,
