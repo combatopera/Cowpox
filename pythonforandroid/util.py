@@ -45,7 +45,6 @@ from pathlib import Path
 import contextlib, logging, os
 
 log = logging.getLogger(__name__)
-build_platform = f"{os.uname()[0]}-{os.uname()[-1]}".lower()
 
 @contextlib.contextmanager
 def current_directory(new_dir):

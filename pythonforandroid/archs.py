@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .util import build_platform
 from glob import glob
 from multiprocessing import cpu_count
 from os.path import join
@@ -115,7 +114,7 @@ class Arch:
     @property
     def clang_path(self):
         llvm_dirname = os.path.basename(glob(str(self.ctx.ndk_dir / 'toolchains' / 'llvm*'))[-1])
-        return self.ctx.ndk_dir / 'toolchains' / llvm_dirname / 'prebuilt' / build_platform / 'bin'
+        return self.ctx.ndk_dir / 'toolchains' / llvm_dirname / 'prebuilt' / Recipe.build_platform / 'bin'
 
     @property
     def clang_exe(self):
@@ -194,16 +193,13 @@ class Arch:
         env['READELF'] = '{}-readelf'.format(command_prefix)
         env['NM'] = '{}-nm'.format(command_prefix)
         env['LD'] = '{}-ld'.format(command_prefix)
-
         # Android's arch/toolchain
         env['ARCH'] = self.arch
         env['NDK_API'] = 'android-{}'.format(str(self.ctx.ndk_api))
         env['TOOLCHAIN_PREFIX'] = self.ctx.toolchain_prefix
         env['TOOLCHAIN_VERSION'] = self.ctx.toolchain_version
-
         # Custom linker options
         env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
-
         # Host python (used by some recipes)
         hostpython_recipe = Recipe.get_recipe(
             'host' + self.ctx.python_recipe.name, self.ctx)
@@ -211,10 +207,7 @@ class Arch:
             hostpython_recipe.get_build_dir(self.arch),
             'native-build',
             'build',
-            'lib.{}-{}'.format(
-                build_platform,
-                self.ctx.python_recipe.major_minor_version_string,
-            ),
+            f"lib.{Recipe.build_platform}-{self.ctx.python_recipe.major_minor_version_string}",
         )
         env['PATH'] = f"{self.clang_path}{os.pathsep}{os.environ['PATH']}"
         return env

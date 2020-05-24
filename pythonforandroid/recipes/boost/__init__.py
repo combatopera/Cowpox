@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.util import current_directory, build_platform
+from pythonforandroid.util import current_directory
 from p4a import Recipe
 from pythonforandroid.logger import shprint
 from os.path import join, exists
@@ -121,31 +121,20 @@ class BoostRecipe(Recipe):
         # We don't use the normal env because we
         # are building with a standalone toolchain
         env = os.environ.copy()
-
         # find user-config.jam
         env['BOOST_BUILD_PATH'] = self.get_build_dir(arch.arch)
         # find boost source
         env['BOOST_ROOT'] = env['BOOST_BUILD_PATH']
-
         env['PYTHON_ROOT'] = self.ctx.python_recipe.link_root(arch.arch)
         env['PYTHON_INCLUDE'] = self.ctx.python_recipe.include_root(arch.arch)
         env['PYTHON_MAJOR_MINOR'] = self.ctx.python_recipe.version[:3]
-        env[
-            'PYTHON_LINK_VERSION'
-        ] = self.ctx.python_recipe.major_minor_version_string
+        env['PYTHON_LINK_VERSION'] = self.ctx.python_recipe.major_minor_version_string
         if 'python3' in self.ctx.python_recipe.name:
             env['PYTHON_LINK_VERSION'] += 'm'
-
         env['ARCH'] = arch.arch.replace('-', '')
         env['TARGET_TRIPLET'] = arch.target
         env['CROSSHOST'] = arch.command_prefix
-        env['CROSSHOME'] = join(
-            self.ctx.ndk_dir,
-            'toolchains/llvm/prebuilt/{build_platform}'.format(
-                build_platform=build_platform
-            ),
-        )
+        env['CROSSHOME'] = str(self.ctx.ndk_dir / 'toolchains' / 'llvm' / 'prebuilt' / self.build_platform)
         return env
-
 
 recipe = BoostRecipe()
