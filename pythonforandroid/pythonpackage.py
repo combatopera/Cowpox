@@ -556,7 +556,6 @@ def parse_as_folder_reference(dep):
 
 def _extract_info_from_package(dependency,
                                extract_type=None,
-                               debug=False,
                                include_build_requirements=False
                                ):
     """ Internal function to extract metainfo from a package.
@@ -565,15 +564,10 @@ def _extract_info_from_package(dependency,
         - name
         - dependencies  (a list of dependencies)
     """
-    if debug:
-        print("_extract_info_from_package called with "
-              "extract_type={} include_build_requirements={}".format(
-                  extract_type, include_build_requirements,
-              ))
     output_folder = tempfile.mkdtemp(prefix="pythonpackage-metafolder-")
     try:
         extract_metainfo_files_from_package(
-            dependency, output_folder, debug=debug
+            dependency, output_folder, debug=False
         )
 
         # Extract the type of data source we used to get the metadata:
@@ -602,10 +596,6 @@ def _extract_info_from_package(dependency,
             # and we haven't implemented another way to get them:
             if include_build_requirements and \
                     metadata_source_type == "wheel":
-                if debug:
-                    print("_extract_info_from_package: was called "
-                          "with include_build_requirements=True on "
-                          "package obtained as wheel, raising error...")
                 raise NotImplementedError(
                     "fetching build requirements for "
                     "wheels is not implemented"
