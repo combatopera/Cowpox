@@ -553,16 +553,7 @@ def parse_as_folder_reference(dep):
         return dep
     return None
 
-
-def _extract_info_from_package(dependency,
-                               extract_type=None,
-                               ):
-    """ Internal function to extract metainfo from a package.
-        Currently supported info types:
-
-        - name
-        - dependencies  (a list of dependencies)
-    """
+def _extract_info_from_package(dependency):
     output_folder = tempfile.mkdtemp(prefix="pythonpackage-metafolder-")
     try:
         extract_metainfo_files_from_package(
@@ -580,38 +571,19 @@ def _extract_info_from_package(dependency,
                  ) as f:
             # Get metadata and cut away description (is after 2 linebreaks)
             metadata_entries = f.read().partition("\n\n")[0].splitlines()
-
-        if extract_type == "name":
-            name = None
-            for meta_entry in metadata_entries:
-                if meta_entry.lower().startswith("name:"):
-                    return meta_entry.partition(":")[2].strip()
-            if name is None:
-                raise ValueError("failed to obtain package name")
-            return name
-        elif extract_type == "dependencies":
-            # First, make sure we don't attempt to return build requirements
-            # for wheels since they usually come without pyproject.toml
-            # and we haven't implemented another way to get them:
-            # Get build requirements from pyproject.toml if requested:
-            requirements = []
-            # Add requirements from metadata:
-            requirements += [
-                entry.rpartition("Requires-Dist:")[2].strip()
-                for entry in metadata_entries
-                if entry.startswith("Requires-Dist")
-            ]
-
-            return list(set(requirements))  # remove duplicates
+        name = None
+        for meta_entry in metadata_entries:
+            if meta_entry.lower().startswith("name:"):
+                return meta_entry.partition(":")[2].strip()
+        if name is None:
+            raise ValueError("failed to obtain package name")
+        return name
     finally:
         shutil.rmtree(output_folder)
 
-
 package_name_cache = dict()
 
-
-def get_package_name(dependency,
-                     use_cache=True):
+def get_package_name(dependency, use_cache=True):
     def timestamp():
         try:
             return time.monotonic()
@@ -623,6 +595,6 @@ def get_package_name(dependency,
             return value[1]
     except KeyError:
         pass
-    result = _extract_info_from_package(dependency, extract_type="name")
+    result = _extract_info_from_package(dependency)
     package_name_cache[dependency] = (timestamp(), result)
     return result
