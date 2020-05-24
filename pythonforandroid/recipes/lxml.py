@@ -38,9 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from p4a import Recipe, CompiledComponentsPythonRecipe
 from os.path import join
-from os import uname
+from p4a import Recipe, CompiledComponentsPythonRecipe
 
 class LXMLRecipe(CompiledComponentsPythonRecipe):
 
