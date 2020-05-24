@@ -80,7 +80,7 @@ def _extract_metainfo_files_from_package(package, output_folder):
     # (creating sdists/wheels...)
     with TemporaryDirectory() as temp_folder:
         # Package is indeed a folder! Get a temp copy to work on:
-        if is_filesystem_path(package):
+        if _is_filesystem_path(package):
             shutil.copytree(
                 _parse_as_folder_reference(package),
                 os.path.join(temp_folder, "package")
@@ -491,7 +491,7 @@ def _extract_metainfo_files_from_package_unsafe(
             shutil.rmtree(path)
 
 
-def is_filesystem_path(dep):
+def _is_filesystem_path(dep):
     """ Convenience function around _parse_as_folder_reference() to
         check if a dependency refers to a folder path or something remote.
 
