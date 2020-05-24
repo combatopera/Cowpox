@@ -42,7 +42,7 @@ from .util import current_directory, ensure_dir, walk_valid_filens, BuildInterru
 from lagoon import cp, make, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
-from os.path import dirname, exists, join, isfile
+from os.path import dirname, exists, join
 from p4a import Recipe, TargetPythonRecipe
 from shutil import copy2
 import glob, logging, os, sh, subprocess
@@ -365,11 +365,7 @@ class HostPythonRecipe(Recipe):
             setup_location = recipe_build_dir / 'Modules' / 'Setup'
             if not setup_location.exists():
                 raise BuildInterruptingException('Could not find Setup.dist or Setup in Python build')
-        with current_directory(recipe_build_dir):
-            make.print('-j', cpu_count(), '-C', build_dir)
-            for exe_name in 'python.exe', 'python':
-                exe = self.get_path_to_python() / exe_name
-                if isfile(exe):
-                    cp.print(exe, self.python_exe)
-                    break
+        make.print('-j', cpu_count(), '-C', build_dir, cwd = recipe_build_dir)
+        exe, = (exe for exe in (self.get_path_to_python() / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
+        cp.print(exe, self.python_exe)
         self.ctx.hostpython = self.python_exe
