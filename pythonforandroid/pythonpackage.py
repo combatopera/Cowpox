@@ -474,22 +474,10 @@ def _extract_metainfo_files_from_package_unsafe(
                 [f for f in os.listdir(path) if f.endswith(".dist-info")][0],
                 "METADATA"
             )
-
-        # Store type of metadata source. Can be "wheel", "source" for source
-        # distribution, and others get_package_as_folder() may support
-        # in the future.
-        with open(os.path.join(output_path, "metadata_source"), "w") as f:
-            try:
-                f.write(path_type)
-            except TypeError:  # in python 2 path_type may be str/bytes:
-                f.write(path_type.decode("utf-8", "replace"))
-
-        # Copy the metadata file:
         shutil.copyfile(metadata_path, os.path.join(output_path, "METADATA"))
     finally:
         if clean_up_path:
             shutil.rmtree(path)
-
 
 def _is_filesystem_path(dep):
     """ Convenience function around _parse_as_folder_reference() to
