@@ -82,8 +82,7 @@ def _extract_metainfo_files_from_package(package, output_folder):
     # A temp folder for making a package copy in case it's a local folder,
     # because extracting metadata might modify files
     # (creating sdists/wheels...)
-    temp_folder = tempfile.mkdtemp(prefix="pythonpackage-package-copy-")
-    try:
+    with TemporaryDirectory() as temp_folder:
         # Package is indeed a folder! Get a temp copy to work on:
         if is_filesystem_path(package):
             shutil.copytree(
@@ -115,13 +114,7 @@ def _extract_metainfo_files_from_package(package, output_folder):
             )
         except subprocess.CalledProcessError as e:
             output = e.output.decode("utf-8", "replace")
-            raise ValueError(
-                "failed to obtain meta info - "
-                "is '{}' a valid package? "
-                "Detailed output:\n{}".format(package, output)
-                )
-    finally:
-        shutil.rmtree(temp_folder)
+            raise ValueError(f"failed to obtain meta info - is '{package}' a valid package? Detailed output:\n{output}")
 
 def _get_system_python_executable():
     """ Returns the path the system-wide python binary.
