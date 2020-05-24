@@ -911,7 +911,7 @@ class TargetPythonRecipe(Recipe):
 
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
-        self.ctx.python_recipe = self
+        self.ctx.python_recipe = self # XXX: Can this suck less?
 
     def include_root(self, arch):
         '''The root directory from which to include headers.'''

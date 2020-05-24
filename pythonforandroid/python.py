@@ -209,7 +209,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
 
     def prebuild_arch(self, arch):
         super(TargetPythonRecipe, self).prebuild_arch(arch)
-        self.ctx.python_recipe = self
+        self.ctx.python_recipe = self # Sucks.
 
     def build_arch(self, arch):
         assert self.ctx.ndk_api >= self.MIN_NDK_API
