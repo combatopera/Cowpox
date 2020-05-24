@@ -65,7 +65,7 @@ def transform_dep_for_pip(dependency):
         return url
     return dependency
 
-def extract_metainfo_files_from_package(package, output_folder):
+def _extract_metainfo_files_from_package(package, output_folder):
     """ Extracts metdata files from the given package to the given folder,
         which may be referenced in any way that is permitted in
         a requirements.txt file or install_requires=[] listing.
@@ -537,7 +537,7 @@ def parse_as_folder_reference(dep):
 
 def _extract_info_from_package(dependency):
     with TemporaryDirectory() as output_folder:
-        extract_metainfo_files_from_package(dependency, output_folder)
+        _extract_metainfo_files_from_package(dependency, output_folder)
         with open(os.path.join(output_folder, "METADATA"), "r", encoding="utf-8") as f:
             # Get metadata and cut away description (is after 2 linebreaks)
             metadata_entries = f.read().partition("\n\n")[0].splitlines()
