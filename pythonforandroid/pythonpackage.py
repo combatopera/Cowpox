@@ -567,15 +567,11 @@ def _extract_info_from_package(dependency):
 
 package_name_cache = {}
 
-def get_package_name(dependency, use_cache=True):
-    def timestamp():
-        try:
-            return time.monotonic()
-        except AttributeError:
-            return time.time()  # Python 2.
+def get_package_name(dependency):
+    timestamp = time.monotonic
     try:
         value = package_name_cache[dependency]
-        if value[0] + 600.0 > timestamp() and use_cache:
+        if value[0] + 600.0 > timestamp():
             return value[1]
     except KeyError:
         pass
