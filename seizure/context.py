@@ -91,6 +91,7 @@ def _apilevels(sdk_dir):
 
 class Context:
 
+    contribroot = Path(resource_filename('pythonforandroid', '.'))
     env = os.environ.copy()
     # the filepath of toolchain.py
     distribution = None
@@ -203,7 +204,6 @@ class Context:
             Archx86_64(self),
             ArchAarch_64(self),
         )
-        self.contribroot = Path(resource_filename('pythonforandroid', '.'))
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
