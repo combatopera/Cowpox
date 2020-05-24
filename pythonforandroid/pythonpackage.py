@@ -75,10 +75,6 @@ def _extract_metainfo_files_from_package(package, output_folder):
         - pytoml.yml  (only if package wasn't obtained as wheel)
         - METADATA
     """
-    if package is None:
-        raise ValueError("package cannot be None")
-    if not os.path.exists(output_folder) or os.path.isfile(output_folder):
-        raise ValueError("output folder needs to be existing folder")
     # A temp folder for making a package copy in case it's a local folder,
     # because extracting metadata might modify files
     # (creating sdists/wheels...)
