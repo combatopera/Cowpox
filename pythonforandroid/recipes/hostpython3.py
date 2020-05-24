@@ -38,8 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.python import HostPythonRecipe
-
+from p4a.python import HostPythonRecipe
 
 class Hostpython3Recipe(HostPythonRecipe):
     '''
@@ -52,6 +51,5 @@ class Hostpython3Recipe(HostPythonRecipe):
     version = '3.8.1'
     name = 'hostpython3'
     conflicts = ['hostpython2']
-
 
 recipe = Hostpython3Recipe()

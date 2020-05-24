@@ -38,11 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import sh
-from pythonforandroid.python import GuestPythonRecipe
 from p4a import Recipe
 from p4a.patch import version_starts_with
-
+from p4a.python import GuestPythonRecipe
+import sh
 
 class Python3Recipe(GuestPythonRecipe):
     '''

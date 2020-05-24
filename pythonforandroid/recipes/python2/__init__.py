@@ -40,7 +40,7 @@
 
 from os.path import join, exists
 from p4a import Recipe
-from pythonforandroid.python import GuestPythonRecipe
+from p4a.python import GuestPythonRecipe
 from pythonforandroid.logger import shprint
 import logging, sh
 
