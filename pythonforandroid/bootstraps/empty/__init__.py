@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.bootstrap import Bootstrap
+from p4a.boot import Bootstrap
 
 class EmptyBootstrap(Bootstrap):
 

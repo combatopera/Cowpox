@@ -39,8 +39,8 @@
 # THE SOFTWARE.
 
 from lagoon import cp, rm
+from p4a.boot import Bootstrap
 from pathlib import Path
-from pythonforandroid.bootstrap import Bootstrap
 from pythonforandroid.util import current_directory, ensure_dir
 import logging
 

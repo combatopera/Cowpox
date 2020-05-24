@@ -38,12 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .util import current_directory, ensure_dir
+from . import Recipe
 from importlib import import_module
 from lagoon import cp, find, mv, rm, unzip
 from os import listdir, walk, sep
 from os.path import join, isdir, normpath, splitext, basename
-from p4a import Recipe
+from pythonforandroid.util import current_directory, ensure_dir
 from tempfile import TemporaryDirectory
 import functools, glob, logging, os, sh, shlex, shutil
 
