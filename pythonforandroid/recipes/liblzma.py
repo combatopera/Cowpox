@@ -38,16 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import sh
-
 from multiprocessing import cpu_count
 from os.path import exists, join
-
-from pythonforandroid.archs import Arch
-from pythonforandroid.logger import shprint
 from p4a import Recipe
+from pythonforandroid.logger import shprint
 from pythonforandroid.util import current_directory, ensure_dir
-
+import sh
 
 class LibLzmaRecipe(Recipe):
 
@@ -55,7 +51,7 @@ class LibLzmaRecipe(Recipe):
     url = 'https://tukaani.org/xz/xz-{version}.tar.gz'
     built_libraries = {'liblzma.so': 'install/lib'}
 
-    def build_arch(self, arch: Arch) -> None:
+    def build_arch(self, arch) -> None:
         env = self.get_recipe_env(arch)
         install_dir = join(self.get_build_dir(arch.arch), 'install')
         with current_directory(self.get_build_dir(arch.arch)):
@@ -68,24 +64,21 @@ class LibLzmaRecipe(Recipe):
                     '--disable-builddir',
                     '--disable-static',
                     '--enable-shared',
-
                     '--disable-xz',
                     '--disable-xzdec',
                     '--disable-lzmadec',
                     '--disable-lzmainfo',
                     '--disable-scripts',
                     '--disable-doc',
-
                     _env=env)
             shprint(
                 sh.make, '-j', str(cpu_count()),
                 _env=env
             )
-
             ensure_dir('install')
             shprint(sh.make, 'install', _env=env)
 
-    def get_library_includes(self, arch: Arch) -> str:
+    def get_library_includes(self, arch) -> str:
         """
         Returns a string with the appropriate `-I<lib directory>` to link
         with the lzma lib. This string is usually added to the environment
@@ -95,7 +88,7 @@ class LibLzmaRecipe(Recipe):
             self.get_build_dir(arch.arch), 'install', 'include',
         )
 
-    def get_library_ldflags(self, arch: Arch) -> str:
+    def get_library_ldflags(self, arch) -> str:
         """
         Returns a string with the appropriate `-L<lib directory>` to link
         with the lzma lib. This string is usually added to the environment
@@ -113,6 +106,5 @@ class LibLzmaRecipe(Recipe):
         variable `LIBS`.
         """
         return " -llzma"
-
 
 recipe = LibLzmaRecipe()

@@ -38,15 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import sh
-
 from multiprocessing import cpu_count
-
-from pythonforandroid.archs import Arch
-from pythonforandroid.logger import shprint
 from p4a import Recipe
+from pythonforandroid.logger import shprint
 from pythonforandroid.util import current_directory
-
+import sh
 
 class LibBz2Recipe(Recipe):
 
@@ -55,7 +51,7 @@ class LibBz2Recipe(Recipe):
     built_libraries = {"libbz2.so": ""}
     patches = ["lib_android.patch"]
 
-    def build_arch(self, arch: Arch) -> None:
+    def build_arch(self, arch) -> None:
         env = self.get_recipe_env(arch)
         with current_directory(self.get_build_dir(arch.arch)):
             shprint(
@@ -70,7 +66,7 @@ class LibBz2Recipe(Recipe):
                 _env=env,
             )
 
-    def get_library_includes(self, arch: Arch) -> str:
+    def get_library_includes(self, arch) -> str:
         """
         Returns a string with the appropriate `-I<lib directory>` to link
         with the bz2 lib. This string is usually added to the environment
@@ -78,7 +74,7 @@ class LibBz2Recipe(Recipe):
         """
         return " -I" + self.get_build_dir(arch.arch)
 
-    def get_library_ldflags(self, arch: Arch) -> str:
+    def get_library_ldflags(self, arch) -> str:
         """
         Returns a string with the appropriate `-L<lib directory>` to link
         with the bz2 lib. This string is usually added to the environment
@@ -94,6 +90,5 @@ class LibBz2Recipe(Recipe):
         variable `LIBS`.
         """
         return " -lbz2"
-
 
 recipe = LibBz2Recipe()
