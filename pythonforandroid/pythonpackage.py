@@ -65,12 +65,7 @@ def transform_dep_for_pip(dependency):
         return url
     return dependency
 
-
-def extract_metainfo_files_from_package(
-        package,
-        output_folder,
-        debug=False
-        ):
+def extract_metainfo_files_from_package(package, output_folder):
     """ Extracts metdata files from the given package to the given folder,
         which may be referenced in any way that is permitted in
         a requirements.txt file or install_requires=[] listing.
@@ -80,17 +75,10 @@ def extract_metainfo_files_from_package(
         - pytoml.yml  (only if package wasn't obtained as wheel)
         - METADATA
     """
-
     if package is None:
         raise ValueError("package cannot be None")
-
     if not os.path.exists(output_folder) or os.path.isfile(output_folder):
         raise ValueError("output folder needs to be existing folder")
-
-    if debug:
-        print("extract_metainfo_files_from_package: extracting for " +
-              "package: " + str(package))
-
     # A temp folder for making a package copy in case it's a local folder,
     # because extracting metadata might modify files
     # (creating sdists/wheels...)
@@ -103,7 +91,6 @@ def extract_metainfo_files_from_package(
                 os.path.join(temp_folder, "package")
             )
             package = os.path.join(temp_folder, "package")
-
         # Because PEP517 can be noisy and contextlib.redirect_* fails to
         # contain it, we will run the actual analysis in a separate process:
         try:
@@ -128,11 +115,6 @@ def extract_metainfo_files_from_package(
             )
         except subprocess.CalledProcessError as e:
             output = e.output.decode("utf-8", "replace")
-            if debug:
-                print("Got error obtaining meta info.")
-                print("Detail output:")
-                print(output)
-                print("End of Detail output.")
             raise ValueError(
                 "failed to obtain meta info - "
                 "is '{}' a valid package? "
@@ -140,7 +122,6 @@ def extract_metainfo_files_from_package(
                 )
     finally:
         shutil.rmtree(temp_folder)
-
 
 def _get_system_python_executable():
     """ Returns the path the system-wide python binary.
@@ -556,7 +537,7 @@ def parse_as_folder_reference(dep):
 
 def _extract_info_from_package(dependency):
     with TemporaryDirectory() as output_folder:
-        extract_metainfo_files_from_package(dependency, output_folder, debug=False)
+        extract_metainfo_files_from_package(dependency, output_folder)
         with open(os.path.join(output_folder, "METADATA"), "r", encoding="utf-8") as f:
             # Get metadata and cut away description (is after 2 linebreaks)
             metadata_entries = f.read().partition("\n\n")[0].splitlines()
