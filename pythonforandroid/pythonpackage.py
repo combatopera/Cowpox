@@ -82,7 +82,7 @@ def _extract_metainfo_files_from_package(package, output_folder):
         # Package is indeed a folder! Get a temp copy to work on:
         if is_filesystem_path(package):
             shutil.copytree(
-                parse_as_folder_reference(package),
+                _parse_as_folder_reference(package),
                 os.path.join(temp_folder, "package")
             )
             package = os.path.join(temp_folder, "package")
@@ -409,7 +409,7 @@ def _extract_metainfo_files_from_package_unsafe(
 
     clean_up_path = False
     path_type = "source"
-    path = parse_as_folder_reference(package)
+    path = _parse_as_folder_reference(package)
     if path is None:
         # This is not a path. Download it:
         (path_type, path) = get_package_as_folder(package)
@@ -492,15 +492,15 @@ def _extract_metainfo_files_from_package_unsafe(
 
 
 def is_filesystem_path(dep):
-    """ Convenience function around parse_as_folder_reference() to
+    """ Convenience function around _parse_as_folder_reference() to
         check if a dependency refers to a folder path or something remote.
 
         Returns True if local, False if remote.
     """
-    return (parse_as_folder_reference(dep) is not None)
+    return (_parse_as_folder_reference(dep) is not None)
 
 
-def parse_as_folder_reference(dep):
+def _parse_as_folder_reference(dep):
     """ See if a dependency reference refers to a folder path.
         If it does, return the folder path (which parses and
         resolves file:// urls in the process).
@@ -513,7 +513,7 @@ def parse_as_folder_reference(dep):
             ):
         # This should be a 'pkgname @ https://...' style path, or
         # 'pkname @ /local/file/path'.
-        return parse_as_folder_reference(dep.partition("@")[2].lstrip())
+        return _parse_as_folder_reference(dep.partition("@")[2].lstrip())
 
     # Check if this is either not an url, or a file URL:
     if dep.startswith(("/", "file://")) or (
