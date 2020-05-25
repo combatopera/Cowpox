@@ -44,7 +44,7 @@ from lagoon import cp, find, mv, rm, unzip
 from os import listdir, walk, sep
 from os.path import join, isdir, normpath, splitext, basename
 from pathlib import Path
-from pythonforandroid.util import current_directory, ensure_dir
+from pythonforandroid.util import current_directory
 from tempfile import TemporaryDirectory
 import functools, glob, logging, os, sh, shlex, shutil
 
@@ -279,14 +279,13 @@ class Bootstrap:
             log.debug("copy %s jar", name)
             log.debug("  from %s", jar_src)
             log.debug("  to %s", jar_tgt)
-            Path('libs').mkdirp()
+            libspath = Path('libs').mkdirp()
             cp._a.print(jar_src, jar_tgt)
             so_src_dir = join(temp_dir, 'jni', arch.arch)
-            so_tgt_dir = join('libs', arch.arch)
+            so_tgt_dir = (libspath / arch.arch).mkdirp()
             log.debug("copy %s .so", name)
             log.debug("  from %s", so_src_dir)
             log.debug("  to %s", so_tgt_dir)
-            ensure_dir(so_tgt_dir)
             so_files = glob.glob(join(so_src_dir, '*.so'))
             for f in so_files:
                 cp._a.print(f, so_tgt_dir)
