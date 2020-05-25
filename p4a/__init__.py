@@ -915,14 +915,6 @@ class TargetPythonRecipe(Recipe):
     def major_minor_version_string(self):
         return '.'.join([str(v) for v in LooseVersion(self.version).version[:2]])
 
-    def create_python_bundle(self, dirn, arch):
-        """
-        Create a packaged python bundle in the target directory, by
-        copying all the modules and standard library to the right
-        place.
-        """
-        raise NotImplementedError('{} does not implement create_python_bundle'.format(self))
-
     def reduce_object_file_names(self, dirn):
         """Recursively renames all files named YYY.cpython-...-linux-gnu.so"
         to "YYY.so", i.e. removing the erroneous architecture name

@@ -43,7 +43,7 @@ from lagoon import cp, make, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from os.path import dirname, exists, join
-from pythonforandroid.util import current_directory, ensure_dir, walk_valid_filens, BuildInterruptingException
+from pythonforandroid.util import current_directory, walk_valid_filens, BuildInterruptingException
 from shutil import copy2
 import glob, logging, os, sh, subprocess
 
@@ -254,34 +254,33 @@ class GuestPythonRecipe(TargetPythonRecipe):
         self.compile_python_files(modules_build_dir)
         self.compile_python_files(self.get_build_dir(arch.arch) / 'Lib')
         self.compile_python_files(self.ctx.get_python_install_dir())
-        modules_dir = join(dirn, 'modules')
+        modules_dir = (dirn / 'modules').mkdirp()
         c_ext = self.compiled_extension
-        ensure_dir(modules_dir)
         module_filens = glob.glob(join(modules_build_dir, '*.so')) + glob.glob(join(modules_build_dir, f"*{c_ext}"))
         log.info("Copy %s files into the bundle", len(module_filens))
         for filen in module_filens:
             log.info(" - copy %s", filen)
             copy2(filen, modules_dir)
-        stdlib_zip = join(dirn, 'stdlib.zip')
+        stdlib_zip = dirn / 'stdlib.zip'
         with current_directory(self.get_build_dir(arch.arch) / 'Lib'):
             stdlib_filens = list(walk_valid_filens('.', self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
             log.info("Zip %s files into the bundle", len(stdlib_filens))
             zip.print(stdlib_zip, *stdlib_filens)
-        ensure_dir(join(dirn, 'site-packages'))
+        (dirn / 'site-packages').mkdirp()
         with current_directory(self.ctx.get_python_install_dir().mkdirp()):
             filens = list(walk_valid_filens('.', self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
             log.info("Copy %s files into the site-packages", len(filens))
             for filen in filens:
                 log.info(" - copy %s", filen)
-                ensure_dir(join(dirn, 'site-packages', dirname(filen)))
-                copy2(filen, join(dirn, 'site-packages', filen))
+                (dirn / 'site-packages' / dirname(filen)).mkdirp()
+                copy2(filen, dirn / 'site-packages' / filen)
         python_lib_name = f"libpython{self.major_minor_version_string}"
         if self.major_minor_version_string[0] == '3':
             python_lib_name += 'm'
         cp.print(self.get_build_dir(arch.arch) / 'android-build' / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.arch)
         log.info('Renaming .so files to reflect cross-compile')
-        self.reduce_object_file_names(join(dirn, 'site-packages'))
-        return join(dirn, 'site-packages')
+        self.reduce_object_file_names(dirn / 'site-packages')
+        return dirn / 'site-packages'
 
 class HostPythonRecipe(Recipe):
     '''
