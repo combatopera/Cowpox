@@ -45,7 +45,7 @@ from lagoon.program import Program
 from os import listdir, walk
 from os.path import exists, join, split
 from pathlib import Path
-from pythonforandroid.util import current_directory, BuildInterruptingException
+from pythonforandroid.util import current_directory
 from seizure.mirror import Mirror
 from urllib.parse import urlparse
 from zipfile import ZipFile
@@ -565,14 +565,8 @@ class Recipe(metaclass = RecipeMeta):
         return recipe
 
 class IncludedFilesBehaviour:
-    '''Recipe mixin class that will automatically unpack files included in
-    the recipe directory.'''
-    src_filename = None
 
     def prepare_build_dir(self, arch):
-        if self.src_filename is None:
-            raise BuildInterruptingException(
-                'IncludedFilesBehaviour failed: no src_filename specified')
         rm._rf.print(self.get_build_dir(arch))
         cp._a.print(self.get_recipe_dir() / self.src_filename, self.get_build_dir(arch))
 
