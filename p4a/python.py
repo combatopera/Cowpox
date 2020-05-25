@@ -302,15 +302,7 @@ class HostPythonRecipe(Recipe):
 
     @property
     def _exe_name(self):
-        '''
-        Returns the name of the python executable depending on the version.
-        '''
-        if not self.version:
-            raise BuildInterruptingException(
-                'The hostpython recipe must have set version'
-            )
-        version = self.version.split('.')[0]
-        return 'python{major_version}'.format(major_version=version)
+        return f"python{self.version.split('.')[0]}"
 
     @property
     def python_exe(self):
