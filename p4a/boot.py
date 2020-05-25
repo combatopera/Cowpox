@@ -43,6 +43,7 @@ from importlib import import_module
 from lagoon import cp, find, mv, rm, unzip
 from os import listdir, walk, sep
 from os.path import join, isdir, normpath, splitext, basename
+from pathlib import Path
 from pythonforandroid.util import current_directory, ensure_dir
 from tempfile import TemporaryDirectory
 import functools, glob, logging, os, sh, shlex, shutil
@@ -248,8 +249,7 @@ class Bootstrap:
 
     def distribute_libs(self, arch, src_dir):
         log.info('Copying libs')
-        tgt_dir = join('libs', arch.arch)
-        ensure_dir(tgt_dir)
+        tgt_dir = Path('libs', arch.arch).mkdirp()
         for lib in glob.glob(join(src_dir, '*')):
             cp._a.print(lib, tgt_dir)
 
