@@ -44,7 +44,6 @@ from lagoon import cp, find, mv, rm, unzip
 from os import listdir, walk, sep
 from os.path import join, isdir, normpath, splitext, basename
 from pathlib import Path
-from pythonforandroid.util import current_directory
 from tempfile import TemporaryDirectory
 import functools, glob, logging, os, sh, shlex, shutil
 
@@ -151,9 +150,7 @@ class Bootstrap:
         self.build_dir = self.get_build_dir()
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files(join(os.path.abspath(self.bootstrap_dir / ".." / 'common'), 'build'), self.build_dir, False)
-        with current_directory(self.build_dir):
-            with open('project.properties', 'w') as fileh:
-                fileh.write('target=android-{}'.format(self.ctx.android_api))
+        (self.build_dir / 'project.properties').write_text(f"target=android-{self.ctx.android_api}")
 
     def prepare_dist_dir(self):
         self.dist_dir.mkdirp()
