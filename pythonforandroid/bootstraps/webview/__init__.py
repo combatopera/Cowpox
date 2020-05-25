@@ -60,8 +60,8 @@ class WebViewBootstrap(Bootstrap):
         if len(self.ctx.archs) > 1:
             raise ValueError('built for more than one arch, but bootstrap cannot handle that yet')
         log.info("Bootstrap running with arch %s", arch)
+        log.info('Copying python distribution')
         with current_directory(self.dist_dir):
-            log.info('Copying python distribution')
             self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))
             self.distribute_aars(arch)
             self.distribute_javaclasses(self.ctx.javaclass_dir)
@@ -70,7 +70,6 @@ class WebViewBootstrap(Bootstrap):
             if 'sqlite3' not in self.ctx.recipe_build_order:
                 with open('blacklist.txt', 'a') as fileh:
                     fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
-
         self.strip_libraries(arch)
         self.fry_eggs(site_packages_dir)
         super().run_distribute()

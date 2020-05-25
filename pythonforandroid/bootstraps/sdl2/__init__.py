@@ -59,11 +59,9 @@ class SDL2GradleBootstrap(Bootstrap):
         log.info("Copying SDL2/gradle build for %s", arch)
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
+        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.ctx.sdk_dir}")
+        log.info('Copying Python distribution')
         with current_directory(self.dist_dir):
-            with open('local.properties', 'w') as fileh:
-                fileh.write('sdk.dir={}'.format(self.ctx.sdk_dir))
-        with current_directory(self.dist_dir):
-            log.info('Copying Python distribution')
             python_bundle_dir = Path('_python_bundle', '_python_bundle').mkdirp()
             self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))
             self.distribute_javaclasses(self.ctx.javaclass_dir, dest_dir = Path("src", "main", "java"))
