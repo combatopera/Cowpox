@@ -45,7 +45,7 @@ from .graph import get_recipe_order
 from lagoon import cp, gradle
 from p4a.boot import Bootstrap
 from pathlib import Path
-from pythonforandroid.util import BuildInterruptingException, current_directory
+from pythonforandroid.util import BuildInterruptingException
 from types import SimpleNamespace
 import glob, logging, re
 
@@ -97,8 +97,7 @@ def _require_prebuilt_dist(args, ctx): # TODO: Not twice.
     return dist
 
 def apk(args, downstreamargs, ctx, dist):
-    with current_directory(dist.dist_dir):
-        apkversion = makeapkversion(downstreamargs, dist.dist_dir, args.private.expanduser().resolve())
+    apkversion = makeapkversion(downstreamargs, dist.dist_dir, args.private.expanduser().resolve())
     env = dict(ANDROID_NDK_HOME = ctx.ndk_dir, ANDROID_HOME = ctx.sdk_dir)
     output = gradle.__no_daemon.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], env = env, cwd = dist.dist_dir)
     apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode

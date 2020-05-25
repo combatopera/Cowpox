@@ -43,6 +43,7 @@ from fnmatch import fnmatch
 from os import listdir, makedirs, remove
 from os.path import dirname, join, isfile, realpath, relpath, split, exists
 from pathlib import Path
+from pythonforandroid.util import current_directory
 from zipfile import ZipFile
 import jinja2, json, logging, os, shutil, subprocess, tarfile, tempfile, time
 
@@ -349,6 +350,7 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
 def makeapkversion(args, distdir, private):
+  with current_directory(distdir):
     render = Render(distdir)
     distinfo = DistInfo(distdir)
     ndk_api = int(distinfo.forkey('ndk_api'))
