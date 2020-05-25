@@ -41,7 +41,7 @@
 from lagoon import cp, rm
 from p4a.boot import Bootstrap
 from pathlib import Path
-from pythonforandroid.util import current_directory, ensure_dir
+from pythonforandroid.util import current_directory
 import logging
 
 log = logging.getLogger(__name__)
@@ -68,8 +68,7 @@ class ServiceOnlyBootstrap(Bootstrap):
             self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))
             self.distribute_aars(arch)
             self.distribute_javaclasses(self.ctx.javaclass_dir)
-            python_bundle_dir = Path('_python_bundle', '_python_bundle')
-            ensure_dir(python_bundle_dir)
+            python_bundle_dir = Path('_python_bundle', '_python_bundle').mkdirp()
             site_packages_dir = self.ctx.python_recipe.create_python_bundle(self.dist_dir / python_bundle_dir, arch)
             if 'sqlite3' not in self.ctx.recipe_build_order:
                 with open('blacklist.txt', 'a') as fileh:
