@@ -253,10 +253,9 @@ class Bootstrap:
         for lib in glob.glob(join(src_dir, '*')):
             cp._a.print(lib, tgt_dir)
 
-    def distribute_javaclasses(self, javaclass_dir, dest_dir="src"):
-        '''Copy existing javaclasses from build dir to current dist dir.'''
+    def distribute_javaclasses(self, javaclass_dir, dest_dir = Path('src')):
         log.info('Copying java files')
-        ensure_dir(dest_dir)
+        dest_dir.mkdirp()
         for filename in glob.glob(str(javaclass_dir)):
             cp._a.print(filename, dest_dir)
 
@@ -280,7 +279,7 @@ class Bootstrap:
             log.debug("copy %s jar", name)
             log.debug("  from %s", jar_src)
             log.debug("  to %s", jar_tgt)
-            ensure_dir('libs')
+            Path('libs').mkdirp()
             cp._a.print(jar_src, jar_tgt)
             so_src_dir = join(temp_dir, 'jni', arch.arch)
             so_tgt_dir = join('libs', arch.arch)
