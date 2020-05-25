@@ -42,7 +42,8 @@ from multiprocessing import cpu_count
 from os.path import join
 from pythonforandroid.logger import shprint
 from p4a import Recipe
-from pythonforandroid.util import current_directory, ensure_dir
+from pathlib import Path
+from pythonforandroid.util import current_directory
 import sh
 
 class LibgeosRecipe(Recipe):
@@ -58,9 +59,8 @@ class LibgeosRecipe(Recipe):
 
     def build_arch(self, arch):
         source_dir = self.get_build_dir(arch.arch)
-        build_target = join(source_dir, 'build_target')
+        build_target = Path(source_dir, 'build_target').mkdirp()
         install_target = join(source_dir, 'install_target')
-        ensure_dir(build_target)
         with current_directory(build_target):
             env = self.get_recipe_env(arch)
             shprint(sh.cmake, source_dir,

@@ -40,7 +40,8 @@
 
 from pythonforandroid.logger import shprint
 from p4a import CompiledComponentsPythonRecipe
-from pythonforandroid.util import current_directory, ensure_dir
+from pathlib import Path
+from pythonforandroid.util import current_directory
 import logging, os, sh
 
 log = logging.getLogger(__name__)
@@ -79,7 +80,7 @@ class ReportLabRecipe(CompiledComponentsPythonRecipe):
             log.info("reportlab recipe: ft_lib_dir=%s", ft_lib_dir)
             log.info("reportlab recipe: ft_inc_dir=%s", ft_inc_dir)
             with current_directory(recipe_dir):
-                ensure_dir(tmp_dir)
+                Path(tmp_dir).mkdirp()
                 pfbfile = os.path.join(tmp_dir, "pfbfer-20070710.zip")
                 if not os.path.isfile(pfbfile):
                     sh.wget("http://www.reportlab.com/ftp/pfbfer-20070710.zip", "-O", pfbfile)

@@ -39,9 +39,8 @@
 # THE SOFTWARE.
 
 from os.path import join
-from pathlib import Path
 from p4a import CppCompiledComponentsPythonRecipe
-from pythonforandroid.util import ensure_dir
+from pathlib import Path
 import logging
 
 log = logging.getLogger(__name__)
@@ -75,9 +74,7 @@ class MatplotlibRecipe(CppCompiledComponentsPythonRecipe):
         well...we don't even install the libraries...so we must trick a little
         the mlp install).
         """
-        pkg_config_path = self.get_recipe_env(arch)['PKG_CONFIG_PATH']
-        ensure_dir(pkg_config_path)
-
+        pkg_config_path = Path(self.get_recipe_env(arch)['PKG_CONFIG_PATH']).mkdirp()
         lib_to_pc_file = {
             # `pkg-config` search for version freetype2.pc, our current
             # version for freetype, but we have our recipe named without
@@ -96,17 +93,9 @@ class MatplotlibRecipe(CppCompiledComponentsPythonRecipe):
                 text_buffer = template_file.read()
             # set the library absolute path and library version
             lib_recipe = self.get_recipe(lib_name, self.ctx)
-            text_buffer = text_buffer.replace(
-                'path_to_built', lib_recipe.get_build_dir(arch.arch),
-            )
-            text_buffer = text_buffer.replace(
-                'library_version', lib_recipe.version,
-            )
-
-            # write the library pc file into our defined dir `PKG_CONFIG_PATH`
-            pc_dest_file = join(pkg_config_path, lib_to_pc_file[lib_name])
-            with open(pc_dest_file, 'w') as pc_file:
-                pc_file.write(text_buffer)
+            text_buffer = text_buffer.replace('path_to_built', lib_recipe.get_build_dir(arch.arch))
+            text_buffer = text_buffer.replace('library_version', lib_recipe.version)
+            (pkg_config_path / lib_to_pc_file[lib_name]).write_text(text_buffer)
 
     def download_web_backend_dependencies(self, arch):
         """
@@ -127,8 +116,8 @@ class MatplotlibRecipe(CppCompiledComponentsPythonRecipe):
         )
         url = 'https://jqueryui.com/resources/download/jquery-ui-1.12.1.zip'
         log.info("Will download into %s", env['XDG_CACHE_HOME'])
-        ensure_dir(join(env['XDG_CACHE_HOME'], 'matplotlib'))
-        self.download_file(url, Path(env['XDG_CACHE_HOME'], 'matplotlib', jquery_sha))
+        matplotlibdir = Path(env['XDG_CACHE_HOME'], 'matplotlib').mkdirp()
+        self.download_file(url, matplotlibdir / jquery_sha)
 
     def prebuild_arch(self, arch):
         with open(join(self.get_recipe_dir(), 'setup.cfg.template')) as fileh:

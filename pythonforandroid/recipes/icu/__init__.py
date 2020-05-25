@@ -40,9 +40,10 @@
 
 from multiprocessing import cpu_count
 from os.path import join, isdir, exists
-from pythonforandroid.logger import shprint
 from p4a import Recipe
-from pythonforandroid.util import current_directory, ensure_dir
+from pathlib import Path
+from pythonforandroid.logger import shprint
+from pythonforandroid.util import current_directory
 import os, sh
 
 class ICURecipe(Recipe):
@@ -93,7 +94,7 @@ class ICURecipe(Recipe):
         def make_build_dest(dest):
             build_dest = join(build_root, dest)
             if not isdir(build_dest):
-                ensure_dir(build_dest)
+                Path(build_dest).mkdirp()
                 return build_dest, False
 
             return build_dest, True
@@ -153,7 +154,7 @@ class ICURecipe(Recipe):
             self.get_build_dir(arch.arch), "icu_build", "include")
         dst_include = join(
             self.ctx.get_python_install_dir(), "include", "icu")
-        ensure_dir(dst_include)
+        Path(dst_include).mkdirp()
         shprint(sh.cp, "-r", join(src_include, "layout"), dst_include)
         shprint(sh.cp, "-r", join(src_include, "unicode"), dst_include)
 

@@ -39,8 +39,8 @@
 # THE SOFTWARE.
 
 from fnmatch import fnmatch
-from os import makedirs, walk
-from os.path import exists, join
+from os import walk
+from os.path import join
 from pathlib import Path
 import contextlib, logging, os
 
@@ -54,10 +54,6 @@ def current_directory(new_dir):
     yield
     log.info("<- directory context %s", cur_dir)
     os.chdir(cur_dir)
-
-def ensure_dir(filename):
-    if not exists(filename):
-        makedirs(filename)
 
 def walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
     """Recursively walks all the files and directories in ``dirn``,
