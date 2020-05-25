@@ -81,7 +81,7 @@ def _build_dist_from_args(ctx, dist, args):
 def _split_argument_list(l):
     return re.split('[ ,]+', l) if l else []
 
-def _require_prebuilt_dist(args, ctx):
+def _require_prebuilt_dist(args, ctx): # TODO: Not twice.
     dist = Distribution.get_distribution(
             ctx,
             args.dist_name,
