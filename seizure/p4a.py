@@ -47,7 +47,7 @@ from p4a.boot import Bootstrap
 from pathlib import Path
 from pythonforandroid.util import BuildInterruptingException, current_directory
 from types import SimpleNamespace
-import glob, logging, os, re
+import glob, logging, re
 
 log = logging.getLogger(__name__)
 

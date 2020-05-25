@@ -73,12 +73,13 @@ class LibffiRecipe(Recipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
+        build_dir = self.get_build_dir(arch.arch)
+        with current_directory(build_dir):
             if not Path('configure').exists():
                 Program.text(f".{os.sep}autogen.sh").print(env = env)
             autoreconf._vif.print(env = env)
             Program.text(f".{os.sep}configure").print(
-                    f"--host={arch.command_prefix}", f"--prefix={self.get_build_dir(arch.arch)}", '--disable-builddir', '--enable-shared', env = env)
+                    f"--host={arch.command_prefix}", f"--prefix={build_dir}", '--disable-builddir', '--enable-shared', env = env)
             make.print('-j', cpu_count(), 'libffi.la', env = env)
 
     def get_include_dirs(self, arch):

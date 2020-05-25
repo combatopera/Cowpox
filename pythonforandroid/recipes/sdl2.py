@@ -40,7 +40,6 @@
 
 from lagoon.program import Program
 from p4a import BootstrapNDKRecipe
-from pythonforandroid.util import current_directory
 
 class LibSDL2Recipe(BootstrapNDKRecipe):
 
@@ -51,14 +50,12 @@ class LibSDL2Recipe(BootstrapNDKRecipe):
     depends = ['sdl2_image', 'sdl2_mixer', 'sdl2_ttf']
 
     def get_recipe_env(self, arch=None, with_flags_in_cc=True, with_python=True):
-        env = super(LibSDL2Recipe, self).get_recipe_env(
+        env = super().get_recipe_env(
             arch=arch, with_flags_in_cc=with_flags_in_cc, with_python=with_python)
         env['APP_ALLOW_MISSING_DEPS'] = 'true'
         return env
 
     def build_arch(self, arch):
-        env = self.get_recipe_env(arch)
-        with current_directory(self.get_jni_dir()):
-            Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', env = env)
+        Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', env = self.get_recipe_env(arch), cwd = self.get_jni_dir())
 
 recipe = LibSDL2Recipe()
