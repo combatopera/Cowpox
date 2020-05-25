@@ -66,7 +66,7 @@ class Dirs:
 
     def install(self):
         for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
-            path.mkdir(parents = True, exist_ok = True)
+            path.mkdirp()
 
     def add_sitecustomize(self):
         with resource_stream(__name__, 'sitecustomize.py') as f, (self.app_dir / 'sitecustomize.py').open('wb') as g:

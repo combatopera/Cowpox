@@ -71,6 +71,6 @@ class Src:
                     continue
                 sfn = Path(root, fn)
                 rfn = (self.dirs.app_dir / root[len(str(self.source_dir)) + 1:] / fn).resolve()
-                rfn.parent.mkdir(parents = True, exist_ok = True)
+                rfn.parent.mkdirp()
                 log.debug('Copy %s', sfn)
                 copyfile(sfn, rfn)
