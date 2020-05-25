@@ -247,7 +247,7 @@ class Bootstrap:
     def distribute_libs(self, arch, src_dir):
         log.info('Copying libs')
         tgt_dir = Path('libs', arch.arch).mkdirp()
-        for lib in glob.glob(join(src_dir, '*')):
+        for lib in glob.glob(f"{src_dir}/*"):
             cp._a.print(lib, tgt_dir)
 
     def distribute_javaclasses(self, javaclass_dir, dest_dir = Path('src')):
@@ -259,7 +259,7 @@ class Bootstrap:
     def distribute_aars(self, arch):
         '''Process existing .aar bundles and copy to current dist dir.'''
         log.info('Unpacking aars')
-        for aar in glob.glob(join(self.ctx.aars_dir, '*.aar')):
+        for aar in glob.glob(f"{self.ctx.aars_dir}/*.aar"):
             self._unpack_aar(aar, arch)
 
     def _unpack_aar(self, aar, arch):
@@ -283,7 +283,7 @@ class Bootstrap:
             log.debug("copy %s .so", name)
             log.debug("  from %s", so_src_dir)
             log.debug("  to %s", so_tgt_dir)
-            so_files = glob.glob(join(so_src_dir, '*.so'))
+            so_files = glob.glob(f"{so_src_dir}/*.so")
             for f in so_files:
                 cp._a.print(f, so_tgt_dir)
 

@@ -41,7 +41,6 @@
 from lagoon import autoreconf, make
 from lagoon.program import Program
 from multiprocessing import cpu_count
-from pathlib import Path
 from p4a import Recipe
 import os
 

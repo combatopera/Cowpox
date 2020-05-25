@@ -45,29 +45,24 @@ from pythonforandroid.util import current_directory
 import glob, sh
 
 class KivyRecipe(CythonRecipe):
+
     version = '1.11.1'
     url = 'https://github.com/kivy/kivy/archive/{version}.zip'
     name = 'kivy'
-
     depends = ['sdl2', 'pyjnius', 'setuptools']
     python_depends = ['certifi']
 
     def cythonize_build(self, env, build_dir='.'):
         super(KivyRecipe, self).cythonize_build(env, build_dir=build_dir)
-
         if not exists(join(build_dir, 'kivy', 'include')):
             return
-
         # If kivy is new enough to use the include dir, copy it
         # manually to the right location as we bypass this stage of
         # the build
         with current_directory(build_dir):
-            build_libs_dirs = glob.glob(join('build', 'lib.*'))
-
+            build_libs_dirs = glob.glob('build/lib.*')
             for dirn in build_libs_dirs:
-                shprint(sh.cp, '-r', join('kivy', 'include'),
-                        join(dirn, 'kivy'))
-
+                shprint(sh.cp, '-r', join('kivy', 'include'), join(dirn, 'kivy'))
     def cythonize_file(self, env, build_dir, filename):
         # We can ignore a few files that aren't important to the
         # android build, and may not work on Android anyway
@@ -87,7 +82,6 @@ class KivyRecipe(CythonRecipe):
                 join(self.ctx.bootstrap.build_dir, 'jni', 'SDL2_mixer'),
                 join(self.ctx.bootstrap.build_dir, 'jni', 'SDL2_ttf'),
                 ])
-
         return env
 
 recipe = KivyRecipe()

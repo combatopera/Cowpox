@@ -255,7 +255,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         self.compile_python_files(self.ctx.get_python_install_dir())
         modules_dir = (dirn / 'modules').mkdirp()
         c_ext = self.compiled_extension
-        module_filens = glob.glob(join(modules_build_dir, '*.so')) + glob.glob(join(modules_build_dir, f"*{c_ext}"))
+        module_filens = glob.glob(f"{modules_build_dir}/*.so") + glob.glob(f"{modules_build_dir}/*{c_ext}")
         log.info("Copy %s files into the bundle", len(module_filens))
         for filen in module_filens:
             log.info(" - copy %s", filen)
