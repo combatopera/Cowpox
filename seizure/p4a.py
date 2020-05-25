@@ -104,7 +104,6 @@ def apk(args, downstreamargs, ctx, dist):
         env['ANDROID_HOME'] = str(ctx.sdk_dir)
         output = gradle.__no_daemon.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], env = env)
         apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
-        apk_glob = "*-{}.apk"
     log.info('Copying APK to current directory')
     apk_re = re.compile(r'.*Package: (.*\.apk)$')
     apk_file = None
@@ -120,7 +119,7 @@ def apk(args, downstreamargs, ctx, dist):
         else:
             suffixes = ("debug", )
         for suffix in suffixes:
-            apks = glob.glob(str(apk_dir / apk_glob.format(suffix)))
+            apks = glob.glob(str(apk_dir / f"*-{suffix}.apk"))
             if apks:
                 if len(apks) > 1:
                     log.info("More than one built APK found... guessing you just built %s", apks[-1])
