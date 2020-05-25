@@ -39,15 +39,29 @@
 # THE SOFTWARE.
 
 from . import Recipe, TargetPythonRecipe
+from fnmatch import fnmatch
 from lagoon import cp, make, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from os.path import dirname, exists, join
-from pythonforandroid.util import current_directory, walk_valid_filens, BuildInterruptingException
+from pythonforandroid.util import current_directory, BuildInterruptingException
 from shutil import copy2
 import glob, logging, os, sh, subprocess
 
 log = logging.getLogger(__name__)
+
+def _walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
+    for dirn, subdirs, filens in os.walk(base_dir):
+        for i in reversed(range(len(subdirs))):
+            subdir = subdirs[i]
+            if subdir in invalid_dir_names:
+                subdirs.pop(i)
+        for filen in filens:
+            for pattern in invalid_file_patterns:
+                if fnmatch(filen, pattern):
+                    break
+            else:
+                yield join(dirn, filen)
 
 class GuestPythonRecipe(TargetPythonRecipe):
     '''
@@ -248,12 +262,12 @@ class GuestPythonRecipe(TargetPythonRecipe):
             copy2(filen, modules_dir)
         stdlib_zip = dirn / 'stdlib.zip'
         with current_directory(self.get_build_dir(arch.arch) / 'Lib'):
-            stdlib_filens = list(walk_valid_filens('.', self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
+            stdlib_filens = list(_walk_valid_filens('.', self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
             log.info("Zip %s files into the bundle", len(stdlib_filens))
             zip.print(stdlib_zip, *stdlib_filens)
         (dirn / 'site-packages').mkdirp()
         with current_directory(self.ctx.get_python_install_dir().mkdirp()):
-            filens = list(walk_valid_filens('.', self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
+            filens = list(_walk_valid_filens('.', self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
             log.info("Copy %s files into the site-packages", len(filens))
             for filen in filens:
                 log.info(" - copy %s", filen)
