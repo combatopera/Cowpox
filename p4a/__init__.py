@@ -45,7 +45,7 @@ from lagoon.program import Program
 from os import listdir, walk
 from os.path import exists, join, split
 from pathlib import Path
-from pythonforandroid.util import current_directory, ensure_dir, BuildInterruptingException
+from pythonforandroid.util import current_directory, BuildInterruptingException
 from seizure.mirror import Mirror
 from urllib.parse import urlparse
 from zipfile import ZipFile
@@ -370,7 +370,7 @@ class Recipe(metaclass = RecipeMeta):
             rm._rf.print(build_dir)
             mkdir._p.print(build_dir)
             rmdir.print(build_dir)
-            ensure_dir(build_dir)
+            build_dir.mkdirp()
             cp._a.print(user_dir, self.get_build_dir(arch))
             return
         if self.url is None:
@@ -889,11 +889,7 @@ class CythonRecipe(PythonRecipe):
         env['LIBLINK'] = 'NOTNONE'
         env['NDKPLATFORM'] = self.ctx.ndk_platform
         env['COPYLIBS'] = '1'
-        # Every recipe uses its own liblink path, object files are
-        # collected and biglinked later
-        liblink_path = join(self.get_build_container_dir(arch.arch), 'objects_{}'.format(self.name))
-        env['LIBLINK_PATH'] = liblink_path
-        ensure_dir(liblink_path)
+        env['LIBLINK_PATH'] = str((self.get_build_container_dir(arch.arch) / f"objects_{self.name}").mkdirp())
         return env
 
 class TargetPythonRecipe(Recipe):

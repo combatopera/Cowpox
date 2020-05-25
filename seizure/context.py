@@ -233,9 +233,7 @@ class Context:
         return self.get_python_install_dir()
 
     def get_libs_dir(self, arch):
-        libsdir = self.libs_dir / arch
-        ensure_dir(libsdir)
-        return libsdir
+        return (self.libs_dir / arch).mkdirp()
 
     def has_lib(self, arch, lib):
         return exists(join(self.get_libs_dir(arch), lib))

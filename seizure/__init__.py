@@ -40,4 +40,4 @@
 
 from pathlib import Path
 
-Path.mkdirp = lambda self: self.mkdir(parents = True, exist_ok = True)
+Path.mkdirp = lambda self: [self.mkdir(parents = True, exist_ok = True), self][-1]

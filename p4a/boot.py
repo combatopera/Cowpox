@@ -155,7 +155,7 @@ class Bootstrap:
                 fileh.write('target=android-{}'.format(self.ctx.android_api))
 
     def prepare_dist_dir(self):
-        ensure_dir(self.dist_dir)
+        self.dist_dir.mkdirp()
 
     def run_distribute(self):
         self.distribution.save_info()

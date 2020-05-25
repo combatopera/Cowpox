@@ -214,8 +214,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
     def build_arch(self, arch):
         assert self.ctx.ndk_api >= self.MIN_NDK_API
         recipe_build_dir = self.get_build_dir(arch.arch)
-        build_dir = recipe_build_dir / 'android-build'
-        ensure_dir(build_dir)
+        build_dir = (recipe_build_dir / 'android-build').mkdirp()
         sys_prefix = '/usr/local'
         sys_exec_prefix = '/usr/local'
         with current_directory(build_dir):
@@ -269,8 +268,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
             log.info("Zip %s files into the bundle", len(stdlib_filens))
             zip.print(stdlib_zip, *stdlib_filens)
         ensure_dir(join(dirn, 'site-packages'))
-        ensure_dir(self.ctx.get_python_install_dir())
-        with current_directory(self.ctx.get_python_install_dir()):
+        with current_directory(self.ctx.get_python_install_dir().mkdirp()):
             filens = list(walk_valid_filens('.', self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
             log.info("Copy %s files into the site-packages", len(filens))
             for filen in filens:
@@ -354,8 +352,7 @@ class HostPythonRecipe(Recipe):
 
     def build_arch(self, arch):
         recipe_build_dir = self.get_build_dir(arch.arch)
-        build_dir = recipe_build_dir / self.build_subdir
-        ensure_dir(build_dir)
+        build_dir = (recipe_build_dir / self.build_subdir).mkdirp()
         if not (build_dir / 'config.status').exists():
             Program.text(recipe_build_dir / 'configure').print(cwd = build_dir)
         setup_dist_location = recipe_build_dir / 'Modules' / 'Setup.dist'
