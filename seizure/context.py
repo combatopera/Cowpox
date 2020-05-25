@@ -47,7 +47,7 @@ from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
 from pythonforandroid.pythonpackage import get_package_name
-from pythonforandroid.util import current_directory, ensure_dir, BuildInterruptingException
+from pythonforandroid.util import current_directory, BuildInterruptingException
 import copy, glob, logging, os, re, sh, subprocess
 
 log = logging.getLogger(__name__)
@@ -112,27 +112,19 @@ class Context:
 
     @property
     def libs_dir(self):
-        dir = self.buildsdir / 'libs_collections' / self.bootstrap.distribution.name
-        ensure_dir(dir)
-        return dir
+        return (self.buildsdir / 'libs_collections' / self.bootstrap.distribution.name).mkdirp()
 
     @property
     def javaclass_dir(self):
-        dir = self.buildsdir / 'javaclasses' / self.bootstrap.distribution.name
-        ensure_dir(dir)
-        return dir
+        return (self.buildsdir / 'javaclasses' / self.bootstrap.distribution.name).mkdirp()
 
     @property
     def aars_dir(self):
-        dir = self.buildsdir / 'aars' / self.bootstrap.distribution.name
-        ensure_dir(dir)
-        return dir
+        return (self.buildsdir / 'aars' / self.bootstrap.distribution.name).mkdirp()
 
     @property
     def python_installs_dir(self):
-        dir = self.buildsdir / 'python-installs'
-        ensure_dir(dir)
-        return dir
+        return (self.buildsdir / 'python-installs').mkdirp()
 
     def get_python_install_dir(self):
         return self.python_installs_dir / self.bootstrap.distribution.name
@@ -143,11 +135,11 @@ class Context:
         self.storage_dir = storage_dir
 
     def ensure_dirs(self):
-        ensure_dir(self.storage_dir)
-        ensure_dir(self.buildsdir)
-        ensure_dir(self.distsdir)
-        ensure_dir(self.buildsdir / 'bootstrap_builds')
-        ensure_dir(self.buildsdir / 'other_builds')
+        self.storage_dir.mkdirp()
+        self.buildsdir.mkdirp()
+        self.distsdir.mkdirp()
+        (self.buildsdir / 'bootstrap_builds').mkdirp()
+        (self.buildsdir / 'other_builds').mkdirp()
 
     def prepare_build_environment(self, user_ndk_api, sdkpath, apilevel, ndkpath):
         self.ensure_dirs()
@@ -283,7 +275,7 @@ def build_recipes(build_order, python_modules, ctx):
         log.info("Building all recipes for arch %s", arch.arch)
         log.info('Unpacking recipes')
         for recipe in recipes:
-            ensure_dir(recipe.get_build_container_dir(arch.arch))
+            recipe.get_build_container_dir(arch.arch).mkdirp()
             recipe.prepare_build_dir(arch.arch)
         log.info('Prebuilding recipes')
         # 2) prebuild packages
