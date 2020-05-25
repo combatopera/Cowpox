@@ -176,14 +176,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         log.info('''Activating flags for android's zlib''')
         zlib_lib_path = self.ctx.ndk_platform / 'usr' / 'lib'
         zlib_includes = self.ctx.ndk_dir / 'sysroot' / 'usr' / 'include'
-        zlib_h = zlib_includes / 'zlib.h'
-        try:
-            zlib_data = zlib_h.read_text()
-        except IOError:
-            raise BuildInterruptingException(
-                "Could not determine android's zlib version, no zlib.h ({}) in"
-                " the NDK dir includes".format(zlib_h)
-            )
+        zlib_data = (zlib_includes / 'zlib.h').read_text()
         for line in zlib_data.split('\n'):
             if line.startswith('#define ZLIB_VERSION '):
                 break
