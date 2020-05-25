@@ -846,11 +846,10 @@ class CythonRecipe(PythonRecipe):
     def strip_object_files(self, arch, env, build_dir=None):
         if build_dir is None:
             build_dir = self.get_build_dir(arch.arch)
-        with current_directory(build_dir):
-            log.info('Stripping object files')
-            e = find.partial('.', '-iname', '*.so', '-exec', env = env)
-            e.print('/usr/bin/echo', '{}', ';')
-            e.print(env['STRIP'].split(' ')[0], '--strip-unneeded', '{}', ';')
+        log.info('Stripping object files')
+        e = find.partial('.', '-iname', '*.so', '-exec', env = env, cwd = build_dir)
+        e.print('/usr/bin/echo', '{}', ';')
+        e.print(env['STRIP'].split(' ')[0], '--strip-unneeded', '{}', ';')
 
     def cythonize_file(self, env, build_dir, filename):
         short_filename = filename
