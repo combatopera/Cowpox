@@ -55,9 +55,7 @@ class WebViewBootstrap(Bootstrap):
         log.info("Creating Android project from build and %s bootstrap", self.name)
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
-        with current_directory(self.dist_dir):
-            with open('local.properties', 'w') as fileh:
-                fileh.write('sdk.dir={}'.format(self.ctx.sdk_dir))
+        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.ctx.sdk_dir}")
         arch = self.ctx.archs[0]
         if len(self.ctx.archs) > 1:
             raise ValueError('built for more than one arch, but bootstrap cannot handle that yet')
