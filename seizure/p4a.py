@@ -99,11 +99,11 @@ def _require_prebuilt_dist(args, ctx):
 def apk(args, downstreamargs, ctx, dist):
     with current_directory(dist.dist_dir):
         apkversion = makeapkversion(downstreamargs, dist.dist_dir, args.private.expanduser().resolve())
-        env = os.environ.copy()
-        env['ANDROID_NDK_HOME'] = str(ctx.ndk_dir)
-        env['ANDROID_HOME'] = str(ctx.sdk_dir)
-        output = gradle.__no_daemon.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], env = env)
-        apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
+    env = os.environ.copy()
+    env['ANDROID_NDK_HOME'] = str(ctx.ndk_dir)
+    env['ANDROID_HOME'] = str(ctx.sdk_dir)
+    output = gradle.__no_daemon.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], env = env, cwd = dist.dist_dir)
+    apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
     log.info('Copying APK to current directory')
     apk_re = re.compile(r'.*Package: (.*\.apk)$')
     apk_file = None
