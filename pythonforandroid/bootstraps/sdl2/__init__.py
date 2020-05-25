@@ -65,7 +65,7 @@ class SDL2GradleBootstrap(Bootstrap):
         with current_directory(self.dist_dir):
             log.info('Copying Python distribution')
             python_bundle_dir = Path('_python_bundle', '_python_bundle')
-            self.distribute_libs(arch, [self.ctx.get_libs_dir(arch.arch)])
+            self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))
             self.distribute_javaclasses(self.ctx.javaclass_dir, dest_dir = Path("src", "main", "java"))
             ensure_dir(python_bundle_dir)
             site_packages_dir = self.ctx.python_recipe.create_python_bundle(self.dist_dir / python_bundle_dir, arch)

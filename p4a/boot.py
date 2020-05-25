@@ -246,14 +246,12 @@ class Bootstrap:
         bootstrap.ctx = ctx
         return bootstrap
 
-    def distribute_libs(self, arch, src_dirs, wildcard='*', dest_dir="libs"):
-        '''Copy existing arch libs from build dirs to current dist dir.'''
+    def distribute_libs(self, arch, src_dir):
         log.info('Copying libs')
-        tgt_dir = join(dest_dir, arch.arch)
+        tgt_dir = join('libs', arch.arch)
         ensure_dir(tgt_dir)
-        for src_dir in src_dirs:
-            for lib in glob.glob(join(src_dir, wildcard)):
-                cp._a.print(lib, tgt_dir)
+        for lib in glob.glob(join(src_dir, '*')):
+            cp._a.print(lib, tgt_dir)
 
     def distribute_javaclasses(self, javaclass_dir, dest_dir="src"):
         '''Copy existing javaclasses from build dir to current dist dir.'''

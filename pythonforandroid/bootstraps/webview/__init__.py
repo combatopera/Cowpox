@@ -64,7 +64,7 @@ class WebViewBootstrap(Bootstrap):
         log.info("Bootstrap running with arch %s", arch)
         with current_directory(self.dist_dir):
             log.info('Copying python distribution')
-            self.distribute_libs(arch, [self.ctx.get_libs_dir(arch.arch)])
+            self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))
             self.distribute_aars(arch)
             self.distribute_javaclasses(self.ctx.javaclass_dir)
             python_bundle_dir = Path('_python_bundle', '_python_bundle')
