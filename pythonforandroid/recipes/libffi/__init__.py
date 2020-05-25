@@ -43,7 +43,6 @@ from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 import os
 
 class LibffiRecipe(Recipe):
@@ -74,13 +73,12 @@ class LibffiRecipe(Recipe):
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
         build_dir = self.get_build_dir(arch.arch)
-        with current_directory(build_dir):
-            if not Path('configure').exists():
-                Program.text(f".{os.sep}autogen.sh").print(env = env)
-            autoreconf._vif.print(env = env)
-            Program.text(f".{os.sep}configure").print(
-                    f"--host={arch.command_prefix}", f"--prefix={build_dir}", '--disable-builddir', '--enable-shared', env = env)
-            make.print('-j', cpu_count(), 'libffi.la', env = env)
+        if not (build_dir / 'configure').exists():
+            Program.text(f".{os.sep}autogen.sh").print(env = env, cwd = build_dir)
+        autoreconf._vif.print(env = env, cwd = build_dir)
+        Program.text(f".{os.sep}configure").print(
+                f"--host={arch.command_prefix}", f"--prefix={build_dir}", '--disable-builddir', '--enable-shared', env = env, cwd = build_dir)
+        make.print('-j', cpu_count(), 'libffi.la', env = env, cwd = build_dir)
 
     def get_include_dirs(self, arch):
         return [self.get_build_dir(arch.arch) / 'include']
