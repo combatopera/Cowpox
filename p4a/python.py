@@ -223,8 +223,8 @@ class GuestPythonRecipe(TargetPythonRecipe):
                 configureargs = ' '.join(self.configure_args).format(
                         android_host = env['HOSTARCH'], android_build = android_build, prefix = sys_prefix, exec_prefix = sys_exec_prefix).split(' ')
                 Program.text(recipe_build_dir / 'configure').print(*configureargs, env = env)
-            make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env)
-            cp.print('pyconfig.h', recipe_build_dir / 'Include')
+        make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env, cwd = build_dir)
+        cp.print(build_dir / 'pyconfig.h', recipe_build_dir / 'Include')
 
     def include_root(self, arch_name):
         return self.get_build_dir(arch_name) / 'Include'
