@@ -104,7 +104,7 @@ class LibtorrentRecipe(Recipe):
 
     def prebuild_arch(self, arch):
         super(LibtorrentRecipe, self).prebuild_arch(arch)
-        if 'openssl' in recipe.ctx.recipe_build_order:
+        if 'openssl' in self.ctx.recipe_build_order:
             # Patch boost user-config.jam to use openssl
             self.get_recipe('boost').apply_patch(join(self.get_recipe_dir(), 'user-config-openssl.patch'), arch.arch)
 
@@ -116,7 +116,7 @@ class LibtorrentRecipe(Recipe):
         # Define build variables
         build_dir = self.get_build_dir(arch.arch)
         ctx_libs_dir = self.ctx.get_libs_dir(arch.arch)
-        encryption = 'openssl' if 'openssl' in recipe.ctx.recipe_build_order else 'built-in'
+        encryption = 'openssl' if 'openssl' in self.ctx.recipe_build_order else 'built-in'
         build_args = [
             '-q',
             # '-a',  # force build, useful to debug the build
@@ -178,7 +178,7 @@ class LibtorrentRecipe(Recipe):
     def get_recipe_env(self, arch):
         # Use environment from boost recipe, cause we use b2 tool from boost
         env = self.get_recipe('boost').get_recipe_env(arch)
-        if 'openssl' in recipe.ctx.recipe_build_order:
+        if 'openssl' in self.ctx.recipe_build_order:
             r = self.get_recipe('openssl')
             env['OPENSSL_BUILD_PATH'] = r.get_build_dir(arch.arch)
             env['OPENSSL_INCLUDE'] = join(r.get_build_dir(arch.arch), 'include')
