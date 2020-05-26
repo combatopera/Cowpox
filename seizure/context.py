@@ -112,13 +112,15 @@ class Context:
         try:
             return self.recipes[name]
         except KeyError:
-            def classes():
-                module = import_module(f"pythonforandroid.recipes.{name.lower()}")
-                for n in dir(module):
-                    obj = getattr(module, n)
-                    if issubclass(obj, Recipe):
-                        yield obj
-            cls, = classes()
+            module = import_module(f"pythonforandroid.recipes.{name.lower()}")
+            cls = Recipe
+            for n in dir(module):
+                obj = getattr(module, n)
+                try:
+                    if issubclass(obj, cls):
+                        cls = obj
+                except TypeError:
+                    pass
             self.recipes[name] = recipe = cls(self)
             return recipe
 
