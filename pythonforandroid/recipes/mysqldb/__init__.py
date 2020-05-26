@@ -87,4 +87,3 @@ class MysqldbRecipe(CompiledComponentsPythonRecipe):
         return env
 
 
-recipe = MysqldbRecipe()

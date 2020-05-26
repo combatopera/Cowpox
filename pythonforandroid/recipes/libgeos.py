@@ -82,4 +82,3 @@ class LibgeosRecipe(Recipe):
             # link with this library...case of shapely's recipe)
             shprint(sh.make, 'install', _env=env)
 
-recipe = LibgeosRecipe()

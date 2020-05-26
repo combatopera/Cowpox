@@ -76,4 +76,3 @@ class M2CryptoRecipe(CompiledComponentsPythonRecipe):
         env['OPENSSL_BUILD_PATH'] = self.get_recipe('openssl').get_build_dir(arch.arch)
         return env
 
-recipe = M2CryptoRecipe()

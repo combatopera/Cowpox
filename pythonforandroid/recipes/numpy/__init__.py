@@ -74,4 +74,3 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
         self.setup_extra_args = []
 
 
-recipe = NumpyRecipe()

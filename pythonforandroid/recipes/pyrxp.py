@@ -48,4 +48,3 @@ class PyRXPURecipe(CompiledComponentsPythonRecipe):
     patches = []
 
 
-recipe = PyRXPURecipe()

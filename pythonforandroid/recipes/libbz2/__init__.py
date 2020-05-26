@@ -91,4 +91,3 @@ class LibBz2Recipe(Recipe):
         """
         return " -lbz2"
 
-recipe = LibBz2Recipe()

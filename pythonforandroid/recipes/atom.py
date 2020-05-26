@@ -48,4 +48,3 @@ class AtomRecipe(CppCompiledComponentsPythonRecipe):
     depends = ['setuptools']
 
 
-recipe = AtomRecipe()

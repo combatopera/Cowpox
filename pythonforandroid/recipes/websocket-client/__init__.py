@@ -64,4 +64,3 @@ class WebSocketClient(Recipe):
     depends = ['android', 'pyjnius', 'cryptography', 'pyasn1', 'pyopenssl']
 
 
-recipe = WebSocketClient()

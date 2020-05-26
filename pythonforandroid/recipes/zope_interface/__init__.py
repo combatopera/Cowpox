@@ -71,4 +71,3 @@ class ZopeInterfaceRecipe(PythonRecipe):
                 'src/zope/interface/common/tests',
             )
 
-recipe = ZopeInterfaceRecipe()

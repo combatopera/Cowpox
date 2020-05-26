@@ -110,4 +110,3 @@ class HarfbuzzRecipe(Recipe):
             freetype.install_libraries(arch)
 
 
-recipe = HarfbuzzRecipe()

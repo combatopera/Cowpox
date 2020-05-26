@@ -72,4 +72,3 @@ class LibsodiumRecipe(Recipe):
         return env
 
 
-recipe = LibsodiumRecipe()

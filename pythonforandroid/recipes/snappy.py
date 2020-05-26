@@ -65,4 +65,3 @@ class SnappyRecipe(Recipe):
             shprint(sh.make, _env=env)
 
 
-recipe = SnappyRecipe()

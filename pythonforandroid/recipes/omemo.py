@@ -54,4 +54,3 @@ class OmemoRecipe(PythonRecipe):
     call_hostpython_via_targetpython = False
 
 
-recipe = OmemoRecipe()

@@ -64,4 +64,3 @@ class PyjniusRecipe(CythonRecipe):
         with current_directory(self.get_build_dir(arch.arch)):
             cp._a.print(Path('jnius', 'src', 'org'), self.ctx.javaclass_dir)
 
-recipe = PyjniusRecipe()

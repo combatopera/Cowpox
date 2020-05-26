@@ -108,4 +108,3 @@ class VlcRecipe(Recipe):
                         _tail=50, _critical=True)
         shprint(sh.cp, '-a', aar, self.ctx.aars_dir)
 
-recipe = VlcRecipe()

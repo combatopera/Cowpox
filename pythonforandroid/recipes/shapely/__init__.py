@@ -74,4 +74,3 @@ class ShapelyRecipe(CythonRecipe):
         return env
 
 
-recipe = ShapelyRecipe()

@@ -48,4 +48,3 @@ class IpaddressRecipe(PythonRecipe):
     depends = ['setuptools']
 
 
-recipe = IpaddressRecipe()

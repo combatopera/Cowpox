@@ -51,4 +51,3 @@ class PyOggRecipe(PythonRecipe):
     call_hostpython_via_targetpython = False
 
 
-recipe = PyOggRecipe()

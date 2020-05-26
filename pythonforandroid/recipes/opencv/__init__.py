@@ -170,4 +170,3 @@ class OpenCVRecipe(NDKRecipe):
                   self.ctx.get_libs_dir(arch.arch))
 
 
-recipe = OpenCVRecipe()

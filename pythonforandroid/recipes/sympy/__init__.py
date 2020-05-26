@@ -53,4 +53,3 @@ class SympyRecipe(PythonRecipe):
     patches = ['fix_timeutils.patch', 'fix_pretty_print.patch']
 
 
-recipe = SympyRecipe()

@@ -92,4 +92,3 @@ class LibRt(Recipe):
             )
 
 
-recipe = LibRt()

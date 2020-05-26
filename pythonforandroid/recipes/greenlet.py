@@ -48,4 +48,3 @@ class GreenletRecipe(CompiledComponentsPythonRecipe):
     call_hostpython_via_targetpython = False
 
 
-recipe = GreenletRecipe()

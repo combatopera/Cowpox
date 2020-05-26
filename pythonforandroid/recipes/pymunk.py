@@ -58,4 +58,3 @@ class PymunkRecipe(CompiledComponentsPythonRecipe):
         return env
 
 
-recipe = PymunkRecipe()

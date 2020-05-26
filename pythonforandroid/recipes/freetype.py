@@ -149,4 +149,3 @@ class FreetypeRecipe(Recipe):
         self.install_libs(arch, *self.get_libraries(arch))
 
 
-recipe = FreetypeRecipe()

@@ -72,4 +72,3 @@ class PandasRecipe(CppCompiledComponentsPythonRecipe):
         return env
 
 
-recipe = PandasRecipe()

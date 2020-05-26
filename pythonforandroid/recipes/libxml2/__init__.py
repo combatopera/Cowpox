@@ -90,4 +90,3 @@ class Libxml2Recipe(Recipe):
         return env
 
 
-recipe = Libxml2Recipe()

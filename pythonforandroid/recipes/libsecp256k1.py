@@ -69,4 +69,3 @@ class LibSecp256k1Recipe(Recipe):
             shprint(sh.make, '-j' + str(cpu_count()), _env=env)
 
 
-recipe = LibSecp256k1Recipe()

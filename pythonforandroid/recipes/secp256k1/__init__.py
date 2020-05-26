@@ -72,4 +72,3 @@ class Secp256k1Recipe(CppCompiledComponentsPythonRecipe):
         return env
 
 
-recipe = Secp256k1Recipe()

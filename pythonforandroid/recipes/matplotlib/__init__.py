@@ -186,4 +186,3 @@ class MatplotlibRecipe(CppCompiledComponentsPythonRecipe):
         return env
 
 
-recipe = MatplotlibRecipe()

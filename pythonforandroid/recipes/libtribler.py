@@ -66,4 +66,3 @@ class LibTriblerRecipe(PythonRecipe):
     site_packages_name = 'Tribler'
 
 
-recipe = LibTriblerRecipe()

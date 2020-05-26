@@ -59,4 +59,3 @@ class Enum34Recipe(PythonRecipe):
         return super(Enum34Recipe, self).should_build(arch)
 
 
-recipe = Enum34Recipe()

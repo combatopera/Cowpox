@@ -48,4 +48,3 @@ class SimpleCryptRecipe(PythonRecipe):
     site_packages_name = 'simplecrypt'
 
 
-recipe = SimpleCryptRecipe()

@@ -73,4 +73,3 @@ class LibcurlRecipe(Recipe):
             shprint(sh.make, 'install', _env=env)
 
 
-recipe = LibcurlRecipe()

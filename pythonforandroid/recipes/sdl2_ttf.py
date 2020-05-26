@@ -47,4 +47,3 @@ class LibSDL2TTF(BootstrapNDKRecipe):
     dir_name = 'SDL2_ttf'
 
 
-recipe = LibSDL2TTF()

@@ -52,4 +52,3 @@ class Hostpython3Recipe(HostPythonRecipe):
     name = 'hostpython3'
     conflicts = ['hostpython2']
 
-recipe = Hostpython3Recipe()

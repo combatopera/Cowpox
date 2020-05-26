@@ -49,4 +49,3 @@ class EnamlRecipe(CppCompiledComponentsPythonRecipe):
     depends = ['setuptools', 'atom', 'kiwisolver']
 
 
-recipe = EnamlRecipe()

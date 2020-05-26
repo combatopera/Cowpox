@@ -108,4 +108,3 @@ class LibLzmaRecipe(Recipe):
         """
         return " -llzma"
 
-recipe = LibLzmaRecipe()

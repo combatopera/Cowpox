@@ -57,4 +57,3 @@ class FlaskRecipe(PythonRecipe):
     install_in_hostpython = False
 
 
-recipe = FlaskRecipe()

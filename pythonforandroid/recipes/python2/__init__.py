@@ -113,4 +113,3 @@ class Python2Recipe(GuestPythonRecipe):
             env['OPENSSL_VERSION'] = recipe.version
         return env
 
-recipe = Python2Recipe()

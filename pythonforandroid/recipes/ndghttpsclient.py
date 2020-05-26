@@ -6,4 +6,3 @@ class NdgHttpsClientRecipe(PythonRecipe):
     depends = ['python2', 'pyopenssl', 'cryptography']
     call_hostpython_via_targetpython = False
 
-recipe = NdgHttpsClientRecipe()

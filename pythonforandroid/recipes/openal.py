@@ -71,4 +71,3 @@ class OpenALRecipe(NDKRecipe):
             shprint(sh.make, _env=env)
             self.install_libs(arch, 'libopenal.so')
 
-recipe = OpenALRecipe()

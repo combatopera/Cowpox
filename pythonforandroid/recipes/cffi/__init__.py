@@ -89,4 +89,3 @@ class CffiRecipe(CompiledComponentsPythonRecipe):
         return env
 
 
-recipe = CffiRecipe()

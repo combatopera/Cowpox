@@ -62,4 +62,3 @@ class Pysha3Recipe(PythonRecipe):
         return env
 
 
-recipe = Pysha3Recipe()

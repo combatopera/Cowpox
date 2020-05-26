@@ -63,4 +63,3 @@ class PyZBarRecipe(PythonRecipe):
         return env
 
 
-recipe = PyZBarRecipe()

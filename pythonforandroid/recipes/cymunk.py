@@ -47,4 +47,3 @@ class CymunkRecipe(CythonRecipe):
     name = 'cymunk'
 
 
-recipe = CymunkRecipe()

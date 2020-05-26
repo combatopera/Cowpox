@@ -47,4 +47,3 @@ class FFPyPlayerCodecsRecipe(Recipe):
     def build_arch(self, arch):
         pass
 
-recipe = FFPyPlayerCodecsRecipe()

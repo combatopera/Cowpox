@@ -48,4 +48,3 @@ class PyProjRecipe(CythonRecipe):
     call_hostpython_via_targetpython = False
 
 
-recipe = PyProjRecipe()

@@ -71,4 +71,3 @@ class ApswRecipe(PythonRecipe):
         env['LIBS'] = env.get('LIBS', '') + ' -lsqlite3'
         return env
 
-recipe = ApswRecipe()

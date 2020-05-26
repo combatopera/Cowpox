@@ -52,4 +52,3 @@ class BabelRecipe(PythonRecipe):
     install_in_hostpython = True
 
 
-recipe = BabelRecipe()

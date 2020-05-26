@@ -137,4 +137,3 @@ class BoostRecipe(Recipe):
         env['CROSSHOME'] = str(self.ctx.ndk_dir / 'toolchains' / 'llvm' / 'prebuilt' / self.build_platform)
         return env
 
-recipe = BoostRecipe()

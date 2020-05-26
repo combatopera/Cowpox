@@ -76,4 +76,3 @@ class PyCryptoRecipe(CompiledComponentsPythonRecipe):
                     '--enable-shared', _env=env)
         super().build_compiled_components(arch)
 
-recipe = PyCryptoRecipe()

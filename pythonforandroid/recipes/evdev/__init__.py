@@ -62,4 +62,3 @@ class EvdevRecipe(CompiledComponentsPythonRecipe):
         return env
 
 
-recipe = EvdevRecipe()

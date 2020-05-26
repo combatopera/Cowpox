@@ -99,4 +99,3 @@ class LibxsltRecipe(Recipe):
         env['LIBS'] = '-lxml2 -lz -lm'
         return env
 
-recipe = LibxsltRecipe()

@@ -82,4 +82,3 @@ class LibffiRecipe(Recipe):
     def get_include_dirs(self, arch):
         return [self.get_build_dir(arch.arch) / 'include']
 
-recipe = LibffiRecipe()

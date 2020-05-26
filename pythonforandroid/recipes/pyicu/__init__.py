@@ -65,4 +65,3 @@ class PyICURecipe(CppCompiledComponentsPythonRecipe):
         return env
 
 
-recipe = PyICURecipe()

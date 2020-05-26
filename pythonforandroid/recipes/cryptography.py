@@ -57,4 +57,3 @@ class CryptographyRecipe(CompiledComponentsPythonRecipe):
         env['LIBS'] = openssl_recipe.link_libs_flags()
         return env
 
-recipe = CryptographyRecipe()

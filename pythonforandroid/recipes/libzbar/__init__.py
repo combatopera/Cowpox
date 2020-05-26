@@ -90,4 +90,3 @@ class LibZBarRecipe(Recipe):
             shprint(sh.make, '-j' + str(cpu_count()), _env=env)
 
 
-recipe = LibZBarRecipe()

@@ -47,4 +47,3 @@ class PycryptodomeRecipe(PythonRecipe):
     depends = ['setuptools', 'cffi']
 
 
-recipe = PycryptodomeRecipe()

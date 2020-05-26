@@ -69,4 +69,3 @@ class LibexpatRecipe(Recipe):
             shprint(sh.make, 'install', _env=env)
 
 
-recipe = LibexpatRecipe()

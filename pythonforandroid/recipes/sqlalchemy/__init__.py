@@ -52,4 +52,3 @@ class SQLAlchemyRecipe(CompiledComponentsPythonRecipe):
     patches = ['zipsafe.patch']
 
 
-recipe = SQLAlchemyRecipe()

@@ -48,4 +48,3 @@ class GroestlcoinHashRecipe(CythonRecipe):
     cythonize = False
 
 
-recipe = GroestlcoinHashRecipe()

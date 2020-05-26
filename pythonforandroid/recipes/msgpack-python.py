@@ -48,4 +48,3 @@ class MsgPackRecipe(CythonRecipe):
     call_hostpython_via_targetpython = False
 
 
-recipe = MsgPackRecipe()

@@ -67,4 +67,3 @@ class KiwiSolverRecipe(CppCompiledComponentsPythonRecipe):
         return env
 
 
-recipe = KiwiSolverRecipe()

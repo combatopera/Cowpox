@@ -79,4 +79,3 @@ class LibZMQRecipe(Recipe):
             shprint(sh.make, 'install', _env=env)
 
 
-recipe = LibZMQRecipe()

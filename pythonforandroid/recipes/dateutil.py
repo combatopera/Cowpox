@@ -51,4 +51,3 @@ class DateutilRecipe(PythonRecipe):
     install_in_hostpython = True
 
 
-recipe = DateutilRecipe()

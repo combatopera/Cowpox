@@ -59,4 +59,3 @@ class FFPyPlayerRecipe(CythonRecipe):
         env["SDL2_MIXER_INCLUDE_DIR"] = join(self.ctx.bootstrap.build_dir, 'jni', 'SDL2_mixer')
         return env
 
-recipe = FFPyPlayerRecipe()

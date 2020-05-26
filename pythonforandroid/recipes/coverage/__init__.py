@@ -56,4 +56,3 @@ class CoverageRecipe(PythonRecipe):
     call_hostpython_via_targetpython = False
 
 
-recipe = CoverageRecipe()

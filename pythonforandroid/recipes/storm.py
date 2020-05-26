@@ -59,4 +59,3 @@ class StormRecipe(PythonRecipe):
                     'setup.py')
 
 
-recipe = StormRecipe()

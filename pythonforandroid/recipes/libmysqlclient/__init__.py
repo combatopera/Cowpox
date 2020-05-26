@@ -104,4 +104,3 @@ class LibmysqlclientRecipe(Recipe):
     #       self.install_libs(arch, 'libmysqlclient.so')
 
 
-recipe = LibmysqlclientRecipe()

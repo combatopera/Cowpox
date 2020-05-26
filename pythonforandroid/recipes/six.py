@@ -48,4 +48,3 @@ class SixRecipe(PythonRecipe):
     depends = ['setuptools']
 
 
-recipe = SixRecipe()

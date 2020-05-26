@@ -119,4 +119,3 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
                     '#define SDL_ANDROID_GetJNIEnv SDL_AndroidGetJNIEnv\n'
                 )
 
-recipe = AndroidRecipe()

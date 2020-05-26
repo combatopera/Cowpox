@@ -65,4 +65,3 @@ class AudiostreamRecipe(CythonRecipe):
         return env
 
 
-recipe = AudiostreamRecipe()

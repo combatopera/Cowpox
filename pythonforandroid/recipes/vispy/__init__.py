@@ -51,4 +51,3 @@ class VispyRecipe(PythonRecipe):
                'remove_ati_check.patch']
 
 
-recipe = VispyRecipe()

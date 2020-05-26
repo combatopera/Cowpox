@@ -52,4 +52,3 @@ class PytzRecipe(PythonRecipe):
     install_in_hostpython = True
 
 
-recipe = PytzRecipe()

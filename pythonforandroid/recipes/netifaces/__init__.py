@@ -56,4 +56,3 @@ class NetifacesRecipe(CompiledComponentsPythonRecipe):
     call_hostpython_via_targetpython = False
 
 
-recipe = NetifacesRecipe()

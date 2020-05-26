@@ -91,4 +91,3 @@ class ReportLabRecipe(CompiledComponentsPythonRecipe):
                     with open('setup.py', 'w') as f:
                         f.write(text)
 
-recipe = ReportLabRecipe()

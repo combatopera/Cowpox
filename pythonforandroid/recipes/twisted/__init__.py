@@ -66,4 +66,3 @@ class TwistedRecipe(CythonRecipe):
         return env
 
 
-recipe = TwistedRecipe()

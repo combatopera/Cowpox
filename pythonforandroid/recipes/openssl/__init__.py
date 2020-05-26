@@ -94,4 +94,3 @@ class OpenSSLRecipe(Recipe):
             self.apply_patch('disable-sover.patch', arch.arch)
             make.print('build_libs', env = env)
 
-recipe = OpenSSLRecipe()

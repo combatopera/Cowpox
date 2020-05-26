@@ -51,4 +51,3 @@ class CythonRecipe(CompiledComponentsPythonRecipe):
     install_in_hostpython = True
 
 
-recipe = CythonRecipe()

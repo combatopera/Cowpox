@@ -76,4 +76,3 @@ class LibShineRecipe(Recipe):
             shprint(sh.make, 'install', _env=env)
 
 
-recipe = LibShineRecipe()

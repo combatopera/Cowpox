@@ -86,4 +86,3 @@ class Psycopg2Recipe(PythonRecipe):
                     '--root={}'.format(self.ctx.get_python_install_dir()),
                     '--install-lib=.', _env=env)
 
-recipe = Psycopg2Recipe()

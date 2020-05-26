@@ -51,4 +51,3 @@ class LibSDL2Image(BootstrapNDKRecipe):
                ]
 
 
-recipe = LibSDL2Image()

@@ -55,4 +55,3 @@ class FontconfigRecipe(BootstrapNDKRecipe):
         with current_directory(self.get_jni_dir()):
             shprint(sh.ndk_build, "V=1", 'fontconfig', _env=env)
 
-recipe = FontconfigRecipe()

@@ -60,4 +60,3 @@ class OggRecipe(Recipe):
             shprint(configure, *flags, _env=env)
             shprint(sh.make, _env=env)
 
-recipe = OggRecipe()

@@ -70,4 +70,3 @@ class XedDSARecipe(CythonRecipe):
             sh.cp('-a', sh.glob('_crypto_sign*.so'), self.ctx.get_site_packages_dir())
             self.install_python_package(arch)
 
-recipe = XedDSARecipe()

@@ -54,4 +54,3 @@ class CppyRecipe(PythonRecipe):
     depends = ['setuptools']
 
 
-recipe = CppyRecipe()

@@ -73,4 +73,3 @@ class VorbisRecipe(NDKRecipe):
                 join('lib', '.libs', 'libvorbisfile.so'),
                 join('lib', '.libs', 'libvorbisenc.so'))
 
-recipe = VorbisRecipe()

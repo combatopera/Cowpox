@@ -70,4 +70,3 @@ class ZBarRecipe(PythonRecipe):
         return env
 
 
-recipe = ZBarRecipe()

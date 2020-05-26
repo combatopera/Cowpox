@@ -66,4 +66,3 @@ class Sqlite3Recipe(NDKRecipe):
         env['NDK_PROJECT_PATH'] = str(self.get_build_dir(arch.arch))
         return env
 
-recipe = Sqlite3Recipe()

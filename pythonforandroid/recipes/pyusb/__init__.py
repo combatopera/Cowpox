@@ -51,4 +51,3 @@ class PyusbRecipe(PythonRecipe):
     patches = ['fix-android.patch']
 
 
-recipe = PyusbRecipe()

@@ -62,4 +62,3 @@ class CdecimalRecipe(CompiledComponentsPythonRecipe):
             self.setup_extra_args = ['--with-machine=' + machine]
 
 
-recipe = CdecimalRecipe()

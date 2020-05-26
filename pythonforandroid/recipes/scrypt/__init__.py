@@ -63,4 +63,3 @@ class ScryptRecipe(CythonRecipe):
         return env
 
 
-recipe = ScryptRecipe()

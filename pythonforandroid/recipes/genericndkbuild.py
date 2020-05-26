@@ -64,4 +64,3 @@ class GenericNDKBuildRecipe(BootstrapNDKRecipe):
         with current_directory(self.get_jni_dir()):
             shprint(sh.ndk_build, "V=1", _env=env)
 
-recipe = GenericNDKBuildRecipe()

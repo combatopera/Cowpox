@@ -88,4 +88,3 @@ class IFAddrRecipe(CompiledComponentsPythonRecipe):
             shprint(cc, *cflags, _env=env)
             shprint(sh.cp, 'libifaddrs.so', self.ctx.get_libs_dir(arch.arch))
 
-recipe = IFAddrRecipe()

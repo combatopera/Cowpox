@@ -92,4 +92,3 @@ class PillowRecipe(CompiledComponentsPythonRecipe):
         return env
 
 
-recipe = PillowRecipe()

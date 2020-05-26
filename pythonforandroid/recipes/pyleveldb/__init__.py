@@ -62,4 +62,3 @@ class PyLevelDBRecipe(CppCompiledComponentsPythonRecipe):
         return env
 
 
-recipe = PyLevelDBRecipe()

@@ -49,4 +49,3 @@ class PySDL2Recipe(PythonRecipe):
     depends = ['sdl2']
 
 
-recipe = PySDL2Recipe()

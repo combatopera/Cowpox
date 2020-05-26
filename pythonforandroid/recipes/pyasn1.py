@@ -48,4 +48,3 @@ class PyASN1Recipe(PythonRecipe):
     depends = []
 
 
-recipe = PyASN1Recipe()

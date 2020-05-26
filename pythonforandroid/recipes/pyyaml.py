@@ -48,4 +48,3 @@ class PyYamlRecipe(PythonRecipe):
     site_packages_name = 'pyyaml'
 
 
-recipe = PyYamlRecipe()

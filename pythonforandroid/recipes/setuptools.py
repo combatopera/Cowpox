@@ -48,4 +48,3 @@ class SetuptoolsRecipe(PythonRecipe):
     install_in_hostpython = True
 
 
-recipe = SetuptoolsRecipe()

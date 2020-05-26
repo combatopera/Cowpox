@@ -171,4 +171,3 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
         return env
 
 
-recipe = ProtobufCppRecipe()

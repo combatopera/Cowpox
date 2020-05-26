@@ -53,4 +53,3 @@ class PycparserRecipe(PythonRecipe):
     install_in_hostpython = True
 
 
-recipe = PycparserRecipe()

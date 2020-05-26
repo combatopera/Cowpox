@@ -99,4 +99,3 @@ class LibGlobRecipe(Recipe):
             cflags.extend(env['LDFLAGS'].split())
             shprint(cc, *cflags, _env=env)
 
-recipe = LibGlobRecipe()

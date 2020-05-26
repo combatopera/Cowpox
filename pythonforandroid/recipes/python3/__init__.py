@@ -117,4 +117,3 @@ class Python3Recipe(GuestPythonRecipe):
             self.configure_args += (f"--with-openssl={recipe.get_build_dir(arch.arch)}",)
         return env
 
-recipe = Python3Recipe()

@@ -87,4 +87,3 @@ class LXMLRecipe(CompiledComponentsPythonRecipe):
             env['CFLAGS'] += cflags
         return env
 
-recipe = LXMLRecipe()

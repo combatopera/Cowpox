@@ -55,4 +55,3 @@ class X3DHRecipe(PythonRecipe):
     call_hostpython_via_targetpython = False
 
 
-recipe = X3DHRecipe()

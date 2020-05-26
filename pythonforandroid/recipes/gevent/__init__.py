@@ -71,4 +71,3 @@ class GeventRecipe(CythonRecipe):
         log.info("""Moved "%s" from LDFLAGS to LIBS.""", env['LIBS'])
         return env
 
-recipe = GeventRecipe()

@@ -52,4 +52,3 @@ class ZopeRecipe(PythonRecipe):
         env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch.arch)}"
         env['LDSHARED'] = str(self.ctx.contribroot / 'tools' / 'liblink')
 
-recipe = ZopeRecipe()

@@ -47,4 +47,3 @@ class UJsonRecipe(CompiledComponentsPythonRecipe):
     depends = []
 
 
-recipe = UJsonRecipe()

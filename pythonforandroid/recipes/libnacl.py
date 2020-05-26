@@ -49,4 +49,3 @@ class LibNaClRecipe(PythonRecipe):
     call_hostpython_via_targetpython = False
 
 
-recipe = LibNaClRecipe()

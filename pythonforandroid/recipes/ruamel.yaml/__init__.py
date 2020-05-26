@@ -50,4 +50,3 @@ class RuamelYamlRecipe(PythonRecipe):
     patches = ['disable-pip-req.patch']
 
 
-recipe = RuamelYamlRecipe()

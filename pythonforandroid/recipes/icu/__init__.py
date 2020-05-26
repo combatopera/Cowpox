@@ -158,4 +158,3 @@ class ICURecipe(Recipe):
         shprint(sh.cp, "-r", join(src_include, "layout"), dst_include)
         shprint(sh.cp, "-r", join(src_include, "unicode"), dst_include)
 
-recipe = ICURecipe()

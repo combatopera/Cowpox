@@ -63,4 +63,3 @@ class ZBarLightRecipe(PythonRecipe):
         return env
 
 
-recipe = ZBarLightRecipe()

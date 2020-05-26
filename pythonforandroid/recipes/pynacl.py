@@ -64,4 +64,3 @@ class PyNaCLRecipe(CompiledComponentsPythonRecipe):
         return env
 
 
-recipe = PyNaCLRecipe()

@@ -93,4 +93,3 @@ class JpegRecipe(Recipe):
             shprint(sh.make, _env=env)
 
 
-recipe = JpegRecipe()

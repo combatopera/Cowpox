@@ -48,4 +48,3 @@ class EthashRecipe(PythonRecipe):
     depends = ['setuptools']
 
 
-recipe = EthashRecipe()

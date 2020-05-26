@@ -185,4 +185,3 @@ class LibtorrentRecipe(Recipe):
             env['OPENSSL_VERSION'] = r.version
         return env
 
-recipe = LibtorrentRecipe()

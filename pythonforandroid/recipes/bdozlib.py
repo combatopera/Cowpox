@@ -42,4 +42,3 @@ from p4a import CythonRecipe
 
 class RecipeImpl(CythonRecipe): pass
 
-recipe = RecipeImpl()

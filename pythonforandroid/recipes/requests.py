@@ -49,4 +49,3 @@ class RequestsRecipe(PythonRecipe):
     call_hostpython_via_targetpython = False
 
 
-recipe = RequestsRecipe()
