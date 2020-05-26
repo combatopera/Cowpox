@@ -64,9 +64,7 @@ class ShapelyRecipe(CythonRecipe):
 
     def get_recipe_env(self, arch=None, with_flags_in_cc=True):
         env = super(ShapelyRecipe, self).get_recipe_env(arch)
-
-        libgeos_install = join(self.get_recipe(
-            'libgeos', self.ctx).get_build_dir(arch.arch), 'install_target')
+        libgeos_install = join(self.get_recipe('libgeos').get_build_dir(arch.arch), 'install_target')
         # All this `GEOS_X` variables should be string types, separated
         # by commas in case that we need to pass more than one value
         env['GEOS_INCLUDE_DIRS'] = join(libgeos_install, 'include')

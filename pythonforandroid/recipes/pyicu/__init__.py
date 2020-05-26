@@ -54,8 +54,7 @@ class PyICURecipe(CppCompiledComponentsPythonRecipe):
 
         icu_include = join(
             self.ctx.get_python_install_dir(), "include", "icu")
-
-        icu_recipe = self.get_recipe('icu', self.ctx)
+        icu_recipe = self.get_recipe('icu')
         icu_link_libs = icu_recipe.built_libraries.keys()
         env["PYICU_LIBRARIES"] = ":".join(lib[3:-3] for lib in icu_link_libs)
         env["CPPFLAGS"] += " -I" + icu_include

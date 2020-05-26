@@ -53,9 +53,7 @@ class PyNaCLRecipe(CompiledComponentsPythonRecipe):
     def get_recipe_env(self, arch):
         env = super(PyNaCLRecipe, self).get_recipe_env(arch)
         env['SODIUM_INSTALL'] = 'system'
-
-        libsodium_build_dir = self.get_recipe(
-            'libsodium', self.ctx).get_build_dir(arch.arch)
+        libsodium_build_dir = self.get_recipe('libsodium').get_build_dir(arch.arch)
         env['CFLAGS'] += ' -I{}'.format(os.path.join(libsodium_build_dir,
                                                      'src/libsodium/include'))
         env['LDFLAGS'] += ' -L{}'.format(

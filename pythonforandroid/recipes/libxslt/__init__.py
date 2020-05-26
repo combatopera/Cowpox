@@ -63,7 +63,7 @@ class LibxsltRecipe(Recipe):
         with current_directory(build_dir):
             # If the build is done with /bin/sh things blow up,
             # try really hard to use bash
-            libxml2_recipe = Recipe.get_recipe('libxml2', self.ctx)
+            libxml2_recipe = self.get_recipe('libxml2')
             libxml2_build_dir = libxml2_recipe.get_build_dir(arch.arch)
             build_arch = gcc._dumpmachine().split('\n')[0]
             if not Path('configure').exists():
@@ -86,7 +86,7 @@ class LibxsltRecipe(Recipe):
         env = super(LibxsltRecipe, self).get_recipe_env(arch)
         env['CONFIG_SHELL'] = '/bin/bash'
         env['SHELL'] = '/bin/bash'
-        libxml2_recipe = Recipe.get_recipe('libxml2', self.ctx)
+        libxml2_recipe = self.get_recipe('libxml2')
         libxml2_build_dir = libxml2_recipe.get_build_dir(arch.arch)
         libxml2_libs_dir = join(libxml2_build_dir, '.libs')
         env['CFLAGS'] = ' '.join([

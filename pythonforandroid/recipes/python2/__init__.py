@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from os.path import join, exists
-from p4a import Recipe
 from p4a.python import GuestPythonRecipe
 from pythonforandroid.logger import shprint
 import logging, sh
@@ -108,7 +107,7 @@ class Python2Recipe(GuestPythonRecipe):
             # compiled libffi, this step is not necessary for python3.
             self.configure_args += ('--with-system-ffi',)
         if 'openssl' in self.ctx.recipe_build_order:
-            recipe = Recipe.get_recipe('openssl', self.ctx)
+            recipe = self.get_recipe('openssl')
             openssl_build = recipe.get_build_dir(arch.arch)
             env['OPENSSL_BUILD'] = openssl_build
             env['OPENSSL_VERSION'] = recipe.version

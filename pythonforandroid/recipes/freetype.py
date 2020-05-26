@@ -72,9 +72,7 @@ class FreetypeRecipe(Recipe):
     def get_recipe_env(self, arch=None, with_harfbuzz=False):
         env = super(FreetypeRecipe, self).get_recipe_env(arch)
         if with_harfbuzz:
-            harfbuzz_build = self.get_recipe(
-                'harfbuzz', self.ctx
-            ).get_build_dir(arch.arch)
+            harfbuzz_build = self.get_recipe('harfbuzz').get_build_dir(arch.arch)
             freetype_install = join(self.get_build_dir(arch.arch), 'install')
             env['CFLAGS'] = ' '.join(
                 [env['CFLAGS'], '-DFT_CONFIG_OPTION_USE_HARFBUZZ']

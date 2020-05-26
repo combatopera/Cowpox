@@ -40,10 +40,11 @@
 
 from .archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
+from importlib import import_module
 from lagoon import virtualenv
 from lagoon.program import Program
 from os.path import join, exists, split
-from p4a import CythonRecipe, Recipe
+from p4a import CythonRecipe
 from pathlib import Path
 from pkg_resources import resource_filename
 from pythonforandroid.pythonpackage import get_package_name
@@ -105,6 +106,11 @@ class Context:
     bootstrap_build_dir = None
 
     recipe_build_order = None  # Will hold the list of all built recipes
+
+    def get_recipe(self, name):
+        recipe = import_module(f"pythonforandroid.recipes.{name.lower()}").recipe
+        recipe.ctx = self # TODO: Create and pass in.
+        return recipe
 
     @property
     def packages_path(self):
@@ -243,7 +249,7 @@ class Context:
                 # Failed to look up any meaningful name.
                 return False
         try:
-            recipe = Recipe.get_recipe(name, self)
+            recipe = self.get_recipe(name)
         except ModuleNotFoundError:
             pass
         else:
@@ -266,7 +272,7 @@ def build_recipes(build_order, python_modules, ctx):
     if python_modules:
         python_modules = sorted(set(python_modules))
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(python_modules))
-    recipes = [Recipe.get_recipe(name, ctx) for name in build_order]
+    recipes = [ctx.get_recipe(name) for name in build_order]
     # download is arch independent
     log.info('Downloading recipes')
     for recipe in recipes:

@@ -92,7 +92,7 @@ class MatplotlibRecipe(CppCompiledComponentsPythonRecipe):
             with open(pc_template_file) as template_file:
                 text_buffer = template_file.read()
             # set the library absolute path and library version
-            lib_recipe = self.get_recipe(lib_name, self.ctx)
+            lib_recipe = self.get_recipe(lib_name)
             text_buffer = text_buffer.replace('path_to_built', lib_recipe.get_build_dir(arch.arch))
             text_buffer = text_buffer.replace('library_version', lib_recipe.version)
             (pkg_config_path / lib_to_pc_file[lib_name]).write_text(text_buffer)
@@ -167,11 +167,10 @@ class MatplotlibRecipe(CppCompiledComponentsPythonRecipe):
         # success with our build (without depending on system development
         # libraries), but if we tell the compiler where to find our libraries
         # and includes, then the install success :)
-        png = self.get_recipe('png', self.ctx)
+        png = self.get_recipe('png')
         env['CFLAGS'] += f' -I{png.get_build_dir(arch)}'
         env['LDFLAGS'] += f' -L{join(png.get_build_dir(arch.arch), ".libs")}'
-
-        freetype = self.get_recipe('freetype', self.ctx)
+        freetype = self.get_recipe('freetype')
         free_lib_dir = join(freetype.get_build_dir(arch.arch), 'objs', '.libs')
         free_inc_dir = join(freetype.get_build_dir(arch.arch), 'include')
         env['CFLAGS'] += f' -I{free_inc_dir}'
@@ -180,7 +179,7 @@ class MatplotlibRecipe(CppCompiledComponentsPythonRecipe):
         # `freetype` could be built with `harfbuzz` support,
         # so we also include the necessary flags...just to be sure
         if 'harfbuzz' in self.ctx.recipe_build_order:
-            harfbuzz = self.get_recipe('harfbuzz', self.ctx)
+            harfbuzz = self.get_recipe('harfbuzz')
             harf_build = harfbuzz.get_build_dir(arch.arch)
             env['CFLAGS'] += f' -I{harf_build} -I{join(harf_build, "src")}'
             env['LDFLAGS'] += f' -L{join(harf_build, "src", ".libs")}'

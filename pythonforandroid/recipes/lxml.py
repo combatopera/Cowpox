@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from os.path import join
-from p4a import Recipe, CompiledComponentsPythonRecipe
+from p4a import CompiledComponentsPythonRecipe
 
 class LXMLRecipe(CompiledComponentsPythonRecipe):
 
@@ -59,7 +59,7 @@ class LXMLRecipe(CompiledComponentsPythonRecipe):
     def get_recipe_env(self, arch):
         env = super(LXMLRecipe, self).get_recipe_env(arch)
         # libxslt flags
-        libxslt_recipe = Recipe.get_recipe('libxslt', self.ctx)
+        libxslt_recipe = self.get_recipe('libxslt')
         libxslt_build_dir = libxslt_recipe.get_build_dir(arch.arch)
         cflags = ' -I' + libxslt_build_dir
         cflags += ' -I' + join(libxslt_build_dir, 'libxslt')
@@ -68,7 +68,7 @@ class LXMLRecipe(CompiledComponentsPythonRecipe):
         env['LDFLAGS'] += ' -L' + join(libxslt_build_dir, 'libexslt', '.libs')
         env['LIBS'] = '-lxslt -lexslt'
         # libxml2 flags
-        libxml2_recipe = Recipe.get_recipe('libxml2', self.ctx)
+        libxml2_recipe = self.get_recipe('libxml2')
         libxml2_build_dir = libxml2_recipe.get_build_dir(arch.arch)
         libxml2_libs_dir = join(libxml2_build_dir, '.libs')
         cflags += ' -I' + libxml2_build_dir

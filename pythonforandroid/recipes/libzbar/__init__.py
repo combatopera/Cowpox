@@ -60,7 +60,7 @@ class LibZBarRecipe(Recipe):
 
     def get_recipe_env(self, arch=None, with_flags_in_cc=True):
         env = super(LibZBarRecipe, self).get_recipe_env(arch, with_flags_in_cc)
-        libiconv = self.get_recipe('libiconv', self.ctx)
+        libiconv = self.get_recipe('libiconv')
         libiconv_dir = libiconv.get_build_dir(arch.arch)
         env['CFLAGS'] += ' -I' + os.path.join(libiconv_dir, 'include')
         env['LIBS'] = env.get('LIBS', '') + ' -landroid -liconv'

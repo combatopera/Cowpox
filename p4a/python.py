@@ -153,7 +153,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         env['HOSTARCH'] = arch.command_prefix
         env['CC'] = arch.get_clang_exe(with_target=True)
         prebuilt = self.ctx.ndk_dir / 'toolchains' / f"{self.ctx.toolchain_prefix}-{self.ctx.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin'
-        env['PATH'] = os.pathsep.join([f"""{self.get_recipe(f"host{self.name}", self.ctx).get_path_to_python()}""", str(prebuilt), env['PATH']])
+        env['PATH'] = os.pathsep.join([f"""{self.get_recipe(f"host{self.name}").get_path_to_python()}""", str(prebuilt), env['PATH']])
         env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ctx.ndk_api}"
         env['LDFLAGS'] = env.get('LDFLAGS', '')
         if sh.which('lld') is not None:
@@ -171,21 +171,21 @@ class GuestPythonRecipe(TargetPythonRecipe):
             env['LIBS'] = env.get('LIBS', '') + link_libs
         if 'sqlite3' in self.ctx.recipe_build_order:
             log.info('Activating flags for sqlite3')
-            recipe = Recipe.get_recipe('sqlite3', self.ctx)
+            recipe = self.get_recipe('sqlite3')
             add_flags(f" -I{recipe.get_build_dir(arch.arch)}", f" -L{recipe.get_lib_dir(arch)}", ' -lsqlite3')
         if 'libffi' in self.ctx.recipe_build_order:
             log.info('Activating flags for libffi')
-            recipe = Recipe.get_recipe('libffi', self.ctx)
+            recipe = self.get_recipe('libffi')
             env['PKG_CONFIG_PATH'] = recipe.get_build_dir(arch.arch)
             add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs(arch))), f" -L{recipe.get_build_dir(arch.arch) / '.libs'}", ' -lffi')
         if 'openssl' in self.ctx.recipe_build_order:
             log.info('Activating flags for openssl')
-            recipe = Recipe.get_recipe('openssl', self.ctx)
+            recipe = self.get_recipe('openssl')
             add_flags(recipe.include_flags(arch), recipe.link_dirs_flags(arch), recipe.link_libs_flags())
         for library_name in 'libbz2', 'liblzma':
             if library_name in self.ctx.recipe_build_order:
                 log.info("Activating flags for %s", library_name)
-                recipe = Recipe.get_recipe(library_name, self.ctx)
+                recipe = self.get_recipe(library_name)
                 add_flags(recipe.get_library_includes(arch), recipe.get_library_ldflags(arch), recipe.get_library_libs_flag())
         log.info('''Activating flags for android's zlib''')
         zlib_lib_path = self.ctx.ndk_platform / 'usr' / 'lib'

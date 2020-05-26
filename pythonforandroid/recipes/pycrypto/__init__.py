@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from pythonforandroid.logger import shprint
-from p4a import CompiledComponentsPythonRecipe, Recipe
+from p4a import CompiledComponentsPythonRecipe
 from pythonforandroid.util import current_directory
 import logging, sh
 
@@ -56,7 +56,7 @@ class PyCryptoRecipe(CompiledComponentsPythonRecipe):
 
     def get_recipe_env(self, arch=None):
         env = super(PyCryptoRecipe, self).get_recipe_env(arch)
-        openssl_recipe = Recipe.get_recipe('openssl', self.ctx)
+        openssl_recipe = self.get_recipe('openssl')
         env['CC'] = env['CC'] + openssl_recipe.include_flags(arch)
         env['LDFLAGS'] += ' -L{}'.format(self.ctx.get_libs_dir(arch.arch))
         env['LDFLAGS'] += ' -L{}'.format(self.ctx.libs_dir)

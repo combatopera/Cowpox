@@ -79,8 +79,7 @@ class FFMpegRecipe(Recipe):
                     '--enable-nonfree',
                     '--enable-protocol=https,tls_openssl',
                 ]
-                build_dir = Recipe.get_recipe(
-                    'openssl', self.ctx).get_build_dir(arch.arch)
+                build_dir = self.get_recipe('openssl').get_build_dir(arch.arch)
                 cflags += ['-I' + build_dir + '/include/',
                            '-DOPENSSL_API_COMPAT=0x10002000L']
                 ldflags += ['-L' + build_dir]
@@ -88,14 +87,13 @@ class FFMpegRecipe(Recipe):
             if 'ffpyplayer_codecs' in self.ctx.recipe_build_order:
                 # libx264
                 flags += ['--enable-libx264']
-                build_dir = Recipe.get_recipe(
-                    'libx264', self.ctx).get_build_dir(arch.arch)
+                build_dir = self.get_recipe('libx264').get_build_dir(arch.arch)
                 cflags += ['-I' + build_dir + '/include/']
                 ldflags += ['-lx264', '-L' + build_dir + '/lib/']
 
                 # libshine
                 flags += ['--enable-libshine']
-                build_dir = Recipe.get_recipe('libshine', self.ctx).get_build_dir(arch.arch)
+                build_dir = self.get_recipe('libshine').get_build_dir(arch.arch)
                 cflags += ['-I' + build_dir + '/include/']
                 ldflags += ['-lshine', '-L' + build_dir + '/lib/']
                 ldflags += ['-lm']

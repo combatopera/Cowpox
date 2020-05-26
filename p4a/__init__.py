@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from distutils.version import LooseVersion
-from importlib import import_module
 from lagoon import basename, cp, find, git as sysgit, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
 from lagoon.program import Program
 from os import listdir, walk
@@ -558,11 +557,8 @@ class Recipe(metaclass = RecipeMeta):
             recipe_libs.add(abs_path)
         return recipe_libs
 
-    @classmethod
-    def get_recipe(cls, name, ctx):
-        recipe = import_module(f"pythonforandroid.recipes.{name.lower()}").recipe
-        recipe.ctx = ctx # TODO: Pass in.
-        return recipe
+    def get_recipe(self, name):
+        return self.ctx.get_recipe(name)
 
 class IncludedFilesBehaviour:
 
@@ -684,7 +680,7 @@ class PythonRecipe(Recipe):
     def real_hostpython_location(self):
         host_name = f"host{self.ctx.python_recipe.name}"
         if host_name in {'hostpython2', 'hostpython3'}:
-            return Recipe.get_recipe(host_name, self.ctx).python_exe
+            return self.get_recipe(host_name).python_exe
         else:
             return Path(f"python{self.ctx.python_recipe.version}")
 

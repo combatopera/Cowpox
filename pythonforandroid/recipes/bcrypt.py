@@ -38,8 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from p4a import CompiledComponentsPythonRecipe, Recipe
-
+from p4a import CompiledComponentsPythonRecipe
 
 class BCryptRecipe(CompiledComponentsPythonRecipe):
     name = 'bcrypt'
@@ -50,13 +49,10 @@ class BCryptRecipe(CompiledComponentsPythonRecipe):
 
     def get_recipe_env(self, arch):
         env = super(BCryptRecipe, self).get_recipe_env(arch)
-
-        openssl_recipe = Recipe.get_recipe('openssl', self.ctx)
+        openssl_recipe = self.get_recipe('openssl')
         env['CFLAGS'] += openssl_recipe.include_flags(arch)
         env['LDFLAGS'] += openssl_recipe.link_dirs_flags(arch)
         env['LIBS'] = openssl_recipe.link_libs_flags()
-
         return env
-
 
 recipe = BCryptRecipe()

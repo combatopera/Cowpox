@@ -201,8 +201,7 @@ class Arch:
         # Custom linker options
         env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
         # Host python (used by some recipes)
-        hostpython_recipe = Recipe.get_recipe(
-            'host' + self.ctx.python_recipe.name, self.ctx)
+        hostpython_recipe = self.ctx.get_recipe(f"host{self.ctx.python_recipe.name}")
         env['BUILDLIB_PATH'] = join(
             hostpython_recipe.get_build_dir(self.arch),
             'native-build',

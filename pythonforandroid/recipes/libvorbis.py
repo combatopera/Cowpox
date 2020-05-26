@@ -53,7 +53,7 @@ class VorbisRecipe(NDKRecipe):
 
     def get_recipe_env(self, arch=None):
         env = super(VorbisRecipe, self).get_recipe_env(arch)
-        ogg = self.get_recipe('libogg', self.ctx)
+        ogg = self.get_recipe('libogg')
         env['CFLAGS'] += ' -I{}'.format(join(ogg.get_build_dir(arch.arch), 'include'))
         return env
 

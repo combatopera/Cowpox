@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Recipe
 from importlib import import_module
 from lagoon import cp, find, mv, rm, unzip
 from os import listdir, walk, sep
@@ -183,7 +182,7 @@ class Bootstrap:
                 ok = True
                 # Check if the bootstap's dependencies have an internal conflict:
                 for recipe in possible_dependencies:
-                    recipe = Recipe.get_recipe(recipe, ctx)
+                    recipe = ctx.get_recipe(recipe)
                     if any([conflict in recipes for conflict in recipe.conflicts]):
                         ok = False
                         break
@@ -191,7 +190,7 @@ class Bootstrap:
                 # packages:
                 for recipe in recipes:
                     try:
-                        recipe = Recipe.get_recipe(recipe, ctx)
+                        recipe = ctx.get_recipe(recipe)
                     except ValueError:
                         conflicts = []
                     else:
@@ -329,7 +328,7 @@ def expand_dependencies(recipes, ctx):
             if isinstance(entry, (tuple, list)):
                 entry = entry[0]
             try:
-                recipe = Recipe.get_recipe(entry, ctx)
+                recipe = ctx.get_recipe(entry)
                 recipes_with_deps += recipe.depends
             except ValueError:
                 # it's a pure python package without a recipe, so we

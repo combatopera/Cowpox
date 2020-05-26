@@ -68,7 +68,7 @@ class HarfbuzzRecipe(Recipe):
     def get_recipe_env(self, arch=None):
         env = super(HarfbuzzRecipe, self).get_recipe_env(arch)
         if 'freetype' in self.ctx.recipe_build_order:
-            freetype = self.get_recipe('freetype', self.ctx)
+            freetype = self.get_recipe('freetype')
             freetype_install = join(
                 freetype.get_build_dir(arch.arch), 'install'
             )
@@ -105,7 +105,7 @@ class HarfbuzzRecipe(Recipe):
 
         if 'freetype' in self.ctx.recipe_build_order:
             # Rebuild/install freetype with harfbuzz support
-            freetype = self.get_recipe('freetype', self.ctx)
+            freetype = self.get_recipe('freetype')
             freetype.build_arch(arch, with_harfbuzz=True)
             freetype.install_libraries(arch)
 

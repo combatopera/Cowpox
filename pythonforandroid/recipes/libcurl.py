@@ -54,8 +54,7 @@ class LibcurlRecipe(Recipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-
-        openssl_recipe = self.get_recipe('openssl', self.ctx)
+        openssl_recipe = self.get_recipe('openssl')
         openssl_dir = openssl_recipe.get_build_dir(arch.arch)
 
         env['LDFLAGS'] += openssl_recipe.link_dirs_flags(arch)

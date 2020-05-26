@@ -40,7 +40,6 @@
 
 from copy import deepcopy
 from itertools import product
-from p4a import Recipe
 from pythonforandroid.util import BuildInterruptingException
 import logging
 
@@ -68,7 +67,7 @@ class RecipeOrder(dict):
     def conflicts(self):
         for name in self.keys():
             try:
-                recipe = Recipe.get_recipe(name, self.ctx)
+                recipe = self.ctx.get_recipe(name)
                 conflicts = [dep.lower() for dep in recipe.conflicts]
             except ModuleNotFoundError:
                 conflicts = []
@@ -112,7 +111,7 @@ def recursively_collect_orders(
     if blacklist is None:
         blacklist = set()
     try:
-        recipe = Recipe.get_recipe(name, ctx)
+        recipe = ctx.get_recipe(name)
         dependencies = get_dependency_tuple_list_for_recipe(recipe, blacklist = blacklist)
         # handle opt_depends: these impose requirements on the build
         # order only if already present in the list of recipes to build
@@ -205,7 +204,7 @@ def obvious_conflict_checker(ctx, name_tuples, blacklist=None):
             recipe_dependencies = []
             try:
                 # Get recipe to add and who's ultimately adding it:
-                recipe = Recipe.get_recipe(name, ctx)
+                recipe = ctx.get_recipe(name)
                 recipe_conflicts = {c.lower() for c in recipe.conflicts}
                 recipe_dependencies = get_dependency_tuple_list_for_recipe(
                     recipe, blacklist=blacklist
@@ -230,7 +229,7 @@ def obvious_conflict_checker(ctx, name_tuples, blacklist=None):
                     # (remember this function only catches obvious issues)
                     continue
                 try:
-                    dep_recipe = Recipe.get_recipe(dep_tuple_list[0], ctx)
+                    dep_recipe = ctx.get_recipe(dep_tuple_list[0])
                 except ModuleNotFoundError:
                     continue
                 conflicts = [c.lower() for c in dep_recipe.conflicts]
@@ -342,7 +341,7 @@ def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
     python_modules = []
     for name in chosen_order:
         try:
-            recipe = Recipe.get_recipe(name, ctx)
+            recipe = ctx.get_recipe(name)
             python_modules += recipe.python_depends
         except ModuleNotFoundError:
             python_modules.append(name)

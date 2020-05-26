@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from p4a import Recipe
 from p4a.patch import version_starts_with
 from p4a.python import GuestPythonRecipe
 import sh
@@ -114,7 +113,7 @@ class Python3Recipe(GuestPythonRecipe):
     def set_libs_flags(self, env, arch):
         env = super().set_libs_flags(env, arch)
         if 'openssl' in self.ctx.recipe_build_order:
-            recipe = Recipe.get_recipe('openssl', self.ctx)
+            recipe = self.get_recipe('openssl')
             self.configure_args += (f"--with-openssl={recipe.get_build_dir(arch.arch)}",)
         return env
 

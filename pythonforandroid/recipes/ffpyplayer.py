@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from p4a import CythonRecipe, Recipe
+from p4a import CythonRecipe
 from os.path import join
 
 class FFPyPlayerRecipe(CythonRecipe):
@@ -50,7 +50,7 @@ class FFPyPlayerRecipe(CythonRecipe):
 
     def get_recipe_env(self, arch, with_flags_in_cc=True):
         env = super(FFPyPlayerRecipe, self).get_recipe_env(arch)
-        build_dir = Recipe.get_recipe('ffmpeg', self.ctx).get_build_dir(arch.arch)
+        build_dir = self.get_recipe('ffmpeg').get_build_dir(arch.arch)
         env["FFMPEG_INCLUDE_DIR"] = join(build_dir, "include")
         env["FFMPEG_LIB_DIR"] = join(build_dir, "lib")
         env["SDL_INCLUDE_DIR"] = join(self.ctx.bootstrap.build_dir, 'jni', 'SDL', 'include')

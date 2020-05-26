@@ -58,21 +58,18 @@ class PillowRecipe(CompiledComponentsPythonRecipe):
         env['ANDROID_ROOT'] = join(self.ctx.ndk_platform, 'usr')
         ndk_lib_dir = join(self.ctx.ndk_platform, 'usr', 'lib')
         ndk_include_dir = join(self.ctx.ndk_dir, 'sysroot', 'usr', 'include')
-
-        png = self.get_recipe('png', self.ctx)
+        png = self.get_recipe('png')
         png_lib_dir = join(png.get_build_dir(arch.arch), '.libs')
         png_inc_dir = png.get_build_dir(arch)
-
-        jpeg = self.get_recipe('jpeg', self.ctx)
+        jpeg = self.get_recipe('jpeg')
         jpeg_inc_dir = jpeg_lib_dir = jpeg.get_build_dir(arch.arch)
-
-        freetype = self.get_recipe('freetype', self.ctx)
+        freetype = self.get_recipe('freetype')
         free_lib_dir = join(freetype.get_build_dir(arch.arch), 'objs', '.libs')
         free_inc_dir = join(freetype.get_build_dir(arch.arch), 'include')
 
         # harfbuzz is a direct dependency of freetype and we need the proper
         # flags to successfully build the Pillow recipe, so we add them here.
-        harfbuzz = self.get_recipe('harfbuzz', self.ctx)
+        harfbuzz = self.get_recipe('harfbuzz')
         harf_lib_dir = join(harfbuzz.get_build_dir(arch.arch), 'src', '.libs')
         harf_inc_dir = harfbuzz.get_build_dir(arch.arch)
 

@@ -51,10 +51,8 @@ class PyLevelDBRecipe(CppCompiledComponentsPythonRecipe):
 
     def get_recipe_env(self, arch):
         env = super(PyLevelDBRecipe, self).get_recipe_env(arch)
-
-        snappy_recipe = self.get_recipe('snappy', self.ctx)
-        leveldb_recipe = self.get_recipe('leveldb', self.ctx)
-
+        snappy_recipe = self.get_recipe('snappy')
+        leveldb_recipe = self.get_recipe('leveldb')
         env["LDFLAGS"] += " -L" + snappy_recipe.get_build_dir(arch.arch)
         env["LDFLAGS"] += " -L" + leveldb_recipe.get_build_dir(arch.arch)
 

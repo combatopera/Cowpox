@@ -40,15 +40,15 @@
 
 # coding=utf-8
 
-from p4a import CythonRecipe, Recipe
+from p4a import CythonRecipe
 from os.path import join
 from pythonforandroid.util import current_directory
 import sh
 from pythonforandroid.logger import shprint
 import glob
 
-
 class PyZMQRecipe(CythonRecipe):
+
     name = 'pyzmq'
     version = 'master'
     url = 'https://github.com/zeromq/pyzmq/archive/{version}.zip'
@@ -71,7 +71,7 @@ class PyZMQRecipe(CythonRecipe):
         return env
 
     def build_cython_components(self, arch):
-        libzmq_recipe = Recipe.get_recipe('libzmq', self.ctx)
+        libzmq_recipe = self.get_recipe('libzmq')
         libzmq_prefix = join(libzmq_recipe.get_build_dir(arch.arch), "install")
         self.setup_extra_args = ["--zmq={}".format(libzmq_prefix)]
         self.build_cmd = "configure"
@@ -94,6 +94,5 @@ skip_check_zmq = True
             build_dir = glob.glob('build/lib.*')[0]
             shprint(sh.find, build_dir, '-name', '"*.o"', '-exec',
                     env['STRIP'], '{}', ';', _env=env)
-
 
 recipe = PyZMQRecipe()

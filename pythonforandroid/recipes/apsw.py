@@ -65,7 +65,7 @@ class ApswRecipe(PythonRecipe):
 
     def get_recipe_env(self, arch):
         env = super(ApswRecipe, self).get_recipe_env(arch)
-        sqlite_recipe = self.get_recipe('sqlite3', self.ctx)
+        sqlite_recipe = self.get_recipe('sqlite3')
         env['CFLAGS'] += ' -I' + sqlite_recipe.get_build_dir(arch.arch)
         env['LDFLAGS'] += ' -L' + sqlite_recipe.get_lib_dir(arch)
         env['LIBS'] = env.get('LIBS', '') + ' -lsqlite3'
