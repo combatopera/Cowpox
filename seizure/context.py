@@ -332,8 +332,7 @@ def build_recipes(build_order, python_modules, ctx):
     pip.install.print('Cython', env = base_env, cwd = ctx.buildsdir)
     with current_directory(ctx.buildsdir):
         # Get environment variables for build (with CC/compiler set):
-        standard_recipe = CythonRecipe()
-        standard_recipe.ctx = ctx
+        standard_recipe = CythonRecipe(ctx)
         # (note: following line enables explicit -lpython... linker options)
         standard_recipe.call_hostpython_via_targetpython = False
         recipe_env = standard_recipe.get_recipe_env(ctx.archs[0])
