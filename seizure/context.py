@@ -119,8 +119,7 @@ class Context:
                     if issubclass(obj, Recipe):
                         yield obj
             cls, = classes()
-            self.recipes[name] = recipe = cls()
-            recipe.ctx = self # TODO: Pass in.
+            self.recipes[name] = recipe = cls(self)
             return recipe
 
     @property

@@ -153,6 +153,9 @@ class Recipe(metaclass = RecipeMeta):
     `stl_lib_name`
     '''
 
+    def __init__(self, ctx):
+        self.ctx = ctx
+
     @property
     def stl_include_dir(self):
         return join(self.stl_lib_source.format(ctx=self.ctx), 'include')
