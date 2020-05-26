@@ -847,7 +847,7 @@ class CythonRecipe(PythonRecipe):
             build_dir = self.get_build_dir(arch.arch)
         log.info('Stripping object files')
         e = find.partial('.', '-iname', '*.so', '-exec', env = env, cwd = build_dir)
-        e.print('/usr/bin/echo', '{}', ';')
+        e.print('/usr/bin/echo', '{}', ';') # FIXME: No such path.
         e.print(env['STRIP'].split(' ')[0], '--strip-unneeded', '{}', ';')
 
     def cythonize_file(self, env, build_dir, filename):
