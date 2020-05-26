@@ -44,7 +44,7 @@ from importlib import import_module
 from lagoon import virtualenv
 from lagoon.program import Program
 from os.path import join, exists, split
-from p4a import CythonRecipe
+from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
 from pythonforandroid.pythonpackage import get_package_name
@@ -106,11 +106,22 @@ class Context:
     bootstrap_build_dir = None
 
     recipe_build_order = None  # Will hold the list of all built recipes
+    recipes = {}
 
     def get_recipe(self, name):
-        recipe = import_module(f"pythonforandroid.recipes.{name.lower()}").recipe
-        recipe.ctx = self # TODO: Create and pass in.
-        return recipe
+        try:
+            return self.recipes[name]
+        except KeyError:
+            def classes():
+                module = import_module(f"pythonforandroid.recipes.{name.lower()}")
+                for n in dir(module):
+                    obj = getattr(module, n)
+                    if issubclass(obj, Recipe):
+                        yield obj
+            cls, = classes()
+            self.recipes[name] = recipe = cls()
+            recipe.ctx = self # TODO: Pass in.
+            return recipe
 
     @property
     def packages_path(self):
