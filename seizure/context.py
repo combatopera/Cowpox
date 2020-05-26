@@ -117,7 +117,7 @@ class Context:
             for n in dir(module):
                 obj = getattr(module, n)
                 try:
-                    if issubclass(obj, cls):
+                    if issubclass(obj, cls): # FIXME LATER: There could be more than one leaf.
                         cls = obj
                 except TypeError:
                     pass
