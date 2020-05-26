@@ -144,10 +144,6 @@ class GuestPythonRecipe(TargetPythonRecipe):
         longer used and has been removed in favour of extension .pyc
     '''
 
-    def __init__(self, *args, **kwargs):
-        self._ctx = None
-        super().__init__(*args, **kwargs)
-
     def get_recipe_env(self, arch = None, with_flags_in_cc = True):
         env = os.environ.copy()
         env['HOSTARCH'] = arch.command_prefix

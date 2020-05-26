@@ -882,12 +882,6 @@ class CythonRecipe(PythonRecipe):
         return env
 
 class TargetPythonRecipe(Recipe):
-    '''Class for target python recipes. Sets ctx.python_recipe to point to
-    itself, so as to know later what kind of Python was built or used.'''
-
-    def __init__(self, *args, **kwargs):
-        self._ctx = None
-        super().__init__(*args, **kwargs)
 
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
