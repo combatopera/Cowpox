@@ -115,13 +115,11 @@ def _listfiles(d):
             yield fn
 
 def _make_tar(tfn, source_dirs, blacklist, distinfo):
-    def select(fn):
-        return not blacklist.has(fn)
     files = []
     for sd in source_dirs:
         sd = realpath(sd)
         _compile_dir(sd, distinfo)
-        files.extend([x, relpath(realpath(x), sd)] for x in _listfiles(sd) if select(x))
+        files.extend([x, relpath(realpath(x), sd)] for x in _listfiles(sd) if not blacklist.has(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = set()
         for fn, afn in files:
