@@ -263,8 +263,7 @@ class TargetAndroid:
             yield 'gradle_repositories', config.getlist('app','android.add_gradle_repositories', [])
             yield 'packaging_options', config.getlist('app','android.add_packaging_options', [])
             yield 'meta_data', list(self._meta_data())
-            add_activity = config.getlist('app', 'android.add_activities', [])
-            yield 'add_activity', add_activity if add_activity else None
+            yield 'add_activity', config.getlist('app', 'android.add_activities', [])
             icon = config.getdefault('app', 'icon.filename', '')
             yield 'icon', (self.config.workspace / icon).expanduser().resolve() if icon else None
             yield 'wakelock', True if config.getbooldefault('app', 'android.wakelock', False) else None
