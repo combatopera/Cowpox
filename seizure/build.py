@@ -117,8 +117,8 @@ def _listfiles(d):
 def _make_tar(tfn, source_dirs, blacklist, distinfo):
     files = []
     for sd in source_dirs:
-        sd = realpath(sd)
-        _compile_dir(sd, distinfo)
+        sd = sd.resolve()
+        subprocess.check_call([distinfo.forkey('hostpython'), '-OO', '-m', 'compileall', '-b', '-f', sd])
         files.extend([x, relpath(realpath(x), sd)] for x in _listfiles(sd) if not blacklist.has(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = set()
@@ -138,9 +138,6 @@ def _make_tar(tfn, source_dirs, blacklist, distinfo):
                     tinfo.mode |= 0o111
                     tf.addfile(tinfo)
             tf.add(fn, afn)
-
-def _compile_dir(dfn, distinfo):
-    subprocess.check_call([distinfo.forkey('hostpython'), '-OO', '-m', 'compileall', '-b', '-f', dfn])
 
 def makeapkversion(args, distdir, private):
     render = Render(distdir)
