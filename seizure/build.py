@@ -162,7 +162,7 @@ def makeapkversion(args, distdir, private):
                 print(f"P4A_IS_WINDOWED={args.window}", file = f)
                 print(f"P4A_ORIENTATION={args.orientation}", file = f)
             print(f"P4A_MINSDK={args.min_sdk_version}", file = f)
-        tar_dirs = [env_vars_tarpath, args.private]
+        tar_dirs = [env_vars_tarpath, private]
         for python_bundle_dir in (distdir / n for n in ['private', '_python_bundle']):
             if python_bundle_dir.exists():
                 tar_dirs.append(python_bundle_dir)
