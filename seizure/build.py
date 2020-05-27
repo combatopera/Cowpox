@@ -183,13 +183,13 @@ def makeapkversion(args, distdir, private):
         lookup = {'x86_64': 9, 'arm64-v8a': 8, 'armeabi-v7a': 7, 'x86': 6}
         return f"{lookup.get(distinfo.forkey('archs')[0], 1)}{args.min_sdk_version}{version_code}"
     args.numeric_version = numver() # TODO: Do not abuse args for this.
+    if args.intent_filters:
+        args.intent_filters = args.intent_filters.read_text()
+    args.extra_source_dirs = []
     _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir)
 
 def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir):
   with current_directory(distdir):
-    if args.intent_filters:
-        args.intent_filters = args.intent_filters.read_text()
-    args.extra_source_dirs = []
     service = False
     service_main = join(realpath(args.private), 'service', 'main.py')
     if exists(service_main) or exists(service_main + 'o'):
