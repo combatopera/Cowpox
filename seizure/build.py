@@ -103,15 +103,13 @@ class Render:
 
 def _listfiles(d):
     subdirlist = []
-    for item in os.listdir(d):
-        fn = join(d, item)
-        if isfile(fn):
+    for fn in d.iterdir():
+        if fn.is_file():
             yield fn
         else:
             subdirlist.append(fn)
     for subdir in subdirlist:
-        for fn in _listfiles(subdir):
-            yield fn
+        yield from _listfiles(subdir)
 
 def _make_tar(tfn, source_dirs, blacklist, distinfo):
     files = []
