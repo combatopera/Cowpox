@@ -155,10 +155,6 @@ def makeapkversion(args, distdir, private):
     assets_dir = (distdir / 'src' / 'main' / 'assets').mkdirp()
     _try_unlink(assets_dir / 'public.mp3')
     _try_unlink(assets_dir / 'private.mp3')
-    _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, assets_dir)
-
-def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, assets_dir):
-  with current_directory(distdir):
     with TemporaryDirectory() as env_vars_tarpath:
         env_vars_tarpath = Path(env_vars_tarpath)
         with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:
@@ -173,6 +169,10 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, ass
         if bootstrapname == "webview":
             tar_dirs.append(distdir / 'webview_includes')
         _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo)
+    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir)
+
+def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir):
+  with current_directory(distdir):
     res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
     default_presplash = 'templates/kivy-presplash.jpg'
