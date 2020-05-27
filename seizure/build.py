@@ -183,10 +183,10 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, ass
             log.info('No setup.py/pyproject.toml used, copying full private data into .apk.')
             tar_dirs.append(args.private)
         for python_bundle_dir in 'private', '_python_bundle':
-            if exists(python_bundle_dir):
-                tar_dirs.append(python_bundle_dir)
+            if (distdir / python_bundle_dir).exists():
+                tar_dirs.append(distdir / python_bundle_dir)
         if bootstrapname == "webview":
-            tar_dirs.append('webview_includes')
+            tar_dirs.append(distdir / 'webview_includes')
         if args.private:
             _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo)
     res_dir = Path('src', 'main', 'res')
