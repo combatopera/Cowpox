@@ -159,11 +159,9 @@ def makeapkversion(args, distdir, private):
         blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
     with (distdir / 'whitelist.txt').open() as f:
         blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-    if private is None and bootstrapname == 'sdl2':
-        raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
     args.private = private
     if bootstrapname != "webview":
-        if private is None or (not (private.resolve() / 'main.py').exists() and not (private.resolve() / 'main.pyo').exists()):
+        if not (private.resolve() / 'main.py').exists() and not (private.resolve() / 'main.pyo').exists():
             raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
     assets_dir = (distdir / 'src' / 'main' / 'assets').mkdirp()
     _try_unlink(assets_dir / 'public.mp3')
@@ -179,16 +177,14 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, ass
                 print(f"P4A_ORIENTATION={args.orientation}", file = f)
             print(f"P4A_MINSDK={args.min_sdk_version}", file = f)
         tar_dirs = [env_vars_tarpath]
-        if args.private:
-            log.info('No setup.py/pyproject.toml used, copying full private data into .apk.')
-            tar_dirs.append(args.private)
+        log.info('No setup.py/pyproject.toml used, copying full private data into .apk.')
+        tar_dirs.append(args.private)
         for python_bundle_dir in 'private', '_python_bundle':
             if (distdir / python_bundle_dir).exists():
                 tar_dirs.append(distdir / python_bundle_dir)
         if bootstrapname == "webview":
             tar_dirs.append(distdir / 'webview_includes')
-        if args.private:
-            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo)
+        _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo)
     res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
     default_presplash = 'templates/kivy-presplash.jpg'
@@ -213,10 +209,9 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, ass
         args.activity_launch_mode = ''
     args.extra_source_dirs = []
     service = False
-    if args.private:
-        service_main = join(realpath(args.private), 'service', 'main.py')
-        if exists(service_main) or exists(service_main + 'o'):
-            service = True
+    service_main = join(realpath(args.private), 'service', 'main.py')
+    if exists(service_main) or exists(service_main + 'o'):
+        service = True
     service_names = []
     for sid, spec in enumerate(args.services):
         spec = spec.split(':')
