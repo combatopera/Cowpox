@@ -188,8 +188,7 @@ def makeapkversion(args, distdir, private):
 def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir):
   with current_directory(distdir):
     if args.intent_filters:
-        with open(args.intent_filters) as fd:
-            args.intent_filters = fd.read()
+        args.intent_filters = args.intent_filters.read_text()
     if not args.add_activity:
         args.add_activity = []
     if not args.activity_launch_mode:
