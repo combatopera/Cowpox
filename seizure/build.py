@@ -192,15 +192,13 @@ def makeapkversion(args, distdir, private):
     if private is None and bootstrapname == 'sdl2':
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
     args.private = private
+    if bootstrapname != "webview":
+        if private is None or (not (private.resolve() / 'main.py').exists() and not (private.resolve() / 'main.pyo').exists()):
+            raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
     _make_package(args, bootstrapname, blacklist, distinfo, render, distdir)
 
 def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir):
   with current_directory(distdir):
-    if bootstrapname != "webview":
-        if args.private is None or (
-                not exists(join(realpath(args.private), 'main.py')) and
-                not exists(join(realpath(args.private), 'main.pyo'))):
-            raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
     assets_dir = Path('src', 'main', 'assets')
     _try_unlink(assets_dir / 'public.mp3')
     _try_unlink(assets_dir / 'private.mp3')
