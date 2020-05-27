@@ -173,12 +173,11 @@ def makeapkversion(args, distdir, private):
 def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, assets_dir):
   with current_directory(distdir):
     with TemporaryDirectory() as env_vars_tarpath:
-        with Path(env_vars_tarpath, "p4a_env_vars.txt").open("w") as f:
-            if hasattr(args, "window"):
-                f.write("P4A_IS_WINDOWED=" + str(args.window) + "\n")
-            if hasattr(args, "orientation"):
-                f.write("P4A_ORIENTATION=" + str(args.orientation) + "\n")
-            f.write("P4A_MINSDK=" + str(args.min_sdk_version) + "\n")
+        with Path(env_vars_tarpath, 'p4a_env_vars.txt').open('w') as f:
+            if bootstrapname != 'service_only':
+                print(f"P4A_IS_WINDOWED={args.window}", file = f)
+                print(f"P4A_ORIENTATION={args.orientation}", file = f)
+            print(f"P4A_MINSDK={args.min_sdk_version}", file = f)
         tar_dirs = [env_vars_tarpath]
         if args.private:
             log.info('No setup.py/pyproject.toml used, copying full private data into .apk.')
