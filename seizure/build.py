@@ -44,7 +44,8 @@ from os import listdir, makedirs, remove
 from os.path import dirname, join, isfile, realpath, relpath, split, exists
 from pathlib import Path
 from pythonforandroid.util import current_directory
-import jinja2, json, logging, os, shutil, subprocess, tarfile, tempfile, time
+from tempfile import TemporaryDirectory
+import jinja2, json, logging, os, shutil, subprocess, tarfile, time
 
 log = logging.getLogger(__name__)
 
@@ -171,25 +172,24 @@ def makeapkversion(args, distdir, private):
 
 def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, assets_dir):
   with current_directory(distdir):
-    env_vars_tarpath = tempfile.mkdtemp(prefix = "p4a-extra-env-")
-    with Path(env_vars_tarpath, "p4a_env_vars.txt").open("w") as f:
-        if hasattr(args, "window"):
-            f.write("P4A_IS_WINDOWED=" + str(args.window) + "\n")
-        if hasattr(args, "orientation"):
-            f.write("P4A_ORIENTATION=" + str(args.orientation) + "\n")
-        f.write("P4A_MINSDK=" + str(args.min_sdk_version) + "\n")
-    tar_dirs = [env_vars_tarpath]
-    if args.private:
-        log.info('No setup.py/pyproject.toml used, copying full private data into .apk.')
-        tar_dirs.append(args.private)
-    for python_bundle_dir in 'private', '_python_bundle':
-        if exists(python_bundle_dir):
-            tar_dirs.append(python_bundle_dir)
-    if bootstrapname == "webview":
-        tar_dirs.append('webview_includes')
-    if args.private:
-        _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo)
-    shutil.rmtree(env_vars_tarpath)
+    with TemporaryDirectory() as env_vars_tarpath:
+        with Path(env_vars_tarpath, "p4a_env_vars.txt").open("w") as f:
+            if hasattr(args, "window"):
+                f.write("P4A_IS_WINDOWED=" + str(args.window) + "\n")
+            if hasattr(args, "orientation"):
+                f.write("P4A_ORIENTATION=" + str(args.orientation) + "\n")
+            f.write("P4A_MINSDK=" + str(args.min_sdk_version) + "\n")
+        tar_dirs = [env_vars_tarpath]
+        if args.private:
+            log.info('No setup.py/pyproject.toml used, copying full private data into .apk.')
+            tar_dirs.append(args.private)
+        for python_bundle_dir in 'private', '_python_bundle':
+            if exists(python_bundle_dir):
+                tar_dirs.append(python_bundle_dir)
+        if bootstrapname == "webview":
+            tar_dirs.append('webview_includes')
+        if args.private:
+            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo)
     res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
     default_presplash = 'templates/kivy-presplash.jpg'
