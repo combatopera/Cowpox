@@ -127,7 +127,7 @@ def _make_tar(tfn, source_dirs, blacklist, distinfo):
                     d /= component
                     if d != Path('.') and d not in dirs:
                         dirs.add(d)
-                        tinfo = tarfile.TarInfo(d)
+                        tinfo = tarfile.TarInfo(str(d))
                         tinfo.type = tarfile.DIRTYPE
                         tinfo.mode |= 0o111
                         tf.addfile(tinfo)
@@ -169,16 +169,16 @@ def makeapkversion(args, distdir, private):
         if bootstrapname == "webview":
             tar_dirs.append(distdir / 'webview_includes')
         _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo)
-    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir)
-
-def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir):
-  with current_directory(distdir):
-    res_dir = Path('src', 'main', 'res')
-    default_icon = 'templates/kivy-icon.png'
-    default_presplash = 'templates/kivy-presplash.jpg'
+    res_dir = distdir / 'src' / 'main' / 'res'
+    default_icon = distdir / 'templates' / 'kivy-icon.png'
     shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
     if bootstrapname != "service_only":
+        default_presplash = distdir / 'templates' / 'kivy-presplash.jpg'
         shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
+    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir)
+
+def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir):
+  with current_directory(distdir):
     versioned_name = args.name.replace(' ', '').replace('\'', '') + '-' + args.version
     def numver():
         version_code = 0
