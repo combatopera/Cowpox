@@ -189,8 +189,6 @@ def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, re
   with current_directory(distdir):
     if args.intent_filters:
         args.intent_filters = args.intent_filters.read_text()
-    if not args.activity_launch_mode:
-        args.activity_launch_mode = ''
     args.extra_source_dirs = []
     service = False
     service_main = join(realpath(args.private), 'service', 'main.py')
