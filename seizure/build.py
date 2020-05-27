@@ -160,17 +160,16 @@ def makeapkversion(args, distdir, private):
 def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, assets_dir):
   with current_directory(distdir):
     with TemporaryDirectory() as env_vars_tarpath:
-        with Path(env_vars_tarpath, 'p4a_env_vars.txt').open('w') as f:
+        env_vars_tarpath = Path(env_vars_tarpath)
+        with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:
             if bootstrapname != 'service_only':
                 print(f"P4A_IS_WINDOWED={args.window}", file = f)
                 print(f"P4A_ORIENTATION={args.orientation}", file = f)
             print(f"P4A_MINSDK={args.min_sdk_version}", file = f)
-        tar_dirs = [env_vars_tarpath]
-        log.info('No setup.py/pyproject.toml used, copying full private data into .apk.')
-        tar_dirs.append(args.private)
-        for python_bundle_dir in 'private', '_python_bundle':
-            if (distdir / python_bundle_dir).exists():
-                tar_dirs.append(distdir / python_bundle_dir)
+        tar_dirs = [env_vars_tarpath, args.private]
+        for python_bundle_dir in (distdir / n for n in ['private', '_python_bundle']):
+            if python_bundle_dir.exists():
+                tar_dirs.append(python_bundle_dir)
         if bootstrapname == "webview":
             tar_dirs.append(distdir / 'webview_includes')
         _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo)
