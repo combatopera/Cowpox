@@ -125,8 +125,6 @@ def _make_tar(tfn, source_dirs, blacklist, distinfo):
                 d = ''
                 for component in split(dn):
                     d = join(d, component)
-                    if d.startswith('/'):
-                        d = d[1:]
                     if d == '' or d in dirs:
                         continue
                     dirs.add(d)
