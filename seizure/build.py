@@ -41,7 +41,7 @@
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from os import listdir, makedirs, remove
-from os.path import dirname, join, realpath, exists
+from os.path import dirname, join, exists
 from pathlib import Path
 from pythonforandroid.util import current_directory
 from tempfile import TemporaryDirectory
@@ -190,10 +190,6 @@ def makeapkversion(args, distdir, private):
 
 def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir):
   with current_directory(distdir):
-    service = False
-    service_main = join(realpath(args.private), 'service', 'main.py')
-    if exists(service_main) or exists(service_main + 'o'):
-        service = True
     service_names = []
     for sid, spec in enumerate(args.services):
         spec = spec.split(':')
@@ -248,7 +244,7 @@ def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, re
     manifest_path = "src/main/AndroidManifest.xml"
     render_args = {
         "args": args,
-        "service": service,
+        "service": any((args.private.resolve() / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
         "service_names": service_names,
         "android_api": android_api
     }
