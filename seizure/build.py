@@ -175,10 +175,6 @@ def makeapkversion(args, distdir, private):
     if bootstrapname != "service_only":
         default_presplash = distdir / 'templates' / 'kivy-presplash.jpg'
         shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
-    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir)
-
-def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir):
-  with current_directory(distdir):
     def numver():
         version_code = 0
         for i in args.version.split('.'):
@@ -187,6 +183,10 @@ def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, re
         lookup = {'x86_64': 9, 'arm64-v8a': 8, 'armeabi-v7a': 7, 'x86': 6}
         return f"{lookup.get(distinfo.forkey('archs')[0], 1)}{args.min_sdk_version}{version_code}"
     args.numeric_version = numver() # TODO: Do not abuse args for this.
+    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir)
+
+def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir):
+  with current_directory(distdir):
     if args.intent_filters:
         with open(args.intent_filters) as fd:
             args.intent_filters = fd.read()
