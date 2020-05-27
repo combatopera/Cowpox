@@ -350,7 +350,6 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
 def makeapkversion(args, distdir, private):
-  with current_directory(distdir):
     render = Render(distdir)
     distinfo = DistInfo(distdir)
     ndk_api = int(distinfo.forkey('ndk_api'))
@@ -368,5 +367,6 @@ def makeapkversion(args, distdir, private):
     if private is None and bootstrapname == 'sdl2':
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
     args.private = private
-    _make_package(args, bootstrapname, blacklist, distinfo, render)
+    with current_directory(distdir):
+        _make_package(args, bootstrapname, blacklist, distinfo, render)
     return args.version # FIXME: We pass this in!
