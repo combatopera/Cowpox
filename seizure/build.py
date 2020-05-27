@@ -44,7 +44,6 @@ from os import listdir, makedirs, remove
 from os.path import dirname, join, isfile, realpath, relpath, split, exists
 from pathlib import Path
 from pythonforandroid.util import current_directory
-from zipfile import ZipFile
 import jinja2, json, logging, os, shutil, subprocess, tarfile, tempfile, time
 
 log = logging.getLogger(__name__)
@@ -114,35 +113,9 @@ def _listfiles(d):
         for fn in _listfiles(subdir):
             yield fn
 
-def _make_python_zip(blacklist):
-    if not exists('private'):
-        log.info('No compiled python is present to zip, skipping.')
-        return []
-    d = realpath(join('private', 'lib', 'python2.7'))
+def _make_tar(tfn, source_dirs, blacklist, distinfo):
     def select(fn):
-        if blacklist.has(fn):
-            return False
-        fn = realpath(fn)
-        assert(fn.startswith(d))
-        fn = fn[len(d):]
-        if (fn.startswith('/site-packages/')
-                or fn.startswith('/config/')
-                or fn.startswith('/lib-dynload/')
-                or fn.startswith('/libpymodules.so')):
-            return False
-        return fn
-    python_files = [x for x in _listfiles(d) if select(x)]
-    zfn = join('private', 'lib', 'python27.zip')
-    zf = ZipFile(zfn, 'w')
-    for fn in python_files:
-        zf.write(fn, fn[len(d):])
-    zf.close()
-    return python_files
-
-def _make_tar(tfn, source_dirs, blacklist, distinfo, python_files):
-    def select(fn):
-        rfn = realpath(fn)
-        return False if rfn in python_files else not blacklist.has(fn)
+        return not blacklist.has(fn)
     files = []
     for sd in source_dirs:
         sd = realpath(sd)
@@ -198,7 +171,6 @@ def makeapkversion(args, distdir, private):
 
 def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, assets_dir):
   with current_directory(distdir):
-    python_files = _make_python_zip(blacklist)
     env_vars_tarpath = tempfile.mkdtemp(prefix = "p4a-extra-env-")
     with Path(env_vars_tarpath, "p4a_env_vars.txt").open("w") as f:
         if hasattr(args, "window"):
@@ -216,7 +188,7 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, ass
     if bootstrapname == "webview":
         tar_dirs.append('webview_includes')
     if args.private:
-        _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo, python_files)
+        _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo)
     shutil.rmtree(env_vars_tarpath)
     res_dir = Path('src', 'main', 'res')
     default_icon = 'templates/kivy-icon.png'
