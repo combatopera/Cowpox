@@ -116,7 +116,7 @@ def _make_tar(tfn, source_dirs, blacklist, distinfo):
     for sd in source_dirs:
         sd = sd.resolve()
         subprocess.check_call([distinfo.forkey('hostpython'), '-OO', '-m', 'compileall', '-b', '-f', sd])
-        files.extend([x, relpath(realpath(x), sd)] for x in _listfiles(sd) if not blacklist.has(x))
+        files.extend([x, x.resolve().relative_to(sd)] for x in _listfiles(sd) if not blacklist.has(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = set()
         for fn, afn in files:
