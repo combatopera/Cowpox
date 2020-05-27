@@ -174,6 +174,27 @@ def _make_tar(tfn, source_dirs, blacklist, distinfo, python_files):
 def _compile_dir(dfn, distinfo):
     subprocess.check_call([distinfo.forkey('hostpython'), '-OO', '-m', 'compileall', '-b', '-f', dfn])
 
+def makeapkversion(args, distdir, private):
+    render = Render(distdir)
+    distinfo = DistInfo(distdir)
+    ndk_api = int(distinfo.forkey('ndk_api'))
+    bootstrapname = distinfo.forkey('bootstrap')
+    blacklist = Blacklist(bootstrapname)
+    args.allow_backup = 'true'
+    args.extra_manifest_xml = ''
+    if ndk_api != args.min_sdk_version:
+        log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
+        raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
+    with (distdir / 'blacklist.txt').open() as f:
+        blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
+    with (distdir / 'whitelist.txt').open() as f:
+        blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
+    if private is None and bootstrapname == 'sdl2':
+        raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
+    args.private = private
+    with current_directory(distdir):
+        _make_package(args, bootstrapname, blacklist, distinfo, render)
+
 def _make_package(args, bootstrapname, blacklist, distinfo, render):
     if bootstrapname != "webview":
         if args.private is None or (
@@ -348,24 +369,3 @@ def _make_package(args, bootstrapname, blacklist, distinfo, render):
                 if e.returncode != 1:
                     raise e
                 log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
-
-def makeapkversion(args, distdir, private):
-    render = Render(distdir)
-    distinfo = DistInfo(distdir)
-    ndk_api = int(distinfo.forkey('ndk_api'))
-    bootstrapname = distinfo.forkey('bootstrap')
-    blacklist = Blacklist(bootstrapname)
-    args.allow_backup = 'true'
-    args.extra_manifest_xml = ''
-    if ndk_api != args.min_sdk_version:
-        log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
-        raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
-    with (distdir / 'blacklist.txt').open() as f:
-        blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-    with (distdir / 'whitelist.txt').open() as f:
-        blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-    if private is None and bootstrapname == 'sdl2':
-        raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
-    args.private = private
-    with current_directory(distdir):
-        _make_package(args, bootstrapname, blacklist, distinfo, render)
