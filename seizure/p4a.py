@@ -97,7 +97,7 @@ def _require_prebuilt_dist(args, ctx): # TODO: Not twice.
     return dist
 
 def apk(args, downstreamargs, ctx, dist):
-    apkversion = makeapkversion(downstreamargs, dist.dist_dir, args.private.expanduser().resolve())
+    makeapkversion(downstreamargs, dist.dist_dir, args.private.expanduser().resolve())
     env = dict(ANDROID_NDK_HOME = ctx.ndk_dir, ANDROID_HOME = ctx.sdk_dir)
     output = gradle.__no_daemon.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], env = env, cwd = dist.dist_dir)
     apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
@@ -128,7 +128,7 @@ def apk(args, downstreamargs, ctx, dist):
     log.info('Add version number to APK')
     APK_SUFFIX = '.apk'
     apk_name = Path(apk_file).name[:-len(APK_SUFFIX)]
-    apk_file_dest = f"{apk_name}-{apkversion}-{APK_SUFFIX}" # XXX: This looks wrong?
+    apk_file_dest = f"{apk_name}-{downstreamargs.version}-{APK_SUFFIX}" # XXX: This looks wrong?
     log.info("APK renamed to %s", apk_file_dest)
     cp.print(apk_file, apk_file_dest)
 

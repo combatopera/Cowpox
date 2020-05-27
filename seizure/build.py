@@ -369,4 +369,3 @@ def makeapkversion(args, distdir, private):
     args.private = private
     with current_directory(distdir):
         _make_package(args, bootstrapname, blacklist, distinfo, render)
-    return args.version # FIXME: We pass this in!
