@@ -179,7 +179,6 @@ def makeapkversion(args, distdir, private):
 
 def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir):
   with current_directory(distdir):
-    versioned_name = args.name.replace(' ', '').replace('\'', '') + '-' + args.version
     def numver():
         version_code = 0
         for i in args.version.split('.'):
@@ -283,7 +282,7 @@ def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, re
         'build.tmpl.xml',
         'build.xml',
         args = args,
-        versioned_name = versioned_name,
+        versioned_name = f"""{args.name.replace(' ', '').replace("'", '')}-{args.version}""",
     )
     render_args = {"args": args, "private_version": str(time.time())}
     if bootstrapname == "sdl2":
