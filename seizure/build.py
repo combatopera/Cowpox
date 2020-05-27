@@ -192,7 +192,7 @@ def makeapkversion(args, distdir, private):
     if private is None and bootstrapname == 'sdl2':
         raise Exception('Need --private directory or --launcher (SDL2 bootstrap only)to have something to launch inside the .apk!')
     args.private = private
-        _make_package(args, bootstrapname, blacklist, distinfo, render, distdir)
+    _make_package(args, bootstrapname, blacklist, distinfo, render, distdir)
 
 def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir):
   with current_directory(distdir):
