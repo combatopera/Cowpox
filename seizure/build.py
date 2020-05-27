@@ -85,12 +85,8 @@ class Blacklist:
         return not match_filename(self.WHITELIST_PATTERNS) and match_filename(self.BLACKLIST_PATTERNS)
 
 def _try_unlink(fn):
-    if exists(fn):
-        os.unlink(fn)
-
-def _ensure_dir(path):
-    if not exists(path):
-        makedirs(path)
+    if fn.exists():
+        fn.unlink()
 
 class Render:
 
@@ -195,14 +191,13 @@ def makeapkversion(args, distdir, private):
     if bootstrapname != "webview":
         if private is None or (not (private.resolve() / 'main.py').exists() and not (private.resolve() / 'main.pyo').exists()):
             raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
-    _make_package(args, bootstrapname, blacklist, distinfo, render, distdir)
-
-def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir):
-  with current_directory(distdir):
-    assets_dir = Path('src', 'main', 'assets')
+    assets_dir = (distdir / 'src' / 'main' / 'assets').mkdirp()
     _try_unlink(assets_dir / 'public.mp3')
     _try_unlink(assets_dir / 'private.mp3')
-    _ensure_dir(assets_dir)
+    _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, assets_dir)
+
+def _make_package(args, bootstrapname, blacklist, distinfo, render, distdir, assets_dir):
+  with current_directory(distdir):
     python_files = _make_python_zip(blacklist)
     env_vars_tarpath = tempfile.mkdtemp(prefix = "p4a-extra-env-")
     with Path(env_vars_tarpath, "p4a_env_vars.txt").open("w") as f:
