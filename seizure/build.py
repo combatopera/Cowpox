@@ -102,14 +102,13 @@ class Render:
             f.write(text.encode('utf-8'))
 
 def _listfiles(d):
-    basedir = d
     subdirlist = []
     for item in os.listdir(d):
         fn = join(d, item)
         if isfile(fn):
             yield fn
         else:
-            subdirlist.append(join(basedir, item))
+            subdirlist.append(fn)
     for subdir in subdirlist:
         for fn in _listfiles(subdir):
             yield fn
