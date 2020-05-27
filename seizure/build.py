@@ -41,7 +41,7 @@
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from os import listdir, makedirs, remove
-from os.path import dirname, join, isfile, realpath, relpath, split, exists
+from os.path import dirname, join, realpath, exists
 from pathlib import Path
 from pythonforandroid.util import current_directory
 from tempfile import TemporaryDirectory
@@ -120,18 +120,17 @@ def _make_tar(tfn, source_dirs, blacklist, distinfo):
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = set()
         for fn, afn in files:
-            dn = dirname(afn)
+            dn = afn.parent
             if dn not in dirs:
-                d = ''
-                for component in split(dn):
-                    d = join(d, component)
-                    if d == '' or d in dirs:
-                        continue
-                    dirs.add(d)
-                    tinfo = tarfile.TarInfo(d)
-                    tinfo.type = tarfile.DIRTYPE
-                    tinfo.mode |= 0o111
-                    tf.addfile(tinfo)
+                d = Path('.')
+                for component in dn.parent, dn.name:
+                    d /= component
+                    if d != Path('.') and d not in dirs:
+                        dirs.add(d)
+                        tinfo = tarfile.TarInfo(d)
+                        tinfo.type = tarfile.DIRTYPE
+                        tinfo.mode |= 0o111
+                        tf.addfile(tinfo)
             tf.add(fn, afn)
 
 def makeapkversion(args, distdir, private):
