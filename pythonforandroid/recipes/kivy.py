@@ -38,11 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from os.path import exists, join, basename
-from pythonforandroid.logger import shprint
+from lagoon import cp
+from os.path import join
 from p4a import CythonRecipe
-from pythonforandroid.util import current_directory
-import glob, sh
+from pathlib import Path
 
 class KivyRecipe(CythonRecipe):
 
@@ -54,17 +53,14 @@ class KivyRecipe(CythonRecipe):
 
     def cythonize_build(self, env):
         super().cythonize_build(env)
-        if not exists(join('kivy', 'include')):
-            return
-        build_libs_dirs = glob.glob('build/lib.*')
-        for dirn in build_libs_dirs:
-            shprint(sh.cp, '-r', join('kivy', 'include'), join(dirn, 'kivy'))
+        kivyinclude = Path('kivy', 'include')
+        if kivyinclude.exists():
+            for dirn in Path('build').glob('lib.*'):
+                cp._r.print(kivyinclude, dirn / 'kivy')
 
     def cythonize_file(self, env, filename):
-        do_not_cythonize = {'window_x11.pyx'}
-        if basename(filename) in do_not_cythonize:
-            return
-        super().cythonize_file(env, filename)
+        if filename.name not in {'window_x11.pyx'}:
+            super().cythonize_file(env, filename)
 
     def get_recipe_env(self, arch):
         env = super(KivyRecipe, self).get_recipe_env(arch)
