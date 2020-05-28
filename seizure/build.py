@@ -200,22 +200,11 @@ def makeapkversion(args, distdir, private):
             sticky = 'sticky' in options,
             service_id = 1 + sid,
         )
-    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names)
+    android_api = int((distdir / 'project.properties').read_text().strip().split('-')[1])
+    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api)
 
-def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names):
+def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api):
   with current_directory(distdir):
-    # Find the SDK directory and target API
-    with open('project.properties', 'r') as fileh:
-        target = fileh.read().strip()
-    android_api = target.split('-')[1]
-    try:
-        int(android_api)
-    except (ValueError, TypeError):
-        raise ValueError(
-            "failed to extract the Android API level from " +
-            "build.properties. expected int, got: '" +
-            str(android_api) + "'"
-        )
     with open('local.properties', 'r') as fileh:
         sdk_dir = fileh.read().strip()
     sdk_dir = sdk_dir[8:]
