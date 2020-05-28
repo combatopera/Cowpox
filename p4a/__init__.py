@@ -768,11 +768,12 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     def build_compiled_components(self, arch):
         log.info("Building compiled components in %s", self.name)
         env = self.get_recipe_env(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
-            hostpython = Program.text(self.hostpython_location)
-            if self.install_in_hostpython:
-                hostpython.print('setup.py', 'clean', '--all', env = env)
-            hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args, env = env)
+        builddir = self.get_build_dir(arch.arch)
+        hostpython = Program.text(self.hostpython_location).partial(env = env, cwd = builddir)
+        if self.install_in_hostpython:
+            hostpython.print('setup.py', 'clean', '--all')
+        hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
+        with current_directory(builddir):
             build_dir = glob.glob('build/lib.*')[0]
             find.print(build_dir, '-name', '"*.o"', '-exec', env['STRIP'], '{}', ';', env = env)
 
