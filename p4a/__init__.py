@@ -856,8 +856,7 @@ class CythonRecipe(PythonRecipe):
             cyenv['PYTHONPATH'] = cyenv['CYTHONPATH']
         elif 'PYTHONPATH' in cyenv:
             del cyenv['PYTHONPATH']
-        if 'PYTHONNOUSERSITE' in cyenv:
-            cyenv.pop('PYTHONNOUSERSITE')
+        cyenv.pop('PYTHONNOUSERSITE', None)
         python_command = Program.text(f"python{self.ctx.python_recipe.major_minor_version_string.split('.')[0]}")
         python_command.print("-m", "Cython.Build.Cythonize", filename, *self.cython_args, env = cyenv)
 
@@ -866,9 +865,8 @@ class CythonRecipe(PythonRecipe):
             log.info('Running cython cancelled per recipe setting')
             return
         log.info('Running cython where appropriate')
-        for root, dirnames, filenames in walk("."):
-            for filename in fnmatch.filter(filenames, "*.pyx"):
-                self.cythonize_file(env, join(root, filename))
+        for filename in Path('.').rglob('*.pyx'):
+            self.cythonize_file(env, filename)
 
     def get_recipe_env(self, arch, with_flags_in_cc=True):
         env = super().get_recipe_env(arch, with_flags_in_cc)
