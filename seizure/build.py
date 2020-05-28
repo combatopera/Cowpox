@@ -224,7 +224,7 @@ def makeapkversion(args, distdir, private):
         android_api = android_api,
         build_tools_version = build_tools_version,
     )
-    render_args = {"args": args, "private_version": str(time.time())}
+    render_args = {"args": args, "private_version": str(time.time())} # XXX: Must we use time?
     if bootstrapname == "sdl2":
         render_args["url_scheme"] = url_scheme
     render(
