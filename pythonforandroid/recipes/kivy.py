@@ -53,7 +53,7 @@ class KivyRecipe(CythonRecipe):
     python_depends = ['certifi']
 
     def cythonize_build(self, env, build_dir='.'):
-        super(KivyRecipe, self).cythonize_build(env, build_dir=build_dir)
+        super().cythonize_build(env, build_dir=build_dir)
         if not exists(join(build_dir, 'kivy', 'include')):
             return
         # If kivy is new enough to use the include dir, copy it
@@ -63,6 +63,7 @@ class KivyRecipe(CythonRecipe):
             build_libs_dirs = glob.glob('build/lib.*')
             for dirn in build_libs_dirs:
                 shprint(sh.cp, '-r', join('kivy', 'include'), join(dirn, 'kivy'))
+
     def cythonize_file(self, env, build_dir, filename):
         # We can ignore a few files that aren't important to the
         # android build, and may not work on Android anyway
@@ -83,4 +84,3 @@ class KivyRecipe(CythonRecipe):
                 join(self.ctx.bootstrap.build_dir, 'jni', 'SDL2_ttf'),
                 ])
         return env
-
