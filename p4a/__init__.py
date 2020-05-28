@@ -743,8 +743,7 @@ class PythonRecipe(Recipe):
         hpenv = env.copy()
         hostpython.print('setup.py', 'install', '-O2', f"--root={self.ctx.get_python_install_dir()}", '--install-lib=.', *self.setup_extra_args, env = hpenv, cwd = builddir)
         if self.install_in_hostpython:
-            with current_directory(builddir):
-                self.install_hostpython_package(arch)
+            self.install_hostpython_package(arch)
 
     def get_hostrecipe_env(self, arch):
         return dict(os.environ, PYTHONPATH = self.real_hostpython_location.parent / 'Lib' / 'site-packages')
