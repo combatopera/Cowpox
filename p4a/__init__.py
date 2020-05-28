@@ -832,12 +832,12 @@ class CythonRecipe(PythonRecipe):
                 raise
             log.info("%s first build failed (as expected)", self.name)
             manually_cythonise = True
+        if manually_cythonise:
+            self.cythonize_build(env, builddir)
+            setup.print()
+        else:
+            log.info('First build appeared to complete correctly, skipping manualcythonising.')
         with current_directory(builddir):
-            if manually_cythonise:
-                self.cythonize_build(env, builddir)
-                setup.print()
-            else:
-                log.info('First build appeared to complete correctly, skipping manualcythonising.')
             self.strip_object_files(arch, env)
 
     def strip_object_files(self, arch, env, build_dir=None):
