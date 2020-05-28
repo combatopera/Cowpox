@@ -41,6 +41,7 @@
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from lagoon import patch
+from lagoon.program import Program
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import jinja2, json, logging, os, shutil, subprocess, tarfile, time
@@ -107,9 +108,10 @@ def _listfiles(d):
 
 def _make_tar(tfn, source_dirs, blacklist, distinfo):
     files = []
+    compileall = Program.text(distinfo.forkey('hostpython'))._OO._m.compileall._b._f
     for sd in source_dirs:
         sd = sd.resolve()
-        subprocess.check_call([distinfo.forkey('hostpython'), '-OO', '-m', 'compileall', '-b', '-f', sd])
+        compileall.print(sd)
         files.extend([x, x.resolve().relative_to(sd)] for x in _listfiles(sd) if not blacklist.has(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = set()
