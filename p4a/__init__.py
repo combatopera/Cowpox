@@ -821,20 +821,19 @@ class CythonRecipe(PythonRecipe):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env(arch)
         builddir = self.get_build_dir(arch.arch)
-        hostpython = Program.text(self.ctx.hostpython)
-        hostpython._c.print('import sys; print(sys.path)', env = env, cwd = builddir)
+        hostpython = Program.text(self.ctx.hostpython).partial(env = env, cwd = builddir)
+        hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False
+        setup = hostpython.partial('setup.py', 'build_ext', '-v', *self.setup_extra_args)
+        try:
+            setup.print()
+        except subprocess.CalledProcessError as e:
+            if 1 != e.returncode:
+                raise
+            log.info("%s first build failed (as expected)", self.name)
+            manually_cythonise = True
         with current_directory(builddir):
-            setup = hostpython.partial('setup.py', 'build_ext', '-v', *self.setup_extra_args, env = env)
-            try:
-                setup.print()
-            except subprocess.CalledProcessError as e:
-                if 1 != e.returncode:
-                    raise
-                print()
-                log.info("%s first build failed (as expected)", self.name)
-                manually_cythonise = True
             if manually_cythonise:
                 self.cythonize_build(env=env)
                 setup.print()
