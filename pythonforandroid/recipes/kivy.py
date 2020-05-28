@@ -39,9 +39,8 @@
 # THE SOFTWARE.
 
 from lagoon import cp
-from os.path import join
 from p4a import CythonRecipe
-from pathlib import Path
+import os
 
 class KivyRecipe(CythonRecipe):
 
@@ -63,14 +62,14 @@ class KivyRecipe(CythonRecipe):
             super().cythonize_file(env, filename)
 
     def get_recipe_env(self, arch):
-        env = super(KivyRecipe, self).get_recipe_env(arch)
+        env = super().get_recipe_env(arch)
         if 'sdl2' in self.ctx.recipe_build_order:
             env['USE_SDL2'] = '1'
             env['KIVY_SPLIT_EXAMPLES'] = '1'
-            env['KIVY_SDL2_PATH'] = ':'.join([
-                join(self.ctx.bootstrap.build_dir, 'jni', 'SDL', 'include'),
-                join(self.ctx.bootstrap.build_dir, 'jni', 'SDL2_image'),
-                join(self.ctx.bootstrap.build_dir, 'jni', 'SDL2_mixer'),
-                join(self.ctx.bootstrap.build_dir, 'jni', 'SDL2_ttf'),
-                ])
+            env['KIVY_SDL2_PATH'] = os.pathsep.join([
+                self.ctx.bootstrap.build_dir / 'jni' / 'SDL' / 'include',
+                self.ctx.bootstrap.build_dir / 'jni' / 'SDL2_image',
+                self.ctx.bootstrap.build_dir / 'jni' / 'SDL2_mixer',
+                self.ctx.bootstrap.build_dir / 'jni' / 'SDL2_ttf',
+            ])
         return env
