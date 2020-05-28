@@ -51,11 +51,11 @@ class KivyRecipe(CythonRecipe):
     depends = ['sdl2', 'pyjnius', 'setuptools']
     python_depends = ['certifi']
 
-    def cythonize_build(self, env):
-        super().cythonize_build(env)
-        kivyinclude = Path('kivy', 'include')
+    def cythonize_build(self, env, build_dir):
+        super().cythonize_build(env, build_dir)
+        kivyinclude = build_dir / 'kivy' / 'include'
         if kivyinclude.exists():
-            for dirn in Path('build').glob('lib.*'):
+            for dirn in build_dir.glob('build/lib.*'):
                 cp._r.print(kivyinclude, dirn / 'kivy')
 
     def cythonize_file(self, env, filename):

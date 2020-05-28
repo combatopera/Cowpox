@@ -834,7 +834,7 @@ class CythonRecipe(PythonRecipe):
             manually_cythonise = True
         with current_directory(builddir):
             if manually_cythonise:
-                self.cythonize_build(env)
+                self.cythonize_build(env, builddir)
                 setup.print()
             else:
                 log.info('First build appeared to complete correctly, skipping manualcythonising.')
@@ -859,12 +859,12 @@ class CythonRecipe(PythonRecipe):
         python_command = Program.text(f"python{self.ctx.python_recipe.major_minor_version_string.split('.')[0]}")
         python_command.print("-m", "Cython.Build.Cythonize", filename, *self.cython_args, env = cyenv)
 
-    def cythonize_build(self, env):
+    def cythonize_build(self, env, build_dir):
         if not self.cythonize:
             log.info('Running cython cancelled per recipe setting')
             return
         log.info('Running cython where appropriate')
-        for filename in Path('.').rglob('*.pyx'):
+        for filename in build_dir.rglob('*.pyx'):
             self.cythonize_file(env, filename)
 
     def get_recipe_env(self, arch, with_flags_in_cc=True):
