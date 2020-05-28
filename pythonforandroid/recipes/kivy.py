@@ -52,17 +52,13 @@ class KivyRecipe(CythonRecipe):
     depends = ['sdl2', 'pyjnius', 'setuptools']
     python_depends = ['certifi']
 
-    def cythonize_build(self, env, build_dir='.'):
-        super().cythonize_build(env, build_dir=build_dir)
-        if not exists(join(build_dir, 'kivy', 'include')):
+    def cythonize_build(self, env):
+        super().cythonize_build(env)
+        if not exists(join('kivy', 'include')):
             return
-        # If kivy is new enough to use the include dir, copy it
-        # manually to the right location as we bypass this stage of
-        # the build
-        with current_directory(build_dir):
-            build_libs_dirs = glob.glob('build/lib.*')
-            for dirn in build_libs_dirs:
-                shprint(sh.cp, '-r', join('kivy', 'include'), join(dirn, 'kivy'))
+        build_libs_dirs = glob.glob('build/lib.*')
+        for dirn in build_libs_dirs:
+            shprint(sh.cp, '-r', join('kivy', 'include'), join(dirn, 'kivy'))
 
     def cythonize_file(self, env, build_dir, filename):
         # We can ignore a few files that aren't important to the
@@ -70,7 +66,7 @@ class KivyRecipe(CythonRecipe):
         do_not_cythonize = ['window_x11.pyx', ]
         if basename(filename) in do_not_cythonize:
             return
-        super(KivyRecipe, self).cythonize_file(env, build_dir, filename)
+        super().cythonize_file(env, build_dir, filename)
 
     def get_recipe_env(self, arch):
         env = super(KivyRecipe, self).get_recipe_env(arch)
