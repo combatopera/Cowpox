@@ -201,20 +201,15 @@ def makeapkversion(args, distdir, private):
             service_id = 1 + sid,
         )
     android_api = int((distdir / 'project.properties').read_text().strip().split('-')[1])
-    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api)
-
-def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api):
-  with current_directory(distdir):
-    with open('local.properties', 'r') as fileh:
-        sdk_dir = fileh.read().strip()
-    sdk_dir = sdk_dir[8:]
-
-    # Try to build with the newest available build tools
+    sdk_dir = Path((distdir / 'local.properties').read_text().strip()[8:])
     ignored = {".DS_Store", ".ds_store"}
-    build_tools_versions = [x for x in listdir(join(sdk_dir, 'build-tools')) if x not in ignored]
-    build_tools_versions = sorted(build_tools_versions,
-                                  key=LooseVersion)
+    build_tools_versions = [x for x in listdir(sdk_dir / 'build-tools') if x not in ignored]
+    build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
     build_tools_version = build_tools_versions[-1]
+    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version)
+
+def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version):
+  with current_directory(distdir):
 
     # Folder name for launcher (used by SDL2 bootstrap)
     url_scheme = 'kivy'
