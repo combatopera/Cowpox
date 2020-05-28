@@ -357,4 +357,4 @@ def build_recipes(build_order, python_modules, ctx):
             log.info('Installing Python modules with pip')
             log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
             pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env)
-        standard_recipe.strip_object_files(ctx.archs[0], env, build_dir = ctx.buildsdir)
+        standard_recipe.strip_object_files(ctx.archs[0], env, ctx.buildsdir)

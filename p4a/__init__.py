@@ -838,9 +838,9 @@ class CythonRecipe(PythonRecipe):
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
         with current_directory(builddir):
-            self.strip_object_files(arch, env)
+            self.strip_object_files(arch, env, None)
 
-    def strip_object_files(self, arch, env, build_dir=None):
+    def strip_object_files(self, arch, env, build_dir):
         if build_dir is None:
             build_dir = self.get_build_dir(arch.arch)
         log.info('Stripping object files')
