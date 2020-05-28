@@ -838,11 +838,9 @@ class CythonRecipe(PythonRecipe):
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
         with current_directory(builddir):
-            self.strip_object_files(arch, env, None)
+            self.strip_object_files(arch, env, builddir)
 
     def strip_object_files(self, arch, env, build_dir):
-        if build_dir is None:
-            build_dir = self.get_build_dir(arch.arch)
         log.info('Stripping object files')
         e = find.partial('.', '-iname', '*.so', '-exec', env = env, cwd = build_dir)
         e.print('/usr/bin/echo', '{}', ';') # FIXME: No such path.
