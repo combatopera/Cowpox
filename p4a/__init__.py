@@ -322,43 +322,36 @@ class Recipe(metaclass = RecipeMeta):
             expected_md5 = ma.group(2)
         else:
             expected_md5 = self.md5sum
-        mkdir._p.print(self.ctx.packages_path / self.name)
-        with current_directory(self.ctx.packages_path / self.name):
-            filename = Path(basename(url)[:-1])
-            do_download = True
-            marker_filename = Path(f".mark-{filename}")
-            if filename.exists() and filename.is_file():
-                if not marker_filename.exists():
-                    rm.print(filename)
-                elif expected_md5:
-                    current_md5 = _md5sum(filename)
+        packagepath = (self.ctx.packages_path / self.name).mkdirp()
+        filename = packagepath / basename(url)[:-1]
+        do_download = True
+        marker_filename = packagepath / f".mark-{filename.name}"
+        if filename.exists() and filename.is_file():
+            if not marker_filename.exists():
+                filename.unlink()
+            elif expected_md5:
+                current_md5 = _md5sum(filename)
+                if current_md5 != expected_md5:
+                    log.debug("Generated md5sum: %s", current_md5)
+                    log.debug("Expected md5sum: %s", expected_md5)
+                    raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
+                do_download = False
+            else:
+                do_download = False
+        if do_download:
+            log.debug("Downloading %s from %s", self.name, url)
+            rm._f.print(marker_filename)
+            self.download_file(self.versioned_url, filename)
+            touch.print(marker_filename)
+            if filename.exists() and filename.is_file() and expected_md5:
+                current_md5 = _md5sum(filename)
+                if expected_md5 is not None:
                     if current_md5 != expected_md5:
                         log.debug("Generated md5sum: %s", current_md5)
                         log.debug("Expected md5sum: %s", expected_md5)
-                        raise ValueError(
-                            ('Generated md5sum does not match expected md5sum '
-                             'for {} recipe').format(self.name))
-                    do_download = False
-                else:
-                    do_download = False
-
-            # If we got this far, we will download
-            if do_download:
-                log.debug("Downloading %s from %s", self.name, url)
-                rm._f.print(marker_filename)
-                self.download_file(self.versioned_url, filename)
-                touch.print(marker_filename)
-                if filename.exists() and filename.is_file() and expected_md5:
-                    current_md5 = _md5sum(filename)
-                    if expected_md5 is not None:
-                        if current_md5 != expected_md5:
-                            log.debug("Generated md5sum: %s", current_md5)
-                            log.debug("Expected md5sum: %s", expected_md5)
-                            raise ValueError(
-                                ('Generated md5sum does not match expected md5sum '
-                                 'for {} recipe').format(self.name))
-            else:
-                log.info("%s download already cached, skipping", self.name)
+                        raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
+        else:
+            log.info("%s download already cached, skipping", self.name)
 
     def unpack(self, arch):
         log.info("Unpacking %s for %s", self.name, arch)
@@ -890,5 +883,4 @@ class TargetPythonRecipe(Recipe):
                 mv.print(filen, join(file_dirname, parts[0] + '.so'))
 
 def _md5sum(filen):
-    with open(filen, 'rb') as fileh:
-        return hashlib.md5(fileh.read()).hexdigest()
+    return hashlib.md5(filen.read_bytes()).hexdigest()
