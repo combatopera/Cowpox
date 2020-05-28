@@ -41,14 +41,14 @@
 from distutils.version import LooseVersion
 from lagoon import basename, cp, find, git as sysgit, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
 from lagoon.program import Program
-from os import listdir, walk
+from os import listdir
 from os.path import exists, join, split
 from pathlib import Path
 from pythonforandroid.util import current_directory
 from seizure.mirror import Mirror
 from urllib.parse import urlparse
 from zipfile import ZipFile
-import fnmatch, glob, hashlib, logging, os, re, shutil, subprocess
+import glob, hashlib, logging, os, re, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
