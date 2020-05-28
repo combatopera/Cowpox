@@ -146,7 +146,7 @@ def makeapkversion(args, distdir, private):
             raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
     assets_dir = (distdir / 'src' / 'main' / 'assets').mkdirp()
     for p in (assets_dir / n for n in ['public.mp3', 'private.mp3']):
-        if p.exists()
+        if p.exists():
             p.unlink()
     with TemporaryDirectory() as env_vars_tarpath:
         env_vars_tarpath = Path(env_vars_tarpath)
