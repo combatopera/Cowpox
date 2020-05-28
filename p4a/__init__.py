@@ -773,9 +773,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
-        with current_directory(builddir):
-            build_dir = glob.glob('build/lib.*')[0]
-            find.print(build_dir, '-name', '"*.o"', '-exec', env['STRIP'], '{}', ';', env = env)
+        find.print(next(builddir.glob('build/lib.*')), '-name', '"*.o"', '-exec', env['STRIP'], '{}', ';', env = env, cwd = builddir)
 
     def install_hostpython_package(self, arch):
         env = self.get_hostrecipe_env(arch)
