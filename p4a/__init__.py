@@ -47,7 +47,7 @@ from pythonforandroid.util import current_directory
 from seizure.mirror import Mirror
 from urllib.parse import urlparse
 from zipfile import ZipFile
-import glob, hashlib, logging, os, re, shutil, subprocess
+import hashlib, logging, os, re, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
