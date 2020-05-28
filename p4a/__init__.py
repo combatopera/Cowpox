@@ -477,7 +477,7 @@ class Recipe(metaclass = RecipeMeta):
             touch.print(join(build_dir, '.patched'))
 
     def should_build(self, arch):
-        return not all(lib.exists() for lib in self.get_libraries(arch.arch)) if self.build_libraries else True
+        return not all(lib.exists() for lib in self.get_libraries(arch.arch)) if self.built_libraries else True
 
     def build_arch(self, arch):
         '''Run any build tasks for the Recipe. By default, this checks if
