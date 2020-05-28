@@ -41,7 +41,6 @@
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from lagoon import patch
-from os import listdir
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import jinja2, json, logging, os, shutil, subprocess, tarfile, time
@@ -198,7 +197,7 @@ def makeapkversion(args, distdir, private):
     android_api = int((distdir / 'project.properties').read_text().strip().split('-')[1])
     sdk_dir = Path((distdir / 'local.properties').read_text().strip()[8:])
     ignored = {".DS_Store", ".ds_store"}
-    build_tools_versions = [x for x in listdir(sdk_dir / 'build-tools') if x not in ignored]
+    build_tools_versions = [x.name for x in (sdk_dir / 'build-tools').iterdir() if x.name not in ignored]
     build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
     build_tools_version = build_tools_versions[-1]
     url_scheme = 'kivy'
