@@ -738,11 +738,12 @@ class PythonRecipe(Recipe):
         if env is None:
             env = self.get_recipe_env(arch)
         log.info("Installing %s into site-packages", self.name)
-        with current_directory(self.get_build_dir(arch.arch)):
-            hostpython = Program.text(self.hostpython_location)
-            hpenv = env.copy()
-            hostpython.print('setup.py', 'install', '-O2', f"--root={self.ctx.get_python_install_dir()}", '--install-lib=.', *self.setup_extra_args, env = hpenv)
-            if self.install_in_hostpython:
+        builddir = self.get_build_dir(arch.arch)
+        hostpython = Program.text(self.hostpython_location)
+        hpenv = env.copy()
+        hostpython.print('setup.py', 'install', '-O2', f"--root={self.ctx.get_python_install_dir()}", '--install-lib=.', *self.setup_extra_args, env = hpenv, cwd = builddir)
+        if self.install_in_hostpython:
+            with current_directory(builddir):
                 self.install_hostpython_package(arch)
 
     def get_hostrecipe_env(self, arch):
