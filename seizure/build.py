@@ -83,10 +83,6 @@ class Blacklist:
                     return True
         return not match_filename(self.WHITELIST_PATTERNS) and match_filename(self.BLACKLIST_PATTERNS)
 
-def _try_unlink(fn):
-    if fn.exists():
-        fn.unlink()
-
 class Render:
 
     def __init__(self, distdir):
@@ -149,8 +145,9 @@ def makeapkversion(args, distdir, private):
         if not (private.resolve() / 'main.py').exists() and not (private.resolve() / 'main.pyo').exists():
             raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
     assets_dir = (distdir / 'src' / 'main' / 'assets').mkdirp()
-    _try_unlink(assets_dir / 'public.mp3')
-    _try_unlink(assets_dir / 'private.mp3')
+    for p in (assets_dir / n for n in ['public.mp3', 'private.mp3']):
+        if p.exists()
+            p.unlink()
     with TemporaryDirectory() as env_vars_tarpath:
         env_vars_tarpath = Path(env_vars_tarpath)
         with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:
