@@ -849,11 +849,8 @@ class CythonRecipe(PythonRecipe):
         e.print('/usr/bin/echo', '{}', ';') # FIXME: No such path.
         e.print(env['STRIP'].split(' ')[0], '--strip-unneeded', '{}', ';')
 
-    def cythonize_file(self, env, build_dir, filename):
-        short_filename = filename
-        if filename.startswith(build_dir):
-            short_filename = filename[len(build_dir) + 1:]
-        log.info("Cythonize %s", short_filename)
+    def cythonize_file(self, env, filename):
+        log.info("Cythonize %s", filename)
         cyenv = env.copy()
         if 'CYTHONPATH' in cyenv:
             cyenv['PYTHONPATH'] = cyenv['CYTHONPATH']
@@ -871,7 +868,7 @@ class CythonRecipe(PythonRecipe):
         log.info('Running cython where appropriate')
         for root, dirnames, filenames in walk("."):
             for filename in fnmatch.filter(filenames, "*.pyx"):
-                self.cythonize_file(env, '.', join(root, filename))
+                self.cythonize_file(env, join(root, filename))
 
     def get_recipe_env(self, arch, with_flags_in_cc=True):
         env = super().get_recipe_env(arch, with_flags_in_cc)

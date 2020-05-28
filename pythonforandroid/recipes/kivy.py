@@ -60,13 +60,11 @@ class KivyRecipe(CythonRecipe):
         for dirn in build_libs_dirs:
             shprint(sh.cp, '-r', join('kivy', 'include'), join(dirn, 'kivy'))
 
-    def cythonize_file(self, env, build_dir, filename):
-        # We can ignore a few files that aren't important to the
-        # android build, and may not work on Android anyway
-        do_not_cythonize = ['window_x11.pyx', ]
+    def cythonize_file(self, env, filename):
+        do_not_cythonize = {'window_x11.pyx'}
         if basename(filename) in do_not_cythonize:
             return
-        super().cythonize_file(env, build_dir, filename)
+        super().cythonize_file(env, filename)
 
     def get_recipe_env(self, arch):
         env = super(KivyRecipe, self).get_recipe_env(arch)
