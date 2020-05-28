@@ -40,7 +40,7 @@
 
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
-from os import listdir, makedirs, remove
+from os import listdir, makedirs
 from os.path import dirname, exists
 from pathlib import Path
 from pythonforandroid.util import current_directory
@@ -206,16 +206,8 @@ def makeapkversion(args, distdir, private):
     build_tools_versions = [x for x in listdir(sdk_dir / 'build-tools') if x not in ignored]
     build_tools_versions = sorted(build_tools_versions, key = LooseVersion)
     build_tools_version = build_tools_versions[-1]
-    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version)
-
-def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version):
-  with current_directory(distdir):
-
-    # Folder name for launcher (used by SDL2 bootstrap)
     url_scheme = 'kivy'
-
-    # Render out android manifest:
-    manifest_path = "src/main/AndroidManifest.xml"
+    manifest_path = distdir / 'src' / 'main' / 'AndroidManifest.xml'
     render_args = {
         "args": args,
         "service": any((args.private.resolve() / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
@@ -225,34 +217,31 @@ def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, re
     if bootstrapname == "sdl2":
         render_args["url_scheme"] = url_scheme
     render(
-        'AndroidManifest.tmpl.xml',
+        distdir / 'AndroidManifest.tmpl.xml',
         manifest_path,
-        **render_args)
-
-    # Copy the AndroidManifest.xml to the dist root dir so that ant
-    # can also use it
-    if exists('AndroidManifest.xml'):
-        remove('AndroidManifest.xml')
-    shutil.copy(manifest_path, 'AndroidManifest.xml')
+        **render_args,
+    )
     render(
-        'build.tmpl.gradle',
-        'build.gradle',
+        distdir / 'build.tmpl.gradle',
+        distdir / 'build.gradle',
         args = args,
         aars = [],
         jars = [],
         android_api = android_api,
         build_tools_version = build_tools_version,
     )
-    render(
-        'build.tmpl.xml',
-        'build.xml',
-        args = args,
-        versioned_name = f"""{args.name.replace(' ', '').replace("'", '')}-{args.version}""",
-    )
     render_args = {"args": args, "private_version": str(time.time())}
     if bootstrapname == "sdl2":
         render_args["url_scheme"] = url_scheme
-    render('strings.tmpl.xml', res_dir / 'values' / 'strings.xml', **render_args)
+    render(
+        distdir / 'strings.tmpl.xml',
+        res_dir / 'values' / 'strings.xml',
+        **render_args,
+    )
+    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version)
+
+def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version):
+  with current_directory(distdir):
     if Path("templates", "custom_rules.tmpl.xml").exists():
         render(
             'custom_rules.tmpl.xml',
