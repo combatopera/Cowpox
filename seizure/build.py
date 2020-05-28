@@ -40,6 +40,7 @@
 
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
+from lagoon import patch
 from os import listdir
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -254,7 +255,7 @@ def makeapkversion(args, distdir, private):
         for patch_path in src_patches.iterdir():
             log.info("Applying patch: %s", patch_path)
             try:
-                subprocess.check_call(["patch", "-N", "-p1", "-t", "-i", patch_path], cwd = distdir)
+                patch._N._p1._t._i.print(patch_path, cwd = distdir)
             except subprocess.CalledProcessError as e:
                 if e.returncode != 1:
                     raise e
