@@ -94,12 +94,8 @@ class Render:
         self.environment = jinja2.Environment(loader = jinja2.FileSystemLoader(distdir / 'templates'))
 
     def __call__(self, template, dest, **kwargs):
-        dest_dir = dirname(dest)
-        if dest_dir and not exists(dest_dir):
-            makedirs(dest_dir)
-        text = self.environment.get_template(template).render(**kwargs)
-        with open(dest, 'wb') as f:
-            f.write(text.encode('utf-8'))
+        dest.parent.mkdirp()
+        dest.write_text(self.environment.get_template(template).render(**kwargs))
 
 def _listfiles(d):
     subdirlist = []
@@ -191,7 +187,7 @@ def makeapkversion(args, distdir, private):
         name, entrypoint, *options = spec.split(':')
         service_names.append(name)
         render(
-            distdir / 'Service.tmpl.java',
+            'Service.tmpl.java',
             distdir / 'src' / 'main' / 'java' / args.package.replace('.', os.sep) / f"Service{name.capitalize()}.java",
             name = name,
             entrypoint = entrypoint,
@@ -217,12 +213,12 @@ def makeapkversion(args, distdir, private):
     if bootstrapname == "sdl2":
         render_args["url_scheme"] = url_scheme
     render(
-        distdir / 'AndroidManifest.tmpl.xml',
+        'AndroidManifest.tmpl.xml',
         manifest_path,
         **render_args,
     )
     render(
-        distdir / 'build.tmpl.gradle',
+        'build.tmpl.gradle',
         distdir / 'build.gradle',
         args = args,
         aars = [],
@@ -234,7 +230,7 @@ def makeapkversion(args, distdir, private):
     if bootstrapname == "sdl2":
         render_args["url_scheme"] = url_scheme
     render(
-        distdir / 'strings.tmpl.xml',
+        'strings.tmpl.xml',
         res_dir / 'values' / 'strings.xml',
         **render_args,
     )
