@@ -820,12 +820,12 @@ class CythonRecipe(PythonRecipe):
     def build_cython_components(self, arch):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
-            hostpython = Program.text(self.ctx.hostpython)
-            hostpython._c.print('import sys; print(sys.path)', env = env)
-            log.debug("cwd is %s", os.getcwd())
-            log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
-            manually_cythonise = False
+        builddir = self.get_build_dir(arch.arch)
+        hostpython = Program.text(self.ctx.hostpython)
+        hostpython._c.print('import sys; print(sys.path)', env = env, cwd = builddir)
+        log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
+        manually_cythonise = False
+        with current_directory(builddir):
             setup = hostpython.partial('setup.py', 'build_ext', '-v', *self.setup_extra_args, env = env)
             try:
                 setup.print()
