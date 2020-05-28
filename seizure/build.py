@@ -240,15 +240,16 @@ def makeapkversion(args, distdir, private):
             distdir / 'custom_rules.xml',
             args = args,
         )
+    if bootstrapname == "webview":
+        render(
+            'WebViewLoader.tmpl.java',
+            distdir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android' / 'WebViewLoader.java',
+            args = args,
+        )
     _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version)
 
 def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version):
   with current_directory(distdir):
-    if bootstrapname == "webview":
-        render('WebViewLoader.tmpl.java',
-               'src/main/java/org/kivy/android/WebViewLoader.java',
-               args=args)
-
     if args.sign:
         render('build.properties', 'build.properties')
     else:
