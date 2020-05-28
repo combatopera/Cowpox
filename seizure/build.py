@@ -246,15 +246,14 @@ def makeapkversion(args, distdir, private):
             distdir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android' / 'WebViewLoader.java',
             args = args,
         )
+    if args.sign:
+        render('build.properties', distdir / 'build.properties')
+    elif (distdir / 'build.properties').exists():
+        (distdir / 'build.properties').unlink()
     _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version)
 
 def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version):
   with current_directory(distdir):
-    if args.sign:
-        render('build.properties', 'build.properties')
-    else:
-        if exists('build.properties'):
-            os.remove('build.properties')
     src_patches = Path('src', 'patches')
     if src_patches.exists():
         log.info("Applying Java source code patches...")
