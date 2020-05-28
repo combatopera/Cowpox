@@ -41,7 +41,7 @@
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from os import listdir, makedirs, remove
-from os.path import dirname, join, exists
+from os.path import dirname, exists
 from pathlib import Path
 from pythonforandroid.util import current_directory
 from tempfile import TemporaryDirectory
