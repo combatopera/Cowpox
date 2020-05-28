@@ -879,7 +879,7 @@ class TargetPythonRecipe(Recipe):
 
     @property
     def major_minor_version_string(self):
-        return '.'.join([str(v) for v in LooseVersion(self.version).version[:2]])
+        return '.'.join(str(v) for v in LooseVersion(self.version).version[:2])
 
     def reduce_object_file_names(self, dirn):
         """Recursively renames all files named YYY.cpython-...-linux-gnu.so"
