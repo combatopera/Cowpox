@@ -234,15 +234,16 @@ def makeapkversion(args, distdir, private):
         res_dir / 'values' / 'strings.xml',
         **render_args,
     )
+    if (distdir / "templates" / "custom_rules.tmpl.xml").exists():
+        render(
+            'custom_rules.tmpl.xml',
+            distdir / 'custom_rules.xml',
+            args = args,
+        )
     _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version)
 
 def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version):
   with current_directory(distdir):
-    if Path("templates", "custom_rules.tmpl.xml").exists():
-        render(
-            'custom_rules.tmpl.xml',
-            'custom_rules.xml',
-            args=args)
     if bootstrapname == "webview":
         render('WebViewLoader.tmpl.java',
                'src/main/java/org/kivy/android/WebViewLoader.java',
