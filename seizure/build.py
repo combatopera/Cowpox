@@ -251,8 +251,7 @@ def makeapkversion(args, distdir, private):
     src_patches = distdir / 'src' / 'patches'
     if src_patches.exists():
         log.info("Applying Java source code patches...")
-        for patch_name in os.listdir(src_patches):
-            patch_path = src_patches / patch_name
+        for patch_path in src_patches.iterdir():
             log.info("Applying patch: %s", patch_path)
             try:
                 subprocess.check_call(["patch", "-N", "-p1", "-t", "-i", patch_path], cwd = distdir)
