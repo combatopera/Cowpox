@@ -41,9 +41,7 @@
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from os import listdir
-from os.path import exists
 from pathlib import Path
-from pythonforandroid.util import current_directory
 from tempfile import TemporaryDirectory
 import jinja2, json, logging, os, shutil, subprocess, tarfile, time
 
@@ -250,18 +248,14 @@ def makeapkversion(args, distdir, private):
         render('build.properties', distdir / 'build.properties')
     elif (distdir / 'build.properties').exists():
         (distdir / 'build.properties').unlink()
-    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version)
-
-def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names, android_api, build_tools_version):
-  with current_directory(distdir):
-    src_patches = Path('src', 'patches')
+    src_patches = distdir / 'src' / 'patches'
     if src_patches.exists():
         log.info("Applying Java source code patches...")
         for patch_name in os.listdir(src_patches):
             patch_path = src_patches / patch_name
             log.info("Applying patch: %s", patch_path)
             try:
-                subprocess.check_call(["patch", "-N", "-p1", "-t", "-i", patch_path])
+                subprocess.check_call(["patch", "-N", "-p1", "-t", "-i", patch_path], cwd = distdir)
             except subprocess.CalledProcessError as e:
                 if e.returncode != 1:
                     raise e
