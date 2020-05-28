@@ -186,34 +186,24 @@ def makeapkversion(args, distdir, private):
     if args.intent_filters:
         args.intent_filters = args.intent_filters.read_text()
     args.extra_source_dirs = []
-    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir)
-
-def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir):
-  with current_directory(distdir):
     service_names = []
     for sid, spec in enumerate(args.services):
-        spec = spec.split(':')
-        name = spec[0]
-        entrypoint = spec[1]
-        options = spec[2:]
-        foreground = 'foreground' in options
-        sticky = 'sticky' in options
+        name, entrypoint, *options = spec.split(':')
         service_names.append(name)
-        service_target_path =\
-            'src/main/java/{}/Service{}.java'.format(
-                args.package.replace(".", "/"),
-                name.capitalize()
-            )
         render(
-            'Service.tmpl.java',
-            service_target_path,
-            name=name,
-            entrypoint=entrypoint,
-            args=args,
-            foreground=foreground,
-            sticky=sticky,
-            service_id=sid + 1,
+            distdir / 'Service.tmpl.java',
+            distdir / 'src' / 'main' / 'java' / args.package.replace('.', os.sep) / f"Service{name.capitalize()}.java",
+            name = name,
+            entrypoint = entrypoint,
+            args = args,
+            foreground = 'foreground' in options,
+            sticky = 'sticky' in options,
+            service_id = 1 + sid,
         )
+    _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names)
+
+def _make_package(args, bootstrapname, distinfo, render, distdir, assets_dir, res_dir, service_names):
+  with current_directory(distdir):
     # Find the SDK directory and target API
     with open('project.properties', 'r') as fileh:
         target = fileh.read().strip()
