@@ -40,8 +40,8 @@
 
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
-from os import listdir, makedirs
-from os.path import dirname, exists
+from os import listdir
+from os.path import exists
 from pathlib import Path
 from pythonforandroid.util import current_directory
 from tempfile import TemporaryDirectory
