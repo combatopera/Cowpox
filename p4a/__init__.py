@@ -837,14 +837,13 @@ class CythonRecipe(PythonRecipe):
             setup.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
-        with current_directory(builddir):
-            self.strip_object_files(arch, env, builddir)
+        self.strip_object_files(arch, env, builddir)
 
     def strip_object_files(self, arch, env, build_dir):
         log.info('Stripping object files')
-        e = find.partial('.', '-iname', '*.so', '-exec', env = env, cwd = build_dir)
-        e.print('/usr/bin/echo', '{}', ';') # FIXME: No such path.
-        e.print(env['STRIP'].split(' ')[0], '--strip-unneeded', '{}', ';')
+        exec = find.partial('.', '-iname', '*.so', '-exec', env = env, cwd = build_dir)
+        exec.print('echo', '{}', ';')
+        exec.print(env['STRIP'].split(' ')[0], '--strip-unneeded', '{}', ';') # TODO: Avoid inspecting env.
 
     def cythonize_file(self, env, filename):
         log.info("Cythonize %s", filename)
