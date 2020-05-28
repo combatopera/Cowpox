@@ -41,7 +41,7 @@
 from distutils.version import LooseVersion
 from lagoon import basename, cp, find, git as sysgit, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
 from lagoon.program import Program
-from os.path import exists, join, split
+from os.path import join, split
 from pathlib import Path
 from pythonforandroid.util import current_directory
 from seizure.mirror import Mirror
@@ -477,16 +477,7 @@ class Recipe(metaclass = RecipeMeta):
             touch.print(join(build_dir, '.patched'))
 
     def should_build(self, arch):
-        '''Should perform any necessary test and return True only if it needs
-        building again. Per default we implement a library test, in case that
-        we detect so.
-
-        '''
-        if self.built_libraries:
-            return not all(
-                exists(lib) for lib in self.get_libraries(arch.arch)
-            )
-        return True
+        return not all(lib.exists() for lib in self.get_libraries(arch.arch)) if self.build_libraries else True
 
     def build_arch(self, arch):
         '''Run any build tasks for the Recipe. By default, this checks if
