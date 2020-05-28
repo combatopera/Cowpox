@@ -43,7 +43,6 @@ from lagoon import basename, cp, find, git as sysgit, mkdir, mv, patch as patche
 from lagoon.program import Program
 from os.path import join, split
 from pathlib import Path
-from pythonforandroid.util import current_directory
 from seizure.mirror import Mirror
 from urllib.parse import urlparse
 from zipfile import ZipFile
@@ -375,41 +374,40 @@ class Recipe(metaclass = RecipeMeta):
         ma = re.match('^(.+)#md5=([0-9a-f]{32})$', filename)
         if ma:                  # fragmented URL?
             filename = ma.group(1)
-        with current_directory(build_dir):
-            directory_name = self.get_build_dir(arch)
-            if not directory_name.exists() or not directory_name.is_dir():
-                extraction_filename = self.ctx.packages_path / self.name / filename
-                if extraction_filename.is_file():
-                    if extraction_filename.name.endswith('.zip'):
-                        try:
-                            unzip.print(extraction_filename)
-                        except subprocess.CalledProcessError as e:
-                            # return code 1 means unzipping had
-                            # warnings but did complete,
-                            # apparently happens sometimes with
-                            # github zips
-                            if e.returncode not in {1, 2}:
-                                raise
-                        zf = ZipFile(extraction_filename, 'r')
-                        root_directory = zf.filelist[0].filename.split('/')[0]
-                        if root_directory != directory_name.name:
-                            mv.print(root_directory, directory_name)
-                    elif extraction_filename.name.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
-                        tar.xf.print(extraction_filename)
-                        root_directory = tar.tf(extraction_filename).split('\n')[0].split('/')[0]
-                        if root_directory != directory_name.name:
-                            mv.print(root_directory, directory_name)
-                    else:
-                        raise Exception(f"Could not extract {extraction_filename} download, it must be .zip, .tar.gz or .tar.bz2 or .tar.xz")
-                elif extraction_filename.is_dir():
-                    directory_name.mkdir()
-                    for entry in extraction_filename.iterdir():
-                        if entry.name not in {'.git'}:
-                            cp._Rv.print(entry, directory_name)
+        directory_name = self.get_build_dir(arch)
+        if not directory_name.exists() or not directory_name.is_dir():
+            extraction_filename = self.ctx.packages_path / self.name / filename
+            if extraction_filename.is_file():
+                if extraction_filename.name.endswith('.zip'):
+                    try:
+                        unzip.print(extraction_filename, cwd = build_dir)
+                    except subprocess.CalledProcessError as e:
+                        # return code 1 means unzipping had
+                        # warnings but did complete,
+                        # apparently happens sometimes with
+                        # github zips
+                        if e.returncode not in {1, 2}:
+                            raise
+                    zf = ZipFile(extraction_filename, 'r')
+                    root_directory = zf.filelist[0].filename.split('/')[0]
+                    if root_directory != directory_name.name:
+                        mv.print(root_directory, directory_name, cwd = build_dir)
+                elif extraction_filename.name.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
+                    tar.xf.print(extraction_filename, cwd = build_dir)
+                    root_directory = tar.tf(extraction_filename).split('\n')[0].split('/')[0]
+                    if root_directory != directory_name.name:
+                        mv.print(root_directory, directory_name, cwd = build_dir)
                 else:
-                    raise Exception(f"Given path is neither a file nor a directory: {extraction_filename}")
+                    raise Exception(f"Could not extract {extraction_filename} download, it must be .zip, .tar.gz or .tar.bz2 or .tar.xz")
+            elif extraction_filename.is_dir():
+                directory_name.mkdir()
+                for entry in extraction_filename.iterdir():
+                    if entry.name not in {'.git'}:
+                        cp._Rv.print(entry, directory_name)
             else:
-                log.info("%s is already unpacked, skipping", self.name)
+                raise Exception(f"Given path is neither a file nor a directory: {extraction_filename}")
+        else:
+            log.info("%s is already unpacked, skipping", self.name)
 
     def get_recipe_env(self, arch=None, with_flags_in_cc=True):
         """Return the env specialized for the recipe
