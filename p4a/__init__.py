@@ -41,7 +41,6 @@
 from distutils.version import LooseVersion
 from lagoon import basename, cp, find, git as sysgit, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
 from lagoon.program import Program
-from os import listdir
 from os.path import exists, join, split
 from pathlib import Path
 from pythonforandroid.util import current_directory
@@ -411,9 +410,9 @@ class Recipe(metaclass = RecipeMeta):
                         raise Exception(f"Could not extract {extraction_filename} download, it must be .zip, .tar.gz or .tar.bz2 or .tar.xz")
                 elif extraction_filename.is_dir():
                     directory_name.mkdir()
-                    for entry in listdir(extraction_filename):
-                        if entry not in {'.git'}:
-                            cp._Rv.print(extraction_filename / entry, directory_name)
+                    for entry in extraction_filename.iterdir():
+                        if entry.name not in {'.git'}:
+                            cp._Rv.print(entry, directory_name)
                 else:
                     raise Exception(f"Given path is neither a file nor a directory: {extraction_filename}")
             else:
@@ -715,7 +714,7 @@ class PythonRecipe(Recipe):
             hppath.append(hppath[0] / 'site-packages')
             builddir = self.hostpython_location.parent / 'build'
             if builddir.exists():
-                hppath += [builddir / d for d in listdir(builddir) if (builddir / d).is_dir()]
+                hppath.extend(d for d in builddir.iterdir() if d.is_dir())
             if hppath:
                 if 'PYTHONPATH' in env:
                     env['PYTHONPATH'] = ':'.join(map(str, hppath + [env['PYTHONPATH']]))
