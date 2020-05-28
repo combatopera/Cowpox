@@ -751,8 +751,7 @@ class PythonRecipe(Recipe):
 
     def install_hostpython_package(self, arch):
         env = self.get_hostrecipe_env(arch)
-        real_hostpython = Program.text(self.real_hostpython_location)
-        real_hostpython.print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', *self.setup_extra_args, env = env)
+        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', *self.setup_extra_args, env = env, cwd = self.get_build_dir(arch.arch))
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
@@ -781,9 +780,9 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def rebuild_compiled_components(self, arch, env):
         log.info("Rebuilding compiled components in %s", self.name)
-        hostpython = Program.text(self.real_hostpython_location)
-        hostpython.print('setup.py', 'clean', '--all', env = env)
-        hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args, env = env)
+        hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir(arch.arch))
+        hostpython.print('setup.py', 'clean', '--all')
+        hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
 
 class CppCompiledComponentsPythonRecipe(CompiledComponentsPythonRecipe):
     """ Extensions that require the cxx-stl """
