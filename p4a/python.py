@@ -249,7 +249,6 @@ class GuestPythonRecipe(TargetPythonRecipe):
             copy2(filen, modules_dir)
         stdlib_zip = dirn / 'stdlib.zip'
         libdir = self.get_build_dir(arch.arch) / 'Lib'
-      with current_directory(dirn):
         stdlib_filens = list(_walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(stdlib_zip, *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
@@ -265,6 +264,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
             python_lib_name += 'm'
         cp.print(self.get_build_dir(arch.arch) / 'android-build' / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.arch)
         log.info('Renaming .so files to reflect cross-compile')
+      with current_directory(dirn):
         self.reduce_object_file_names(dirn / 'site-packages')
         return dirn / 'site-packages'
 
