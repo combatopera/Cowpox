@@ -269,8 +269,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
             log.info("Copy %s files into the site-packages", len(filens))
             for filen in filens:
                 log.info(" - copy %s", filen)
-                (dirn / 'site-packages' / filen.parent).mkdirp()
-                copy2(filen, dirn / 'site-packages' / filen)
+                copy2(filen, (dirn / 'site-packages' / filen).pmkdirp())
         python_lib_name = f"libpython{self.major_minor_version_string}"
         if self.major_minor_version_string[0] == '3':
             python_lib_name += 'm'

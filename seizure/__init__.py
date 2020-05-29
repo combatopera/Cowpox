@@ -41,3 +41,4 @@
 from pathlib import Path
 
 Path.mkdirp = lambda self: [self.mkdir(parents = True, exist_ok = True), self][-1]
+Path.pmkdirp = lambda self: [self.parent.mkdirp(), self][-1]

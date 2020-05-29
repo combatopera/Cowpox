@@ -89,8 +89,7 @@ class Render:
         self.environment = jinja2.Environment(loader = jinja2.FileSystemLoader(distdir / 'templates'))
 
     def __call__(self, template, dest, **kwargs):
-        dest.parent.mkdirp()
-        dest.write_text(self.environment.get_template(template).render(**kwargs))
+        dest.pmkdirp().write_text(self.environment.get_template(template).render(**kwargs))
 
 def _listfiles(d):
     subdirlist = []

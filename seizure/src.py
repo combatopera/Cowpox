@@ -70,7 +70,5 @@ class Src:
                 if ext and self.include_exts and ext[1:] not in self.include_exts:
                     continue
                 sfn = Path(root, fn)
-                rfn = (self.dirs.app_dir / root[len(str(self.source_dir)) + 1:] / fn).resolve()
-                rfn.parent.mkdirp()
                 log.debug('Copy %s', sfn)
-                copyfile(sfn, rfn)
+                copyfile(sfn, (self.dirs.app_dir / root[len(str(self.source_dir)) + 1:] / fn).resolve().pmkdirp())
