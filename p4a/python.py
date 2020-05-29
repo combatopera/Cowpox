@@ -40,12 +40,12 @@
 
 from . import Recipe, TargetPythonRecipe
 from fnmatch import fnmatch
-from lagoon import cp, make, zip
+from lagoon import cp, find, make, mv, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from os.path import exists
 from pathlib import Path
-from pythonforandroid.util import BuildInterruptingException, current_directory
+from pythonforandroid.util import BuildInterruptingException
 from shutil import copy2
 import logging, os, sh
 
@@ -234,7 +234,6 @@ class GuestPythonRecipe(TargetPythonRecipe):
         Program.text(self.ctx.hostpython)._OO._m.compileall.print(*args, '-f', dir, cwd = cwd)
 
     def create_python_bundle(self, dirn, arch):
-      if 1:
         dirn = (dirn / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.get_build_dir(arch.arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.major_minor_version_string}"
         self._compile_python_files(dirn, modules_build_dir)
@@ -264,9 +263,18 @@ class GuestPythonRecipe(TargetPythonRecipe):
             python_lib_name += 'm'
         cp.print(self.get_build_dir(arch.arch) / 'android-build' / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.arch)
         log.info('Renaming .so files to reflect cross-compile')
-      with current_directory(dirn):
-        self.reduce_object_file_names(dirn / 'site-packages')
+        self._reduce_object_file_names(dirn / 'site-packages')
         return dirn / 'site-packages'
+
+    def _reduce_object_file_names(self, dirn):
+        """Recursively renames all files named YYY.cpython-...-linux-gnu.so"
+        to "YYY.so", i.e. removing the erroneous architecture name
+        coming from the local system.
+        """
+        for filen in map(Path, find(dirn, '-iname', '*.so').splitlines()):
+            parts = filen.name.split('.')
+            if len(parts) > 2:
+                mv.print(filen, filen.parent / f"{parts[0]}.so")
 
 class HostPythonRecipe(Recipe):
     '''

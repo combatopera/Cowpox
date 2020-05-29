@@ -41,7 +41,7 @@
 from distutils.version import LooseVersion
 from lagoon import basename, cp, find, git as sysgit, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
 from lagoon.program import Program
-from os.path import join, split
+from os.path import join
 from pathlib import Path
 from seizure.mirror import Mirror
 from urllib.parse import urlparse
@@ -868,17 +868,6 @@ class TargetPythonRecipe(Recipe):
     @property
     def major_minor_version_string(self):
         return '.'.join(str(v) for v in LooseVersion(self.version).version[:2])
-
-    def reduce_object_file_names(self, dirn):
-        """Recursively renames all files named YYY.cpython-...-linux-gnu.so"
-        to "YYY.so", i.e. removing the erroneous architecture name
-        coming from the local system.
-        """
-        for filen in find(dirn, '-iname', '*.so').splitlines():
-            file_dirname, file_basename = split(filen)
-            parts = file_basename.split('.')
-            if len(parts) > 2:
-                mv.print(filen, join(file_dirname, parts[0] + '.so'))
 
 def _md5sum(filen):
     return hashlib.md5(filen.read_bytes()).hexdigest()
