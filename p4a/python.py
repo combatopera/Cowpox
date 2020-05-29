@@ -43,7 +43,8 @@ from fnmatch import fnmatch
 from lagoon import cp, make, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
-from os.path import dirname, exists, join
+from os.path import dirname, exists
+from pathlib import Path
 from pythonforandroid.util import current_directory, BuildInterruptingException
 from shutil import copy2
 import glob, logging, os, sh, subprocess
@@ -61,7 +62,7 @@ def _walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
                 if fnmatch(filen, pattern):
                     break
             else:
-                yield join(dirn, filen)
+                yield Path(dirn, filen)
 
 class GuestPythonRecipe(TargetPythonRecipe):
     '''
@@ -257,10 +258,11 @@ class GuestPythonRecipe(TargetPythonRecipe):
             log.info(" - copy %s", filen)
             copy2(filen, modules_dir)
         stdlib_zip = dirn / 'stdlib.zip'
-        with current_directory(self.get_build_dir(arch.arch) / 'Lib'):
+        libdir = self.get_build_dir(arch.arch) / 'Lib'
+        with current_directory(libdir):
             stdlib_filens = list(_walk_valid_filens('.', self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
-            log.info("Zip %s files into the bundle", len(stdlib_filens))
-            zip.print(stdlib_zip, *stdlib_filens)
+        log.info("Zip %s files into the bundle", len(stdlib_filens))
+        zip.print(stdlib_zip, *stdlib_filens, cwd = libdir)
         (dirn / 'site-packages').mkdirp()
         with current_directory(self.ctx.get_python_install_dir().mkdirp()):
             filens = list(_walk_valid_filens('.', self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
