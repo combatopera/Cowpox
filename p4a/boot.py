@@ -41,7 +41,7 @@
 from importlib import import_module
 from lagoon import cp, find, mv, rm, unzip
 from os import listdir, walk, sep
-from os.path import join, isdir, normpath, splitext, basename
+from os.path import join, isdir, normpath, splitext
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import functools, glob, logging, os, sh, shlex, shutil
@@ -256,34 +256,31 @@ class Bootstrap:
             cp._a.print(filename, dest_dir)
 
     def distribute_aars(self, arch):
-        '''Process existing .aar bundles and copy to current dist dir.'''
         log.info('Unpacking aars')
-        for aar in glob.glob(f"{self.ctx.aars_dir}/*.aar"):
+        for aar in self.ctx.aars_dir.glob('*.aar'):
             self._unpack_aar(aar, arch)
 
     def _unpack_aar(self, aar, arch):
-        '''Unpack content of .aar bundle and copy to current dist dir.'''
         with TemporaryDirectory() as temp_dir:
-            name = splitext(basename(aar))[0]
-            jar_name = name + '.jar'
+            name = splitext(aar.name)[0]
+            jar_name = f"{name}.jar"
             log.info("unpack %s aar", name)
             log.debug("  from %s", aar)
             log.debug("  to %s", temp_dir)
             unzip._o.print(aar, '-d', temp_dir)
-            jar_src = join(temp_dir, 'classes.jar')
-            jar_tgt = join('libs', jar_name)
+            jar_src = Path(temp_dir, 'classes.jar')
+            jar_tgt = self.build_dir / 'libs' / jar_name
             log.debug("copy %s jar", name)
             log.debug("  from %s", jar_src)
             log.debug("  to %s", jar_tgt)
-            libspath = Path('libs').mkdirp()
+            libspath = (self.build_dir / 'libs').mkdirp()
             cp._a.print(jar_src, jar_tgt)
-            so_src_dir = join(temp_dir, 'jni', arch.arch)
+            so_src_dir = Path(temp_dir, 'jni', arch.arch)
             so_tgt_dir = (libspath / arch.arch).mkdirp()
             log.debug("copy %s .so", name)
             log.debug("  from %s", so_src_dir)
             log.debug("  to %s", so_tgt_dir)
-            so_files = glob.glob(f"{so_src_dir}/*.so")
-            for f in so_files:
+            for f in so_src_dir.glob('*.so'):
                 cp._a.print(f, so_tgt_dir)
 
     def strip_libraries(self, arch):
