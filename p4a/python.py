@@ -43,7 +43,7 @@ from fnmatch import fnmatch
 from lagoon import cp, make, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
-from os.path import dirname, exists
+from os.path import exists
 from pathlib import Path
 from pythonforandroid.util import current_directory, BuildInterruptingException
 from shutil import copy2
@@ -259,17 +259,17 @@ class GuestPythonRecipe(TargetPythonRecipe):
             copy2(filen, modules_dir)
         stdlib_zip = dirn / 'stdlib.zip'
         libdir = self.get_build_dir(arch.arch) / 'Lib'
-        with current_directory(libdir):
-            stdlib_filens = list(_walk_valid_filens('.', self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
+        stdlib_filens = list(_walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(stdlib_zip, *stdlib_filens, cwd = libdir)
         (dirn / 'site-packages').mkdirp()
-        with current_directory(self.ctx.get_python_install_dir().mkdirp()):
+        installdir = self.ctx.get_python_install_dir().mkdirp()
+        with current_directory(installdir):
             filens = list(_walk_valid_filens('.', self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
             log.info("Copy %s files into the site-packages", len(filens))
             for filen in filens:
                 log.info(" - copy %s", filen)
-                (dirn / 'site-packages' / dirname(filen)).mkdirp()
+                (dirn / 'site-packages' / filen.parent).mkdirp()
                 copy2(filen, dirn / 'site-packages' / filen)
         python_lib_name = f"libpython{self.major_minor_version_string}"
         if self.major_minor_version_string[0] == '3':
