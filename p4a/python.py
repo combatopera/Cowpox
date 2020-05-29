@@ -45,7 +45,7 @@ from lagoon.program import Program
 from multiprocessing import cpu_count
 from os.path import exists
 from pathlib import Path
-from pythonforandroid.util import BuildInterruptingException
+from pythonforandroid.util import BuildInterruptingException, current_directory
 from shutil import copy2
 import glob, logging, os, sh, subprocess
 
@@ -246,6 +246,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         subprocess.call(args)
 
     def create_python_bundle(self, dirn, arch):
+      with current_directory(dirn):
         dirn = (dirn / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.get_build_dir(arch.arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.major_minor_version_string}"
         self.compile_python_files(modules_build_dir)
