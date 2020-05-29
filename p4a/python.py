@@ -261,15 +261,14 @@ class GuestPythonRecipe(TargetPythonRecipe):
         libdir = self.get_build_dir(arch.arch) / 'Lib'
         stdlib_filens = list(_walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
-        zip.print(stdlib_zip, *stdlib_filens, cwd = libdir)
+        zip.print(stdlib_zip, *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
         (dirn / 'site-packages').mkdirp()
         installdir = self.ctx.get_python_install_dir().mkdirp()
-        with current_directory(installdir):
-            filens = list(_walk_valid_filens('.', self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
-            log.info("Copy %s files into the site-packages", len(filens))
-            for filen in filens:
-                log.info(" - copy %s", filen)
-                copy2(filen, (dirn / 'site-packages' / filen).pmkdirp())
+        filens = list(_walk_valid_filens(installdir, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
+        log.info("Copy %s files into the site-packages", len(filens))
+        for filen in filens:
+            log.info(" - copy %s", filen)
+            copy2(filen, (dirn / 'site-packages' / filen.relative_to(installdir)).pmkdirp())
         python_lib_name = f"libpython{self.major_minor_version_string}"
         if self.major_minor_version_string[0] == '3':
             python_lib_name += 'm'
