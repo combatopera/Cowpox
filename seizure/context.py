@@ -330,18 +330,18 @@ def build_recipes(build_order, python_modules, ctx):
     pip.install._U.print('pip', env = base_env, cwd = ctx.buildsdir)
     log.info('Install Cython in case one of the modules needs it to build')
     pip.install.print('Cython', env = base_env, cwd = ctx.buildsdir)
+    # Get environment variables for build (with CC/compiler set):
+    standard_recipe = CythonRecipe(ctx)
+    # (note: following line enables explicit -lpython... linker options)
+    standard_recipe.call_hostpython_via_targetpython = False
+    recipe_env = standard_recipe.get_recipe_env(ctx.archs[0])
+    env = copy.copy(base_env)
+    env.update(recipe_env)
+    # Make sure our build package dir is available, and the virtualenv
+    # site packages come FIRST (so the proper pip version is used):
+    env['PYTHONPATH'] = f"""{(ctx.buildsdir / 'venv' / 'lib' / f"python{ctx.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{ctx.get_site_packages_dir()}"""
+    # Install the manually specified requirements first:
     with current_directory(ctx.buildsdir):
-        # Get environment variables for build (with CC/compiler set):
-        standard_recipe = CythonRecipe(ctx)
-        # (note: following line enables explicit -lpython... linker options)
-        standard_recipe.call_hostpython_via_targetpython = False
-        recipe_env = standard_recipe.get_recipe_env(ctx.archs[0])
-        env = copy.copy(base_env)
-        env.update(recipe_env)
-        # Make sure our build package dir is available, and the virtualenv
-        # site packages come FIRST (so the proper pip version is used):
-        env['PYTHONPATH'] = f"""{(ctx.buildsdir / 'venv' / 'lib' / f"python{ctx.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{ctx.get_site_packages_dir()}"""
-        # Install the manually specified requirements first:
         if not modules:
             log.info('There are no Python modules to install, skipping')
         else:
