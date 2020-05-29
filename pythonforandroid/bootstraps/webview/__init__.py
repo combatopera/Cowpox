@@ -64,7 +64,7 @@ class WebViewBootstrap(Bootstrap):
             self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))
             self.distribute_aars(arch)
             self.distribute_javaclasses(self.ctx.javaclass_dir)
-            site_packages_dir = self.ctx.python_recipe.create_python_bundle((self.dist_dir / '_python_bundle' / '_python_bundle').mkdirp(), arch)
+            site_packages_dir = self.ctx.python_recipe.create_python_bundle(self.dist_dir, arch)
             if 'sqlite3' not in self.ctx.recipe_build_order:
                 with open('blacklist.txt', 'a') as fileh:
                     fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')

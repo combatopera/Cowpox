@@ -246,6 +246,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         subprocess.call(args)
 
     def create_python_bundle(self, dirn, arch):
+        dirn = (dirn / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.get_build_dir(arch.arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.major_minor_version_string}"
         self.compile_python_files(modules_build_dir)
         self.compile_python_files(self.get_build_dir(arch.arch) / 'Lib')
