@@ -62,8 +62,8 @@ class WebViewBootstrap(Bootstrap):
         log.info('Copying python distribution')
         self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))
         self.distribute_aars(arch)
+        self.distribute_javaclasses(self.ctx.javaclass_dir)
         with current_directory(self.dist_dir):
-            self.distribute_javaclasses(self.ctx.javaclass_dir)
             site_packages_dir = self.ctx.python_recipe.create_python_bundle(self.dist_dir, arch)
             if 'sqlite3' not in self.ctx.recipe_build_order:
                 with open('blacklist.txt', 'a') as fileh:

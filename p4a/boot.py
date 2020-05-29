@@ -44,7 +44,7 @@ from os import listdir, walk, sep
 from os.path import join, isdir, normpath, splitext
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import functools, glob, logging, os, sh, shlex, shutil
+import functools, logging, os, sh, shlex, shutil
 
 log = logging.getLogger(__name__)
 
@@ -249,11 +249,10 @@ class Bootstrap:
         for lib in src_dir.iterdir():
             cp._a.print(lib, tgt_dir)
 
-    def distribute_javaclasses(self, javaclass_dir, dest_dir = Path('src')):
+    def distribute_javaclasses(self, javaclass_dir, dest_dir = 'src'):
         log.info('Copying java files')
-        dest_dir.mkdirp()
-        for filename in glob.glob(str(javaclass_dir)):
-            cp._a.print(filename, dest_dir)
+        if javaclass_dir.exists():
+            cp._a.print(javaclass_dir, (self.dist_dir / dest_dir).mkdirp())
 
     def distribute_aars(self, arch):
         log.info('Unpacking aars')
