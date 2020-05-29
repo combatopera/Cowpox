@@ -41,7 +41,6 @@
 from os.path import join, isdir, isfile
 from pythonforandroid.logger import shprint
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 import logging, os, sh
 
 log = logging.getLogger(__name__)
@@ -92,7 +91,7 @@ class VlcRecipe(Recipe):
         port_dir = join(build_dir, 'vlc-port-android')
         aar = self.aars[arch]
         if not isfile(aar):
-            with current_directory(port_dir):
+            with self.current_directory(port_dir):
                 env = dict(os.environ)
                 env.update({
                     'ANDROID_ABI': arch.arch,

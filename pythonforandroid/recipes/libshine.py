@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count
 from os.path import realpath
@@ -61,7 +60,7 @@ class LibShineRecipe(Recipe):
         return env
 
     def build_arch(self, arch):
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             env = self.get_recipe_env(arch)
             shprint(sh.Command('./bootstrap'))
             configure = sh.Command('./configure')

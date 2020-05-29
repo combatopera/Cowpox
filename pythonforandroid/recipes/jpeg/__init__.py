@@ -40,7 +40,6 @@
 
 from p4a import Recipe
 from pythonforandroid.logger import shprint
-from pythonforandroid.util import current_directory
 from os.path import join
 import sh
 
@@ -62,7 +61,7 @@ class JpegRecipe(Recipe):
         build_dir = self.get_build_dir(arch.arch)
 
         # todo: Fix simd/neon
-        with current_directory(build_dir):
+        with self.current_directory(build_dir):
             env = self.get_recipe_env(arch)
             toolchain_file = join(self.ctx.ndk_dir,
                                   'build/cmake/android.toolchain.cmake')

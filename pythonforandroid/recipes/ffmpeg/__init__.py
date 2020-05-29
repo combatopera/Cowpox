@@ -41,7 +41,6 @@
 from os.path import exists, join, realpath
 from pythonforandroid.logger import shprint
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 import sh
 
 class FFMpegRecipe(Recipe):
@@ -66,7 +65,7 @@ class FFMpegRecipe(Recipe):
         return env
 
     def build_arch(self, arch):
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             env = arch.get_env()
 
             flags = ['--disable-everything']

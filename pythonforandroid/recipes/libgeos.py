@@ -43,7 +43,6 @@ from os.path import join
 from pythonforandroid.logger import shprint
 from p4a import Recipe
 from pathlib import Path
-from pythonforandroid.util import current_directory
 import sh
 
 class LibgeosRecipe(Recipe):
@@ -61,7 +60,7 @@ class LibgeosRecipe(Recipe):
         source_dir = self.get_build_dir(arch.arch)
         build_target = Path(source_dir, 'build_target').mkdirp()
         install_target = join(source_dir, 'install_target')
-        with current_directory(build_target):
+        with self.current_directory(build_target):
             env = self.get_recipe_env(arch)
             shprint(sh.cmake, source_dir,
                     '-DANDROID_ABI={}'.format(arch.arch),

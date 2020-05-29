@@ -40,7 +40,6 @@
 
 from p4a import Recipe
 from pythonforandroid.logger import shprint
-from pythonforandroid.util import current_directory
 from os.path import join, exists
 from multiprocessing import cpu_count
 import logging, sh
@@ -130,7 +129,7 @@ class FreetypeRecipe(Recipe):
             )
         log.info("Configure args are:\n\t-%s", '\n\t-'.join(config_args))
         # Build freetype library
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             configure = sh.Command('./configure')
             shprint(configure, *config_args, _env=env)
             shprint(sh.make, '-j', str(cpu_count()), _env=env)

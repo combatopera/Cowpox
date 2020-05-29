@@ -42,7 +42,6 @@ from multiprocessing import cpu_count
 from os.path import exists, join
 from pythonforandroid.logger import shprint
 from p4a import CppCompiledComponentsPythonRecipe
-from pythonforandroid.util import current_directory
 import logging, os, sh, sys
 
 log = logging.getLogger(__name__)
@@ -99,14 +98,14 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
                 raise e
         log.info("Will download into %s", self.protoc_dir)
         self.download_file(protoc_url, self.protoc_dir / filename)
-        with current_directory(self.protoc_dir):
+        with self.current_directory(self.protoc_dir):
             shprint(sh.unzip, self.protoc_dir / filename)
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
 
         # Build libproto.so
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             build_arch = (
                 shprint(sh.gcc, '-dumpmachine')
                 .stdout.decode('utf-8')
@@ -124,7 +123,7 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
                     '--enable-shared',
                     _env=env)
 
-            with current_directory(join(self.get_build_dir(arch.arch), 'src')):
+            with self.current_directory(join(self.get_build_dir(arch.arch), 'src')):
                 shprint(sh.make, 'libprotobuf.la', '-j'+str(cpu_count()), _env=env)
 
         self.install_python_package(arch)
@@ -132,7 +131,7 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
     def build_compiled_components(self, arch):
         # Build python bindings and _message.so
         env = self.get_recipe_env(arch)
-        with current_directory(join(self.get_build_dir(arch.arch), 'python')):
+        with self.current_directory(join(self.get_build_dir(arch.arch), 'python')):
             hostpython = sh.Command(self.hostpython_location)
             shprint(hostpython,
                     'setup.py',
@@ -142,7 +141,7 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
     def install_python_package(self, arch):
         env = self.get_recipe_env(arch)
         log.info("Installing %s into site-packages", self.name)
-        with current_directory(join(self.get_build_dir(arch.arch), 'python')):
+        with self.current_directory(join(self.get_build_dir(arch.arch), 'python')):
             hostpython = sh.Command(self.hostpython_location)
 
             hpenv = env.copy()

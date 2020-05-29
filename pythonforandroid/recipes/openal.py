@@ -41,7 +41,6 @@
 from os.path import join
 from pythonforandroid.logger import shprint
 from p4a import NDKRecipe
-from pythonforandroid.util import current_directory
 import os, sh
 
 class OpenALRecipe(NDKRecipe):
@@ -52,12 +51,12 @@ class OpenALRecipe(NDKRecipe):
 
     def prebuild_arch(self, arch):
         # we need to build native tools for host system architecture
-        with current_directory(join(self.get_build_dir(arch.arch), 'native-tools')):
+        with self.current_directory(join(self.get_build_dir(arch.arch), 'native-tools')):
             shprint(sh.cmake, '.', _env=os.environ)
             shprint(sh.make, _env=os.environ)
 
     def build_arch(self, arch):
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             env = self.get_recipe_env(arch)
             cmake_args = [
                 '-DCMAKE_TOOLCHAIN_FILE={}'.format('XCompile-Android.txt'),

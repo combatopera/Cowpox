@@ -43,7 +43,6 @@ from os.path import exists, join
 from p4a import Recipe
 from pathlib import Path
 from pythonforandroid.logger import shprint
-from pythonforandroid.util import current_directory
 import sh
 
 class LibLzmaRecipe(Recipe):
@@ -55,7 +54,7 @@ class LibLzmaRecipe(Recipe):
     def build_arch(self, arch) -> None:
         env = self.get_recipe_env(arch)
         install_dir = join(self.get_build_dir(arch.arch), 'install')
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             if not exists('configure'):
                 shprint(sh.Command('./autogen.sh'), _env=env)
             shprint(sh.Command('autoreconf'), '-vif', _env=env)

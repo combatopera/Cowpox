@@ -40,7 +40,6 @@
 
 from pythonforandroid.logger import shprint
 from p4a import PythonRecipe
-from pythonforandroid.util import current_directory
 import sh
 
 class Psycopg2Recipe(PythonRecipe):
@@ -58,7 +57,7 @@ class Psycopg2Recipe(PythonRecipe):
 
     def prebuild_arch(self, arch):
         libdir = self.ctx.get_libs_dir(arch.arch)
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             # pg_config_helper will return the system installed libpq, but we
             # need the one we just cross-compiled
             shprint(sh.sed, '-i',
@@ -77,7 +76,7 @@ class Psycopg2Recipe(PythonRecipe):
         if env is None:
             env = self.get_recipe_env(arch)
 
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             hostpython = sh.Command(self.ctx.hostpython)
 
             shprint(hostpython, 'setup.py', 'build_ext', '--static-libpq',

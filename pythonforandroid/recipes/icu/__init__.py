@@ -43,7 +43,6 @@ from os.path import join, isdir, exists
 from p4a import Recipe
 from pathlib import Path
 from pythonforandroid.logger import shprint
-from pythonforandroid.util import current_directory
 import os, sh
 
 class ICURecipe(Recipe):
@@ -113,7 +112,7 @@ class ICURecipe(Recipe):
         if not exists:
             configure = sh.Command(
                 join(build_root, "source", "runConfigureICU"))
-            with current_directory(build_linux):
+            with self.current_directory(build_linux):
                 shprint(
                     configure,
                     "Linux",
@@ -132,7 +131,7 @@ class ICURecipe(Recipe):
 
             configure = sh.Command(join(build_root, "source", "configure"))
 
-            with current_directory(build_android):
+            with self.current_directory(build_android):
                 shprint(
                     configure,
                     "--with-cross-build="+build_linux,

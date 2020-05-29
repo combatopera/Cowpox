@@ -40,7 +40,6 @@
 
 import sh
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 from pythonforandroid.logger import shprint
 from os.path import join
 from multiprocessing import cpu_count
@@ -60,7 +59,7 @@ class LibcurlRecipe(Recipe):
         env['LDFLAGS'] += openssl_recipe.link_dirs_flags(arch)
         env['LIBS'] = env.get('LIBS', '') + openssl_recipe.link_libs_flags()
 
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             dst_dir = join(self.get_build_dir(arch.arch), 'dist')
             shprint(
                 sh.Command('./configure'),

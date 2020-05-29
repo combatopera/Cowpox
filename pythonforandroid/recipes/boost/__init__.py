@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.util import current_directory
 from p4a import Recipe
 from pythonforandroid.logger import shprint
 from os.path import join, exists
@@ -100,7 +99,7 @@ class BoostRecipe(Recipe):
     def prebuild_arch(self, arch):
         super(BoostRecipe, self).prebuild_arch(arch)
         env = self.get_recipe_env(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             # Set custom configuration
             shutil.copyfile(
                 join(self.get_recipe_dir(), 'user-config.jam'),
@@ -111,7 +110,7 @@ class BoostRecipe(Recipe):
         super(BoostRecipe, self).build_arch(arch)
         env = self.get_recipe_env(arch)
         env['PYTHON_HOST'] = self.ctx.hostpython
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             if not exists('b2'):
                 # Compile Boost.Build engine with this custom toolchain
                 bash = sh.Command('bash')

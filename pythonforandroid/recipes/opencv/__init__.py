@@ -41,7 +41,6 @@
 from os.path import join
 import sh
 from p4a import NDKRecipe
-from pythonforandroid.util import current_directory
 from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count
 
@@ -86,7 +85,7 @@ class OpenCVRecipe(NDKRecipe):
     def build_arch(self, arch):
         build_dir = join(self.get_build_dir(arch.arch), 'build')
         shprint(sh.mkdir, '-p', build_dir)
-        with current_directory(build_dir):
+        with self.current_directory(build_dir):
             env = self.get_recipe_env(arch)
 
             python_major = self.ctx.python_recipe.version[0]

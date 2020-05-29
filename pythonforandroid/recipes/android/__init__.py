@@ -40,7 +40,6 @@
 
 from os.path import join
 from p4a import CythonRecipe, IncludedFilesBehaviour
-from pythonforandroid.util import current_directory
 from p4a.patch import will_build
 import logging
 
@@ -98,7 +97,7 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
 
         # create config files for Cython, C and Python
         with (
-                current_directory(self.get_build_dir(arch.arch))), (
+                self.current_directory(self.get_build_dir(arch.arch))), (
                 open(join('android', 'config.pxi'), 'w')) as fpxi, (
                 open(join('android', 'config.h'), 'w')) as fh, (
                 open(join('android', 'config.py'), 'w')) as fpy:

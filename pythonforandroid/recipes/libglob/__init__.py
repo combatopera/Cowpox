@@ -41,7 +41,6 @@
 from os.path import exists, join
 from pythonforandroid.logger import shprint
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 import logging, sh
 
 log = logging.getLogger(__name__)
@@ -90,7 +89,7 @@ class LibGlobRecipe(Recipe):
             cli = env['CC'].split()[1]
         cc = sh.Command(cli)
 
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             cflags = env['CFLAGS'].split()
             cflags.extend(['-I.', '-c', '-l.', 'glob.c', '-I.'])
             shprint(cc, *cflags, _env=env)

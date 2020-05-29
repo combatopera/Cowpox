@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 from pythonforandroid.logger import shprint
 from os.path import exists
 import sh
@@ -54,7 +53,7 @@ class Libxml2Recipe(Recipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
 
             if not exists('configure'):
                 shprint(sh.Command('./autogen.sh'), _env=env)

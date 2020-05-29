@@ -40,7 +40,6 @@
 
 from pythonforandroid.logger import shprint
 from p4a import BootstrapNDKRecipe
-from pythonforandroid.util import current_directory
 import sh
 
 class GenericNDKBuildRecipe(BootstrapNDKRecipe):
@@ -61,6 +60,6 @@ class GenericNDKBuildRecipe(BootstrapNDKRecipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-        with current_directory(self.get_jni_dir()):
+        with self.current_directory(self.get_jni_dir()):
             shprint(sh.ndk_build, "V=1", _env=env)
 

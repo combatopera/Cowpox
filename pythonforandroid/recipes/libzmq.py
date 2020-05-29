@@ -40,7 +40,6 @@
 
 from p4a import Recipe
 from pythonforandroid.logger import shprint
-from pythonforandroid.util import current_directory
 from os.path import join
 import sh
 
@@ -65,7 +64,7 @@ class LibZMQRecipe(Recipe):
         curdir = self.get_build_dir(arch.arch)
         prefix = join(curdir, "install")
 
-        with current_directory(curdir):
+        with self.current_directory(curdir):
             bash = sh.Command('sh')
             shprint(
                 bash, './configure',

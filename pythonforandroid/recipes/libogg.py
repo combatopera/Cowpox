@@ -40,7 +40,6 @@
 
 from pythonforandroid.logger import shprint
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 import sh
 
 class OggRecipe(Recipe):
@@ -50,7 +49,7 @@ class OggRecipe(Recipe):
     built_libraries = {'libogg.so': 'src/.libs'}
 
     def build_arch(self, arch):
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             env = self.get_recipe_env(arch)
             flags = [
                 '--with-sysroot=' + self.ctx.ndk_platform,

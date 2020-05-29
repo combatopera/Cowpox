@@ -40,7 +40,6 @@
 
 from os.path import join
 from p4a import PythonRecipe
-from pythonforandroid.util import current_directory
 import sh
 
 class ZopeInterfaceRecipe(PythonRecipe):
@@ -64,7 +63,7 @@ class ZopeInterfaceRecipe(PythonRecipe):
 
     def prebuild_arch(self, arch):
         super(ZopeInterfaceRecipe, self).prebuild_arch(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             sh.rm(
                 '-rf',
                 'src/zope/interface/tests',

@@ -40,7 +40,6 @@
 
 from pythonforandroid.logger import shprint
 from p4a import CompiledComponentsPythonRecipe
-from pythonforandroid.util import current_directory
 import logging, sh
 
 log = logging.getLogger(__name__)
@@ -69,7 +68,7 @@ class PyCryptoRecipe(CompiledComponentsPythonRecipe):
     def build_compiled_components(self, arch):
         log.info("Configuring compiled components in %s", self.name)
         env = self.get_recipe_env(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             configure = sh.Command('./configure')
             shprint(configure, '--host=arm-eabi',
                     '--prefix={}'.format(self.ctx.get_python_install_dir()),

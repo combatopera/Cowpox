@@ -40,7 +40,6 @@
 
 from pythonforandroid.logger import shprint
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 import sh
 from os.path import join
 
@@ -64,7 +63,7 @@ class LibmysqlclientRecipe(Recipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-        with current_directory(join(self.get_build_dir(arch.arch), 'libmysqlclient')):
+        with self.current_directory(join(self.get_build_dir(arch.arch), 'libmysqlclient')):
             shprint(sh.cp, '-t', '.', join(self.get_recipe_dir(), 'p4a.cmake'))
             # shprint(sh.mkdir, 'Platform')
             # shprint(sh.cp, '-t', 'Platform', join(self.get_recipe_dir(), 'Linux.cmake'))
@@ -90,7 +89,7 @@ class LibmysqlclientRecipe(Recipe):
     #
     # def build_arch(self, arch):
     #   env = self.get_recipe_env(arch)
-    #   with current_directory(self.get_build_dir(arch.arch)):
+    #   with self.current_directory(self.get_build_dir(arch.arch)):
     #       # configure = sh.Command('./configure')
     #       # todo: should add openssl as an optional dep and compile support
     #       # shprint(configure, '--enable-shared', '--enable-assembler',

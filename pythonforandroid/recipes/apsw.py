@@ -40,7 +40,6 @@
 
 from pythonforandroid.logger import shprint
 from p4a import PythonRecipe
-from pythonforandroid.util import current_directory
 import sh
 
 class ApswRecipe(PythonRecipe):
@@ -53,7 +52,7 @@ class ApswRecipe(PythonRecipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             # Build python bindings
             hostpython = sh.Command(self.hostpython_location)
             shprint(hostpython,

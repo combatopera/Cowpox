@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from pythonforandroid.logger import shprint
-from pythonforandroid.util import current_directory
 from p4a import Recipe
 from multiprocessing import cpu_count
 from os.path import join
@@ -56,7 +55,7 @@ class LevelDBRecipe(Recipe):
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
         source_dir = self.get_build_dir(arch.arch)
-        with current_directory(source_dir):
+        with self.current_directory(source_dir):
             snappy_recipe = self.get_recipe('snappy')
             snappy_build = snappy_recipe.get_build_dir(arch.arch)
 

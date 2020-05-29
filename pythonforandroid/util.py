@@ -38,20 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pathlib import Path
-import contextlib, logging, os
-
-log = logging.getLogger(__name__)
-
-@contextlib.contextmanager
-def current_directory(new_dir):
-    cur_dir = Path.cwd()
-    log.info("-> directory context %s", new_dir)
-    os.chdir(new_dir)
-    yield
-    log.info("<- directory context %s", cur_dir)
-    os.chdir(cur_dir)
-
 class BuildInterruptingException(Exception):
 
     def __init__(self, message, instructions = None):

@@ -41,7 +41,6 @@
 from os.path import join
 from pythonforandroid.logger import shprint
 from p4a import CythonRecipe
-from pythonforandroid.util import current_directory
 import sh
 
 class XedDSARecipe(CythonRecipe):
@@ -58,7 +57,7 @@ class XedDSARecipe(CythonRecipe):
     call_hostpython_via_targetpython = False
 
     def build_arch(self, arch):
-        with current_directory(join(self.get_build_dir(arch.arch))):
+        with self.current_directory(join(self.get_build_dir(arch.arch))):
             env = self.get_recipe_env(arch)
             hostpython = sh.Command(self.ctx.hostpython)
             shprint(

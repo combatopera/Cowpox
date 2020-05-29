@@ -42,7 +42,6 @@ from lagoon import autoreconf, gcc, make
 from os.path import join
 from pathlib import Path
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 from pythonforandroid.logger import shprint
 import sh
 
@@ -60,7 +59,7 @@ class LibxsltRecipe(Recipe):
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
         build_dir = self.get_build_dir(arch.arch)
-        with current_directory(build_dir):
+        with self.current_directory(build_dir):
             # If the build is done with /bin/sh things blow up,
             # try really hard to use bash
             libxml2_recipe = self.get_recipe('libxml2')

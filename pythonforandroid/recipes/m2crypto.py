@@ -40,7 +40,6 @@
 
 from p4a import CompiledComponentsPythonRecipe
 from pythonforandroid.logger import shprint
-from pythonforandroid.util import current_directory
 import glob, logging, sh
 
 log = logging.getLogger(__name__)
@@ -56,7 +55,7 @@ class M2CryptoRecipe(CompiledComponentsPythonRecipe):
     def build_compiled_components(self, arch):
         log.info("Building compiled components in %s", self.name)
         env = self.get_recipe_env(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             # Build M2Crypto
             hostpython = sh.Command(self.hostpython_location)
             if self.install_in_hostpython:

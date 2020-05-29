@@ -40,7 +40,6 @@
 
 from lagoon import make, perl
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 
 class OpenSSLRecipe(Recipe):
 
@@ -89,7 +88,7 @@ class OpenSSLRecipe(Recipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(arch), f"-D__ANDROID_API__={self.ctx.ndk_api}", env = env)
             self.apply_patch('disable-sover.patch', arch.arch)
             make.print('build_libs', env = env)

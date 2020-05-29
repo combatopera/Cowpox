@@ -40,7 +40,6 @@
 
 from p4a import Recipe
 from pythonforandroid.logger import shprint
-from pythonforandroid.util import current_directory
 from os.path import join
 import sh
 
@@ -53,7 +52,7 @@ class SnappyRecipe(Recipe):
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
         source_dir = self.get_build_dir(arch.arch)
-        with current_directory(source_dir):
+        with self.current_directory(source_dir):
             shprint(sh.cmake, source_dir,
                     '-DANDROID_ABI={}'.format(arch.arch),
                     '-DANDROID_NATIVE_API_LEVEL={}'.format(self.ctx.ndk_api),

@@ -43,7 +43,6 @@ from os import listdir, walk
 from os.path import join, basename
 from pythonforandroid.logger import shprint
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 import sh, shutil
 
 # This recipe builds libtorrent with Python bindings
@@ -145,7 +144,7 @@ class LibtorrentRecipe(Recipe):
         build_args.append('release')
 
         # Compile libtorrent with boost libraries and python bindings
-        with current_directory(join(build_dir, 'bindings/python')):
+        with self.current_directory(join(build_dir, 'bindings/python')):
             b2 = sh.Command(join(env['BOOST_ROOT'], 'b2'))
             shprint(b2, *build_args, _env=env)
 

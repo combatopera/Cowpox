@@ -41,7 +41,6 @@
 
 import sh
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 from pythonforandroid.logger import shprint
 from os.path import join
 from multiprocessing import cpu_count
@@ -55,7 +54,7 @@ class LibexpatRecipe(Recipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-        with current_directory(join(self.get_build_dir(arch.arch), 'expat')):
+        with self.current_directory(join(self.get_build_dir(arch.arch), 'expat')):
             dst_dir = join(self.get_build_dir(arch.arch), 'dist')
             shprint(sh.Command('./buildconf.sh'), _env=env)
             shprint(

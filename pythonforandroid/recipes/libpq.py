@@ -40,7 +40,6 @@
 
 from pythonforandroid.logger import shprint
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 import os.path, sh
 
 class LibpqRecipe(Recipe):
@@ -54,7 +53,7 @@ class LibpqRecipe(Recipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             configure = sh.Command('./configure')
             shprint(configure, '--without-readline', '--host=arm-linux',
                     _env=env)

@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.util import current_directory
 from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count
 from os.path import realpath
@@ -52,7 +51,7 @@ class LibX264Recipe(Recipe):
     built_libraries = {'libx264.a': 'lib'}
 
     def build_arch(self, arch):
-        with current_directory(self.get_build_dir(arch.arch)):
+        with self.current_directory(self.get_build_dir(arch.arch)):
             env = self.get_recipe_env(arch)
             if 'arm64' in arch.arch:
                 cross_prefix = 'aarch64-linux-android-'

@@ -40,7 +40,6 @@
 
 from p4a import Recipe
 from pythonforandroid.logger import shprint
-from pythonforandroid.util import current_directory
 from multiprocessing import cpu_count
 import sh
 
@@ -53,7 +52,7 @@ class PngRecipe(Recipe):
 
     def build_arch(self, arch):
         build_dir = self.get_build_dir(arch.arch)
-        with current_directory(build_dir):
+        with self.current_directory(build_dir):
             env = self.get_recipe_env(arch)
             build_arch = (
                 shprint(sh.gcc, '-dumpmachine')
