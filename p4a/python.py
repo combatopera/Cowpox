@@ -47,7 +47,7 @@ from os.path import exists
 from pathlib import Path
 from pythonforandroid.util import BuildInterruptingException, current_directory
 from shutil import copy2
-import glob, logging, os, sh, subprocess
+import logging, os, sh
 
 log = logging.getLogger(__name__)
 
@@ -240,16 +240,16 @@ class GuestPythonRecipe(TargetPythonRecipe):
         self._compile_python_files(dirn, modules_build_dir)
         self._compile_python_files(dirn, self.get_build_dir(arch.arch) / 'Lib')
         self._compile_python_files(dirn, self.ctx.get_python_install_dir())
-      with current_directory(dirn):
         modules_dir = (dirn / 'modules').mkdirp()
         c_ext = self.compiled_extension
-        module_filens = glob.glob(f"{modules_build_dir}/*.so") + glob.glob(f"{modules_build_dir}/*{c_ext}")
+        module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob(f"*{c_ext}")]
         log.info("Copy %s files into the bundle", len(module_filens))
         for filen in module_filens:
             log.info(" - copy %s", filen)
             copy2(filen, modules_dir)
         stdlib_zip = dirn / 'stdlib.zip'
         libdir = self.get_build_dir(arch.arch) / 'Lib'
+      with current_directory(dirn):
         stdlib_filens = list(_walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(stdlib_zip, *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
