@@ -61,8 +61,8 @@ class SDL2GradleBootstrap(Bootstrap):
         cp._r.print(self.build_dir, self.dist_dir)
         (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.ctx.sdk_dir}")
         log.info('Copying Python distribution')
+        self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))
         with current_directory(self.dist_dir):
-            self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))
             self.distribute_javaclasses(self.ctx.javaclass_dir, dest_dir = Path("src", "main", "java"))
             site_packages_dir = self.ctx.python_recipe.create_python_bundle(self.dist_dir, arch)
             if 'sqlite3' not in self.ctx.recipe_build_order:

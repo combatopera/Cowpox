@@ -60,8 +60,8 @@ class WebViewBootstrap(Bootstrap):
             raise ValueError('built for more than one arch, but bootstrap cannot handle that yet')
         log.info("Bootstrap running with arch %s", arch)
         log.info('Copying python distribution')
+        self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))
         with current_directory(self.dist_dir):
-            self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))
             self.distribute_aars(arch)
             self.distribute_javaclasses(self.ctx.javaclass_dir)
             site_packages_dir = self.ctx.python_recipe.create_python_bundle(self.dist_dir, arch)

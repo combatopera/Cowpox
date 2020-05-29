@@ -245,8 +245,8 @@ class Bootstrap:
 
     def distribute_libs(self, arch, src_dir):
         log.info('Copying libs')
-        tgt_dir = Path('libs', arch.arch).mkdirp()
-        for lib in glob.glob(f"{src_dir}/*"):
+        tgt_dir = (self.dist_dir / 'libs' / arch.arch).mkdirp()
+        for lib in src_dir.iterdir():
             cp._a.print(lib, tgt_dir)
 
     def distribute_javaclasses(self, javaclass_dir, dest_dir = Path('src')):
