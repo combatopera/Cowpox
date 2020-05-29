@@ -45,7 +45,7 @@ from lagoon.program import Program
 from multiprocessing import cpu_count
 from os.path import exists
 from pathlib import Path
-from pythonforandroid.util import current_directory, BuildInterruptingException
+from pythonforandroid.util import BuildInterruptingException
 from shutil import copy2
 import glob, logging, os, sh, subprocess
 
@@ -217,9 +217,8 @@ class GuestPythonRecipe(TargetPythonRecipe):
         env = self.set_libs_flags(self.get_recipe_env(arch), arch)
         android_build = Program.text(recipe_build_dir / 'config.guess')(cwd = build_dir).strip()
         if not (build_dir / 'config.status').exists():
-            with current_directory(build_dir):
-                configureargs = ' '.join(self.configure_args).format(
-                        android_host = env['HOSTARCH'], android_build = android_build, prefix = sys_prefix, exec_prefix = sys_exec_prefix).split(' ')
+            kwargs = dict(android_host = env['HOSTARCH'], android_build = android_build, prefix = sys_prefix, exec_prefix = sys_exec_prefix)
+            configureargs = [a.format(**kwargs) for a in self.configure_args]
             Program.text(recipe_build_dir / 'configure').print(*configureargs, env = env, cwd = build_dir)
         make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env, cwd = build_dir)
         cp.print(build_dir / 'pyconfig.h', recipe_build_dir / 'Include')
