@@ -229,29 +229,18 @@ class GuestPythonRecipe(TargetPythonRecipe):
     def link_root(self, arch_name):
         return self.get_build_dir(arch_name) / 'android-build'
 
-    def compile_python_files(self, dir):
-        '''
-        Compile the python files (recursively) for the python files inside
-        a given folder.
-
-        .. note:: python2 compiles the files into extension .pyo, but in
-            python3, and as of Python 3.5, the .pyo filename extension is no
-            longer used...uses .pyc (https://www.python.org/dev/peps/pep-0488)
-        '''
-        args = [self.ctx.hostpython]
-        if self.ctx.python_recipe.name == 'python3':
-            args += ['-OO', '-m', 'compileall', '-b', '-f', dir]
-        else:
-            args += ['-OO', '-m', 'compileall', '-f', dir]
-        subprocess.call(args)
+    def _compile_python_files(self, cwd, dir):
+        args = ['-b'] if self.ctx.python_recipe.name == 'python3' else []
+        Program.text(self.ctx.hostpython)._OO._m.compileall.print(*args, '-f', dir, cwd = cwd)
 
     def create_python_bundle(self, dirn, arch):
-      with current_directory(dirn):
+      if 1:
         dirn = (dirn / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.get_build_dir(arch.arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.major_minor_version_string}"
-        self.compile_python_files(modules_build_dir)
-        self.compile_python_files(self.get_build_dir(arch.arch) / 'Lib')
-        self.compile_python_files(self.ctx.get_python_install_dir())
+        self._compile_python_files(dirn, modules_build_dir)
+        self._compile_python_files(dirn, self.get_build_dir(arch.arch) / 'Lib')
+        self._compile_python_files(dirn, self.ctx.get_python_install_dir())
+      with current_directory(dirn):
         modules_dir = (dirn / 'modules').mkdirp()
         c_ext = self.compiled_extension
         module_filens = glob.glob(f"{modules_build_dir}/*.so") + glob.glob(f"{modules_build_dir}/*{c_ext}")
