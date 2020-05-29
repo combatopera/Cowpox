@@ -48,7 +48,7 @@ from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
 from pythonforandroid.pythonpackage import get_package_name
-from pythonforandroid.util import current_directory, BuildInterruptingException
+from pythonforandroid.util import BuildInterruptingException
 import copy, glob, logging, os, re, sh, subprocess
 
 log = logging.getLogger(__name__)
@@ -341,20 +341,16 @@ def build_recipes(build_order, python_modules, ctx):
     # site packages come FIRST (so the proper pip version is used):
     env['PYTHONPATH'] = f"""{(ctx.buildsdir / 'venv' / 'lib' / f"python{ctx.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{ctx.get_site_packages_dir()}"""
     # Install the manually specified requirements first:
-    with current_directory(ctx.buildsdir):
-        if not modules:
-            log.info('There are no Python modules to install, skipping')
-        else:
-            log.info('Creating a requirements.txt file for the Python modules')
-            with open('requirements.txt', 'w') as fileh:
-                for module in modules:
-                    key = 'VERSION_' + module
-                    if key in os.environ:
-                        line = '{}=={}\n'.format(module, os.environ[key])
-                    else:
-                        line = '{}\n'.format(module)
-                    fileh.write(line)
-            log.info('Installing Python modules with pip')
-            log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
-            pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env)
-        standard_recipe.strip_object_files(ctx.archs[0], env, ctx.buildsdir)
+    if not modules:
+        log.info('There are no Python modules to install, skipping')
+    else:
+        log.info('Creating a requirements.txt file for the Python modules')
+        with (ctx.buildsdir / 'requirements.txt').open('w') as fileh:
+            for module in modules:
+                key = f"VERSION_{module}" # TODO: Retire this.
+                line = f"{module}=={os.environ[key]}" if key in os.environ else module
+                print(line, file = fileh)
+        log.info('Installing Python modules with pip')
+        log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
+        pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env, cwd = ctx.buildsdir)
+    standard_recipe.strip_object_files(ctx.archs[0], env, ctx.buildsdir)
