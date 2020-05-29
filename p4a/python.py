@@ -166,6 +166,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
             env['CPPFLAGS'] = env.get('CPPFLAGS', '') + include_flags
             env['LDFLAGS'] = env.get('LDFLAGS', '') + link_dirs
             env['LIBS'] = env.get('LIBS', '') + link_libs
+        # TODO LATER: Use polymorphism!
         if 'sqlite3' in self.ctx.recipe_build_order:
             log.info('Activating flags for sqlite3')
             recipe = self.get_recipe('sqlite3')
