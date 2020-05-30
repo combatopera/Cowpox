@@ -57,7 +57,7 @@ class Result: pass
 def run(config, dirs, target, src):
     dirs.install()
     log.info('Install platform')
-    target.install_platform() # TODO: Cache this.
+    target.install_platform() # TODO: Bake these into the image.
     log.info('Compile platform')
     target.compile_platform()
     src._copy_application_sources()
