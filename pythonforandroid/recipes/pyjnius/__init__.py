@@ -52,8 +52,10 @@ class PyjniusRecipe(CythonRecipe):
     name = 'pyjnius'
     depends = [('genericndkbuild', 'sdl2'), 'six']
     site_packages_name = 'jnius'
-    patches = [('sdl2_jnienv_getter.patch', will_build('sdl2')),
-               ('genericndkbuild_jnienv_getter.patch', will_build('genericndkbuild'))]
+    patches = [
+        ('sdl2_jnienv_getter.patch', will_build('sdl2')),
+        ('genericndkbuild_jnienv_getter.patch', will_build('genericndkbuild')),
+    ]
 
     def postbuild_arch(self, arch):
         super().postbuild_arch(arch)

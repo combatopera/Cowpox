@@ -99,7 +99,7 @@ class Recipe(metaclass = RecipeMeta):
     '''A list of optional dependencies, that must be built before this
     recipe if they are built at all, but whose presence is not essential.'''
 
-    patches = []
+    patches = ()
     '''A list of patches to apply to the source. Values can be either a string
     referring to the patch file relative to the recipe dir, or a tuple of the
     string patch file and a callable, which will receive the kwargs `arch` and
@@ -449,13 +449,11 @@ class Recipe(metaclass = RecipeMeta):
                 return
             build_dir = self.get_build_dir(arch.arch)
             for patch in self.patches:
-                if isinstance(patch, (tuple, list)):
+                if isinstance(patch, (tuple, list)): # TODO: Yuk.
                     patch, patch_check = patch
                     if not patch_check(arch=arch, recipe=self):
                         continue
-                self.apply_patch(
-                        patch.format(version=self.version, arch=arch.arch),
-                        arch.arch, build_dir=build_dir)
+                self.apply_patch(patch, arch.arch, build_dir)
             touch.print(build_dir / '.patched')
 
     def should_build(self, arch):
