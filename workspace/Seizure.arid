@@ -41,6 +41,15 @@
 targetname = android
 APACHE_ANT_VERSION = 1.9.4
 RECOMMENDED_NDK_VERSION = 19b
-app android
-    ant = $(APACHE_ANT_VERSION)
-    ndk = $(RECOMMENDED_NDK_VERSION)
+app
+    android
+        ant = $(APACHE_ANT_VERSION)
+        ndk = $(RECOMMENDED_NDK_VERSION)
+    source
+        dir = $.(.)
+        include_exts +=
+            py
+            png
+            jpg
+            kv
+            atlas

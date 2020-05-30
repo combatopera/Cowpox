@@ -68,6 +68,10 @@ class Config:
         except AttributeError:
             return type(self)(obj)
 
+    def __iter__(self):
+        for r in self._context:
+            yield r.resolve(self._context).value
+
 class LegacyConfig(SafeConfigParser):
 
     build_mode = 'debug'
