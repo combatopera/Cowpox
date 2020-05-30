@@ -68,9 +68,7 @@ def _get_dependency_tuple_list_for_recipe(recipe, blacklist):
         return []
     return [t for t in (tuple(set(deptuple) - blacklist) for deptuple in _fix_deplist(recipe.depends)) if t]
 
-def recursively_collect_orders(
-        name, ctx, all_inputs, orders=None, blacklist=None
-        ):
+def _recursively_collect_orders(name, ctx, all_inputs, orders, blacklist):
     '''For each possible recipe ordering, try to add the new recipe name
     to that order. Recursively do the same thing with all the
     dependencies of each recipe.
@@ -116,11 +114,7 @@ def recursively_collect_orders(
 
             dependency_new_orders = [new_order]
             for dependency in dependency_set:
-                dependency_new_orders = recursively_collect_orders(
-                    dependency, ctx, all_inputs, dependency_new_orders,
-                    blacklist=blacklist
-                )
-
+                dependency_new_orders = _recursively_collect_orders(dependency, ctx, all_inputs, dependency_new_orders, blacklist)
             new_orders.extend(dependency_new_orders)
 
     return new_orders
@@ -269,10 +263,7 @@ def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
     for name_set in product(*names):
         new_possible_orders = [RecipeOrder(ctx)]
         for name in name_set:
-            new_possible_orders = recursively_collect_orders(
-                name, ctx, name_set, orders=new_possible_orders,
-                blacklist=blacklist
-            )
+            new_possible_orders = _recursively_collect_orders(name, ctx, name_set, new_possible_orders, blacklist)
         possible_orders.extend(new_possible_orders)
 
     # turn each order graph into a linear list if possible
