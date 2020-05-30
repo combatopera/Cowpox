@@ -100,7 +100,6 @@ class Context:
     bootstrap = None
     bootstrap_build_dir = None
     recipe_build_order = None
-    recipes = {} # FIXME: No!
 
     def all_bootstraps(self):
         return {path.name for path in (self.contribroot / 'bootstraps').iterdir() if path.name not in {'__pycache__', 'common'} and path.is_dir()}
@@ -197,6 +196,7 @@ class Context:
         self.toolchain_version = toolchain_version
 
     def __init__(self):
+        self.recipes = {}
         self.include_dirs = []
         self.ndk = None
         self.toolchain_prefix = None
