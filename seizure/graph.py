@@ -100,24 +100,17 @@ def _recursively_collect_orders(name, ctx, all_inputs, orders, blacklist):
             new_orders.extend(dependency_new_orders)
     return new_orders
 
-def find_order(graph):
-    '''
-    Do a topological sort on the dependency graph dict.
-    '''
+def _find_order(graph):
     while graph:
-        # Find all items without a parent
         leftmost = [l for l, s in graph.items() if not s]
         if not leftmost:
             raise ValueError('Dependency cycle detected! %s' % graph)
-        # If there is more than one, sort them for predictable order
         leftmost.sort()
         for result in leftmost:
-            # Yield and remove them from the graph
             yield result
             graph.pop(result)
             for bset in graph.values():
                 bset.discard(result)
-
 
 def obvious_conflict_checker(ctx, name_tuples, blacklist=None):
     """ This is a pre-flight check function that will completely ignore
@@ -250,7 +243,7 @@ def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
     orders = []
     for possible_order in possible_orders:
         try:
-            order = find_order(possible_order)
+            order = _find_order(possible_order)
         except ValueError:  # a circular dependency was found
             log.info("Circular dependency found in graph %s, skipping it.", possible_order)
             continue
