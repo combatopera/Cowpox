@@ -81,10 +81,10 @@ def _main():
     parser = ArgumentParser()
     parser.add_argument('configpath')
     config = Config.load(parser.parse_args().configpath)
-    shutil.copytree('.', config.project, symlinks = True, dirs_exist_ok = True)
-    workspace = Path(config.workspace)
+    shutil.copytree('.', config.container.project, symlinks = True, dirs_exist_ok = True)
+    workspace = Path(config.container.workspace)
     soak.print(cwd = workspace)
-    pipify.print('-f', workspace / 'bdozlib.arid', cwd = config.project)
+    pipify.print('-f', workspace / 'bdozlib.arid', cwd = config.container.project)
     # TODO: Run in arbitrary directory.
     os.chdir(workspace) # FIXME LATER: Only include main.py in artifact.
     di = DI()

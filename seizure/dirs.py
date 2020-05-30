@@ -53,7 +53,7 @@ class Dirs:
 
     @types(Config)
     def __init__(self, config):
-        workspace = Path(config.workspace)
+        workspace = Path(config.container.workspace)
         self.global_platform_dir = self.global_buildozer_dir / config.targetname / 'platform'
         self.buildozer_dir = workspace / '.buildozer'
         self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
