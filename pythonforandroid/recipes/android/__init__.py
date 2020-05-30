@@ -40,17 +40,18 @@
 
 from p4a import CythonRecipe, IncludedFilesBehaviour
 from p4a.patch import will_build
+from types import MappingProxyType
 import logging
 
 log = logging.getLogger(__name__)
 
 class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
-    # name = 'android'
+
     version = None
     url = None
     src_filename = 'src'
     depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
-    config_env = {} # FIXME: This is bad.
+    config_env = MappingProxyType({}) # XXX: Needed?
 
     def get_recipe_env(self, arch):
         env = super().get_recipe_env(arch)
@@ -78,7 +79,7 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
                 print(f'DEF {key} = {repr(value)}', file = fpxi)
                 print(f'{key} = {repr(value)}', file = fpy)
                 print(f"""#define {key} {value if isinstance(value, int) else f'"{value}"'}""", file = fh)
-                self.config_env[key] = str(value)
             if is_sdl2:
                 print('JNIEnv *SDL_AndroidGetJNIEnv(void);', file = fh)
                 print('#define SDL_ANDROID_GetJNIEnv SDL_AndroidGetJNIEnv', file = fh)
+        self.config_env = {key: str(value) for key, value in config.items()}
