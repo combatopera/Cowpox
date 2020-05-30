@@ -409,7 +409,7 @@ class Recipe(metaclass = RecipeMeta):
         else:
             log.info("%s is already unpacked, skipping", self.name)
 
-    def get_recipe_env(self, arch=None, with_flags_in_cc=True):
+    def get_recipe_env(self, arch, with_flags_in_cc=True):
         """Return the env specialized for the recipe
         """
         if arch is None:
@@ -580,7 +580,7 @@ class BootstrapNDKRecipe(Recipe):
     def get_jni_dir(self):
         return self.ctx.bootstrap.build_dir / 'jni'
 
-    def get_recipe_env(self, arch=None, with_flags_in_cc=True, with_python=False):
+    def get_recipe_env(self, arch, with_flags_in_cc=True, with_python=False):
         env = super().get_recipe_env(arch, with_flags_in_cc)
         if not with_python:
             return env
@@ -676,7 +676,7 @@ class PythonRecipe(Recipe):
     def hostpython_location(self):
         return self.ctx.hostpython if self.call_hostpython_via_targetpython else self.real_hostpython_location
 
-    def get_recipe_env(self, arch=None, with_flags_in_cc=True):
+    def get_recipe_env(self, arch, with_flags_in_cc=True):
         env = super().get_recipe_env(arch, with_flags_in_cc)
         env['PYTHONNOUSERSITE'] = '1'
 

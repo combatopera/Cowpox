@@ -65,7 +65,7 @@ class OpenSSLRecipe(Recipe):
     def link_libs_flags(self):
         return f" -lcrypto{self.version} -lssl{self.version}"
 
-    def get_recipe_env(self, arch = None):
+    def get_recipe_env(self, arch):
         env = super().get_recipe_env(arch)
         env['OPENSSL_VERSION'] = self.version
         env['MAKE'] = 'make'
