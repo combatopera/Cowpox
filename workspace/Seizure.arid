@@ -41,20 +41,18 @@
 targetname = android
 APACHE_ANT_VERSION = 1.9.4
 RECOMMENDED_NDK_VERSION = 19b
-app
-    android
-        ant = $(APACHE_ANT_VERSION)
-        ndk = $(RECOMMENDED_NDK_VERSION)
-        api = 27
-        minapi = 21
-        arch = armeabi-v7a
-    source
-        dir = $.(.)
-        include_exts +=
-            py
-            png
-            jpg
-            kv
-            atlas
-    package name = $(Seizure package name)
-    p4a bootstrap = sdl2
+android
+    ant = $(APACHE_ANT_VERSION)
+    ndk = $(RECOMMENDED_NDK_VERSION)
+    api = 27
+    minapi = 21
+    arch = armeabi-v7a
+source
+    dir = $.(.)
+    include_exts +=
+        py
+        png
+        jpg
+        kv
+        atlas
+p4a bootstrap = sdl2

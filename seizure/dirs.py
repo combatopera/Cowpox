@@ -60,9 +60,9 @@ class Dirs:
         self.app_dir = self.buildozer_dir / config.targetname / 'app'
         self.bin_dir = workspace / 'bin'
         self.applibs_dir = self.buildozer_dir / 'applibs'
-        self.apache_ant_dir = self.global_platform_dir / f"apache-ant-{config.app.android.ant}"
+        self.apache_ant_dir = self.global_platform_dir / f"apache-ant-{config.android.ant}"
         self.android_sdk_dir = self.global_platform_dir / 'android-sdk'
-        self.android_ndk_dir = self.global_platform_dir / f"android-ndk-r{config.app.android.ndk}"
+        self.android_ndk_dir = self.global_platform_dir / f"android-ndk-r{config.android.ndk}"
 
     def install(self):
         for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:

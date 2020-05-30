@@ -59,13 +59,13 @@ class TargetAndroid:
     @types(Config, LegacyConfig, JsonStore, Dirs)
     def __init__(self, config, legacyconfig, state, dirs):
         self.APACHE_ANT_VERSION = config.APACHE_ANT_VERSION
-        self.android_ndk_version = config.app.android.ndk
+        self.android_ndk_version = config.android.ndk
         self.workspace = Path(config.container.workspace)
-        self.android_api = int(config.app.android.api)
-        self.android_minapi = int(config.app.android.minapi)
-        self.arch = config.app.android.arch
-        self.dist_name = config.app.package.name
-        self.bootstrapname = config.app.p4a.bootstrap
+        self.android_api = int(config.android.api)
+        self.android_minapi = int(config.android.minapi)
+        self.arch = config.android.arch
+        self.dist_name = config.package.name
+        self.bootstrapname = config.p4a.bootstrap
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
