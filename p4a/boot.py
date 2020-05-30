@@ -149,7 +149,7 @@ class Bootstrap:
         dir will be used for building all different archs.'''
         self.build_dir = self.get_build_dir()
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
-        _copy_files(join(os.path.abspath(self.bootstrap_dir / ".." / 'common'), 'build'), self.build_dir, False)
+        _copy_files((self.bootstrap_dir / ".." / 'common').resolve() / 'build', self.build_dir, False)
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.ctx.android_api}")
 
     def prepare_dist_dir(self):
