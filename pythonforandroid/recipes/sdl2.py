@@ -50,7 +50,7 @@ class LibSDL2Recipe(BootstrapNDKRecipe):
     depends = ['sdl2_image', 'sdl2_mixer', 'sdl2_ttf']
 
     def get_recipe_env(self, arch):
-        env = self.recipe_env_with_python(arch, with_flags_in_cc=True)
+        env = self.recipe_env_with_python(arch)
         env['APP_ALLOW_MISSING_DEPS'] = 'true'
         return env
 
