@@ -53,15 +53,13 @@ class RecipeOrder(dict):
         self.ctx = ctx
 
     def conflicts(self):
-        for name in self.keys():
+        for name in self:
             try:
-                recipe = self.ctx.get_recipe(name)
-                conflicts = [dep.lower() for dep in recipe.conflicts]
+                conflicts = [dep.lower() for dep in self.ctx.get_recipe(name).conflicts]
             except ModuleNotFoundError:
                 conflicts = []
-            if any([c in self for c in conflicts]):
+            if any(c in self for c in conflicts):
                 return True
-        return False
 
 def get_dependency_tuple_list_for_recipe(recipe, blacklist=None):
     """ Get the dependencies of a recipe with filtered out blacklist, and
