@@ -69,11 +69,6 @@ def _get_dependency_tuple_list_for_recipe(recipe, blacklist):
     return [t for t in (tuple(set(deptuple) - blacklist) for deptuple in _fix_deplist(recipe.depends)) if t]
 
 def _recursively_collect_orders(name, ctx, all_inputs, orders, blacklist):
-    '''For each possible recipe ordering, try to add the new recipe name
-    to that order. Recursively do the same thing with all the
-    dependencies of each recipe.
-
-    '''
     name = name.lower()
     if orders is None:
         orders = []
@@ -82,43 +77,28 @@ def _recursively_collect_orders(name, ctx, all_inputs, orders, blacklist):
     try:
         recipe = ctx.get_recipe(name)
         dependencies = _get_dependency_tuple_list_for_recipe(recipe, blacklist)
-        # handle opt_depends: these impose requirements on the build
-        # order only if already present in the list of recipes to build
-        dependencies.extend(_fix_deplist(
-            [[d] for d in recipe.get_opt_depends_in_list(all_inputs)
-             if d.lower() not in blacklist]
-        ))
-        if recipe.conflicts is None:
-            conflicts = []
-        else:
-            conflicts = [dep.lower() for dep in recipe.conflicts]
+        dependencies.extend(_fix_deplist([[d] for d in recipe.get_opt_depends_in_list(all_inputs) if d.lower() not in blacklist]))
+        conflicts = [] if recipe.conflicts is None else [dep.lower() for dep in recipe.conflicts]
     except ModuleNotFoundError:
-        # The recipe does not exist, so we assume it can be installed
-        # via pip with no extra dependencies
         dependencies = []
         conflicts = []
     new_orders = []
-    # for each existing recipe order, see if we can add the new recipe name
     for order in orders:
         if name in order:
             new_orders.append(deepcopy(order))
             continue
         if order.conflicts():
             continue
-        if any([conflict in order for conflict in conflicts]):
+        if any(conflict in order for conflict in conflicts):
             continue
-
         for dependency_set in product(*dependencies):
             new_order = deepcopy(order)
             new_order[name] = set(dependency_set)
-
             dependency_new_orders = [new_order]
             for dependency in dependency_set:
                 dependency_new_orders = _recursively_collect_orders(dependency, ctx, all_inputs, dependency_new_orders, blacklist)
             new_orders.extend(dependency_new_orders)
-
     return new_orders
-
 
 def find_order(graph):
     '''
