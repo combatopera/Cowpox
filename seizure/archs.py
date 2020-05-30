@@ -163,28 +163,20 @@ class Arch:
                 ctx_libs_dir=self.ctx.get_libs_dir(self.arch)
             )
         )
-
-        # LDLIBS: Library flags or names given to compilers when they are
-        # supposed to invoke the linker.
         env['LDLIBS'] = ' '.join(self.common_ldlibs)
-
-        # CCACHE
-        ccache = ''
-        if self.ctx.ccache and bool(int(os.environ.get('USE_CCACHE', '1'))):
-            # print('ccache found, will optimize builds')
-            ccache = self.ctx.ccache + ' '
+        if int(os.environ.get('USE_CCACHE', '1')):
+            ccache = f"{self.ctx.ccache} "
             env['USE_CCACHE'] = '1'
             env['NDK_CCACHE'] = self.ctx.ccache
-            env.update(
-                {k: v for k, v in os.environ.items() if k.startswith('CCACHE_')}
-            )
+            env.update({k: v for k, v in os.environ.items() if k.startswith('CCACHE_')})
+        else:
+            ccache = ''
         if with_flags_in_cc:
             env['CC'] = f"{ccache}{self.clang_exe} {env['CFLAGS']}"
             env['CXX'] = f"{ccache}{self.clang_exe_cxx} {env['CXXFLAGS']}"
         else:
             env['CC'] = f"{ccache}{self.clang_exe}"
             env['CXX'] = f"{ccache}{self.clang_exe_cxx}"
-        # Android's binaries
         command_prefix = self.command_prefix
         env['AR'] = '{}-ar'.format(command_prefix)
         env['RANLIB'] = '{}-ranlib'.format(command_prefix)

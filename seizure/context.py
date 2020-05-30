@@ -41,14 +41,14 @@
 from .archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from importlib import import_module
-from lagoon import virtualenv
+from lagoon import virtualenv, which
 from lagoon.program import Program
 from os.path import join, exists, split
 from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
 from pythonforandroid.pythonpackage import get_package_name
-import copy, glob, logging, os, re, sh, subprocess
+import copy, glob, logging, os, re, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -97,8 +97,7 @@ class Context:
     distribution = None
     libs_dir = None
     aars_dir = None
-    ccache = None  # whether to use ccache
-
+    ccache, = which('ccache').splitlines()
     ndk_platform = None  # the ndk platform directory
 
     bootstrap = None
@@ -175,9 +174,6 @@ class Context:
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
         check_ndk_api(user_ndk_api, apilevel)
         self.ndk_api = user_ndk_api
-        self.ccache = sh.which("ccache")
-        if not self.ccache:
-            log.info('ccache is missing, the build will not be optimized in the future.')
         try:
             subprocess.check_call(['python3', '-m', 'cython', '--help'])
         except subprocess.CalledProcessError:
