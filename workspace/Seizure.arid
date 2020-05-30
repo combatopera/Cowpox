@@ -59,3 +59,4 @@ app
             kv
             atlas
     package name = $(project Seizure package name)
+    p4a bootstrap = sdl2

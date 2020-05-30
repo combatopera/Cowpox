@@ -67,7 +67,7 @@ class TargetAndroid:
         self.arch = config.app.android.arch
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.dist_name = config.app.package.name
-        self.bootstrapname = legacyconfig.getdefault('app', 'p4a.bootstrap', 'sdl2')
+        self.bootstrapname = config.app.p4a.bootstrap
         self.config = legacyconfig
         self.state = state
         self.dirs = dirs
