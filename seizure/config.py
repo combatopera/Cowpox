@@ -38,9 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .recommendations import RECOMMENDED_NDK_VERSION
-from aridity import Context, Repl
 from aridimpl.util import NoSuchPathException
+from aridity import Context, Repl
 from configparser import SafeConfigParser
 from diapyr import types
 from pathlib import Path
@@ -91,7 +90,6 @@ class LegacyConfig(SafeConfigParser):
         self.getbooldefault = self._get_config_bool
         self.getrawdefault = self._get_config_raw_default
         self.read('buildozer.spec', 'utf-8')
-        self.android_ndk_version = self.getdefault('app', 'android.ndk', RECOMMENDED_NDK_VERSION)
 
     def _get_config_list_values(self, *args, **kwargs):
         kwargs['with_values'] = True

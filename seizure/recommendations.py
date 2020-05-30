@@ -45,10 +45,6 @@ log = logging.getLogger(__name__)
 # We only check the NDK major version
 MIN_NDK_VERSION = 19
 MAX_NDK_VERSION = 20
-
-# DO NOT CHANGE LINE FORMAT: buildozer parses the existence of a RECOMMENDED_NDK_VERSION
-RECOMMENDED_NDK_VERSION = "19b"
-
 NDK_DOWNLOAD_URL = "https://developer.android.com/ndk/downloads/"
 NDK_LOWER_THAN_SUPPORTED_MESSAGE = (
     'The minimum supported NDK version is {min_supported}. '
@@ -63,7 +59,7 @@ def check_ndk_version(ndk_dir):
     version = _read_ndk_version(ndk_dir)
     if version is None:
         log.warning("Unable to read the NDK version from the given directory %s.", ndk_dir)
-        log.warning("Make sure your NDK version is greater than %s. If you get build errors, download the recommended NDK %s from %s.", MIN_NDK_VERSION, RECOMMENDED_NDK_VERSION, NDK_DOWNLOAD_URL)
+        log.warning("Make sure your NDK version is greater than %s. If you get build errors, download the recommended NDK from %s.", MIN_NDK_VERSION, NDK_DOWNLOAD_URL)
         return
     # create a dictionary which will describe the relationship of the android's
     # NDK minor version with the `human readable` letter version, egs:
@@ -88,15 +84,12 @@ def check_ndk_version(ndk_dir):
             ),
             (
                 'Please, go to the android NDK page ({ndk_url}) and download a'
-                ' supported version.\n*** The currently recommended NDK'
-                ' version is {rec_version} ***'.format(
+                ' supported version.'.format(
                     ndk_url=NDK_DOWNLOAD_URL,
-                    rec_version=RECOMMENDED_NDK_VERSION,
                 )
             ),
         )
     elif major_version > MAX_NDK_VERSION:
-        log.warning("Maximum recommended NDK version is %s, but newer versions may work.", RECOMMENDED_NDK_VERSION)
         log.warning('Newer NDKs may not be fully supported by p4a.')
 
 def _read_ndk_version(ndk_dir):
