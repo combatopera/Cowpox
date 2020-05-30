@@ -69,7 +69,8 @@ RUN groupadd -g $GID $GROUP && useradd -g $GID -u $UID --create-home --shell /bi
 WORKDIR /workspace
 RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin . /mirror /project) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"' && git init
 USER $USER
-ENTRYPOINT ["Seizure", "/workspace", "/project"]
+ENTRYPOINT ["Seizure", "/workspace/Seizure.arid"]
+RUN { echo workspace = /workspace; echo project = /project; } | tee Seizure.arid
 COPY workspace .
 ENV P4A_bdozlib_DIR /project
 WORKDIR /src

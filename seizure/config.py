@@ -39,19 +39,45 @@
 # THE SOFTWARE.
 
 from .recommendations import RECOMMENDED_NDK_VERSION
-from argparse import Namespace
+from aridity import Context, Repl
 from configparser import SafeConfigParser
 from diapyr import types
+from pathlib import Path
 import logging, re
 
 log = logging.getLogger(__name__)
+
+class Config:
+
+    schema = dict(
+        workspace = Path,
+    )
+
+    @classmethod
+    def load(cls, path):
+        context = Context()
+        with Repl(context) as repl:
+            repl.printf(". %s", path)
+        return cls(context)
+
+    def __init__(self, context, schema):
+        self._context = context
+        self._schema = schema
+
+    def __getattr__(self, name):
+        obj = self._context.resolved(name)
+        try:
+            value = obj.value
+        except AttributeError:
+            return type(self)(obj, self._schema.get(name, {}))
+        return self._schema.get(name, lambda x: x)(value)
 
 class LegacyConfig(SafeConfigParser):
 
     targetname = 'android'
     build_mode = 'debug'
 
-    @types(Namespace)
+    @types(Config)
     def __init__(self, config):
         super().__init__(allow_no_value = True)
         self.workspace = config.workspace

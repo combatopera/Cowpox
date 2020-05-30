@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from .android import TargetAndroid
-from .config import LegacyConfig
+from .config import Config, LegacyConfig
 from .jsonstore import JsonStore
 from .dirs import Dirs
 from .src import Src
@@ -47,7 +47,6 @@ from argparse import ArgumentParser
 from chromalog.log import ColorizingFormatter, ColorizingStreamHandler
 from diapyr import DI, types
 from lagoon import pipify, soak
-from pathlib import Path
 import logging, os, shutil
 
 log = logging.getLogger(__name__)
@@ -79,9 +78,8 @@ def _initlogging():
 def _main():
     _initlogging()
     parser = ArgumentParser()
-    parser.add_argument('workspace', type = Path)
-    parser.add_argument('project', type = Path)
-    config = parser.parse_args()
+    parser.add_argument('configpath')
+    config = Config.load(parser.parse_args().configpath)
     shutil.copytree('.', config.project, symlinks = True, dirs_exist_ok = True)
     soak.print(cwd = config.workspace)
     pipify.print('-f', config.workspace / 'bdozlib.arid', cwd = config.project)
@@ -89,7 +87,7 @@ def _main():
     os.chdir(config.workspace) # FIXME LATER: Only include main.py in artifact.
     di = DI()
     di.add(config)
-    di.add(LegacyConfig) # TODO: Use aridity.
+    di.add(LegacyConfig) # TODO: Retire.
     di.add(Dirs)
     di.add(JsonStore) # TODO: Retire.
     di.add(Src)
