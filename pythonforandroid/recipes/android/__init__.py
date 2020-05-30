@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from os.path import join
 from p4a import CythonRecipe, IncludedFilesBehaviour
 from p4a.patch import will_build
 import logging
@@ -49,11 +48,8 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
     # name = 'android'
     version = None
     url = None
-
     src_filename = 'src'
-
     depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
-
     config_env = {}
 
     def get_recipe_env(self, arch):
@@ -62,23 +58,14 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
         return env
 
     def prebuild_arch(self, arch):
-        super(AndroidRecipe, self).prebuild_arch(arch)
+        super().prebuild_arch(arch)
         ctx_bootstrap = self.ctx.bootstrap.name
-
-        # define macros for Cython, C, Python
-        tpxi = 'DEF {} = {}\n'
-        th = '#define {} {}\n'
-        tpy = '{} = {}\n'
-
-        # make sure bootstrap name is in unicode
         if isinstance(ctx_bootstrap, bytes):
             ctx_bootstrap = ctx_bootstrap.decode('utf-8')
         bootstrap = bootstrap_name = ctx_bootstrap
-
         is_sdl2 = bootstrap_name in ('sdl2', 'sdl2python3', 'sdl2_gradle')
         is_webview = bootstrap_name == 'webview'
         is_service_only = bootstrap_name == 'service_only'
-
         if is_sdl2 or is_webview or is_service_only:
             if is_sdl2:
                 bootstrap = 'sdl2'
@@ -94,27 +81,13 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
             'JAVA_NAMESPACE': java_ns,
             'JNI_NAMESPACE': jni_ns,
         }
-
-        # create config files for Cython, C and Python
-        with (
-                self.current_directory(self.get_build_dir(arch.arch))), (
-                open(join('android', 'config.pxi'), 'w')) as fpxi, (
-                open(join('android', 'config.h'), 'w')) as fh, (
-                open(join('android', 'config.py'), 'w')) as fpy:
-
+        android = self.get_build_dir(arch.arch) / 'android'
+        with (android / 'config.pxi').open('w') as fpxi, (android / 'config.h').open('w') as fh, (android / 'config.py').open('w') as fpy:
             for key, value in config.items():
-                fpxi.write(tpxi.format(key, repr(value)))
-                fpy.write(tpy.format(key, repr(value)))
-
-                fh.write(th.format(
-                    key,
-                    value if isinstance(value, int) else '"{}"'.format(value)
-                ))
+                print(f'DEF {key} = {repr(value)}', file = fpxi)
+                print(f'{key} = {repr(value)}', file = fpy)
+                print(f"""#define {key} {value if isinstance(value, int) else f'"{value}"'}""", file = fh)
                 self.config_env[key] = str(value)
-
             if is_sdl2:
-                fh.write('JNIEnv *SDL_AndroidGetJNIEnv(void);\n')
-                fh.write(
-                    '#define SDL_ANDROID_GetJNIEnv SDL_AndroidGetJNIEnv\n'
-                )
-
+                print('JNIEnv *SDL_AndroidGetJNIEnv(void);', file = fh)
+                print('#define SDL_ANDROID_GetJNIEnv SDL_AndroidGetJNIEnv', file = fh)
