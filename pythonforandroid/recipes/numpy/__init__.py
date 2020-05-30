@@ -39,8 +39,8 @@
 # THE SOFTWARE.
 
 from multiprocessing import cpu_count
-from os.path import join
 from p4a import CompiledComponentsPythonRecipe
+from pathlib import Path
 
 class NumpyRecipe(CompiledComponentsPythonRecipe):
 
@@ -48,20 +48,15 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
     url = 'https://pypi.python.org/packages/source/n/numpy/numpy-{version}.zip'
     site_packages_name = 'numpy'
     depends = ['setuptools', 'cython']
-    patches = [
-        join('patches', 'add_libm_explicitly_to_build.patch'),
-        join('patches', 'do_not_use_system_libs.patch'),
-        join('patches', 'remove_unittest_call.patch'),
-    ]
+    patches = [Path('patches', n) for n in [
+        'add_libm_explicitly_to_build.patch',
+        'do_not_use_system_libs.patch',
+        'remove_unittest_call.patch',
+    ]]
     call_hostpython_via_targetpython = False
 
-    def apply_patches(self, arch):
-        if 'python2' in self.ctx.recipe_build_order:
-            self.patches.append(join('patches', 'fix-py2-numpy-import.patch'))
-        super().apply_patches(arch)
-
     def build_compiled_components(self, arch):
-        self.setup_extra_args = ['-j', str(cpu_count())]
+        self.setup_extra_args = ['-j', str(cpu_count())] # FIXME: Horrible!
         super().build_compiled_components(arch)
         self.setup_extra_args = []
 
@@ -69,5 +64,3 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
         self.setup_extra_args = ['-j', str(cpu_count())]
         super().rebuild_compiled_components(arch, env)
         self.setup_extra_args = []
-
-
