@@ -41,7 +41,7 @@
 from .archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from importlib import import_module
-from lagoon import virtualenv, which
+from lagoon import virtualenv
 from lagoon.program import Program
 from os.path import join, exists, split
 from p4a import CythonRecipe, Recipe
@@ -97,7 +97,6 @@ class Context:
     distribution = None
     libs_dir = None
     aars_dir = None
-    ccache, = which('ccache').splitlines()
     ndk_platform = None  # the ndk platform directory
 
     bootstrap = None

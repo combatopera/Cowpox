@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from glob import glob
+from lagoon import which
 from multiprocessing import cpu_count
 from os.path import join
 from p4a import Recipe
@@ -80,6 +81,7 @@ class Arch:
         '-Wl,-O1',
         '-Wl,-Bsymbolic-functions',
     ]
+    ccachepath, = which('ccache').splitlines()
 
     def __init__(self, ctx):
         self.ctx = ctx
@@ -165,9 +167,9 @@ class Arch:
         )
         env['LDLIBS'] = ' '.join(self.common_ldlibs)
         if int(os.environ.get('USE_CCACHE', '1')):
-            ccache = f"{self.ctx.ccache} "
+            ccache = f"{self.ccachepath} "
             env['USE_CCACHE'] = '1'
-            env['NDK_CCACHE'] = self.ctx.ccache
+            env['NDK_CCACHE'] = self.ccachepath
             env.update({k: v for k, v in os.environ.items() if k.startswith('CCACHE_')})
         else:
             ccache = ''
