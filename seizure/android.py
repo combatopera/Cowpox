@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .config import LegacyConfig
+from .config import Config, LegacyConfig
 from .dirs import APACHE_ANT_VERSION, Dirs
 from .distribution import generate_dist_folder_name
 from .jsonstore import JsonStore
@@ -55,16 +55,16 @@ log = logging.getLogger(__name__)
 
 class TargetAndroid:
 
-    @types(LegacyConfig, JsonStore, Dirs)
-    def __init__(self, config, state, dirs):
-        self.android_api = config.getdefault('app', 'android.api', '27')
-        self.android_minapi = config.getdefault('app', 'android.minapi', '21')
+    @types(Config, LegacyConfig, JsonStore, Dirs)
+    def __init__(self, config, legacyconfig, state, dirs):
+        self.android_api = legacyconfig.getdefault('app', 'android.api', '27')
+        self.android_minapi = legacyconfig.getdefault('app', 'android.minapi', '21')
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
-        self.arch = config.getdefault('app', 'android.arch', 'armeabi-v7a')
+        self.arch = legacyconfig.getdefault('app', 'android.arch', 'armeabi-v7a')
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
-        self.dist_name = config.get('app', 'package.name')
-        self.bootstrapname = config.getdefault('app', 'p4a.bootstrap', 'sdl2')
-        self.config = config
+        self.dist_name = legacyconfig.get('app', 'package.name')
+        self.bootstrapname = legacyconfig.getdefault('app', 'p4a.bootstrap', 'sdl2')
+        self.config = legacyconfig
         self.state = state
         self.dirs = dirs
 
