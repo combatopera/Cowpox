@@ -576,11 +576,8 @@ class BootstrapNDKRecipe(Recipe):
     def get_jni_dir(self):
         return self.ctx.bootstrap.build_dir / 'jni'
 
-    def get_recipe_env(self, arch):
-        return super().get_recipe_env(arch)
-
     def recipe_env_with_python(self, arch):
-        env = super().get_recipe_env(arch)
+        env = self.get_recipe_env(arch)
         env['PYTHON_INCLUDE_ROOT'] = self.ctx.python_recipe.include_root(arch.arch)
         env['PYTHON_LINK_ROOT'] = self.ctx.python_recipe.link_root(arch.arch)
         env['EXTRA_LDLIBS'] = ' -lpython{}'.format(self.ctx.python_recipe.major_minor_version_string)
