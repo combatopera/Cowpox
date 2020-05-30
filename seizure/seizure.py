@@ -61,7 +61,7 @@ def _initlogging():
         logging.root.addHandler(h)
     logging.root.setLevel(logging.DEBUG)
 
-def main():
+def _main():
     _initlogging()
     parser = ArgumentParser()
     parser.add_argument('workspace', type = Path)
@@ -80,6 +80,13 @@ def main():
     di.add(TargetAndroid)
     di.add(run)
     di(Result)
+
+def main():
+    try:
+        _main()
+    except:
+        log.exception('Abort:')
+        raise
 
 class Result: pass
 
