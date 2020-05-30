@@ -144,7 +144,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         longer used and has been removed in favour of extension .pyc
     '''
 
-    def get_recipe_env(self, arch, with_flags_in_cc = True):
+    def get_recipe_env(self, arch):
         env = os.environ.copy()
         env['HOSTARCH'] = arch.command_prefix
         env['CC'] = arch.get_clang_exe(with_target=True)
