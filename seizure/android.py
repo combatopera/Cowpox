@@ -63,11 +63,11 @@ class TargetAndroid:
         self.workspace = Path(config.container.workspace)
         self.android_api = int(config.app.android.api)
         self.android_minapi = int(config.app.android.minapi)
-        self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.arch = config.app.android.arch
-        self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.dist_name = config.app.package.name
         self.bootstrapname = config.app.p4a.bootstrap
+        self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
+        self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
         self.state = state
         self.dirs = dirs
