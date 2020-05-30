@@ -39,7 +39,6 @@
 : THE SOFTWARE.
 
 container . $./(container.arid)
-project . $/($(container src) project.arid)
 targetname = android
 APACHE_ANT_VERSION = 1.9.4
 RECOMMENDED_NDK_VERSION = 19b
@@ -58,5 +57,6 @@ app
             jpg
             kv
             atlas
-    package name = $(project Seizure package name)
+    package name = $(Seizure package name)
     p4a bootstrap = sdl2
+. $/($(container src) project.arid)
