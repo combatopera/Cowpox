@@ -58,6 +58,7 @@ class TargetAndroid:
     @types(Config, LegacyConfig, JsonStore, Dirs)
     def __init__(self, config, legacyconfig, state, dirs):
         self.APACHE_ANT_VERSION = config.APACHE_ANT_VERSION
+        self.android_ndk_version = config.app.android.ndk
         self.android_api = legacyconfig.getdefault('app', 'android.api', '27')
         self.android_minapi = legacyconfig.getdefault('app', 'android.minapi', '21')
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
@@ -100,11 +101,11 @@ class TargetAndroid:
             log.info('Android NDK found at %s', ndk_dir)
             return
         log.info('Android NDK is missing, downloading')
-        archive = f"android-ndk-r{self.config.android_ndk_version}-linux-x86_64.zip"
+        archive = f"android-ndk-r{self.android_ndk_version}-linux-x86_64.zip"
         download('https://dl.google.com/android/repository/', archive, self.dirs.global_platform_dir)
         log.info('Unpacking Android NDK')
         unzip._q.print(archive, cwd = self.dirs.global_platform_dir)
-        source = self.dirs.global_platform_dir / f"android-ndk-r{self.config.android_ndk_version}"
+        source = self.dirs.global_platform_dir / f"android-ndk-r{self.android_ndk_version}"
         log.debug('Rename %s to %s', source, ndk_dir)
         shutil.move(source, ndk_dir)
         log.info('Android NDK installation done.')
@@ -141,7 +142,7 @@ class TargetAndroid:
     def _install_android_packages(self):
         cache_key = 'android:sdk_installation'
         cache_value = [
-            self.android_api, self.android_minapi, self.config.android_ndk_version,
+            self.android_api, self.android_minapi, self.android_ndk_version,
             str(self.dirs.android_sdk_dir), str(self.dirs.android_ndk_dir),
         ]
         if self.state.get(cache_key, None) == cache_value:
