@@ -409,22 +409,18 @@ class Recipe(metaclass = RecipeMeta):
         else:
             log.info("%s is already unpacked, skipping", self.name)
 
-    def get_recipe_env(self, arch, with_flags_in_cc=True):
+    def get_recipe_env(self, arch):
         """Return the env specialized for the recipe
         """
         if arch is None:
             arch = self.filtered_archs[0]
-        env = arch.get_env(with_flags_in_cc=with_flags_in_cc)
-
+        env = arch.get_env(with_flags_in_cc=True)
         if self.need_stl_shared:
             env['CPPFLAGS'] = env.get('CPPFLAGS', '')
             env['CPPFLAGS'] += ' -I{}'.format(self.stl_include_dir)
 
             env['CXXFLAGS'] = env['CFLAGS'] + ' -frtti -fexceptions'
-
-            if with_flags_in_cc:
-                env['CXX'] += ' -frtti -fexceptions'
-
+            env['CXX'] += ' -frtti -fexceptions'
             env['LDFLAGS'] += ' -L{}'.format(self.get_stl_lib_dir(arch))
             env['LIBS'] = env.get('LIBS', '') + " -l{}".format(
                 self.stl_lib_name
@@ -580,11 +576,11 @@ class BootstrapNDKRecipe(Recipe):
     def get_jni_dir(self):
         return self.ctx.bootstrap.build_dir / 'jni'
 
-    def get_recipe_env(self, arch, with_flags_in_cc=True):
-        return super().get_recipe_env(arch, with_flags_in_cc)
+    def get_recipe_env(self, arch):
+        return super().get_recipe_env(arch)
 
-    def recipe_env_with_python(self, arch, with_flags_in_cc=True):
-        env = super().get_recipe_env(arch, with_flags_in_cc)
+    def recipe_env_with_python(self, arch):
+        env = super().get_recipe_env(arch)
         env['PYTHON_INCLUDE_ROOT'] = self.ctx.python_recipe.include_root(arch.arch)
         env['PYTHON_LINK_ROOT'] = self.ctx.python_recipe.link_root(arch.arch)
         env['EXTRA_LDLIBS'] = ' -lpython{}'.format(self.ctx.python_recipe.major_minor_version_string)
@@ -676,8 +672,8 @@ class PythonRecipe(Recipe):
     def hostpython_location(self):
         return self.ctx.hostpython if self.call_hostpython_via_targetpython else self.real_hostpython_location
 
-    def get_recipe_env(self, arch, with_flags_in_cc=True):
-        env = super().get_recipe_env(arch, with_flags_in_cc)
+    def get_recipe_env(self, arch):
+        env = super().get_recipe_env(arch)
         env['PYTHONNOUSERSITE'] = '1'
 
         # Set the LANG, this isn't usually important but is a better default
@@ -846,8 +842,8 @@ class CythonRecipe(PythonRecipe):
         for filename in build_dir.rglob('*.pyx'):
             self.cythonize_file(env, filename)
 
-    def get_recipe_env(self, arch, with_flags_in_cc=True):
-        env = super().get_recipe_env(arch, with_flags_in_cc)
+    def get_recipe_env(self, arch):
+        env = super().get_recipe_env(arch)
         env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch.arch)} -L{self.ctx.libs_dir}  -L{self.ctx.bootstrap.build_dir / 'obj' / 'local' / arch.arch} "
         env['LDSHARED'] = env['CC'] + ' -shared'
         env['LIBLINK'] = 'NOTNONE'
