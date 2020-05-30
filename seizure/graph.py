@@ -160,20 +160,13 @@ def _obvious_conflict_checker(ctx, name_tuples, blacklist):
             to_be_added += [(dep, adder_first_recipe_name or name) for dep in recipe_dependencies if dep not in deps]
 
 def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
-    # Get set of recipe/dependency names, clean up and add bootstrap deps:
     names = set(names) | set(bs_recipe_depends)
-    names = _fix_deplist([
-        ([name] if not isinstance(name, (list, tuple)) else name)
-        for name in names
-    ])
+    names = _fix_deplist([([name] if not isinstance(name, (list, tuple)) else name) for name in names])
     blacklist = set() if blacklist is None else {bitem.lower() for bitem in blacklist}
-    # Remove all values that are in the blacklist:
     names_before_blacklist = list(names)
     names = []
     for name in names_before_blacklist:
-        cleaned_up_tuple = tuple([
-            item for item in name if item not in blacklist
-        ])
+        cleaned_up_tuple = tuple(item for item in name if item not in blacklist)
         if cleaned_up_tuple:
             names.append(cleaned_up_tuple)
     _obvious_conflict_checker(ctx, names, blacklist)
@@ -183,30 +176,17 @@ def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
         for name in name_set:
             new_possible_orders = _recursively_collect_orders(name, ctx, name_set, new_possible_orders, blacklist)
         possible_orders.extend(new_possible_orders)
-
-    # turn each order graph into a linear list if possible
     orders = []
     for possible_order in possible_orders:
         try:
             order = _find_order(possible_order)
-        except ValueError:  # a circular dependency was found
+        except ValueError:
             log.info("Circular dependency found in graph %s, skipping it.", possible_order)
             continue
         orders.append(list(order))
-
-    # prefer python3 and SDL2 if available
-    orders = sorted(orders,
-                    key=lambda order: -('python3' in order) - ('sdl2' in order))
-
+    orders = sorted(orders, key = lambda order: -('python3' in order) - ('sdl2' in order))
     if not orders:
-        raise Exception(
-            'Didn\'t find any valid dependency graphs. '
-            'This means that some of your '
-            'requirements pull in conflicting dependencies.')
-
-    # It would be better to check against possible orders other
-    # than the first one, but in practice clashes will be rare,
-    # and can be resolved by specifying more parameters
+        raise Exception('''Didn't find any valid dependency graphs. This means that some of your requirements pull in conflicting dependencies.''')
     chosen_order = orders[0]
     if len(orders) > 1:
         log.info('Found multiple valid dependency orders:')
@@ -220,8 +200,7 @@ def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
     python_modules = []
     for name in chosen_order:
         try:
-            recipe = ctx.get_recipe(name)
-            python_modules += recipe.python_depends
+            python_modules += ctx.get_recipe(name).python_depends
         except ModuleNotFoundError:
             python_modules.append(name)
         else:
