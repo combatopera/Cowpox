@@ -45,7 +45,6 @@ from .graph import get_recipe_order
 from lagoon import cp, gradle
 from p4a.boot import Bootstrap
 from pathlib import Path
-from pythonforandroid.util import BuildInterruptingException
 from types import SimpleNamespace
 import glob, logging, re
 
@@ -123,7 +122,7 @@ def apk(args, downstreamargs, ctx, dist):
                 apk_file = apks[-1]
                 break
         else:
-            raise BuildInterruptingException('Couldn\'t find the built APK')
+            raise Exception('''Couldn't find the built APK''')
     log.info("Found APK file: %s", apk_file)
     log.info('Add version number to APK')
     APK_SUFFIX = '.apk'

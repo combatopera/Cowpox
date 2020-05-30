@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from distutils.version import LooseVersion
-from pythonforandroid.util import BuildInterruptingException
 import logging
 
 log = logging.getLogger(__name__)
@@ -83,11 +82,11 @@ def check_ndk_version(ndk_dir):
     )
     log.info("Found NDK version %s", string_version)
     if major_version < MIN_NDK_VERSION:
-        raise BuildInterruptingException(
+        raise Exception(
             NDK_LOWER_THAN_SUPPORTED_MESSAGE.format(
                 min_supported=MIN_NDK_VERSION, ndk_url=NDK_DOWNLOAD_URL
             ),
-            instructions=(
+            (
                 'Please, go to the android NDK page ({ndk_url}) and download a'
                 ' supported version.\n*** The currently recommended NDK'
                 ' version is {rec_version} ***'.format(
@@ -124,11 +123,11 @@ def check_target_api(api, arch):
     """
 
     if api >= ARMEABI_MAX_TARGET_API and arch == 'armeabi':
-        raise BuildInterruptingException(
+        raise Exception(
             UNSUPPORTED_NDK_API_FOR_ARMEABI_MESSAGE.format(
                 req_ndk_api=api, max_ndk_api=ARMEABI_MAX_TARGET_API
             ),
-            instructions='You probably want to build with --arch=armeabi-v7a instead')
+            'You probably want to build with --arch=armeabi-v7a instead')
 
     if api < MIN_TARGET_API:
         log.warning("Target API %s < %s", api, MIN_TARGET_API)
@@ -142,8 +141,8 @@ TARGET_NDK_API_GREATER_THAN_TARGET_API_MESSAGE = (
 
 def check_ndk_api(ndk_api, android_api):
     if ndk_api > android_api:
-        raise BuildInterruptingException(
+        raise Exception(
                 TARGET_NDK_API_GREATER_THAN_TARGET_API_MESSAGE.format(ndk_api = ndk_api, android_api = android_api),
-                instructions = 'The NDK API is a minimum supported API number and must be lower than the target Android API')
+                'The NDK API is a minimum supported API number and must be lower than the target Android API')
     if ndk_api < MIN_NDK_API:
         log.warning("NDK API less than %s is not supported", MIN_NDK_API)

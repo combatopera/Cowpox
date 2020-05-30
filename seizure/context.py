@@ -48,7 +48,6 @@ from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
 from pythonforandroid.pythonpackage import get_package_name
-from pythonforandroid.util import BuildInterruptingException
 import copy, glob, logging, os, re, sh, subprocess
 
 log = logging.getLogger(__name__)
@@ -82,7 +81,7 @@ def get_targets(sdk_dir):
     if (sdk_dir / 'tools' / 'android').exists():
         android = Program.text(sdk_dir / 'tools' / 'android')
         return android.list().split('\n')
-    raise BuildInterruptingException('Could not find `android` or `sdkmanager` binaries in Android SDK', instructions = 'Make sure the path to the Android SDK is correct')
+    raise Exception('Could not find `android` or `sdkmanager` binaries in Android SDK', 'Make sure the path to the Android SDK is correct')
 
 def _apilevels(sdk_dir):
     targets = get_targets(sdk_dir)
@@ -168,7 +167,7 @@ class Context:
         apis = _apilevels(sdkpath)
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
         if apilevel not in apis:
-            raise BuildInterruptingException("Requested API target %s is not available, install it with the SDK android tool." % apilevel)
+            raise Exception("Requested API target %s is not available, install it with the SDK android tool." % apilevel)
         log.info("Requested API target %s is available, continuing.", apilevel)
         self.ndk_dir = ndkpath
         log.info("Found NDK dir in $ANDROIDNDK: %s", ndkpath)
@@ -198,7 +197,7 @@ class Context:
             log.warning("Could not find any toolchain for %s!", toolchain_prefix)
             ok = False
         if not ok:
-            raise BuildInterruptingException('python-for-android cannot continue due to the missing executables above')
+            raise Exception('python-for-android cannot continue due to the missing executables above')
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
 
@@ -227,7 +226,7 @@ class Context:
                 new_archs.add(match)
         self.archs = list(new_archs)
         if not self.archs:
-            raise BuildInterruptingException('Asked to compile for no Archs, so failing.')
+            raise Exception('Asked to compile for no Archs, so failing.')
         log.info("Will compile for the following archs: %s", ', '.join(arch.arch for arch in self.archs))
 
     def prepare_bootstrap(self, bs):

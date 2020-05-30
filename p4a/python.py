@@ -45,7 +45,6 @@ from lagoon.program import Program
 from multiprocessing import cpu_count
 from os.path import exists
 from pathlib import Path
-from pythonforandroid.util import BuildInterruptingException
 from shutil import copy2
 import logging, os, sh
 
@@ -346,7 +345,7 @@ class HostPythonRecipe(Recipe):
         else:
             setup_location = recipe_build_dir / 'Modules' / 'Setup'
             if not setup_location.exists():
-                raise BuildInterruptingException('Could not find Setup.dist or Setup in Python build')
+                raise Exception('Could not find Setup.dist or Setup in Python build')
         make.print('-j', cpu_count(), '-C', build_dir, cwd = recipe_build_dir)
         exe, = (exe for exe in (self.get_path_to_python() / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
         cp.print(exe, self.python_exe)

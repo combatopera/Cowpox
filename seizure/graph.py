@@ -40,7 +40,6 @@
 
 from copy import deepcopy
 from itertools import product
-from pythonforandroid.util import BuildInterruptingException
 import logging
 
 log = logging.getLogger(__name__)
@@ -247,7 +246,7 @@ def obvious_conflict_checker(ctx, name_tuples, blacklist=None):
                     adder_second_recipe_name = second_recipe_original_adder
 
                 # Prompt error:
-                raise BuildInterruptingException(
+                raise Exception(
                     "Conflict detected: '{}'"
                     " inducing dependencies {}, and '{}'"
                     " inducing conflicting dependencies {}".format(
@@ -321,7 +320,7 @@ def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
                     key=lambda order: -('python3' in order) - ('sdl2' in order))
 
     if not orders:
-        raise BuildInterruptingException(
+        raise Exception(
             'Didn\'t find any valid dependency graphs. '
             'This means that some of your '
             'requirements pull in conflicting dependencies.')
