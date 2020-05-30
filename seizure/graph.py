@@ -44,19 +44,8 @@ import logging
 
 log = logging.getLogger(__name__)
 
-def fix_deplist(deps):
-    """ Turn a dependency list into lowercase, and make sure all entries
-        that are just a string become a tuple of strings
-    """
-    deps = [
-        ((dep.lower(),)
-         if not isinstance(dep, (list, tuple))
-         else tuple([dep_entry.lower()
-                     for dep_entry in dep
-                    ]))
-        for dep in deps
-    ]
-    return deps
+def _fix_deplist(deps):
+    return [((dep.lower(),) if not isinstance(dep, (list, tuple)) else tuple(x.lower() for x in dep)) for dep in deps]
 
 class RecipeOrder(dict):
 
@@ -76,7 +65,7 @@ class RecipeOrder(dict):
 
 def get_dependency_tuple_list_for_recipe(recipe, blacklist=None):
     """ Get the dependencies of a recipe with filtered out blacklist, and
-        turned into tuples with fix_deplist()
+        turned into tuples with _fix_deplist()
     """
     if blacklist is None:
         blacklist = set()
@@ -85,7 +74,7 @@ def get_dependency_tuple_list_for_recipe(recipe, blacklist=None):
         dependencies = []
     else:
         # Turn all dependencies into tuples so that product will work
-        dependencies = fix_deplist(recipe.depends)
+        dependencies = _fix_deplist(recipe.depends)
 
         # Filter out blacklisted items and turn lowercase:
         dependencies = [
@@ -114,7 +103,7 @@ def recursively_collect_orders(
         dependencies = get_dependency_tuple_list_for_recipe(recipe, blacklist = blacklist)
         # handle opt_depends: these impose requirements on the build
         # order only if already present in the list of recipes to build
-        dependencies.extend(fix_deplist(
+        dependencies.extend(_fix_deplist(
             [[d] for d in recipe.get_opt_depends_in_list(all_inputs)
              if d.lower() not in blacklist]
         ))
@@ -272,7 +261,7 @@ def obvious_conflict_checker(ctx, name_tuples, blacklist=None):
 def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
     # Get set of recipe/dependency names, clean up and add bootstrap deps:
     names = set(names) | set(bs_recipe_depends)
-    names = fix_deplist([
+    names = _fix_deplist([
         ([name] if not isinstance(name, (list, tuple)) else name)
         for name in names
     ])
