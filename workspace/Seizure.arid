@@ -47,6 +47,7 @@ android
     api = 27
     minapi = 21
     arch = armeabi-v7a
+    accept_sdk_license = false
 source
     dir = $.(.)
     include_exts +=

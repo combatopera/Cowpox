@@ -66,6 +66,7 @@ class TargetAndroid:
         self.arch = config.android.arch
         self.dist_name = config.package.name
         self.bootstrapname = config.p4a.bootstrap
+        self.acceptlicense = config.android.accept_sdk_license
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -120,7 +121,7 @@ class TargetAndroid:
                 yield parse(package_name.split(';')[1])
 
     def _android_update_sdk(self, *args):
-        if self.config.getbooldefault('app', 'android.accept_sdk_license', False):
+        if self.acceptlicense:
             with yes.bg(check = False) as yesproc:
                 self.sdkmanager.__licenses.print(stdin = yesproc.stdout)
         self.sdkmanager.print(*args)
