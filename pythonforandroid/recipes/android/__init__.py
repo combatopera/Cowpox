@@ -59,8 +59,7 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
 
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
-        ctx_bootstrap = self.ctx.bootstrap.name
-        bootstrap = bootstrap_name = ctx_bootstrap
+        bootstrap = bootstrap_name = self.ctx.bootstrap.name
         is_sdl2 = bootstrap_name in ('sdl2', 'sdl2python3', 'sdl2_gradle')
         is_webview = bootstrap_name == 'webview'
         is_service_only = bootstrap_name == 'service_only'
