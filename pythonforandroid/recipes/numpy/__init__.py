@@ -38,10 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from p4a import CompiledComponentsPythonRecipe
 from multiprocessing import cpu_count
 from os.path import join
-
+from p4a import CompiledComponentsPythonRecipe
 
 class NumpyRecipe(CompiledComponentsPythonRecipe):
 
@@ -49,13 +48,11 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
     url = 'https://pypi.python.org/packages/source/n/numpy/numpy-{version}.zip'
     site_packages_name = 'numpy'
     depends = ['setuptools', 'cython']
-
     patches = [
         join('patches', 'add_libm_explicitly_to_build.patch'),
         join('patches', 'do_not_use_system_libs.patch'),
         join('patches', 'remove_unittest_call.patch'),
-        ]
-
+    ]
     call_hostpython_via_targetpython = False
 
     def apply_patches(self, arch, build_dir=None):
