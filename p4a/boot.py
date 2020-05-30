@@ -40,11 +40,12 @@
 
 from importlib import import_module
 from lagoon import cp, find, mv, rm, unzip
+from lagoon.program import Program
 from os import listdir, walk, sep
 from os.path import join, isdir, normpath, splitext
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import functools, logging, os, sh, shlex, shutil
+import functools, logging, os, shlex, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -286,16 +287,16 @@ class Bootstrap:
         log.info('Stripping libraries')
         env = arch.get_env()
         tokens = shlex.split(env['STRIP'])
-        strip = sh.Command(str(self.ctx.ndk_dir / 'toolchains' / f"{self.ctx.toolchain_prefix}-{self.ctx.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]))
-        if len(tokens) > 1:
-            strip = strip.bake(tokens[1:])
+        strip = Program.text(self.ctx.ndk_dir / 'toolchains' / f"{self.ctx.toolchain_prefix}-{self.ctx.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]).partial(*tokens[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
         filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so').splitlines()
         log.info('Stripping libraries in private dir')
         for filen in filens:
             try:
-                strip(filen, _env=env)
-            except sh.ErrorReturnCode_1:
+                strip.print(filen, env = env)
+            except subprocess.CalledProcessError as e:
+                if 1 != e.returncode:
+                    raise
                 log.debug("Failed to strip %s", filen)
 
     def fry_eggs(self, sitepackages):
