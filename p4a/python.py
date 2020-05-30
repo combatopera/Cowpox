@@ -230,7 +230,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
 
     def _compile_python_files(self, cwd, dir):
         args = ['-b'] if self.ctx.python_recipe.name == 'python3' else []
-        Program.text(self.ctx.hostpython)._OO._m.compileall.print(*args, '-f', dir, cwd = cwd)
+        Program.text(self.ctx.hostpython)._OO._m.compileall.print(*args, '-f', dir, cwd = cwd, check = False)
 
     def create_python_bundle(self, dirn, arch):
         dirn = (dirn / '_python_bundle' / '_python_bundle').mkdirp()
