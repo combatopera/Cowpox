@@ -45,6 +45,7 @@ app
     android
         ant = $(APACHE_ANT_VERSION)
         ndk = $(RECOMMENDED_NDK_VERSION)
+        api = 27
     source
         dir = $.(.)
         include_exts +=

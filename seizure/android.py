@@ -61,7 +61,7 @@ class TargetAndroid:
         self.APACHE_ANT_VERSION = config.APACHE_ANT_VERSION
         self.android_ndk_version = config.app.android.ndk
         self.workspace = Path(config.workspace)
-        self.android_api = legacyconfig.getdefault('app', 'android.api', '27')
+        self.android_api = int(config.app.android.api)
         self.android_minapi = legacyconfig.getdefault('app', 'android.minapi', '21')
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.arch = legacyconfig.getdefault('app', 'android.arch', 'armeabi-v7a')
@@ -144,7 +144,7 @@ class TargetAndroid:
     def _install_android_packages(self):
         cache_key = 'android:sdk_installation'
         cache_value = [
-            self.android_api, self.android_minapi, self.android_ndk_version,
+            str(self.android_api), self.android_minapi, self.android_ndk_version,
             str(self.dirs.android_sdk_dir), str(self.dirs.android_ndk_dir),
         ]
         if self.state.get(cache_key, None) == cache_value:
@@ -187,7 +187,7 @@ class TargetAndroid:
         create(
             self.dirs.android_sdk_dir,
             self.dirs.android_ndk_dir,
-            int(self.android_api),
+            self.android_api,
             self.dist_name,
             self.bootstrapname,
             self.arch,
@@ -292,7 +292,7 @@ class TargetAndroid:
         makeapk(
             self.dirs.android_sdk_dir,
             self.dirs.android_ndk_dir,
-            int(self.android_api),
+            self.android_api,
             self.dist_name,
             self.bootstrapname,
             self.arch,
