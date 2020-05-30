@@ -46,7 +46,7 @@ from multiprocessing import cpu_count
 from os.path import exists
 from pathlib import Path
 from shutil import copy2
-import logging, os, sh
+import lagoon, logging, os
 
 log = logging.getLogger(__name__)
 
@@ -152,7 +152,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         env['PATH'] = os.pathsep.join([f"""{self.get_recipe(f"host{self.name}").get_path_to_python()}""", str(prebuilt), env['PATH']])
         env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ctx.ndk_api}"
         env['LDFLAGS'] = env.get('LDFLAGS', '')
-        if sh.which('lld') is not None:
+        if hasattr(lagoon, 'lld'):
             # Note: The -L. is to fix a bug in python 3.7.
             # https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234409
             env['LDFLAGS'] += ' -L. -fuse-ld=lld'
