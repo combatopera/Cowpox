@@ -54,7 +54,6 @@ package_data = {
 recursively_include(['recipes'], ['*.patch', '*.pyx', '*.py', '*.c', '*.h', '*.mk', '*.jam'])
 recursively_include(['bootstraps'], ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', '*.patch'])
 recursively_include(['bootstraps', 'webview'], ['*.html'])
-recursively_include(['tools'], ['liblink', 'biglink', 'liblink.sh'])
 setup(
     name = 'Seizure',
     packages = find_packages(),
