@@ -9,6 +9,7 @@ def processresource(context, *resolvables):
     return Concat(templateparser(resource_string(*(r.resolve(context).cat() for r in resolvables)).decode(charset))).resolve(context)
 
 def githash(context):
+    # FIXME: Do this without copying .git into container.
     return Text(git.rev_parse.__short.HEAD(cwd = '/src').rstrip())
 
 def lower(context, resolvable):
