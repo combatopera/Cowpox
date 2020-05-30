@@ -50,7 +50,7 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
     url = None
     src_filename = 'src'
     depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
-    config_env = {}
+    config_env = {} # FIXME: This is bad.
 
     def get_recipe_env(self, arch):
         env = super().get_recipe_env(arch)
@@ -66,20 +66,16 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
         is_sdl2 = bootstrap_name in ('sdl2', 'sdl2python3', 'sdl2_gradle')
         is_webview = bootstrap_name == 'webview'
         is_service_only = bootstrap_name == 'service_only'
-        if is_sdl2 or is_webview or is_service_only:
-            if is_sdl2:
-                bootstrap = 'sdl2'
-            java_ns = u'org.kivy.android'
-            jni_ns = u'org/kivy/android'
-        else:
-            log.error("unsupported bootstrap for android recipe: %s", bootstrap_name)
-            exit(1)
+        if not (is_sdl2 or is_webview or is_service_only):
+            raise Exception("unsupported bootstrap for android recipe: %s" % bootstrap_name)
+        if is_sdl2:
+            bootstrap = 'sdl2'
         config = {
             'BOOTSTRAP': bootstrap,
             'IS_SDL2': int(is_sdl2),
             'PY2': int(will_build('python2')(self)),
-            'JAVA_NAMESPACE': java_ns,
-            'JNI_NAMESPACE': jni_ns,
+            'JAVA_NAMESPACE': 'org.kivy.android',
+            'JNI_NAMESPACE': 'org/kivy/android',
         }
         android = self.get_build_dir(arch.arch) / 'android'
         with (android / 'config.pxi').open('w') as fpxi, (android / 'config.h').open('w') as fh, (android / 'config.py').open('w') as fpy:

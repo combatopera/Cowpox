@@ -56,4 +56,3 @@ class LibSDL2Recipe(BootstrapNDKRecipe):
 
     def build_arch(self, arch):
         Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', env = self.get_recipe_env(arch), cwd = self.get_jni_dir())
-
