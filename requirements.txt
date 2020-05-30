@@ -8,7 +8,6 @@ pep517<0.7.0
 pip
 pytoml
 pyven>=37
-sh>=1.10
 six
 soak
 virtualenv<20
