@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import shprint
 from p4a import BootstrapNDKRecipe
 import sh
 
@@ -52,5 +51,5 @@ class FontconfigRecipe(BootstrapNDKRecipe):
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
         with self.current_directory(self.get_jni_dir()):
-            shprint(sh.ndk_build, "V=1", 'fontconfig', _env=env)
+            self.shprint(sh.ndk_build, "V=1", 'fontconfig', _env=env)
 

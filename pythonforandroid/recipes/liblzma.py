@@ -42,7 +42,6 @@ from multiprocessing import cpu_count
 from os.path import exists, join
 from p4a import Recipe
 from pathlib import Path
-from pythonforandroid.logger import shprint
 import sh
 
 class LibLzmaRecipe(Recipe):
@@ -56,9 +55,9 @@ class LibLzmaRecipe(Recipe):
         install_dir = join(self.get_build_dir(arch.arch), 'install')
         with self.current_directory(self.get_build_dir(arch.arch)):
             if not exists('configure'):
-                shprint(sh.Command('./autogen.sh'), _env=env)
-            shprint(sh.Command('autoreconf'), '-vif', _env=env)
-            shprint(sh.Command('./configure'),
+                self.shprint(sh.Command('./autogen.sh'), _env=env)
+            self.shprint(sh.Command('autoreconf'), '-vif', _env=env)
+            self.shprint(sh.Command('./configure'),
                     '--host=' + arch.command_prefix,
                     '--prefix=' + install_dir,
                     '--disable-builddir',
@@ -71,12 +70,12 @@ class LibLzmaRecipe(Recipe):
                     '--disable-scripts',
                     '--disable-doc',
                     _env=env)
-            shprint(
+            self.shprint(
                 sh.make, '-j', str(cpu_count()),
                 _env=env
             )
             Path('install').mkdirp()
-            shprint(sh.make, 'install', _env=env)
+            self.shprint(sh.make, 'install', _env=env)
 
     def get_library_includes(self, arch) -> str:
         """

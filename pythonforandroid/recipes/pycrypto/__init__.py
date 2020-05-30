@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import shprint
 from p4a import CompiledComponentsPythonRecipe
 import logging, sh
 
@@ -70,7 +69,7 @@ class PyCryptoRecipe(CompiledComponentsPythonRecipe):
         env = self.get_recipe_env(arch)
         with self.current_directory(self.get_build_dir(arch.arch)):
             configure = sh.Command('./configure')
-            shprint(configure, '--host=arm-eabi',
+            self.shprint(configure, '--host=arm-eabi',
                     '--prefix={}'.format(self.ctx.get_python_install_dir()),
                     '--enable-shared', _env=env)
         super().build_compiled_components(arch)

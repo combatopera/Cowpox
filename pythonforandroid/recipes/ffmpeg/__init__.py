@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from os.path import exists, join, realpath
-from pythonforandroid.logger import shprint
 from p4a import Recipe
 import sh
 
@@ -171,9 +170,9 @@ class FFMpegRecipe(Recipe):
             env['LDFLAGS'] += ' ' + ' '.join(ldflags)
 
             configure = sh.Command('./configure')
-            shprint(configure, *flags, _env=env)
-            shprint(sh.make, '-j4', _env=env)
-            shprint(sh.make, 'install', _env=env)
+            self.shprint(configure, *flags, _env=env)
+            self.shprint(sh.make, '-j4', _env=env)
+            self.shprint(sh.make, 'install', _env=env)
             # copy libs:
             sh.cp('-a', sh.glob('./lib/lib*.so'),
                   self.ctx.get_libs_dir(arch.arch))

@@ -43,7 +43,6 @@ from os.path import exists, join
 import sh
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 
 
 class LibRt(Recipe):
@@ -74,13 +73,13 @@ class LibRt(Recipe):
         # Set symlinks, and make sure to update them on every build run:
         if exists(join(fake_librt_temp_folder, "librt.so")):
             remove(join(fake_librt_temp_folder, "librt.so"))
-        shprint(sh.ln, '-sf',
+        self.shprint(sh.ln, '-sf',
                 self.libc_path + '.so',
                 join(fake_librt_temp_folder, "librt.so"),
                 )
         if exists(join(fake_librt_temp_folder, "librt.a")):
             remove(join(fake_librt_temp_folder, "librt.a"))
-        shprint(sh.ln, '-sf',
+        self.shprint(sh.ln, '-sf',
                 self.libc_path + '.a',
                 join(fake_librt_temp_folder, "librt.a"),
                )

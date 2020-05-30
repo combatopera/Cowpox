@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import shprint
 from p4a import Recipe
 from multiprocessing import cpu_count
 from os.path import exists
@@ -55,8 +54,8 @@ class LibSecp256k1Recipe(Recipe):
         env = self.get_recipe_env(arch)
         with self.current_directory(self.get_build_dir(arch.arch)):
             if not exists('configure'):
-                shprint(sh.Command('./autogen.sh'), _env=env)
-            shprint(
+                self.shprint(sh.Command('./autogen.sh'), _env=env)
+            self.shprint(
                 sh.Command('./configure'),
                 '--host=' + arch.toolchain_prefix,
                 '--prefix=' + self.ctx.get_python_install_dir(),
@@ -65,6 +64,6 @@ class LibSecp256k1Recipe(Recipe):
                 '--enable-experimental',
                 '--enable-module-ecdh',
                 _env=env)
-            shprint(sh.make, '-j' + str(cpu_count()), _env=env)
+            self.shprint(sh.make, '-j' + str(cpu_count()), _env=env)
 
 

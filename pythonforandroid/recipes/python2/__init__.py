@@ -40,7 +40,6 @@
 
 from os.path import join, exists
 from p4a.python import GuestPythonRecipe
-from pythonforandroid.logger import shprint
 import logging, sh
 
 log = logging.getLogger(__name__)
@@ -94,7 +93,7 @@ class Python2Recipe(GuestPythonRecipe):
         patch_mark = join(self.get_build_dir(arch.arch), '.openssl-patched')
         if 'openssl' in self.ctx.recipe_build_order and not exists(patch_mark):
             self.apply_patch(join('patches', 'enable-openssl.patch'), arch.arch)
-            shprint(sh.touch, patch_mark)
+            self.shprint(sh.touch, patch_mark)
 
     def build_arch(self, arch):
         log.warning('DEPRECATION: Support for the Python 2 recipe will be removed in 2020, please upgrade to Python 3.')

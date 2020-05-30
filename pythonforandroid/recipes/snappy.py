@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from os.path import join
 import sh
 
@@ -53,7 +52,7 @@ class SnappyRecipe(Recipe):
         env = self.get_recipe_env(arch)
         source_dir = self.get_build_dir(arch.arch)
         with self.current_directory(source_dir):
-            shprint(sh.cmake, source_dir,
+            self.shprint(sh.cmake, source_dir,
                     '-DANDROID_ABI={}'.format(arch.arch),
                     '-DANDROID_NATIVE_API_LEVEL={}'.format(self.ctx.ndk_api),
                     '-DCMAKE_TOOLCHAIN_FILE={}'.format(
@@ -61,6 +60,6 @@ class SnappyRecipe(Recipe):
                              'android.toolchain.cmake')),
                     '-DBUILD_SHARED_LIBS=1',
                     _env=env)
-            shprint(sh.make, _env=env)
+            self.shprint(sh.make, _env=env)
 
 

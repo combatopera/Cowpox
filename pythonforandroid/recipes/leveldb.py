@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import shprint
 from p4a import Recipe
 from multiprocessing import cpu_count
 from os.path import join
@@ -59,7 +58,7 @@ class LevelDBRecipe(Recipe):
             snappy_recipe = self.get_recipe('snappy')
             snappy_build = snappy_recipe.get_build_dir(arch.arch)
 
-            shprint(sh.cmake, source_dir,
+            self.shprint(sh.cmake, source_dir,
                     '-DANDROID_ABI={}'.format(arch.arch),
                     '-DANDROID_NATIVE_API_LEVEL={}'.format(self.ctx.ndk_api),
                     '-DANDROID_STL=' + self.stl_lib_name,
@@ -79,6 +78,6 @@ class LevelDBRecipe(Recipe):
                         path=snappy_build),
 
                     _env=env)
-            shprint(sh.make, '-j' + str(cpu_count()), _env=env)
+            self.shprint(sh.make, '-j' + str(cpu_count()), _env=env)
 
 

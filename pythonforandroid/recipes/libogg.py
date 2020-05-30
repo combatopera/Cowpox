@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import shprint
 from p4a import Recipe
 import sh
 
@@ -56,6 +55,6 @@ class OggRecipe(Recipe):
                 '--host=' + arch.toolchain_prefix,
             ]
             configure = sh.Command('./configure')
-            shprint(configure, *flags, _env=env)
-            shprint(sh.make, _env=env)
+            self.shprint(configure, *flags, _env=env)
+            self.shprint(sh.make, _env=env)
 

@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import shprint
 from p4a import Recipe
 import sh
 from os.path import join
@@ -64,15 +63,15 @@ class LibmysqlclientRecipe(Recipe):
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
         with self.current_directory(join(self.get_build_dir(arch.arch), 'libmysqlclient')):
-            shprint(sh.cp, '-t', '.', join(self.get_recipe_dir(), 'p4a.cmake'))
-            # shprint(sh.mkdir, 'Platform')
-            # shprint(sh.cp, '-t', 'Platform', join(self.get_recipe_dir(), 'Linux.cmake'))
-            shprint(sh.rm, '-f', 'CMakeCache.txt')
-            shprint(sh.cmake, '-G', 'Unix Makefiles',
+            self.shprint(sh.cp, '-t', '.', join(self.get_recipe_dir(), 'p4a.cmake'))
+            # self.shprint(sh.mkdir, 'Platform')
+            # self.shprint(sh.cp, '-t', 'Platform', join(self.get_recipe_dir(), 'Linux.cmake'))
+            self.shprint(sh.rm, '-f', 'CMakeCache.txt')
+            self.shprint(sh.cmake, '-G', 'Unix Makefiles',
                     # '-DCMAKE_MODULE_PATH=' + join(self.get_build_dir(arch.arch), 'libmysqlclient'),
                     '-DCMAKE_INSTALL_PREFIX=./install',
                     '-DCMAKE_TOOLCHAIN_FILE=p4a.cmake', _env=env)
-            shprint(sh.make, _env=env)
+            self.shprint(sh.make, _env=env)
 
             self.install_libs(arch, join('libmysql', 'libmysql.so'))
 
@@ -92,13 +91,13 @@ class LibmysqlclientRecipe(Recipe):
     #   with self.current_directory(self.get_build_dir(arch.arch)):
     #       # configure = sh.Command('./configure')
     #       # todo: should add openssl as an optional dep and compile support
-    #       # shprint(configure, '--enable-shared', '--enable-assembler',
+    #       # self.shprint(configure, '--enable-shared', '--enable-assembler',
     #       #         '--enable-thread-safe-client', '--with-innodb',
     #       #         '--without-server', _env=env)
-    #       # shprint(sh.make, _env=env)
-    #       shprint(sh.cmake, '.', '-DCURSES_LIBRARY=' + env['CURSES_LIBRARY'],
+    #       # self.shprint(sh.make, _env=env)
+    #       self.shprint(sh.cmake, '.', '-DCURSES_LIBRARY=' + env['CURSES_LIBRARY'],
     #               '-DCURSES_INCLUDE_PATH=' + env['CURSES_INCLUDE_PATH'], _env=env)
-    #       shprint(sh.make, _env=env)
+    #       self.shprint(sh.make, _env=env)
     #
     #       self.install_libs(arch, 'libmysqlclient.so')
 

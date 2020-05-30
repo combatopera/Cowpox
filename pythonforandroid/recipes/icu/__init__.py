@@ -42,7 +42,6 @@ from multiprocessing import cpu_count
 from os.path import join, isdir, exists
 from p4a import Recipe
 from pathlib import Path
-from pythonforandroid.logger import shprint
 import os, sh
 
 class ICURecipe(Recipe):
@@ -113,7 +112,7 @@ class ICURecipe(Recipe):
             configure = sh.Command(
                 join(build_root, "source", "runConfigureICU"))
             with self.current_directory(build_linux):
-                shprint(
+                self.shprint(
                     configure,
                     "Linux",
                     "--prefix="+icu_build,
@@ -123,8 +122,8 @@ class ICURecipe(Recipe):
                     "--enable-tests=no",
                     "--enable-samples=no",
                     _env=host_env)
-                shprint(sh.make, "-j", str(cpu_count()), _env=host_env)
-                shprint(sh.make, "install", _env=host_env)
+                self.shprint(sh.make, "-j", str(cpu_count()), _env=host_env)
+                self.shprint(sh.make, "install", _env=host_env)
 
         build_android, exists = make_build_dest("build_icu_android")
         if not exists:
@@ -132,7 +131,7 @@ class ICURecipe(Recipe):
             configure = sh.Command(join(build_root, "source", "configure"))
 
             with self.current_directory(build_android):
-                shprint(
+                self.shprint(
                     configure,
                     "--with-cross-build="+build_linux,
                     "--enable-extras=no",
@@ -143,8 +142,8 @@ class ICURecipe(Recipe):
                     "--host="+env["TOOLCHAIN_PREFIX"],
                     "--prefix="+icu_build,
                     _env=env)
-                shprint(sh.make, "-j", str(cpu_count()), _env=env)
-                shprint(sh.make, "install", _env=env)
+                self.shprint(sh.make, "-j", str(cpu_count()), _env=env)
+                self.shprint(sh.make, "install", _env=env)
 
     def install_libraries(self, arch):
         super(ICURecipe, self).install_libraries(arch)
@@ -154,6 +153,6 @@ class ICURecipe(Recipe):
         dst_include = join(
             self.ctx.get_python_install_dir(), "include", "icu")
         Path(dst_include).mkdirp()
-        shprint(sh.cp, "-r", join(src_include, "layout"), dst_include)
-        shprint(sh.cp, "-r", join(src_include, "unicode"), dst_include)
+        self.shprint(sh.cp, "-r", join(src_include, "layout"), dst_include)
+        self.shprint(sh.cp, "-r", join(src_include, "unicode"), dst_include)
 

@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from os.path import join
 import sh
 
@@ -66,7 +65,7 @@ class LibZMQRecipe(Recipe):
 
         with self.current_directory(curdir):
             bash = sh.Command('sh')
-            shprint(
+            self.shprint(
                 bash, './configure',
                 '--host={}'.format(arch.command_prefix),
                 '--without-documentation',
@@ -74,7 +73,7 @@ class LibZMQRecipe(Recipe):
                 '--with-libsodium=no',
                 '--disable-libunwind',
                 _env=env)
-            shprint(sh.make, _env=env)
-            shprint(sh.make, 'install', _env=env)
+            self.shprint(sh.make, _env=env)
+            self.shprint(sh.make, 'install', _env=env)
 
 

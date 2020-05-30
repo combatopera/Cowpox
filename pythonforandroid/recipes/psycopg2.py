@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import shprint
 from p4a import PythonRecipe
 import sh
 
@@ -60,7 +59,7 @@ class Psycopg2Recipe(PythonRecipe):
         with self.current_directory(self.get_build_dir(arch.arch)):
             # pg_config_helper will return the system installed libpq, but we
             # need the one we just cross-compiled
-            shprint(sh.sed, '-i',
+            self.shprint(sh.sed, '-i',
                     "s|pg_config_helper.query(.libdir.)|'{}'|".format(libdir),
                     'setup.py')
 
@@ -79,9 +78,9 @@ class Psycopg2Recipe(PythonRecipe):
         with self.current_directory(self.get_build_dir(arch.arch)):
             hostpython = sh.Command(self.ctx.hostpython)
 
-            shprint(hostpython, 'setup.py', 'build_ext', '--static-libpq',
+            self.shprint(hostpython, 'setup.py', 'build_ext', '--static-libpq',
                     _env=env)
-            shprint(hostpython, 'setup.py', 'install', '-O2',
+            self.shprint(hostpython, 'setup.py', 'install', '-O2',
                     '--root={}'.format(self.ctx.get_python_install_dir()),
                     '--install-lib=.', _env=env)
 

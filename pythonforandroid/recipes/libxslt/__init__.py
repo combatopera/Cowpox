@@ -42,7 +42,6 @@ from lagoon import autoreconf, gcc, make
 from os.path import join
 from pathlib import Path
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 import sh
 
 class LibxsltRecipe(Recipe):
@@ -66,9 +65,9 @@ class LibxsltRecipe(Recipe):
             libxml2_build_dir = libxml2_recipe.get_build_dir(arch.arch)
             build_arch = gcc._dumpmachine().split('\n')[0]
             if not Path('configure').exists():
-                shprint(sh.Command('./autogen.sh'), _env=env)
+                self.shprint(sh.Command('./autogen.sh'), _env=env)
             autoreconf._vif.print(env = env)
-            shprint(sh.Command('./configure'),
+            self.shprint(sh.Command('./configure'),
                     '--build=' + build_arch,
                     '--host=' + arch.command_prefix,
                     '--target=' + arch.command_prefix,

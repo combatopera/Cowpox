@@ -41,7 +41,6 @@
 from os.path import join
 import sh
 from p4a import NDKRecipe
-from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count
 
 
@@ -84,7 +83,7 @@ class OpenCVRecipe(NDKRecipe):
 
     def build_arch(self, arch):
         build_dir = join(self.get_build_dir(arch.arch), 'build')
-        shprint(sh.mkdir, '-p', build_dir)
+        self.shprint(sh.mkdir, '-p', build_dir)
         with self.current_directory(build_dir):
             env = self.get_recipe_env(arch)
 
@@ -100,7 +99,7 @@ class OpenCVRecipe(NDKRecipe):
             python_include_numpy = join(python_site_packages,
                                         'numpy', 'core', 'include')
 
-            shprint(sh.cmake,
+            self.shprint(sh.cmake,
                     '-DP4A=ON',
                     '-DANDROID_ABI={}'.format(arch.arch),
                     '-DANDROID_STANDALONE_TOOLCHAIN={}'.format(self.ctx.ndk_dir),
@@ -161,9 +160,9 @@ class OpenCVRecipe(NDKRecipe):
 
                     self.get_build_dir(arch.arch),
                     _env=env)
-            shprint(sh.make, '-j' + str(cpu_count()), 'opencv_python' + python_major)
+            self.shprint(sh.make, '-j' + str(cpu_count()), 'opencv_python' + python_major)
             # Install python bindings (cv2.so)
-            shprint(sh.cmake, '-DCOMPONENT=python', '-P', './cmake_install.cmake')
+            self.shprint(sh.cmake, '-DCOMPONENT=python', '-P', './cmake_install.cmake')
             # Copy third party shared libs that we need in our final apk
             sh.cp('-a', sh.glob('./lib/{}/lib*.so'.format(arch.arch)),
                   self.ctx.get_libs_dir(arch.arch))

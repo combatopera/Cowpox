@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import CompiledComponentsPythonRecipe
-from pythonforandroid.logger import shprint
 import glob, logging, sh
 
 log = logging.getLogger(__name__)
@@ -59,15 +58,15 @@ class M2CryptoRecipe(CompiledComponentsPythonRecipe):
             # Build M2Crypto
             hostpython = sh.Command(self.hostpython_location)
             if self.install_in_hostpython:
-                shprint(hostpython, 'setup.py', 'clean', '--all', _env=env)
-            shprint(hostpython, 'setup.py', self.build_cmd,
+                self.shprint(hostpython, 'setup.py', 'clean', '--all', _env=env)
+            self.shprint(hostpython, 'setup.py', self.build_cmd,
                     '-p' + arch.arch,
                     '-c' + 'unix',
                     '-o' + env['OPENSSL_BUILD_PATH'],
                     '-L' + env['OPENSSL_BUILD_PATH'],
                     _env=env, *self.setup_extra_args)
             build_dir = glob.glob('build/lib.*')[0]
-            shprint(sh.find, build_dir, '-name', '"*.o"', '-exec',
+            self.shprint(sh.find, build_dir, '-name', '"*.o"', '-exec',
                     env['STRIP'], '{}', ';', _env=env)
 
     def get_recipe_env(self, arch):

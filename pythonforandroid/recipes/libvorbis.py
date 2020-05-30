@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from os.path import join
-from pythonforandroid.logger import shprint
 from p4a import NDKRecipe
 import sh
 
@@ -64,8 +63,8 @@ class VorbisRecipe(NDKRecipe):
                 '--host=' + arch.toolchain_prefix,
             ]
             configure = sh.Command('./configure')
-            shprint(configure, *flags, _env=env)
-            shprint(sh.make, _env=env)
+            self.shprint(configure, *flags, _env=env)
+            self.shprint(sh.make, _env=env)
             self.install_libs(
                 arch,
                 join('lib', '.libs', 'libvorbis.so'),

@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import shprint
 from p4a import Recipe
 from multiprocessing import cpu_count
 import sh
@@ -57,11 +56,11 @@ class LibIconvRecipe(Recipe):
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
         with self.current_directory(self.get_build_dir(arch.arch)):
-            shprint(
+            self.shprint(
                 sh.Command('./configure'),
                 '--host=' + arch.command_prefix,
                 '--prefix=' + self.ctx.get_python_install_dir(),
                 _env=env)
-            shprint(sh.make, '-j' + str(cpu_count()), _env=env)
+            self.shprint(sh.make, '-j' + str(cpu_count()), _env=env)
 
 

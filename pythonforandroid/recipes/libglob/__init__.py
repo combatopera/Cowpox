@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from os.path import exists, join
-from pythonforandroid.logger import shprint
 from p4a import Recipe
 import logging, sh
 
@@ -70,7 +69,7 @@ class LibGlobRecipe(Recipe):
         path = self.get_build_dir(arch.arch)
         if not exists(path):
             log.info("creating %s", path)
-            shprint(sh.mkdir, '-p', path)
+            self.shprint(sh.mkdir, '-p', path)
 
     def build_arch(self, arch):
         """simple shared compile"""
@@ -81,7 +80,7 @@ class LibGlobRecipe(Recipe):
                 join(self.ctx.python_recipe.get_build_dir(arch.arch), 'Include')):
             if not exists(path):
                 log.info("creating %s", path)
-                shprint(sh.mkdir, '-p', path)
+                self.shprint(sh.mkdir, '-p', path)
         cli = env['CC'].split()[0]
         # makes sure first CC command is the compiler rather than ccache, refs:
         # https://github.com/kivy/python-for-android/issues/1399
@@ -92,9 +91,9 @@ class LibGlobRecipe(Recipe):
         with self.current_directory(self.get_build_dir(arch.arch)):
             cflags = env['CFLAGS'].split()
             cflags.extend(['-I.', '-c', '-l.', 'glob.c', '-I.'])
-            shprint(cc, *cflags, _env=env)
+            self.shprint(cc, *cflags, _env=env)
             cflags = env['CFLAGS'].split()
             cflags.extend(['-shared', '-I.', 'glob.o', '-o', 'libglob.so'])
             cflags.extend(env['LDFLAGS'].split())
-            shprint(cc, *cflags, _env=env)
+            self.shprint(cc, *cflags, _env=env)
 

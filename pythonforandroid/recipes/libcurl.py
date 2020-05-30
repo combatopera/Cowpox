@@ -40,7 +40,6 @@
 
 import sh
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from os.path import join
 from multiprocessing import cpu_count
 
@@ -61,14 +60,14 @@ class LibcurlRecipe(Recipe):
 
         with self.current_directory(self.get_build_dir(arch.arch)):
             dst_dir = join(self.get_build_dir(arch.arch), 'dist')
-            shprint(
+            self.shprint(
                 sh.Command('./configure'),
                 '--host=arm-linux-androideabi',
                 '--enable-shared',
                 '--with-ssl={}'.format(openssl_dir),
                 '--prefix={}'.format(dst_dir),
                 _env=env)
-            shprint(sh.make, '-j', str(cpu_count()), _env=env)
-            shprint(sh.make, 'install', _env=env)
+            self.shprint(sh.make, '-j', str(cpu_count()), _env=env)
+            self.shprint(sh.make, 'install', _env=env)
 
 

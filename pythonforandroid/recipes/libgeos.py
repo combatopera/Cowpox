@@ -40,7 +40,6 @@
 
 from multiprocessing import cpu_count
 from os.path import join
-from pythonforandroid.logger import shprint
 from p4a import Recipe
 from pathlib import Path
 import sh
@@ -62,7 +61,7 @@ class LibgeosRecipe(Recipe):
         install_target = join(source_dir, 'install_target')
         with self.current_directory(build_target):
             env = self.get_recipe_env(arch)
-            shprint(sh.cmake, source_dir,
+            self.shprint(sh.cmake, source_dir,
                     '-DANDROID_ABI={}'.format(arch.arch),
                     '-DANDROID_NATIVE_API_LEVEL={}'.format(self.ctx.ndk_api),
                     '-DANDROID_STL=' + self.stl_lib_name,
@@ -74,10 +73,10 @@ class LibgeosRecipe(Recipe):
                     '-DGEOS_ENABLE_TESTS=OFF',
                     '-DBUILD_SHARED_LIBS=1',
                     _env=env)
-            shprint(sh.make, '-j' + str(cpu_count()), _env=env)
+            self.shprint(sh.make, '-j' + str(cpu_count()), _env=env)
             # We make the install because this way we will have all the
             # includes in one place (mostly we are interested in `geos_c.h`,
             # which is not in the include folder, so this way we make easier to
             # link with this library...case of shapely's recipe)
-            shprint(sh.make, 'install', _env=env)
+            self.shprint(sh.make, 'install', _env=env)
 

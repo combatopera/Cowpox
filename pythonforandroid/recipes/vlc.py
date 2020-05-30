@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from os.path import join, isdir, isfile
-from pythonforandroid.logger import shprint
 from p4a import Recipe
 import logging, os, sh
 
@@ -76,13 +75,13 @@ class VlcRecipe(Recipe):
             log.info("libvlc-<ver>.aar should build from sources at %s", port_dir)
             if not isfile(join(port_dir, 'compile.sh')):
                 log.info("clone vlc port for android sources from %s", self.port_git)
-                shprint(sh.git, 'clone', self.port_git, port_dir,
+                self.shprint(sh.git, 'clone', self.port_git, port_dir,
                         _tail=20, _critical=True)
 # now "git clone ..." is a part of compile.sh
 #            vlc_dir = join(port_dir, 'vlc')
 #            if not isfile(join(vlc_dir, 'Makefile.am')):
 #                info("clone vlc sources from {}".format(self.vlc_git))
-#                shprint(sh.git, 'clone', self.vlc_git, vlc_dir,
+#                self.shprint(sh.git, 'clone', self.vlc_git, vlc_dir,
 #                            _tail=20, _critical=True)
 
     def build_arch(self, arch):
@@ -101,9 +100,9 @@ class VlcRecipe(Recipe):
                 log.info('compiling vlc from sources')
                 log.debug("environment: %s", env)
                 if not isfile(join('bin', 'VLC-debug.apk')):
-                    shprint(sh.Command('./compile.sh'), _env=env,
+                    self.shprint(sh.Command('./compile.sh'), _env=env,
                             _tail=50, _critical=True)
-                shprint(sh.Command('./compile-libvlc.sh'), _env=env,
+                self.shprint(sh.Command('./compile-libvlc.sh'), _env=env,
                         _tail=50, _critical=True)
-        shprint(sh.cp, '-a', aar, self.ctx.aars_dir)
+        self.shprint(sh.cp, '-a', aar, self.ctx.aars_dir)
 

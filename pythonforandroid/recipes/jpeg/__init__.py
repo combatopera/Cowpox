@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from os.path import join
 import sh
 
@@ -66,8 +65,8 @@ class JpegRecipe(Recipe):
             toolchain_file = join(self.ctx.ndk_dir,
                                   'build/cmake/android.toolchain.cmake')
 
-            shprint(sh.rm, '-f', 'CMakeCache.txt', 'CMakeFiles/')
-            shprint(sh.cmake, '-G', 'Unix Makefiles',
+            self.shprint(sh.rm, '-f', 'CMakeCache.txt', 'CMakeFiles/')
+            self.shprint(sh.cmake, '-G', 'Unix Makefiles',
                     '-DCMAKE_SYSTEM_NAME=Android',
                     '-DCMAKE_SYSTEM_PROCESSOR={cpu}'.format(cpu='arm'),
                     '-DCMAKE_POSITION_INDEPENDENT_CODE=1',
@@ -89,6 +88,6 @@ class JpegRecipe(Recipe):
                     '-DENABLE_SHARED=0',
                     '-DENABLE_STATIC=1',
                     _env=env)
-            shprint(sh.make, _env=env)
+            self.shprint(sh.make, _env=env)
 
 

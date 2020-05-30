@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from os.path import join, exists
 from multiprocessing import cpu_count
 import logging, sh
@@ -131,13 +130,13 @@ class FreetypeRecipe(Recipe):
         # Build freetype library
         with self.current_directory(self.get_build_dir(arch.arch)):
             configure = sh.Command('./configure')
-            shprint(configure, *config_args, _env=env)
-            shprint(sh.make, '-j', str(cpu_count()), _env=env)
+            self.shprint(configure, *config_args, _env=env)
+            self.shprint(sh.make, '-j', str(cpu_count()), _env=env)
             if not with_harfbuzz and harfbuzz_in_recipes:
                 log.info('Installing freetype (first time build without harfbuzz)')
                 # First build, install the compiled lib, and clean build env
-                shprint(sh.make, 'install', _env=env)
-                shprint(sh.make, 'distclean', _env=env)
+                self.shprint(sh.make, 'install', _env=env)
+                self.shprint(sh.make, 'distclean', _env=env)
 
     def install_libraries(self, arch):
         # This library it's special because the first time we built it may not

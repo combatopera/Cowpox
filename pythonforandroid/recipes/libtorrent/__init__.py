@@ -41,7 +41,6 @@
 from multiprocessing import cpu_count
 from os import listdir, walk
 from os.path import join, basename
-from pythonforandroid.logger import shprint
 from p4a import Recipe
 import sh, shutil
 
@@ -146,7 +145,7 @@ class LibtorrentRecipe(Recipe):
         # Compile libtorrent with boost libraries and python bindings
         with self.current_directory(join(build_dir, 'bindings/python')):
             b2 = sh.Command(join(env['BOOST_ROOT'], 'b2'))
-            shprint(b2, *build_args, _env=env)
+            self.shprint(b2, *build_args, _env=env)
 
         # Copy only the boost shared libraries into the libs folder. Because
         # boost build two boost_python libraries, we force to search the lib

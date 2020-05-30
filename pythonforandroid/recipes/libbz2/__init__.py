@@ -40,7 +40,6 @@
 
 from multiprocessing import cpu_count
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 import sh
 
 class LibBz2Recipe(Recipe):
@@ -53,7 +52,7 @@ class LibBz2Recipe(Recipe):
     def build_arch(self, arch) -> None:
         env = self.get_recipe_env(arch)
         with self.current_directory(self.get_build_dir(arch.arch)):
-            shprint(
+            self.shprint(
                 sh.make,
                 "-j",
                 str(cpu_count()),

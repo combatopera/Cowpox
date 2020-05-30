@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from os.path import join
-from pythonforandroid.logger import shprint
 from p4a import CythonRecipe
 import sh
 
@@ -60,7 +59,7 @@ class XedDSARecipe(CythonRecipe):
         with self.current_directory(join(self.get_build_dir(arch.arch))):
             env = self.get_recipe_env(arch)
             hostpython = sh.Command(self.ctx.hostpython)
-            shprint(
+            self.shprint(
                 hostpython, 'ref10/build.py',
                 _env=env
             )

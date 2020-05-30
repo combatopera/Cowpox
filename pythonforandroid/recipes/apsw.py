@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import shprint
 from p4a import PythonRecipe
 import sh
 
@@ -55,7 +54,7 @@ class ApswRecipe(PythonRecipe):
         with self.current_directory(self.get_build_dir(arch.arch)):
             # Build python bindings
             hostpython = sh.Command(self.hostpython_location)
-            shprint(hostpython,
+            self.shprint(hostpython,
                     'setup.py',
                     'build_ext',
                     '--enable=fts4', _env=env)

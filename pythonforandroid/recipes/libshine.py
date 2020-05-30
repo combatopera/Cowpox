@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count
 from os.path import realpath
 import sh
@@ -62,16 +61,16 @@ class LibShineRecipe(Recipe):
     def build_arch(self, arch):
         with self.current_directory(self.get_build_dir(arch.arch)):
             env = self.get_recipe_env(arch)
-            shprint(sh.Command('./bootstrap'))
+            self.shprint(sh.Command('./bootstrap'))
             configure = sh.Command('./configure')
-            shprint(configure,
+            self.shprint(configure,
                     f'--host={arch.command_prefix}',
                     '--enable-pic',
                     '--disable-static',
                     '--enable-shared',
                     f'--prefix={realpath(".")}',
                     _env=env)
-            shprint(sh.make, '-j', str(cpu_count()), _env=env)
-            shprint(sh.make, 'install', _env=env)
+            self.shprint(sh.make, '-j', str(cpu_count()), _env=env)
+            self.shprint(sh.make, 'install', _env=env)
 
 

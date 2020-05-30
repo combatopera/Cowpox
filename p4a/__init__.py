@@ -544,6 +544,10 @@ class Recipe(metaclass = RecipeMeta):
     def get_recipe(self, name):
         return self.ctx.get_recipe(name)
 
+    @staticmethod
+    def shprint(command, *args, **kwargs):
+        return command(*args, **kwargs)
+
 class IncludedFilesBehaviour:
 
     def prepare_build_dir(self, arch):

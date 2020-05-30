@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from os.path import join, exists
-from pythonforandroid.logger import shprint
 from p4a import CompiledComponentsPythonRecipe
 import logging, sh
 
@@ -59,7 +58,7 @@ class IFAddrRecipe(CompiledComponentsPythonRecipe):
         path = self.get_build_dir(arch.arch)
         if not exists(path):
             log.info("creating %s", path)
-            shprint(sh.mkdir, '-p', path)
+            self.shprint(sh.mkdir, '-p', path)
 
     def build_arch(self, arch):
         """simple shared compile"""
@@ -70,7 +69,7 @@ class IFAddrRecipe(CompiledComponentsPythonRecipe):
                 join(self.ctx.python_recipe.get_build_dir(arch.arch), 'Include')):
             if not exists(path):
                 log.info("creating %s", path)
-                shprint(sh.mkdir, '-p', path)
+                self.shprint(sh.mkdir, '-p', path)
         cli = env['CC'].split()[0]
         # makes sure first CC command is the compiler rather than ccache, refs:
         # https://github.com/kivy/python-for-android/issues/1398
@@ -80,10 +79,10 @@ class IFAddrRecipe(CompiledComponentsPythonRecipe):
         with self.current_directory(self.get_build_dir(arch.arch)):
             cflags = env['CFLAGS'].split()
             cflags.extend(['-I.', '-c', '-l.', 'ifaddrs.c', '-I.'])
-            shprint(cc, *cflags, _env=env)
+            self.shprint(cc, *cflags, _env=env)
             cflags = env['CFLAGS'].split()
             cflags.extend(['-shared', '-I.', 'ifaddrs.o', '-o', 'libifaddrs.so'])
             cflags.extend(env['LDFLAGS'].split())
-            shprint(cc, *cflags, _env=env)
-            shprint(sh.cp, 'libifaddrs.so', self.ctx.get_libs_dir(arch.arch))
+            self.shprint(cc, *cflags, _env=env)
+            self.shprint(sh.cp, 'libifaddrs.so', self.ctx.get_libs_dir(arch.arch))
 

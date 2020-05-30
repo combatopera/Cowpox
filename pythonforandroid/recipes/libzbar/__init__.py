@@ -40,7 +40,6 @@
 
 import os
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count
 import sh
 
@@ -68,8 +67,8 @@ class LibZBarRecipe(Recipe):
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
         with self.current_directory(self.get_build_dir(arch.arch)):
-            shprint(sh.Command('autoreconf'), '-vif', _env=env)
-            shprint(
+            self.shprint(sh.Command('autoreconf'), '-vif', _env=env)
+            self.shprint(
                 sh.Command('./configure'),
                 '--host=' + arch.command_prefix,
                 '--target=' + arch.toolchain_prefix,
@@ -86,6 +85,6 @@ class LibZBarRecipe(Recipe):
                 '--enable-shared=yes',
                 '--enable-static=no',
                 _env=env)
-            shprint(sh.make, '-j' + str(cpu_count()), _env=env)
+            self.shprint(sh.make, '-j' + str(cpu_count()), _env=env)
 
 

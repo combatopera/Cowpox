@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from os.path import join, exists
 import os, sh, shutil
 
@@ -114,7 +113,7 @@ class BoostRecipe(Recipe):
             if not exists('b2'):
                 # Compile Boost.Build engine with this custom toolchain
                 bash = sh.Command('bash')
-                shprint(bash, 'bootstrap.sh')  # Do not pass env
+                self.shprint(bash, 'bootstrap.sh')  # Do not pass env
 
     def get_recipe_env(self, arch):
         # We don't use the normal env because we

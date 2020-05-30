@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count
 import sh
 
@@ -55,7 +54,7 @@ class LibsodiumRecipe(Recipe):
         env = self.get_recipe_env(arch)
         with self.current_directory(self.get_build_dir(arch.arch)):
             bash = sh.Command('bash')
-            shprint(
+            self.shprint(
                 bash,
                 'configure',
                 '--disable-soname-versions',
@@ -63,7 +62,7 @@ class LibsodiumRecipe(Recipe):
                 '--enable-shared',
                 _env=env,
             )
-            shprint(sh.make, '-j', str(cpu_count()), _env=env)
+            self.shprint(sh.make, '-j', str(cpu_count()), _env=env)
 
     def get_recipe_env(self, arch):
         env = super(LibsodiumRecipe, self).get_recipe_env(arch)

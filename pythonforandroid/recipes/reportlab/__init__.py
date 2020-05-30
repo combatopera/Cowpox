@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from pythonforandroid.logger import shprint
 from p4a import CompiledComponentsPythonRecipe
 from pathlib import Path
 import logging, os, sh
@@ -67,7 +66,7 @@ class ReportLabRecipe(CompiledComponentsPythonRecipe):
                         os.remove(os.path.join(font_dir, l))
             # Apply patches:
             self.apply_patch('patches/fix-setup.patch', arch.arch)
-            shprint(sh.touch, os.path.join(recipe_dir, '.patched'))
+            self.shprint(sh.touch, os.path.join(recipe_dir, '.patched'))
             ft = self.get_recipe('freetype')
             ft_dir = ft.get_build_dir(arch.arch)
             ft_lib_dir = os.environ.get('_FT_LIB_', os.path.join(ft_dir, 'objs', '.libs'))

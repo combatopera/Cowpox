@@ -43,7 +43,6 @@
 from p4a import CythonRecipe
 from os.path import join
 import sh
-from pythonforandroid.logger import shprint
 import glob
 
 class PyZMQRecipe(CythonRecipe):
@@ -88,9 +87,9 @@ skip_check_zmq = True
 
         with self.current_directory(self.get_build_dir(arch.arch)):
             hostpython = sh.Command(self.hostpython_location)
-            shprint(hostpython, 'setup.py', 'configure', '-v', _env=env)
-            shprint(hostpython, 'setup.py', 'build_ext', '-v', _env=env)
+            self.shprint(hostpython, 'setup.py', 'configure', '-v', _env=env)
+            self.shprint(hostpython, 'setup.py', 'build_ext', '-v', _env=env)
             build_dir = glob.glob('build/lib.*')[0]
-            shprint(sh.find, build_dir, '-name', '"*.o"', '-exec',
+            self.shprint(sh.find, build_dir, '-name', '"*.o"', '-exec',
                     env['STRIP'], '{}', ';', _env=env)
 

@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count
 import sh
 
@@ -55,11 +54,11 @@ class PngRecipe(Recipe):
         with self.current_directory(build_dir):
             env = self.get_recipe_env(arch)
             build_arch = (
-                shprint(sh.gcc, '-dumpmachine')
+                self.shprint(sh.gcc, '-dumpmachine')
                 .stdout.decode('utf-8')
                 .split('\n')[0]
             )
-            shprint(
+            self.shprint(
                 sh.Command('./configure'),
                 '--build=' + build_arch,
                 '--host=' + arch.command_prefix,
@@ -69,6 +68,6 @@ class PngRecipe(Recipe):
                 '--prefix={}/install'.format(self.get_build_dir(arch.arch)),
                 _env=env,
             )
-            shprint(sh.make, '-j', str(cpu_count()), _env=env)
+            self.shprint(sh.make, '-j', str(cpu_count()), _env=env)
 
 

@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count
 from os.path import realpath
 import sh
@@ -58,7 +57,7 @@ class LibX264Recipe(Recipe):
             else:
                 cross_prefix = 'arm-linux-androideabi-'
             configure = sh.Command('./configure')
-            shprint(configure,
+            self.shprint(configure,
                     '--cross-prefix={}'.format(cross_prefix),
                     '--host=arm-linux',
                     '--disable-asm',
@@ -68,7 +67,7 @@ class LibX264Recipe(Recipe):
                     '--enable-static',
                     '--prefix={}'.format(realpath('.')),
                     _env=env)
-            shprint(sh.make, '-j', str(cpu_count()), _env=env)
-            shprint(sh.make, 'install', _env=env)
+            self.shprint(sh.make, '-j', str(cpu_count()), _env=env)
+            self.shprint(sh.make, 'install', _env=env)
 
 

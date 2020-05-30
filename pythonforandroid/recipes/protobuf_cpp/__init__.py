@@ -40,7 +40,6 @@
 
 from multiprocessing import cpu_count
 from os.path import exists, join
-from pythonforandroid.logger import shprint
 from p4a import CppCompiledComponentsPythonRecipe
 import logging, os, sh, sys
 
@@ -67,7 +66,7 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
         patch_mark = join(self.get_build_dir(arch.arch), '.protobuf-patched')
         if self.ctx.python_recipe.name == 'python3' and not exists(patch_mark):
             self.apply_patch('fix-python3-compatibility.patch', arch.arch)
-            shprint(sh.touch, patch_mark)
+            self.shprint(sh.touch, patch_mark)
 
         # During building, host needs to transpile .proto files to .py
         # ideally with the same version as protobuf runtime, or with an older one.
@@ -99,7 +98,7 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
         log.info("Will download into %s", self.protoc_dir)
         self.download_file(protoc_url, self.protoc_dir / filename)
         with self.current_directory(self.protoc_dir):
-            shprint(sh.unzip, self.protoc_dir / filename)
+            self.shprint(sh.unzip, self.protoc_dir / filename)
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
@@ -107,15 +106,15 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
         # Build libproto.so
         with self.current_directory(self.get_build_dir(arch.arch)):
             build_arch = (
-                shprint(sh.gcc, '-dumpmachine')
+                self.shprint(sh.gcc, '-dumpmachine')
                 .stdout.decode('utf-8')
                 .split('\n')[0]
             )
 
             if not exists('configure'):
-                shprint(sh.Command('./autogen.sh'), _env=env)
+                self.shprint(sh.Command('./autogen.sh'), _env=env)
 
-            shprint(sh.Command('./configure'),
+            self.shprint(sh.Command('./configure'),
                     '--build={}'.format(build_arch),
                     '--host={}'.format(arch.command_prefix),
                     '--target={}'.format(arch.command_prefix),
@@ -124,7 +123,7 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
                     _env=env)
 
             with self.current_directory(join(self.get_build_dir(arch.arch), 'src')):
-                shprint(sh.make, 'libprotobuf.la', '-j'+str(cpu_count()), _env=env)
+                self.shprint(sh.make, 'libprotobuf.la', '-j'+str(cpu_count()), _env=env)
 
         self.install_python_package(arch)
 
@@ -133,7 +132,7 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
         env = self.get_recipe_env(arch)
         with self.current_directory(join(self.get_build_dir(arch.arch), 'python')):
             hostpython = sh.Command(self.hostpython_location)
-            shprint(hostpython,
+            self.shprint(hostpython,
                     'setup.py',
                     'build_ext',
                     _env=env, *self.setup_extra_args)
@@ -145,7 +144,7 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
             hostpython = sh.Command(self.hostpython_location)
 
             hpenv = env.copy()
-            shprint(hostpython, 'setup.py', 'install', '-O2',
+            self.shprint(hostpython, 'setup.py', 'install', '-O2',
                     '--root={}'.format(self.ctx.get_python_install_dir()),
                     '--install-lib=.',
                     _env=hpenv, *self.setup_extra_args)

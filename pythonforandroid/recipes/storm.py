@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import PythonRecipe
-from pythonforandroid.logger import shprint
 import sh
 
 class StormRecipe(PythonRecipe):
@@ -55,6 +54,6 @@ class StormRecipe(PythonRecipe):
             # Cross compiling for 32 bits in 64 bit ubuntu before precise is
             # failing. See
             # https://bugs.launchpad.net/ubuntu/+source/python2.7/+bug/873007
-            shprint(sh.sed, '-i',
+            self.shprint(sh.sed, '-i',
                     "s|BUILD_CEXTENSIONS = True|BUILD_CEXTENSIONS = False|",
                     'setup.py')

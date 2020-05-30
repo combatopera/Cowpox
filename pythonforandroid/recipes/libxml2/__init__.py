@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from os.path import exists
 import sh
 
@@ -56,11 +55,11 @@ class Libxml2Recipe(Recipe):
         with self.current_directory(self.get_build_dir(arch.arch)):
 
             if not exists('configure'):
-                shprint(sh.Command('./autogen.sh'), _env=env)
-            shprint(sh.Command('autoreconf'), '-vif', _env=env)
-            build_arch = shprint(
+                self.shprint(sh.Command('./autogen.sh'), _env=env)
+            self.shprint(sh.Command('autoreconf'), '-vif', _env=env)
+            build_arch = self.shprint(
                 sh.gcc, '-dumpmachine').stdout.decode('utf-8').split('\n')[0]
-            shprint(sh.Command('./configure'),
+            self.shprint(sh.Command('./configure'),
                     '--build=' + build_arch,
                     '--host=' + arch.command_prefix,
                     '--target=' + arch.command_prefix,
@@ -79,7 +78,7 @@ class Libxml2Recipe(Recipe):
 
             # Ensure we only build libxml2.la as if we do everything
             # we'll need the glob dependency which is a big headache
-            shprint(sh.make, "libxml2.la", _env=env)
+            self.shprint(sh.make, "libxml2.la", _env=env)
 
     def get_recipe_env(self, arch):
         env = super(Libxml2Recipe, self).get_recipe_env(arch)

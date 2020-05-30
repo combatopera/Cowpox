@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from p4a import Recipe
-from pythonforandroid.logger import shprint
 from multiprocessing import cpu_count
 from os.path import join
 import sh
@@ -87,7 +86,7 @@ class HarfbuzzRecipe(Recipe):
 
         with self.current_directory(self.get_build_dir(arch.arch)):
             configure = sh.Command('./configure')
-            shprint(
+            self.shprint(
                 configure,
                 '--without-icu',
                 '--host={}'.format(arch.command_prefix),
@@ -100,7 +99,7 @@ class HarfbuzzRecipe(Recipe):
                 '--without-glib',
                 _env=env,
             )
-            shprint(sh.make, '-j', str(cpu_count()), _env=env)
+            self.shprint(sh.make, '-j', str(cpu_count()), _env=env)
 
         if 'freetype' in self.ctx.recipe_build_order:
             # Rebuild/install freetype with harfbuzz support
