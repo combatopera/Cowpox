@@ -39,9 +39,9 @@
 # THE SOFTWARE.
 
 from lagoon import cp
-from pathlib import Path
-from p4a.patch import will_build
 from p4a import CythonRecipe
+from p4a.patch import will_build
+from pathlib import Path
 import logging
 
 log = logging.getLogger(__name__)
@@ -60,6 +60,4 @@ class PyjniusRecipe(CythonRecipe):
     def postbuild_arch(self, arch):
         super().postbuild_arch(arch)
         log.info('Copying pyjnius java class to classes build dir')
-        with self.current_directory(self.get_build_dir(arch.arch)):
-            cp._a.print(Path('jnius', 'src', 'org'), self.ctx.javaclass_dir)
-
+        cp._a.print(self.get_build_dir(arch.arch) / 'jnius' / 'src' / 'org', self.ctx.javaclass_dir)
