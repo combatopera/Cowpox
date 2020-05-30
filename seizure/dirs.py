@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .config import Config
+from .config import LegacyConfig
 from diapyr import types
 from pathlib import Path
 from pkg_resources import resource_stream
@@ -52,7 +52,7 @@ class Dirs:
     global_buildozer_dir = Path.home() / '.buildozer'
     global_cache_dir = global_buildozer_dir / 'cache' # XXX: Used?
 
-    @types(Config)
+    @types(LegacyConfig)
     def __init__(self, config):
         self.global_platform_dir = self.global_buildozer_dir / config.targetname / 'platform'
         self.buildozer_dir = config.workspace / '.buildozer'

@@ -46,7 +46,7 @@ import logging, re
 
 log = logging.getLogger(__name__)
 
-class Config(SafeConfigParser):
+class LegacyConfig(SafeConfigParser):
 
     targetname = 'android'
     build_mode = 'debug'

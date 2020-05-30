@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from .android import TargetAndroid
-from .config import Config
+from .config import LegacyConfig
 from .jsonstore import JsonStore
 from .dirs import Dirs
 from .src import Src
@@ -54,7 +54,7 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Config, Dirs, TargetAndroid, Src, this = Result)
+@types(LegacyConfig, Dirs, TargetAndroid, Src, this = Result)
 def run(config, dirs, target, src):
     dirs.install()
     log.info('Install platform')
@@ -89,7 +89,7 @@ def _main():
     os.chdir(config.workspace) # FIXME LATER: Only include main.py in artifact.
     di = DI()
     di.add(config)
-    di.add(Config) # TODO: Use aridity.
+    di.add(LegacyConfig) # TODO: Use aridity.
     di.add(Dirs)
     di.add(JsonStore) # TODO: Retire.
     di.add(Src)

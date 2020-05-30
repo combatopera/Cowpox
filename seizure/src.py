@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .config import Config
+from .config import LegacyConfig
 from .dirs import Dirs
 from diapyr import types
 from os import walk
@@ -51,7 +51,7 @@ log = logging.getLogger(__name__)
 
 class Src:
 
-    @types(Config, Dirs)
+    @types(LegacyConfig, Dirs)
     def __init__(self, config, dirs):
         self.source_dir = Path(config.getdefault('app', 'source.dir', '.')).resolve()
         self.include_exts = config.getlist('app', 'source.include_exts', '')

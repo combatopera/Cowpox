@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .config import Config
+from .config import LegacyConfig
 from .dirs import APACHE_ANT_VERSION, Dirs
 from .distribution import generate_dist_folder_name
 from .jsonstore import JsonStore
@@ -55,7 +55,7 @@ log = logging.getLogger(__name__)
 
 class TargetAndroid:
 
-    @types(Config, JsonStore, Dirs)
+    @types(LegacyConfig, JsonStore, Dirs)
     def __init__(self, config, state, dirs):
         self.android_api = config.getdefault('app', 'android.api', '27')
         self.android_minapi = config.getdefault('app', 'android.minapi', '21')
