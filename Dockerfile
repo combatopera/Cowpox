@@ -46,6 +46,7 @@ RUN apt-get update && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
     build-essential ccache cmake gettext adoptopenjdk-8-hotspot zip gradle
+# XXX: Can we bundle gradle deps?
 WORKDIR /root/project
 COPY requirements.txt .
 RUN pip install --upgrade -r requirements.txt
