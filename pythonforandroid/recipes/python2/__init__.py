@@ -40,6 +40,7 @@
 
 from os.path import join, exists
 from p4a.python import GuestPythonRecipe
+from pathlib import Path
 import logging, sh
 
 log = logging.getLogger(__name__)
@@ -92,7 +93,7 @@ class Python2Recipe(GuestPythonRecipe):
         super(Python2Recipe, self).prebuild_arch(arch)
         patch_mark = join(self.get_build_dir(arch.arch), '.openssl-patched')
         if 'openssl' in self.ctx.recipe_build_order and not exists(patch_mark):
-            self.apply_patch(join('patches', 'enable-openssl.patch'), arch.arch)
+            self.apply_patch(Path('patches', 'enable-openssl.patch'), arch)
             self.shprint(sh.touch, patch_mark)
 
     def build_arch(self, arch):

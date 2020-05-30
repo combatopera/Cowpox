@@ -225,7 +225,7 @@ class Recipe(metaclass = RecipeMeta):
 
     def apply_patch(self, filename, arch, build_dir = None):
         log.info("Applying patch %s", filename)
-        patchexe._t._p1.print('-d', build_dir if build_dir else self.get_build_dir(arch), '-i', self.get_recipe_dir() / filename)
+        patchexe._t._p1.print('-d', self.get_build_dir(arch.arch) if build_dir is None else build_dir, '-i', self.get_recipe_dir() / filename)
 
     def copy_file(self, filename, dest):
         log.info("Copy %s to %s", filename, dest)

@@ -104,7 +104,7 @@ class LibtorrentRecipe(Recipe):
         super(LibtorrentRecipe, self).prebuild_arch(arch)
         if 'openssl' in self.ctx.recipe_build_order:
             # Patch boost user-config.jam to use openssl
-            self.get_recipe('boost').apply_patch(join(self.get_recipe_dir(), 'user-config-openssl.patch'), arch.arch)
+            self.get_recipe('boost').apply_patch(self.get_recipe_dir() / 'user-config-openssl.patch', arch)
 
     def build_arch(self, arch):
         super(LibtorrentRecipe, self).build_arch(arch)

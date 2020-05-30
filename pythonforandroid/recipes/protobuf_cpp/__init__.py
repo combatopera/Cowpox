@@ -65,7 +65,7 @@ class ProtobufCppRecipe(CppCompiledComponentsPythonRecipe):
 
         patch_mark = join(self.get_build_dir(arch.arch), '.protobuf-patched')
         if self.ctx.python_recipe.name == 'python3' and not exists(patch_mark):
-            self.apply_patch('fix-python3-compatibility.patch', arch.arch)
+            self.apply_patch('fix-python3-compatibility.patch', arch)
             self.shprint(sh.touch, patch_mark)
 
         # During building, host needs to transpile .proto files to .py

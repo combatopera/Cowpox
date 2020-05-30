@@ -64,8 +64,7 @@ class ReportLabRecipe(CompiledComponentsPythonRecipe):
                 for l in os.listdir(font_dir):
                     if l.lower().startswith('darkgarden'):
                         os.remove(os.path.join(font_dir, l))
-            # Apply patches:
-            self.apply_patch('patches/fix-setup.patch', arch.arch)
+            self.apply_patch(Path('patches', 'fix-setup.patch'), arch)
             self.shprint(sh.touch, os.path.join(recipe_dir, '.patched'))
             ft = self.get_recipe('freetype')
             ft_dir = ft.get_build_dir(arch.arch)
