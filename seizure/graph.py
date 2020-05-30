@@ -61,27 +61,12 @@ class RecipeOrder(dict):
             if any(c in self for c in conflicts):
                 return True
 
-def get_dependency_tuple_list_for_recipe(recipe, blacklist=None):
-    """ Get the dependencies of a recipe with filtered out blacklist, and
-        turned into tuples with _fix_deplist()
-    """
+def _get_dependency_tuple_list_for_recipe(recipe, blacklist):
     if blacklist is None:
         blacklist = set()
-    assert(type(blacklist) == set)
     if recipe.depends is None:
-        dependencies = []
-    else:
-        # Turn all dependencies into tuples so that product will work
-        dependencies = _fix_deplist(recipe.depends)
-
-        # Filter out blacklisted items and turn lowercase:
-        dependencies = [
-            tuple(set(deptuple) - blacklist)
-            for deptuple in dependencies
-            if tuple(set(deptuple) - blacklist)
-        ]
-    return dependencies
-
+        return []
+    return [t for t in (tuple(set(deptuple) - blacklist) for deptuple in _fix_deplist(recipe.depends)) if t]
 
 def recursively_collect_orders(
         name, ctx, all_inputs, orders=None, blacklist=None
@@ -98,7 +83,7 @@ def recursively_collect_orders(
         blacklist = set()
     try:
         recipe = ctx.get_recipe(name)
-        dependencies = get_dependency_tuple_list_for_recipe(recipe, blacklist = blacklist)
+        dependencies = _get_dependency_tuple_list_for_recipe(recipe, blacklist)
         # handle opt_depends: these impose requirements on the build
         # order only if already present in the list of recipes to build
         dependencies.extend(_fix_deplist(
@@ -192,9 +177,7 @@ def obvious_conflict_checker(ctx, name_tuples, blacklist=None):
                 # Get recipe to add and who's ultimately adding it:
                 recipe = ctx.get_recipe(name)
                 recipe_conflicts = {c.lower() for c in recipe.conflicts}
-                recipe_dependencies = get_dependency_tuple_list_for_recipe(
-                    recipe, blacklist=blacklist
-                )
+                recipe_dependencies = _get_dependency_tuple_list_for_recipe(recipe, blacklist)
             except ModuleNotFoundError:
                 pass
             adder_first_recipe_name = adding_recipe or name
