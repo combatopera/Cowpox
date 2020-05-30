@@ -46,6 +46,7 @@ app
         ant = $(APACHE_ANT_VERSION)
         ndk = $(RECOMMENDED_NDK_VERSION)
         api = 27
+        minapi = 21
     source
         dir = $.(.)
         include_exts +=

@@ -62,7 +62,7 @@ class TargetAndroid:
         self.android_ndk_version = config.app.android.ndk
         self.workspace = Path(config.workspace)
         self.android_api = int(config.app.android.api)
-        self.android_minapi = legacyconfig.getdefault('app', 'android.minapi', '21')
+        self.android_minapi = int(config.app.android.minapi)
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.arch = legacyconfig.getdefault('app', 'android.arch', 'armeabi-v7a')
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
@@ -144,7 +144,7 @@ class TargetAndroid:
     def _install_android_packages(self):
         cache_key = 'android:sdk_installation'
         cache_value = [
-            str(self.android_api), self.android_minapi, self.android_ndk_version,
+            str(self.android_api), str(self.android_minapi), self.android_ndk_version,
             str(self.dirs.android_sdk_dir), str(self.dirs.android_ndk_dir),
         ]
         if self.state.get(cache_key, None) == cache_value:
@@ -320,7 +320,7 @@ class TargetAndroid:
     def _update_libraries_references(self, dist_dir):
         project_fn = dist_dir / 'project.properties'
         if not project_fn.exists():
-            content = ['target=android-{}\n'.format(self.android_api), 'APP_PLATFORM={}\n'.format(self.android_minapi)]
+            content = ['target=android-{}\n'.format(self.android_api), f"APP_PLATFORM={self.android_minapi}\n"]
         else:
             with project_fn.open(encoding = 'utf-8') as fd:
                 content = fd.readlines()
