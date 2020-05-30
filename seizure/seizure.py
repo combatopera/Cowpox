@@ -52,6 +52,21 @@ import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
+class Result: pass
+
+@types(Config, Dirs, TargetAndroid, Src, this = Result)
+def run(config, dirs, target, src):
+    dirs.install()
+    log.info('Install platform')
+    target.install_platform() # TODO: Cache this.
+    log.info('Compile platform')
+    target.compile_platform()
+    src._copy_application_sources()
+    shutil.copytree(dirs.applibs_dir, dirs.app_dir / '_applibs')
+    dirs.add_sitecustomize()
+    log.info('Package the application')
+    target.build_package()
+
 def _initlogging():
     console = ColorizingStreamHandler()
     console.setLevel(logging.INFO)
@@ -70,12 +85,13 @@ def _main():
     shutil.copytree('.', config.project, symlinks = True, dirs_exist_ok = True)
     soak.print(cwd = config.workspace)
     pipify.print('-f', config.workspace / 'bdozlib.arid', cwd = config.project)
+    # TODO: Run in arbitrary directory.
     os.chdir(config.workspace) # FIXME LATER: Only include main.py in artifact.
     di = DI()
     di.add(config)
-    di.add(Config)
+    di.add(Config) # TODO: Use aridity.
     di.add(Dirs)
-    di.add(JsonStore)
+    di.add(JsonStore) # TODO: Retire.
     di.add(Src)
     di.add(TargetAndroid)
     di.add(run)
@@ -87,18 +103,3 @@ def main():
     except:
         log.exception('Abort:')
         raise
-
-class Result: pass
-
-@types(Config, Dirs, TargetAndroid, Src, this = Result)
-def run(config, dirs, target, src):
-    dirs.install()
-    log.info('Install platform')
-    target.install_platform()
-    log.info('Compile platform')
-    target.compile_platform()
-    src._copy_application_sources()
-    shutil.copytree(dirs.applibs_dir, dirs.app_dir / '_applibs')
-    dirs.add_sitecustomize()
-    log.info('Package the application')
-    target.build_package()
