@@ -59,16 +59,14 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
 
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
-        bootstrap = bootstrap_name = self.ctx.bootstrap.name
-        is_sdl2 = bootstrap_name in ('sdl2', 'sdl2python3', 'sdl2_gradle')
+        bootstrap_name = self.ctx.bootstrap.name
+        is_sdl2 = bootstrap_name in {'sdl2', 'sdl2python3', 'sdl2_gradle'}
         is_webview = bootstrap_name == 'webview'
         is_service_only = bootstrap_name == 'service_only'
         if not (is_sdl2 or is_webview or is_service_only):
             raise Exception("unsupported bootstrap for android recipe: %s" % bootstrap_name)
-        if is_sdl2:
-            bootstrap = 'sdl2'
         config = {
-            'BOOTSTRAP': bootstrap,
+            'BOOTSTRAP': 'sdl2' if is_sdl2 else bootstrap_name,
             'IS_SDL2': int(is_sdl2),
             'PY2': int(will_build('python2')(self)),
             'JAVA_NAMESPACE': 'org.kivy.android',
