@@ -48,6 +48,7 @@ from .p4a import create, makeapk
 from diapyr import types
 from lagoon import tar, unzip, yes
 from lagoon.program import Program
+from pathlib import Path
 from types import SimpleNamespace
 import logging, os, shutil
 
@@ -59,6 +60,7 @@ class TargetAndroid:
     def __init__(self, config, legacyconfig, state, dirs):
         self.APACHE_ANT_VERSION = config.APACHE_ANT_VERSION
         self.android_ndk_version = config.app.android.ndk
+        self.workspace = Path(config.workspace)
         self.android_api = legacyconfig.getdefault('app', 'android.api', '27')
         self.android_minapi = legacyconfig.getdefault('app', 'android.minapi', '21')
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
@@ -191,7 +193,7 @@ class TargetAndroid:
             self.arch,
             self.build_dir,
             int(self.config.getdefault('app', 'android.ndk_api', self.android_minapi)),
-            self.config.workspace / 'local_recipes',
+            self.workspace / 'local_recipes',
             self.config.getlist('app', 'requirements', ''),
         )
 
@@ -267,17 +269,17 @@ class TargetAndroid:
             yield 'meta_data', list(self._meta_data())
             yield 'add_activity', config.getlist('app', 'android.add_activities', [])
             icon = config.getdefault('app', 'icon.filename', '')
-            yield 'icon', (self.config.workspace / icon).expanduser().resolve() if icon else None
+            yield 'icon', (self.workspace / icon).expanduser().resolve() if icon else None
             yield 'wakelock', True if config.getbooldefault('app', 'android.wakelock', False) else None
             intent_filters = config.getdefault('app', 'android.manifest.intent_filters', '')
-            yield 'intent_filters', self.config.workspace / intent_filters if intent_filters else None
+            yield 'intent_filters', self.workspace / intent_filters if intent_filters else None
             launch_mode = config.getdefault('app', 'android.manifest.launch_mode', '')
             yield 'activity_launch_mode', launch_mode if launch_mode else 'singleTask'
             if self.bootstrapname != 'service_only':
                 yield 'orientation', self._orientation()
                 yield 'window', not config.getbooldefault('app', 'fullscreen', True)
                 presplash = config.getdefault('app', 'presplash.filename', '')
-                yield 'presplash', (self.config.workspace / presplash).expanduser().resolve() if presplash else None
+                yield 'presplash', (self.workspace / presplash).expanduser().resolve() if presplash else None
                 presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
                 yield 'presplash_color', presplash_color if presplash_color else '#000000'
             yield 'sign', True if self.config.build_mode != 'debug' and self._check_p4a_sign_env(True) else None
@@ -296,7 +298,7 @@ class TargetAndroid:
             self.arch,
             self.build_dir,
             int(self.config.getdefault('app', 'android.ndk_api', self.android_minapi)),
-            self.config.workspace / 'local_recipes',
+            self.workspace / 'local_recipes',
             self.dirs.app_dir,
             self.config.build_mode != 'debug',
             SimpleNamespace(**dict(downstreamargs())),

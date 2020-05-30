@@ -47,6 +47,7 @@ from argparse import ArgumentParser
 from chromalog.log import ColorizingFormatter, ColorizingStreamHandler
 from diapyr import DI, types
 from lagoon import pipify, soak
+from pathlib import Path
 import logging, os, shutil
 
 log = logging.getLogger(__name__)
@@ -81,10 +82,11 @@ def _main():
     parser.add_argument('configpath')
     config = Config.load(parser.parse_args().configpath)
     shutil.copytree('.', config.project, symlinks = True, dirs_exist_ok = True)
-    soak.print(cwd = config.workspace)
-    pipify.print('-f', config.workspace / 'bdozlib.arid', cwd = config.project)
+    workspace = Path(config.workspace)
+    soak.print(cwd = workspace)
+    pipify.print('-f', workspace / 'bdozlib.arid', cwd = config.project)
     # TODO: Run in arbitrary directory.
-    os.chdir(config.workspace) # FIXME LATER: Only include main.py in artifact.
+    os.chdir(workspace) # FIXME LATER: Only include main.py in artifact.
     di = DI()
     di.add(config)
     di.add(LegacyConfig) # TODO: Retire.

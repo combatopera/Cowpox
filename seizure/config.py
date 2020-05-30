@@ -42,27 +42,21 @@ from aridimpl.util import NoSuchPathException
 from aridity import Context, Repl
 from configparser import SafeConfigParser
 from diapyr import types
-from pathlib import Path
 import logging, re
 
 log = logging.getLogger(__name__)
 
 class Config:
 
-    schema = dict(
-        workspace = Path,
-    )
-
     @classmethod
     def load(cls, path):
         context = Context()
         with Repl(context) as repl:
             repl.printf(". %s", path)
-        return cls(context, cls.schema)
+        return cls(context)
 
-    def __init__(self, context, schema):
+    def __init__(self, context):
         self._context = context
-        self._schema = schema
 
     def __getattr__(self, name):
         try:
@@ -70,19 +64,17 @@ class Config:
         except NoSuchPathException:
             raise AttributeError
         try:
-            value = obj.value
+            return obj.value
         except AttributeError:
-            return type(self)(obj, self._schema.get(name, {}))
-        return self._schema.get(name, lambda x: x)(value)
+            return type(self)(obj)
 
 class LegacyConfig(SafeConfigParser):
 
     build_mode = 'debug'
 
-    @types(Config)
-    def __init__(self, config):
+    @types()
+    def __init__(self):
         super().__init__(allow_no_value = True)
-        self.workspace = config.workspace
         self.optionxform = lambda value: value
         self.getlist = self._get_config_list
         self.getlistvalues = self._get_config_list_values

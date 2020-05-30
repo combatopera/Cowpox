@@ -53,11 +53,12 @@ class Dirs:
 
     @types(Config)
     def __init__(self, config):
+        workspace = Path(config.workspace)
         self.global_platform_dir = self.global_buildozer_dir / config.targetname / 'platform'
-        self.buildozer_dir = config.workspace / '.buildozer'
+        self.buildozer_dir = workspace / '.buildozer'
         self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
         self.app_dir = self.buildozer_dir / config.targetname / 'app'
-        self.bin_dir = config.workspace / 'bin'
+        self.bin_dir = workspace / 'bin'
         self.applibs_dir = self.buildozer_dir / 'applibs'
         self.apache_ant_dir = self.global_platform_dir / f"apache-ant-{config.app.android.ant}"
         self.android_sdk_dir = self.global_platform_dir / 'android-sdk'
