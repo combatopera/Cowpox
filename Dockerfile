@@ -49,7 +49,8 @@ RUN apt-get update && \
 # XXX: Can we bundle gradle deps?
 WORKDIR /root/project
 COPY requirements.txt .
-RUN pip install --upgrade -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
 FROM base
 RUN pip install pyflakes
