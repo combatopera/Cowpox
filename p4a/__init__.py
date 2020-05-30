@@ -580,14 +580,14 @@ class BootstrapNDKRecipe(Recipe):
     def get_jni_dir(self):
         return self.ctx.bootstrap.build_dir / 'jni'
 
-    def get_recipe_env(self, arch, with_flags_in_cc=True, with_python=False):
+    def get_recipe_env(self, arch, with_flags_in_cc=True):
+        return super().get_recipe_env(arch, with_flags_in_cc)
+
+    def recipe_env_with_python(self, arch, with_flags_in_cc=True):
         env = super().get_recipe_env(arch, with_flags_in_cc)
-        if not with_python:
-            return env
         env['PYTHON_INCLUDE_ROOT'] = self.ctx.python_recipe.include_root(arch.arch)
         env['PYTHON_LINK_ROOT'] = self.ctx.python_recipe.link_root(arch.arch)
-        env['EXTRA_LDLIBS'] = ' -lpython{}'.format(
-            self.ctx.python_recipe.major_minor_version_string)
+        env['EXTRA_LDLIBS'] = ' -lpython{}'.format(self.ctx.python_recipe.major_minor_version_string)
         if 'python3' in self.ctx.python_recipe.name:
             env['EXTRA_LDLIBS'] += 'm'
         return env
