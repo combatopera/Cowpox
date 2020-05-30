@@ -42,7 +42,7 @@ from importlib import import_module
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
 from os import listdir, walk, sep
-from os.path import join, isdir, normpath, splitext
+from os.path import join, normpath, splitext
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import functools, logging, os, shlex, shutil, subprocess
@@ -301,14 +301,13 @@ class Bootstrap:
 
     def fry_eggs(self, sitepackages):
         log.info("Frying eggs in %s", sitepackages)
-        for d in listdir(sitepackages):
-            rd = join(sitepackages, d)
-            if isdir(rd) and d.endswith('.egg'):
-                log.info("  %s", d)
-                files = [join(rd, f) for f in listdir(rd) if f != 'EGG-INFO']
+        for rd in sitepackages.iterdir():
+            if rd.is_dir() and rd.name.endswith('.egg'):
+                log.info("  %s", rd.name)
+                files = [f for f in rd.iterdir() if f.name != 'EGG-INFO']
                 if files:
                     mv._t.print(sitepackages, *files)
-                rm._rf.print(d)
+                rm._rf.print(rd)
 
 def expand_dependencies(recipes, ctx):
     """ This function expands to lists of all different available
