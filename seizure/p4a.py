@@ -60,7 +60,7 @@ def _createcontext(args, sdkpath, apilevel, ndkpath):
 
 def _build_dist_from_args(ctx, dist, args):
     bs = Bootstrap.get_bootstrap(args.bootstrap, ctx)
-    build_order, python_modules = get_recipe_order(ctx, dist.recipes, bs.recipe_depends, [])
+    build_order, python_modules = get_recipe_order(ctx, dist.recipes, bs.recipe_depends, ['genericndkbuild', 'python2'])
     assert not set(build_order) & set(python_modules)
     ctx.recipe_build_order = build_order
     ctx.python_modules = python_modules
