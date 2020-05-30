@@ -336,6 +336,7 @@ def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
         log.info("Using the first of these: %s", chosen_order)
     else:
         log.info("Found a single valid recipe set: %s", chosen_order)
+    raise Exception('boom')
     recipes = []
     python_modules = []
     for name in chosen_order:
