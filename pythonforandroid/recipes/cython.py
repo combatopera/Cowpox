@@ -40,7 +40,6 @@
 
 from p4a import CompiledComponentsPythonRecipe
 
-
 class CythonRecipe(CompiledComponentsPythonRecipe):
 
     version = '0.29.15'
@@ -49,5 +48,3 @@ class CythonRecipe(CompiledComponentsPythonRecipe):
     depends = ['setuptools']
     call_hostpython_via_targetpython = False
     install_in_hostpython = True
-
-
