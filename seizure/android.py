@@ -61,8 +61,8 @@ class TargetAndroid:
         self.APACHE_ANT_VERSION = config.APACHE_ANT_VERSION
         self.android_ndk_version = config.android.ndk
         self.workspace = Path(config.container.workspace)
-        self.android_api = int(config.android.api)
-        self.android_minapi = int(config.android.minapi)
+        self.android_api = config.android.api
+        self.android_minapi = config.android.minapi
         self.arch = config.android.arch
         self.dist_name = config.package.name
         self.bootstrapname = config.p4a.bootstrap
