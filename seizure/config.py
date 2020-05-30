@@ -40,6 +40,7 @@
 
 from .recommendations import RECOMMENDED_NDK_VERSION
 from aridity import Context, Repl
+from aridimpl.util import NoSuchPathException
 from configparser import SafeConfigParser
 from diapyr import types
 from pathlib import Path
@@ -58,14 +59,17 @@ class Config:
         context = Context()
         with Repl(context) as repl:
             repl.printf(". %s", path)
-        return cls(context)
+        return cls(context, cls.schema)
 
     def __init__(self, context, schema):
         self._context = context
         self._schema = schema
 
     def __getattr__(self, name):
-        obj = self._context.resolved(name)
+        try:
+            obj = self._context.resolved(name)
+        except NoSuchPathException:
+            raise AttributeError
         try:
             value = obj.value
         except AttributeError:
