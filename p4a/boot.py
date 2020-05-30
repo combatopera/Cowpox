@@ -41,7 +41,6 @@
 from importlib import import_module
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
-from os import listdir, walk, sep
 from os.path import join, normpath, splitext
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -50,10 +49,10 @@ import functools, logging, os, shlex, shutil, subprocess
 log = logging.getLogger(__name__)
 
 def _copy_files(src_root, dest_root, override):
-    for root, dirnames, filenames in walk(src_root):
+    for root, dirnames, filenames in os.walk(src_root):
         for filename in filenames:
             subdir = normpath(root.replace(str(src_root), ""))
-            if subdir.startswith(sep):  # ensure it is relative
+            if subdir.startswith(os.sep):  # ensure it is relative
                 subdir = subdir[1:]
             dest_dir = join(dest_root, subdir)
             if not os.path.exists(dest_dir):
@@ -159,20 +158,11 @@ class Bootstrap:
         self.distribution.save_info()
 
     @classmethod
-    def _all_bootstraps(cls, ctx):
-        bootstraps_dir = ctx.contribroot / 'bootstraps'
-        result = set()
-        for name in listdir(bootstraps_dir):
-            if name not in {'__pycache__', 'common'} and (bootstraps_dir / name).is_dir():
-                result.add(name)
-        return result
-
-    @classmethod
     def _get_usable_bootstraps_for_recipes(cls, recipes, ctx):
         '''Returns all bootstrap whose recipe requirements do not conflict
         with the given recipes, in no particular order.'''
         log.info('Trying to find a bootstrap that matches the given recipes.')
-        bootstraps = [cls.get_bootstrap(name, ctx) for name in cls._all_bootstraps(ctx)]
+        bootstraps = [cls.get_bootstrap(name, ctx) for name in ctx.all_bootstraps()]
         acceptable_bootstraps = set()
         # Find out which bootstraps are acceptable:
         for bs in bootstraps:

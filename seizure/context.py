@@ -93,17 +93,17 @@ class Context:
 
     contribroot = Path(resource_filename('pythonforandroid', '.'))
     env = os.environ.copy()
-    # the filepath of toolchain.py
     distribution = None
     libs_dir = None
     aars_dir = None
-    ndk_platform = None  # the ndk platform directory
-
+    ndk_platform = None
     bootstrap = None
     bootstrap_build_dir = None
+    recipe_build_order = None
+    recipes = {} # FIXME: No!
 
-    recipe_build_order = None  # Will hold the list of all built recipes
-    recipes = {}
+    def all_bootstraps(self):
+        return {path.name for path in (self.contribroot / 'bootstraps').iterdir() if path.name not in {'__pycache__', 'common'} and path.is_dir()}
 
     def get_recipe(self, name):
         try:
