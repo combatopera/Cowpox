@@ -66,7 +66,7 @@ class TargetAndroid:
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.arch = config.app.android.arch
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
-        self.dist_name = legacyconfig.get('app', 'package.name')
+        self.dist_name = config.app.package.name
         self.bootstrapname = legacyconfig.getdefault('app', 'p4a.bootstrap', 'sdl2')
         self.config = legacyconfig
         self.state = state
