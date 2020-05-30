@@ -40,5 +40,4 @@
 
 from p4a import CythonRecipe
 
-class RecipeImpl(CythonRecipe): pass
-
+class RecipeImpl(CythonRecipe): pass # XXX: Is subclassing necessary?
