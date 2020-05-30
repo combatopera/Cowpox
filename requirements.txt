@@ -1,14 +1,10 @@
-colorama>=0.3.3
 # TODO: Use recent Cython for prebuilt wheel.
 Cython==0.28.6
 diapyr
 jinja2
 lagoon
 pep517<0.7.0
-pip
 pytoml
 pyven>=37
-six
 soak
 virtualenv<20
-wheel
