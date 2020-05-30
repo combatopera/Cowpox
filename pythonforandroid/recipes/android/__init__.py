@@ -60,8 +60,6 @@ class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
         ctx_bootstrap = self.ctx.bootstrap.name
-        if isinstance(ctx_bootstrap, bytes):
-            ctx_bootstrap = ctx_bootstrap.decode('utf-8')
         bootstrap = bootstrap_name = ctx_bootstrap
         is_sdl2 = bootstrap_name in ('sdl2', 'sdl2python3', 'sdl2_gradle')
         is_webview = bootstrap_name == 'webview'
