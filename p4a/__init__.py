@@ -441,27 +441,22 @@ class Recipe(metaclass = RecipeMeta):
         build_dir = self.get_build_dir(arch.arch)
         return (build_dir / '.patched').exists()
 
-    def apply_patches(self, arch, build_dir=None):
-        '''Apply any patches for the Recipe.
-
-        .. versionchanged:: 0.6.0
-            Add ability to apply patches from any dir via kwarg `build_dir`'''
+    def apply_patches(self, arch):
         if self.patches:
             log.info("Applying patches for %s[%s]", self.name, arch.arch)
             if self.is_patched(arch):
                 log.info("%s already patched, skipping", self.name)
                 return
-            build_dir = build_dir if build_dir else self.get_build_dir(arch.arch)
+            build_dir = self.get_build_dir(arch.arch)
             for patch in self.patches:
                 if isinstance(patch, (tuple, list)):
                     patch, patch_check = patch
                     if not patch_check(arch=arch, recipe=self):
                         continue
-
                 self.apply_patch(
                         patch.format(version=self.version, arch=arch.arch),
                         arch.arch, build_dir=build_dir)
-            touch.print(join(build_dir, '.patched'))
+            touch.print(build_dir / '.patched')
 
     def should_build(self, arch):
         return not all(lib.exists() for lib in self.get_libraries(arch.arch)) if self.built_libraries else True

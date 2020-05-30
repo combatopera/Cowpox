@@ -55,10 +55,10 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
     ]
     call_hostpython_via_targetpython = False
 
-    def apply_patches(self, arch, build_dir=None):
+    def apply_patches(self, arch):
         if 'python2' in self.ctx.recipe_build_order:
             self.patches.append(join('patches', 'fix-py2-numpy-import.patch'))
-        super().apply_patches(arch, build_dir=build_dir)
+        super().apply_patches(arch)
 
     def build_compiled_components(self, arch):
         self.setup_extra_args = ['-j', str(cpu_count())]
