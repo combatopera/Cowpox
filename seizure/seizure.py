@@ -44,6 +44,7 @@ from .jsonstore import JsonStore
 from .dirs import Dirs
 from .src import Src
 from argparse import ArgumentParser
+from chromalog.log import ColorizingFormatter, ColorizingStreamHandler
 from diapyr import DI, types
 from lagoon import pipify, soak
 from pathlib import Path
@@ -51,11 +52,17 @@ import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
-def main():
-    console = logging.StreamHandler()
+def _initlogging():
+    console = ColorizingStreamHandler()
     console.setLevel(logging.INFO)
-    logging.basicConfig(format = "%(asctime)s [%(levelname)s] %(message)s", level = logging.DEBUG, handlers = [
-            logging.FileHandler('/workspace/bin/Seizure.log'), console])
+    formatter = ColorizingFormatter("%(asctime)s [%(levelname)s] %(message)s")
+    for h in logging.FileHandler('/workspace/bin/Seizure.log'), console:
+        h.setFormatter(formatter)
+        logging.root.addHandler(h)
+    logging.root.setLevel(logging.DEBUG)
+
+def main():
+    _initlogging()
     parser = ArgumentParser()
     parser.add_argument('workspace', type = Path)
     parser.add_argument('project', type = Path)
