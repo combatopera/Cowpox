@@ -64,7 +64,7 @@ class TargetAndroid:
         self.android_api = int(config.app.android.api)
         self.android_minapi = int(config.app.android.minapi)
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
-        self.arch = legacyconfig.getdefault('app', 'android.arch', 'armeabi-v7a')
+        self.arch = config.app.android.arch
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.dist_name = legacyconfig.get('app', 'package.name')
         self.bootstrapname = legacyconfig.getdefault('app', 'p4a.bootstrap', 'sdl2')
