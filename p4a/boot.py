@@ -41,7 +41,6 @@
 from importlib import import_module
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
-from os.path import join, normpath, splitext
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import functools, logging, os, shlex, shutil, subprocess
@@ -50,22 +49,19 @@ log = logging.getLogger(__name__)
 
 def _copy_files(src_root, dest_root, override):
     for root, dirnames, filenames in os.walk(src_root):
+        root = Path(root)
+        subdir = root.relative_to(src_root)
         for filename in filenames:
-            subdir = normpath(root.replace(str(src_root), ""))
-            if subdir.startswith(os.sep):  # ensure it is relative
-                subdir = subdir[1:]
-            dest_dir = join(dest_root, subdir)
-            if not os.path.exists(dest_dir):
-                os.makedirs(dest_dir)
-            src_file = join(root, filename)
-            dest_file = join(dest_dir, filename)
-            if os.path.isfile(src_file):
-                if override and os.path.exists(dest_file):
-                    os.unlink(dest_file)
-                if not os.path.exists(dest_file):
+            dest_dir = (dest_root / subdir).mkdirp()
+            src_file = root / filename
+            dest_file = dest_dir / filename
+            if src_file.is_file():
+                if override and dest_file.exists():
+                    dest_file.unlink()
+                if not dest_file.exists():
                     shutil.copy(src_file, dest_file)
             else:
-                os.makedirs(dest_file)
+                dest_file.mkdirp()
 
 default_recipe_priorities = [
     "webview", "sdl2", "service_only"  # last is highest
@@ -252,7 +248,7 @@ class Bootstrap:
 
     def _unpack_aar(self, aar, arch):
         with TemporaryDirectory() as temp_dir:
-            name = splitext(aar.name)[0]
+            name = os.path.splitext(aar.name)[0]
             jar_name = f"{name}.jar"
             log.info("unpack %s aar", name)
             log.debug("  from %s", aar)
