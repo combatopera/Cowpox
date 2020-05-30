@@ -49,6 +49,7 @@ android
     arch = armeabi-v7a
     accept_sdk_license = false
     skip_update = false
+    ndk_api = $(minapi)
 source
     dir = $.(.)
     include_exts +=

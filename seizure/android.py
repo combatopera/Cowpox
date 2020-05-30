@@ -68,6 +68,7 @@ class TargetAndroid:
         self.bootstrapname = config.p4a.bootstrap
         self.acceptlicense = config.android.accept_sdk_license
         self.skip_upd = config.android.skip_update
+        self.ndk_api = config.android.ndk_api
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -193,7 +194,7 @@ class TargetAndroid:
             self.bootstrapname,
             self.arch,
             self.build_dir,
-            int(self.config.getdefault('app', 'android.ndk_api', self.android_minapi)),
+            self.ndk_api,
             self.workspace / 'local_recipes',
             self.config.getlist('app', 'requirements', ''),
         )
@@ -298,7 +299,7 @@ class TargetAndroid:
             self.bootstrapname,
             self.arch,
             self.build_dir,
-            int(self.config.getdefault('app', 'android.ndk_api', self.android_minapi)),
+            self.ndk_api,
             self.workspace / 'local_recipes',
             self.dirs.app_dir,
             self.config.build_mode != 'debug',
