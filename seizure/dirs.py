@@ -45,7 +45,6 @@ from pkg_resources import resource_stream
 import logging, shutil
 
 log = logging.getLogger(__name__)
-APACHE_ANT_VERSION = '1.9.4'
 
 class Dirs:
 
@@ -60,7 +59,7 @@ class Dirs:
         self.app_dir = self.buildozer_dir / config.targetname / 'app'
         self.bin_dir = config.workspace / 'bin'
         self.applibs_dir = self.buildozer_dir / 'applibs'
-        self.apache_ant_dir = self.global_platform_dir / f"apache-ant-{legacyconfig.getdefault('app', 'android.ant', APACHE_ANT_VERSION)}"
+        self.apache_ant_dir = self.global_platform_dir / f"apache-ant-{config.app.android.ant}"
         self.android_sdk_dir = self.global_platform_dir / 'android-sdk'
         self.android_ndk_dir = self.global_platform_dir / f"android-ndk-r{legacyconfig.getdefault('app', 'android.ndk', legacyconfig.android_ndk_version)}"
 

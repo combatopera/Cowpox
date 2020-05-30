@@ -39,3 +39,5 @@
 : THE SOFTWARE.
 
 targetname = android
+APACHE_ANT_VERSION = 1.9.4
+app android ant = $(APACHE_ANT_VERSION)

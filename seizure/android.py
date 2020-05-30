@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from .config import Config, LegacyConfig
-from .dirs import APACHE_ANT_VERSION, Dirs
+from .dirs import Dirs
 from .distribution import generate_dist_folder_name
 from .jsonstore import JsonStore
 from .libs.version import parse
@@ -57,6 +57,7 @@ class TargetAndroid:
 
     @types(Config, LegacyConfig, JsonStore, Dirs)
     def __init__(self, config, legacyconfig, state, dirs):
+        self.APACHE_ANT_VERSION = config.APACHE_ANT_VERSION
         self.android_api = legacyconfig.getdefault('app', 'android.api', '27')
         self.android_minapi = legacyconfig.getdefault('app', 'android.minapi', '21')
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
@@ -75,7 +76,7 @@ class TargetAndroid:
             return
         ant_dir.mkdir(parents = True)
         log.info('Android ANT is missing, downloading')
-        archive = f"apache-ant-{APACHE_ANT_VERSION}-bin.tar.gz"
+        archive = f"apache-ant-{self.APACHE_ANT_VERSION}-bin.tar.gz"
         download('http://archive.apache.org/dist/ant/binaries/', archive, ant_dir)
         tar.xzf.print(archive, cwd = ant_dir)
         log.info('Apache ANT installation done.')
