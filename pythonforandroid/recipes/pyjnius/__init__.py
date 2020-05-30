@@ -41,7 +41,6 @@
 from lagoon import cp
 from p4a import CythonRecipe
 from p4a.patch import will_build
-from pathlib import Path
 import logging
 
 log = logging.getLogger(__name__)
