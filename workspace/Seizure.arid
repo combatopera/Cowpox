@@ -63,6 +63,7 @@ android
     manifest launch_mode = singleTask
     presplash_color = #000000
     uses_library := $list()
+    gradle_dependencies := $list()
 source
     dir = $.(.)
     include_exts +=
