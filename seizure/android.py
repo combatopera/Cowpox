@@ -88,6 +88,7 @@ class TargetAndroid:
         self.wakelock = config.android.wakelock
         self.launch_mode = config.android.manifest.launch_mode
         self.fullscreen = config.fullscreen
+        self.presplash_color = config.android.presplash_color
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -285,8 +286,7 @@ class TargetAndroid:
                 yield 'window', not self.fullscreen
                 presplash = self.config.getdefault('app', 'presplash.filename', '')
                 yield 'presplash', (self.workspace / presplash).expanduser().resolve() if presplash else None
-                presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
-                yield 'presplash_color', presplash_color if presplash_color else '#000000'
+                yield 'presplash_color', self.presplash_color
             yield 'sign', True if self.build_mode != 'debug' and self._check_p4a_sign_env(True) else None
             yield 'services', self.config.getlist('app', 'services', [])
             yield 'android_used_libs', self.config.getlist('app', 'android.uses_library', [])

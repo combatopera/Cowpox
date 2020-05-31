@@ -61,6 +61,7 @@ android
     add_activites := $list()
     wakelock = false
     manifest launch_mode = singleTask
+    presplash_color = #000000
 source
     dir = $.(.)
     include_exts +=
