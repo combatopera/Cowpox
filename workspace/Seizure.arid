@@ -84,3 +84,4 @@ title = $(name)
 version = $.(0.1)
 commit = $githash$(container src)
 fullscreen = false
+services := $list()
