@@ -41,8 +41,8 @@
 from . import etc
 from .android import TargetAndroid
 from .config import Config
-from .jsonstore import JsonStore
 from .dirs import Dirs
+from .jsonstore import JsonStore
 from .src import Src
 from .util import Logging
 from diapyr import DI, types
