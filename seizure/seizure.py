@@ -65,22 +65,22 @@ def run(dirs, target, src):
     shutil.copytree(dirs.applibs_dir, dirs.app_dir / '_applibs')
     dirs.add_sitecustomize()
     log.info('Package the application')
-    target.build_package()
+    return target.build_package()
 
-def _initlogging():
+def _initlogging(logpath):
     console = ColorizingStreamHandler()
     console.setLevel(logging.INFO)
     formatter = ColorizingFormatter("%(asctime)s [%(levelname)s] %(message)s")
-    for h in logging.FileHandler('/workspace/bin/Seizure.log'), console:
+    for h in logging.FileHandler(logpath), console:
         h.setFormatter(formatter)
         logging.root.addHandler(h)
     logging.root.setLevel(logging.DEBUG)
 
 def _main():
-    _initlogging()
     parser = ArgumentParser()
     parser.add_argument('configpath')
     config = Config.load(parser.parse_args().configpath).Seizure
+    _initlogging(config.log.path)
     shutil.copytree('.', config.container.project, symlinks = True, dirs_exist_ok = True)
     workspace = Path(config.container.workspace)
     soak.print(cwd = workspace)

@@ -95,6 +95,7 @@ class TargetAndroid:
         self.icon = config.icon.filename
         self.intent_filters = config.android.manifest.intent_filters
         self.presplash = config.presplash.filename
+        self.apkdir = Path(config.apk.dir)
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.state = state
@@ -314,12 +315,12 @@ class TargetAndroid:
             mode = self._get_release_mode()
         apk = f'{dist_dir.name}-{mode}.apk'
         apk_dir = dist_dir / "build" / "outputs" / "apk" / mode_sign
-        apk_dest = f"{self.dist_name}-{self.version}-{self.commit}-{self.arch}-{mode}.apk"
-        shutil.copyfile(apk_dir / apk, self.dirs.bin_dir / apk_dest)
+        apkpath = self.apkdir / f"{self.dist_name}-{self.version}-{self.commit}-{self.arch}-{mode}.apk"
+        shutil.copyfile(apk_dir / apk, apkpath)
         log.info('Android packaging done!')
-        log.info("APK %s available in the bin directory", apk_dest)
-        self.state['android:latestapk'] = apk_dest
+        self.state['android:latestapk'] = apkpath.name
         self.state['android:latestmode'] = self.build_mode
+        return apkpath
 
     def _update_libraries_references(self, dist_dir):
         project_fn = dist_dir / 'project.properties'
