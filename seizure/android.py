@@ -90,6 +90,7 @@ class TargetAndroid:
         self.fullscreen = config.fullscreen
         self.presplash_color = config.android.presplash_color
         self.services = config.services.list()
+        self.android_used_libs = config.android.uses_library.list()
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -290,7 +291,7 @@ class TargetAndroid:
                 yield 'presplash_color', self.presplash_color
             yield 'sign', True if self.build_mode != 'debug' and self._check_p4a_sign_env(True) else None
             yield 'services', self.services
-            yield 'android_used_libs', self.config.getlist('app', 'android.uses_library', [])
+            yield 'android_used_libs', self.android_used_libs
             depends = self.config.getlist('app', 'android.gradle_dependencies', [])
             yield 'depends', depends if depends else None
             if self.bootstrapname == 'webview':

@@ -62,6 +62,7 @@ android
     wakelock = false
     manifest launch_mode = singleTask
     presplash_color = #000000
+    uses_library := $list()
 source
     dir = $.(.)
     include_exts +=
