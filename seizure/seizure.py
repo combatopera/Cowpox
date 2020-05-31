@@ -46,7 +46,6 @@ from .jsonstore import JsonStore
 from .src import Src
 from .util import Logging
 from diapyr import DI, types
-from lagoon import pipify
 from pathlib import Path
 from pkg_resources import resource_filename
 import logging, os, shutil
@@ -59,9 +58,6 @@ class Result: pass
 def run(config, dirs, target, src):
     log.info('Copy project.')
     shutil.copytree(config.container.src, config.container.project, symlinks = True, dirs_exist_ok = True)
-    # TODO: Preparation should happen on host.
-    log.info('Prepare project.')
-    pipify.print('-f', resource_filename(etc.__name__, 'bdozlib.arid'), cwd = config.container.project)
     dirs.install()
     log.info('Install platform')
     target.install_platform() # XXX: Bake these into the image?

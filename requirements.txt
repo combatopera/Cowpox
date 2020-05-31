@@ -1,4 +1,4 @@
-aridity>=24
+aridity
 chromalog
 Cython
 diapyr
@@ -6,5 +6,4 @@ jinja2
 lagoon
 pep517<0.7.0
 pytoml
-pyven>=37
 virtualenv<20
