@@ -51,6 +51,7 @@ android
     skip_update = false
     ndk_api = $(minapi)
     whitelist := $list()
+    permissions := $list()
 source
     dir = $.(.)
     include_exts +=

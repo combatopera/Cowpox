@@ -73,6 +73,7 @@ class TargetAndroid:
         self.fqpackage = config.package.fq
         self.build_mode = config.build_mode
         self.p4a_whitelist = list(config.android.whitelist)
+        self.permissions = list(config.android.permissions)
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -234,7 +235,7 @@ class TargetAndroid:
                 print(entry, file = f)
 
     def _permissions(self):
-        for permission in self.config.getlist('app', 'android.permissions', []):
+        for permission in self.permissions:
             words = permission.split('.')
             words[-1] = words[-1].upper()
             yield '.'.join(words)
