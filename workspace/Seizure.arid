@@ -56,6 +56,7 @@ android
     entrypoint = org.kivy.android.PythonActivity
     apptheme = @android:style/Theme.NoTitleBar
     add_compile_options := $list()
+    add_gradle_repositories := $list()
 source
     dir = $.(.)
     include_exts +=
