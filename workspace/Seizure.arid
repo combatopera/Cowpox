@@ -76,13 +76,13 @@ p4a bootstrap = sdl2
 requirements +=
     python3
     bdozlib
-    $*$map($(requires) it $lower$(it))
+    $*$map($(project requires) it $lower$(it))
 package
     domain = org.test
     fq = $lower($(domain).$(name))
 build_mode = debug
 orientation = portrait
-title = $(name)
+title = $(project name)
 version = $.(0.1)
 commit = $githash$(container src)
 fullscreen = false

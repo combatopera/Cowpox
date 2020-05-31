@@ -39,5 +39,6 @@
 : THE SOFTWARE.
 
 container . $./(container.arid)
-Seizure . $./(Seizure.arid)
-. $/($(container src) project.arid)
+Seizure .
+    $./(Seizure.arid)
+    $/($(container src) Seizure.arid)
