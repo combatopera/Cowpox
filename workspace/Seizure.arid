@@ -53,6 +53,7 @@ android
     whitelist := $list()
     permissions := $list()
     meta_data := $fork()
+    entrypoint = org.kivy.android.PythonActivity
 source
     dir = $.(.)
     include_exts +=

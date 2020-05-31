@@ -77,6 +77,7 @@ class TargetAndroid:
         self.orientation = config.orientation
         self.meta_data = config.android.meta_data.dict()
         self.title = config.title
+        self.android_entrypoint = config.android.entrypoint
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -256,7 +257,7 @@ class TargetAndroid:
             yield 'version', version
             yield 'package', self.fqpackage
             yield 'min_sdk_version', self.android_minapi
-            yield 'android_entrypoint', self.config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
+            yield 'android_entrypoint', self.android_entrypoint
             yield 'android_apptheme', self.config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar')
             yield 'permissions', list(self._permissions())
             yield 'compile_options', self.config.getlist('app', 'android.add_compile_options', [])
