@@ -68,11 +68,10 @@ class Config:
         except AttributeError:
             return type(self)(obj)
 
-    def __iter__(self):
-        for _, o in self._context.itero():
-            yield o.value
+    def list(self):
+        return [o.value for _, o in self._context.itero()]
 
-    def copy(self):
+    def dict(self):
         return {k: o.value for k, o in self._context.itero()}
 
 class LegacyConfig(SafeConfigParser):

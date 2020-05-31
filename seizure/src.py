@@ -54,7 +54,7 @@ class Src:
     @types(Config, Dirs)
     def __init__(self, config, dirs):
         self.source_dir = Path(config.source.dir).resolve()
-        self.include_exts = list(config.source.include_exts)
+        self.include_exts = config.source.include_exts.list()
         self.dirs = dirs
 
     def _copy_application_sources(self):
