@@ -68,7 +68,6 @@ def run(config, dirs, target, src):
     log.info('Compile platform')
     target.compile_platform()
     src._copy_application_sources()
-    shutil.copytree(dirs.applibs_dir, dirs.app_dir / '_applibs')
     dirs.add_sitecustomize()
     log.info('Package the application')
     return target.build_package()

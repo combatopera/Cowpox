@@ -58,13 +58,12 @@ class Dirs:
         self.buildozer_dir = workspace / '.buildozer'
         self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
         self.app_dir = self.buildozer_dir / config.targetname / 'app'
-        self.applibs_dir = self.buildozer_dir / 'applibs'
         self.apache_ant_dir = self.global_platform_dir / f"apache-ant-{config.android.ant}"
         self.android_sdk_dir = self.global_platform_dir / 'android-sdk'
         self.android_ndk_dir = self.global_platform_dir / f"android-ndk-r{config.android.ndk}"
 
     def install(self):
-        for path in self.global_cache_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
+        for path in self.global_cache_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
             path.mkdirp()
 
     def add_sitecustomize(self):
