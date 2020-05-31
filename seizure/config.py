@@ -73,7 +73,7 @@ class Config:
         try:
             return obj.value
         except AttributeError:
-            return type(self)(obj)
+            return type(self)(obj) # FIXME: Always use full path.
 
     def list(self):
         return [o.value for _, o in self._context.itero()]
