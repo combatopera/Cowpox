@@ -248,34 +248,33 @@ class TargetAndroid:
 
     def build_package(self):
         dist_dir = self._get_dist_dir()
-        config = self.config
         version = self.config.get_version()
         self._update_libraries_references(dist_dir)
         self._generate_whitelist(dist_dir)
         def downstreamargs():
-            yield 'name', config.get('app', 'title')
+            yield 'name', self.config.get('app', 'title')
             yield 'version', version
             yield 'package', self.fqpackage
-            yield 'min_sdk_version', int(config.getdefault('app', 'android.minapi', self.android_minapi))
-            yield 'android_entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
-            yield 'android_apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar')
+            yield 'min_sdk_version', int(self.config.getdefault('app', 'android.minapi', self.android_minapi))
+            yield 'android_entrypoint', self.config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
+            yield 'android_apptheme', self.config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar')
             yield 'permissions', list(self._permissions())
-            yield 'compile_options', config.getlist('app', 'android.add_compile_options', [])
-            yield 'gradle_repositories', config.getlist('app','android.add_gradle_repositories', [])
-            yield 'packaging_options', config.getlist('app','android.add_packaging_options', [])
+            yield 'compile_options', self.config.getlist('app', 'android.add_compile_options', [])
+            yield 'gradle_repositories', self.config.getlist('app','android.add_gradle_repositories', [])
+            yield 'packaging_options', self.config.getlist('app','android.add_packaging_options', [])
             yield 'meta_data', list(self._meta_data())
-            yield 'add_activity', config.getlist('app', 'android.add_activities', [])
-            icon = config.getdefault('app', 'icon.filename', '')
+            yield 'add_activity', self.config.getlist('app', 'android.add_activities', [])
+            icon = self.config.getdefault('app', 'icon.filename', '')
             yield 'icon', (self.workspace / icon).expanduser().resolve() if icon else None
-            yield 'wakelock', True if config.getbooldefault('app', 'android.wakelock', False) else None
-            intent_filters = config.getdefault('app', 'android.manifest.intent_filters', '')
+            yield 'wakelock', True if self.config.getbooldefault('app', 'android.wakelock', False) else None
+            intent_filters = self.config.getdefault('app', 'android.manifest.intent_filters', '')
             yield 'intent_filters', self.workspace / intent_filters if intent_filters else None
-            launch_mode = config.getdefault('app', 'android.manifest.launch_mode', '')
+            launch_mode = self.config.getdefault('app', 'android.manifest.launch_mode', '')
             yield 'activity_launch_mode', launch_mode if launch_mode else 'singleTask'
             if self.bootstrapname != 'service_only':
                 yield 'orientation', self._orientation()
-                yield 'window', not config.getbooldefault('app', 'fullscreen', True)
-                presplash = config.getdefault('app', 'presplash.filename', '')
+                yield 'window', not self.config.getbooldefault('app', 'fullscreen', True)
+                presplash = self.config.getdefault('app', 'presplash.filename', '')
                 yield 'presplash', (self.workspace / presplash).expanduser().resolve() if presplash else None
                 presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
                 yield 'presplash_color', presplash_color if presplash_color else '#000000'
