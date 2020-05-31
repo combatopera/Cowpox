@@ -38,19 +38,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from aridimpl.model import Function, Text
 from aridimpl.util import NoSuchPathException
 from aridity import Context, Repl
 from configparser import SafeConfigParser
 from diapyr import types
+from lagoon import git
 import logging
 
 log = logging.getLogger(__name__)
+
+def githash(context, pathresolvable):
+    # FIXME: Do this without copying .git into container.
+    return Text(git.rev_parse.__short.HEAD(cwd = pathresolvable.resolve(context).cat()).rstrip())
 
 class Config:
 
     @classmethod
     def load(cls, path):
         context = Context()
+        context['githash',] = Function(githash)
         with Repl(context) as repl:
             repl.printf(". %s", path)
         return cls(context)

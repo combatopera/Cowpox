@@ -80,6 +80,7 @@ class TargetAndroid:
         self.android_entrypoint = config.android.entrypoint
         self.android_apptheme = config.android.apptheme
         self.version = config.version
+        self.commit = config.commit
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -308,7 +309,7 @@ class TargetAndroid:
             mode = self._get_release_mode()
         apk = f'{dist_dir.name}-{mode}.apk'
         apk_dir = dist_dir / "build" / "outputs" / "apk" / mode_sign
-        apk_dest = f"{self.dist_name}-{self.version}-{self.config['app']['commit']}-{self.arch}-{mode}.apk"
+        apk_dest = f"{self.dist_name}-{self.version}-{self.commit}-{self.arch}-{mode}.apk"
         shutil.copyfile(apk_dir / apk, self.dirs.bin_dir / apk_dest)
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
