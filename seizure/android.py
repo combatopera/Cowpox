@@ -255,7 +255,7 @@ class TargetAndroid:
             yield 'name', self.title
             yield 'version', version
             yield 'package', self.fqpackage
-            yield 'min_sdk_version', int(self.config.getdefault('app', 'android.minapi', self.android_minapi))
+            yield 'min_sdk_version', self.android_minapi
             yield 'android_entrypoint', self.config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
             yield 'android_apptheme', self.config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar')
             yield 'permissions', list(self._permissions())
