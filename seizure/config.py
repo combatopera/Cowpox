@@ -60,26 +60,28 @@ class Config:
         context['githash',] = Function(githash)
         with Repl(context) as repl:
             repl.printf(". %s", path)
-        return cls(context)
+        return cls(context, [])
 
-    def __init__(self, context):
+    def __init__(self, context, prefix):
         self._context = context
+        self._prefix = prefix
 
     def __getattr__(self, name):
+        path = [*self._prefix, name]
         try:
-            obj = self._context.resolved(name)
+            obj = self._context.resolved(*path)
         except NoSuchPathException:
-            raise AttributeError
+            raise AttributeError(name) # XXX: Misleading?
         try:
             return obj.value
         except AttributeError:
-            return type(self)(obj) # FIXME: Always use full path.
+            return type(self)(self._context, path)
 
     def list(self):
-        return [o.value for _, o in self._context.itero()]
+        return [o.value for _, o in self._context.resolved(*self._prefix).itero()]
 
     def dict(self):
-        return {k: o.value for k, o in self._context.itero()}
+        return {k: o.value for k, o in self._context.resolved(*self._prefix).itero()}
 
 class LegacyConfig(SafeConfigParser):
 
