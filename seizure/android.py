@@ -60,7 +60,7 @@ class TargetAndroid:
     def __init__(self, config, legacyconfig, state, dirs):
         self.APACHE_ANT_VERSION = config.APACHE_ANT_VERSION
         self.android_ndk_version = config.android.ndk
-        self.workspace = Path(config.container.workspace)
+        self.local_recipes = Path(config.container.workspace, 'local_recipes')
         self.android_api = config.android.api
         self.android_minapi = config.android.minapi
         self.arch = config.android.arch
@@ -219,7 +219,7 @@ class TargetAndroid:
             self.arch,
             self.build_dir,
             self.ndk_api,
-            self.workspace / 'local_recipes',
+            self.local_recipes,
             self.requirements,
         )
 
@@ -306,7 +306,7 @@ class TargetAndroid:
             self.arch,
             self.build_dir,
             self.ndk_api,
-            self.workspace / 'local_recipes',
+            self.local_recipes,
             self.dirs.app_dir,
             self.build_mode != 'debug',
             SimpleNamespace(**dict(downstreamargs())),
