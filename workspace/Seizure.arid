@@ -74,5 +74,5 @@ package
 build_mode = debug
 orientation = portrait
 title = $(name)
-version = 0.1
+version = $.(0.1)
 commit = $githash$(container src)
