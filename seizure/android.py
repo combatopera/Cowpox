@@ -72,6 +72,7 @@ class TargetAndroid:
         self.requirements = list(config.requirements)
         self.fqpackage = config.package.fq
         self.build_mode = config.build_mode
+        self.p4a_whitelist = list(config.android.whitelist)
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -228,10 +229,9 @@ class TargetAndroid:
         return check
 
     def _generate_whitelist(self, dist_dir):
-        p4a_whitelist = self.config.getlist('app', 'android.whitelist') or []
-        with (dist_dir / 'whitelist.txt').open('w') as fd:
-            for wl in p4a_whitelist:
-                fd.write(wl + '\n')
+        with (dist_dir / 'whitelist.txt').open('w') as f:
+            for entry in self.p4a_whitelist:
+                print(entry, file = f)
 
     def _permissions(self):
         for permission in self.config.getlist('app', 'android.permissions', []):
