@@ -71,7 +71,7 @@ def _initlogging(logpath):
     console = ColorizingStreamHandler()
     console.setLevel(logging.INFO)
     formatter = ColorizingFormatter("%(asctime)s [%(levelname)s] %(message)s")
-    for h in logging.FileHandler(logpath), console:
+    for h in logging.FileHandler(logpath.pmkdirp()), console:
         h.setFormatter(formatter)
         logging.root.addHandler(h)
     logging.root.setLevel(logging.DEBUG)
@@ -80,7 +80,7 @@ def _main():
     parser = ArgumentParser()
     parser.add_argument('configpath')
     config = Config.load(parser.parse_args().configpath).Seizure
-    _initlogging(config.log.path)
+    _initlogging(Path(config.log.path))
     shutil.copytree('.', config.container.project, symlinks = True, dirs_exist_ok = True)
     workspace = Path(config.container.workspace)
     soak.print(cwd = workspace)
