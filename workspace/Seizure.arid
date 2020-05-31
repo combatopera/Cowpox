@@ -55,6 +55,7 @@ android
     meta_data := $fork()
     entrypoint = org.kivy.android.PythonActivity
     apptheme = @android:style/Theme.NoTitleBar
+    add_compile_options := $list()
 source
     dir = $.(.)
     include_exts +=
