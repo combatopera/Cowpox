@@ -74,8 +74,6 @@ class Config:
 
 class LegacyConfig(SafeConfigParser):
 
-    build_mode = 'debug'
-
     @types()
     def __init__(self):
         super().__init__(allow_no_value = True)

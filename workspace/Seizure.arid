@@ -66,3 +66,4 @@ requirements +=
 package
     domain = org.test
     fq = $lower($(domain).$(name))
+build_mode = debug

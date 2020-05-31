@@ -71,6 +71,7 @@ class TargetAndroid:
         self.ndk_api = config.android.ndk_api
         self.requirements = list(config.requirements)
         self.fqpackage = config.package.fq
+        self.build_mode = config.build_mode
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -278,7 +279,7 @@ class TargetAndroid:
                 yield 'presplash', (self.workspace / presplash).expanduser().resolve() if presplash else None
                 presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
                 yield 'presplash_color', presplash_color if presplash_color else '#000000'
-            yield 'sign', True if self.config.build_mode != 'debug' and self._check_p4a_sign_env(True) else None
+            yield 'sign', True if self.build_mode != 'debug' and self._check_p4a_sign_env(True) else None
             yield 'services', self.config.getlist('app', 'services', [])
             yield 'android_used_libs', self.config.getlist('app', 'android.uses_library', [])
             depends = self.config.getlist('app', 'android.gradle_dependencies', [])
@@ -296,10 +297,10 @@ class TargetAndroid:
             self.ndk_api,
             self.workspace / 'local_recipes',
             self.dirs.app_dir,
-            self.config.build_mode != 'debug',
+            self.build_mode != 'debug',
             SimpleNamespace(**dict(downstreamargs())),
         )
-        if self.config.build_mode == 'debug':
+        if self.build_mode == 'debug':
             mode_sign = mode = 'debug'
         else:
             mode_sign = "release"
@@ -311,7 +312,7 @@ class TargetAndroid:
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
         self.state['android:latestapk'] = apk_dest
-        self.state['android:latestmode'] = self.config.build_mode
+        self.state['android:latestmode'] = self.build_mode
 
     def _update_libraries_references(self, dist_dir):
         project_fn = dist_dir / 'project.properties'
