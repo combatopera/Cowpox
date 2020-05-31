@@ -60,10 +60,14 @@ android
     add_packaging_options := $list()
     add_activities := $list()
     wakelock = false
-    manifest launch_mode = singleTask
+    manifest
+        launch_mode = singleTask
+        intent_filters = $(None)
     presplash_color = #000000
     uses_library := $list()
     gradle_dependencies := $list()
+icon filename = $(None)
+presplash filename = $(None)
 source
     dir = $.(.)
     include_exts +=

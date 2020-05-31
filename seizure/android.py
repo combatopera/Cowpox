@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .config import Config, LegacyConfig
+from .config import Config
 from .dirs import Dirs
 from .distribution import generate_dist_folder_name
 from .jsonstore import JsonStore
@@ -56,8 +56,8 @@ log = logging.getLogger(__name__)
 
 class TargetAndroid:
 
-    @types(Config, LegacyConfig, JsonStore, Dirs)
-    def __init__(self, config, legacyconfig, state, dirs):
+    @types(Config, JsonStore, Dirs)
+    def __init__(self, config, state, dirs):
         self.APACHE_ANT_VERSION = config.APACHE_ANT_VERSION
         self.android_ndk_version = config.android.ndk
         self.local_recipes = Path(config.container.workspace, 'local_recipes')
@@ -93,9 +93,11 @@ class TargetAndroid:
         self.android_used_libs = config.android.uses_library.list()
         self.depends = config.android.gradle_dependencies.list()
         self.projectdir = Path(config.container.src)
+        self.icon = config.icon.filename
+        self.intent_filters = config.android.manifest.intent_filters
+        self.presplash = config.presplash.filename
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
-        self.config = legacyconfig
         self.state = state
         self.dirs = dirs
 
@@ -279,17 +281,14 @@ class TargetAndroid:
             yield 'packaging_options', self.packaging_options
             yield 'meta_data', ['='.join(korv.strip() for korv in item) for item in self.meta_data.items()]
             yield 'add_activity', self.add_activity
-            icon = self.config.getdefault('app', 'icon.filename', '')
-            yield 'icon', self.projectdir / icon if icon else None
+            yield 'icon', None if self.icon is None else self.projectdir / self.icon
             yield 'wakelock', True if self.wakelock else None
-            intent_filters = self.config.getdefault('app', 'android.manifest.intent_filters', '')
-            yield 'intent_filters', self.projectdir / intent_filters if intent_filters else None
+            yield 'intent_filters', None if self.intent_filters is None else self.projectdir / self.intent_filters
             yield 'activity_launch_mode', self.launch_mode
             if self.bootstrapname != 'service_only':
                 yield 'orientation', self._orientation()
                 yield 'window', not self.fullscreen
-                presplash = self.config.getdefault('app', 'presplash.filename', '')
-                yield 'presplash', self.projectdir / presplash if presplash else None
+                yield 'presplash', None if self.presplash is None else self.projectdir / self.presplash
                 yield 'presplash_color', self.presplash_color
             yield 'sign', True if self.build_mode != 'debug' and self._check_p4a_sign_env(True) else None
             yield 'services', self.services
