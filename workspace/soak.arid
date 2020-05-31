@@ -1,4 +1,3 @@
-plugin soak configure
 Seizure
     main name = main
     . /src/Seizure.arid
