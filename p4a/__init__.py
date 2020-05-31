@@ -293,9 +293,6 @@ class Recipe(metaclass = RecipeMeta):
         return self.get_build_container_dir(arch) / self.name
 
     def get_recipe_dir(self):
-        local_recipe_dir = self.ctx.local_recipes / self.name
-        if local_recipe_dir.exists():
-            return local_recipe_dir
         return self.ctx.contribroot / 'recipes' / self.name
 
     def download_if_necessary(self):

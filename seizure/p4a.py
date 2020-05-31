@@ -53,7 +53,6 @@ log = logging.getLogger(__name__)
 def _createcontext(args, sdkpath, apilevel, ndkpath):
     ctx = Context()
     ctx.setup_dirs(args.storage_dir)
-    ctx.local_recipes = args.local_recipes
     ctx.set_archs([args.arch])
     ctx.prepare_build_environment(args.ndk_api, sdkpath, apilevel, ndkpath)
     return ctx
@@ -131,27 +130,25 @@ def apk(args, downstreamargs, ctx, dist):
     log.info("APK renamed to %s", apk_file_dest)
     cp.print(apk_file, apk_file_dest)
 
-def create(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, ndk_api, local_recipes, requirements):
+def create(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, ndk_api, requirements):
     args = SimpleNamespace(
         dist_name = dist_name,
         bootstrap = bootstrap,
         arch = arch,
         storage_dir = storage_dir,
         ndk_api = ndk_api,
-        local_recipes = local_recipes,
         requirements = requirements,
     )
     ctx = _createcontext(args, sdkpath, apilevel, ndkpath)
     _require_prebuilt_dist(args, ctx)
 
-def makeapk(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, ndk_api, local_recipes, private, release, downstreamargs):
+def makeapk(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, ndk_api, private, release, downstreamargs):
     args = SimpleNamespace(
         dist_name = dist_name,
         bootstrap = bootstrap,
         arch = arch,
         storage_dir = storage_dir,
         ndk_api = ndk_api,
-        local_recipes = local_recipes,
         requirements = [],
         private = private,
         build_mode = 'release' if release else 'debug',
