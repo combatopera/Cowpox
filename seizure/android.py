@@ -245,10 +245,6 @@ class TargetAndroid:
     def _orientation(self):
         return 'sensor' if self.orientation == 'all' else self.orientation
 
-    def _meta_data(self):
-        for item in self.meta_data.items():
-            yield '='.join(korv.strip() for korv in item)
-
     def build_package(self):
         dist_dir = self._get_dist_dir()
         version = self.config.get_version()
@@ -265,7 +261,7 @@ class TargetAndroid:
             yield 'compile_options', self.config.getlist('app', 'android.add_compile_options', [])
             yield 'gradle_repositories', self.config.getlist('app','android.add_gradle_repositories', [])
             yield 'packaging_options', self.config.getlist('app','android.add_packaging_options', [])
-            yield 'meta_data', list(self._meta_data())
+            yield 'meta_data', ['='.join(korv.strip() for korv in item) for item in self.meta_data.items()]
             yield 'add_activity', self.config.getlist('app', 'android.add_activities', [])
             icon = self.config.getdefault('app', 'icon.filename', '')
             yield 'icon', (self.workspace / icon).expanduser().resolve() if icon else None
