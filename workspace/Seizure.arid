@@ -59,6 +59,7 @@ android
     add_gradle_repositories := $list()
     add_packaging_options := $list()
     add_activites := $list()
+    wakelock = false
 source
     dir = $.(.)
     include_exts +=

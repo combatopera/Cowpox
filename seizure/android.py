@@ -85,6 +85,7 @@ class TargetAndroid:
         self.gradle_repositories = config.android.add_gradle_repositories.list()
         self.packaging_options = config.android.add_packaging_options.list()
         self.add_activity = config.android.add_activities.list()
+        self.wakelock = config.android.wakelock
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -273,7 +274,7 @@ class TargetAndroid:
             yield 'add_activity', self.add_activity
             icon = self.config.getdefault('app', 'icon.filename', '')
             yield 'icon', (self.workspace / icon).expanduser().resolve() if icon else None
-            yield 'wakelock', True if self.config.getbooldefault('app', 'android.wakelock', False) else None
+            yield 'wakelock', True if self.wakelock else None
             intent_filters = self.config.getdefault('app', 'android.manifest.intent_filters', '')
             yield 'intent_filters', self.workspace / intent_filters if intent_filters else None
             launch_mode = self.config.getdefault('app', 'android.manifest.launch_mode', '')
