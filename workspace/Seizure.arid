@@ -74,3 +74,4 @@ package
 build_mode = debug
 orientation = portrait
 title = $(name)
+version = 0.1

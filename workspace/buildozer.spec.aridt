@@ -28,7 +28,7 @@
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.1
+#version = 0.1
 
 commit = $githash()
 

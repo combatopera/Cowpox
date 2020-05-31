@@ -79,6 +79,7 @@ class TargetAndroid:
         self.title = config.title
         self.android_entrypoint = config.android.entrypoint
         self.android_apptheme = config.android.apptheme
+        self.version = config.version
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -250,12 +251,11 @@ class TargetAndroid:
 
     def build_package(self):
         dist_dir = self._get_dist_dir()
-        version = self.config.get_version()
         self._update_libraries_references(dist_dir)
         self._generate_whitelist(dist_dir)
         def downstreamargs():
             yield 'name', self.title
-            yield 'version', version
+            yield 'version', self.version
             yield 'package', self.fqpackage
             yield 'min_sdk_version', self.android_minapi
             yield 'android_entrypoint', self.android_entrypoint
@@ -308,7 +308,7 @@ class TargetAndroid:
             mode = self._get_release_mode()
         apk = f'{dist_dir.name}-{mode}.apk'
         apk_dir = dist_dir / "build" / "outputs" / "apk" / mode_sign
-        apk_dest = f"{self.dist_name}-{version}-{self.config['app']['commit']}-{self.arch}-{mode}.apk"
+        apk_dest = f"{self.dist_name}-{self.version}-{self.config['app']['commit']}-{self.arch}-{mode}.apk"
         shutil.copyfile(apk_dir / apk, self.dirs.bin_dir / apk_dest)
         log.info('Android packaging done!')
         log.info("APK %s available in the bin directory", apk_dest)
