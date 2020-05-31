@@ -87,6 +87,7 @@ class TargetAndroid:
         self.add_activity = config.android.add_activities.list()
         self.wakelock = config.android.wakelock
         self.launch_mode = config.android.manifest.launch_mode
+        self.fullscreen = config.fullscreen
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -281,7 +282,7 @@ class TargetAndroid:
             yield 'activity_launch_mode', self.launch_mode
             if self.bootstrapname != 'service_only':
                 yield 'orientation', self._orientation()
-                yield 'window', not self.config.getbooldefault('app', 'fullscreen', True)
+                yield 'window', not self.fullscreen
                 presplash = self.config.getdefault('app', 'presplash.filename', '')
                 yield 'presplash', (self.workspace / presplash).expanduser().resolve() if presplash else None
                 presplash_color = self.config.getdefault('app', 'android.presplash_color', None)
