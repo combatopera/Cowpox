@@ -64,7 +64,7 @@ def run(config, dirs, target, src):
     pipify.print('-f', resource_filename(etc.__name__, 'bdozlib.arid'), cwd = config.container.project)
     dirs.install()
     log.info('Install platform')
-    target.install_platform() # TODO: Bake these into the image.
+    target.install_platform() # XXX: Bake these into the image?
     log.info('Compile platform')
     target.compile_platform()
     src._copy_application_sources()
