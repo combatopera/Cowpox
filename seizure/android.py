@@ -70,6 +70,7 @@ class TargetAndroid:
         self.skip_upd = config.android.skip_update
         self.ndk_api = config.android.ndk_api
         self.requirements = list(config.requirements)
+        self.fqpackage = config.package.fq
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -225,13 +226,6 @@ class TargetAndroid:
                 check = False
         return check
 
-    def _get_package(self):
-        package_domain = self.config.getdefault('app', 'package.domain', '')
-        package = self.dist_name
-        if package_domain:
-            package = package_domain + '.' + package
-        return package.lower()
-
     def _generate_whitelist(self, dist_dir):
         p4a_whitelist = self.config.getlist('app', 'android.whitelist') or []
         with (dist_dir / 'whitelist.txt').open('w') as fd:
@@ -261,7 +255,7 @@ class TargetAndroid:
         def downstreamargs():
             yield 'name', config.get('app', 'title')
             yield 'version', version
-            yield 'package', self._get_package()
+            yield 'package', self.fqpackage
             yield 'min_sdk_version', int(config.getdefault('app', 'android.minapi', self.android_minapi))
             yield 'android_entrypoint', config.getdefault('app', 'android.entrypoint', 'org.kivy.android.PythonActivity')
             yield 'android_apptheme', config.getdefault('app', 'android.apptheme', '@android:style/Theme.NoTitleBar')

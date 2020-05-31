@@ -63,3 +63,6 @@ requirements +=
     python3
     bdozlib
     $*$map($(requires) it $lower$(it))
+package
+    domain = org.test
+    fq = $lower($(domain).$(name))
