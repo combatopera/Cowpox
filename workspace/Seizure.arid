@@ -60,6 +60,7 @@ android
     add_packaging_options := $list()
     add_activites := $list()
     wakelock = false
+    manifest launch_mode = singleTask
 source
     dir = $.(.)
     include_exts +=
