@@ -2,6 +2,4 @@ plugin soak configure
 Seizure
     main name = main
     . /src/Seizure.arid
-soak
-    buildozer.spec from = buildozer.spec.aridt
-    main.py from = main.py.aridt
+soak main.py from = main.py.aridt

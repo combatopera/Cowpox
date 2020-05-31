@@ -41,14 +41,9 @@
 from aridimpl.model import Function, Text
 from aridimpl.util import NoSuchPathException
 from aridity import Context, Repl
-from configparser import SafeConfigParser
-from diapyr import types
 from lagoon import git
-import logging
 
-log = logging.getLogger(__name__)
-
-def githash(context, pathresolvable):
+def _githash(context, pathresolvable):
     # FIXME: Do this without copying .git into container.
     return Text(git.rev_parse.__short.HEAD(cwd = pathresolvable.resolve(context).cat()).rstrip())
 
@@ -57,7 +52,7 @@ class Config:
     @classmethod
     def load(cls, path):
         context = Context()
-        context['githash',] = Function(githash)
+        context['githash',] = Function(_githash)
         with Repl(context) as repl:
             repl.printf(". %s", path)
         return cls(context, [])
@@ -82,60 +77,3 @@ class Config:
 
     def dict(self):
         return {k: o.value for k, o in self._context.resolved(*self._prefix).itero()}
-
-class LegacyConfig(SafeConfigParser):
-
-    @types()
-    def __init__(self):
-        super().__init__(allow_no_value = True)
-        self.optionxform = lambda value: value
-        self.getlist = self._get_config_list
-        self.getlistvalues = self._get_config_list_values
-        self.getdefault = self._get_config_default
-        self.getbooldefault = self._get_config_bool
-        self.getrawdefault = self._get_config_raw_default
-        self.read('buildozer.spec', 'utf-8')
-
-    def _get_config_list_values(self, *args, **kwargs):
-        kwargs['with_values'] = True
-        return self._get_config_list(*args, **kwargs)
-
-    def _get_config_list(self, section, token, default=None, with_values=False):
-        l_section = '{}:{}'.format(section, token)
-        if self.has_section(l_section):
-            values = self.options(l_section)
-            if with_values:
-                return ['{}={}'.format(key, self.get(l_section, key)) for
-                        key in values]
-            else:
-                return [x.strip() for x in values]
-
-        values = self.getdefault(section, token, '')
-        if not values:
-            return default
-        values = values.split(',')
-        if not values:
-            return default
-        return [x.strip() for x in values]
-
-    def _get_config_default(self, section, token, default=None):
-        if not self.has_section(section):
-            return default
-        if not self.has_option(section, token):
-            return default
-        return self.get(section, token)
-
-    def _get_config_bool(self, section, token, default=False):
-        if not self.has_section(section):
-            return default
-        if not self.has_option(section, token):
-            return default
-        return self.getboolean(section, token)
-
-    def _get_config_raw_default(self, section, token, default=None, section_sep="=", split_char=" "):
-        l_section = '{}:{}'.format(section, token)
-        if self.has_section(l_section):
-            return [section_sep.join(item) for item in self.items(l_section)]
-        if not self.has_option(section, token):
-            return default.split(split_char)
-        return self.get(section, token).split(split_char)

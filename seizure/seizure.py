@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from .android import TargetAndroid
-from .config import Config, LegacyConfig
+from .config import Config
 from .jsonstore import JsonStore
 from .dirs import Dirs
 from .src import Src
@@ -54,8 +54,8 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(LegacyConfig, Dirs, TargetAndroid, Src, this = Result)
-def run(config, dirs, target, src):
+@types(Dirs, TargetAndroid, Src, this = Result)
+def run(dirs, target, src):
     dirs.install()
     log.info('Install platform')
     target.install_platform() # TODO: Bake these into the image.
@@ -89,7 +89,6 @@ def _main():
     os.chdir(workspace) # FIXME LATER: Only include main.py in artifact.
     di = DI()
     di.add(config)
-    di.add(LegacyConfig) # TODO: Retire.
     di.add(Dirs)
     di.add(JsonStore) # TODO: Retire.
     di.add(Src)
