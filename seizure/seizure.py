@@ -46,7 +46,7 @@ from .dirs import Dirs
 from .src import Src
 from chromalog.log import ColorizingFormatter, ColorizingStreamHandler
 from diapyr import DI, types
-from lagoon import pipify, soak
+from lagoon import pipify
 from pathlib import Path
 from pkg_resources import resource_filename
 import logging, os, shutil
@@ -84,11 +84,9 @@ def _main():
     config = Config.load(resource_filename(etc.__name__, 'root.arid')).Seizure
     setlogpath(Path(config.log.path))
     shutil.copytree('.', config.container.project, symlinks = True, dirs_exist_ok = True)
-    workspace = Path(config.container.workspace)
-    soak.print(cwd = workspace)
     pipify.print('-f', resource_filename(etc.__name__, 'bdozlib.arid'), cwd = config.container.project)
     # TODO: Run in arbitrary directory.
-    os.chdir(workspace) # FIXME LATER: Only include main.py in artifact.
+    os.chdir(config.container.workspace)
     di = DI()
     try:
         di.add(config)

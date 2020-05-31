@@ -7,5 +7,4 @@ lagoon
 pep517<0.7.0
 pytoml
 pyven>=37
-soak
 virtualenv<20
