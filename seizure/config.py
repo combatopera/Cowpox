@@ -72,6 +72,9 @@ class Config:
         for _, o in self._context.itero():
             yield o.value
 
+    def copy(self):
+        return {k: o.value for k, o in self._context.itero()}
+
 class LegacyConfig(SafeConfigParser):
 
     @types()

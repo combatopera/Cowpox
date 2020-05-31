@@ -52,6 +52,7 @@ android
     ndk_api = $(minapi)
     whitelist := $list()
     permissions := $list()
+    meta_data := $fork()
 source
     dir = $.(.)
     include_exts +=

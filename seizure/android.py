@@ -75,6 +75,7 @@ class TargetAndroid:
         self.p4a_whitelist = list(config.android.whitelist)
         self.permissions = list(config.android.permissions)
         self.orientation = config.orientation
+        self.meta_data = config.android.meta_data.copy()
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -245,8 +246,8 @@ class TargetAndroid:
         return 'sensor' if self.orientation == 'all' else self.orientation
 
     def _meta_data(self):
-        for meta in self.config.getlistvalues('app', 'android.meta_data', []):
-            yield '='.join(korv.strip() for korv in meta.split('=', 1))
+        for item in self.meta_data.items():
+            yield '='.join(korv.strip() for korv in item)
 
     def build_package(self):
         dist_dir = self._get_dist_dir()
