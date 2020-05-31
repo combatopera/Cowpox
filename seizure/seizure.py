@@ -55,8 +55,13 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Dirs, TargetAndroid, Src, this = Result)
-def run(dirs, target, src):
+@types(Config, Dirs, TargetAndroid, Src, this = Result)
+def run(config, dirs, target, src):
+    log.info('Copy project.')
+    shutil.copytree(config.container.src, config.container.project, symlinks = True, dirs_exist_ok = True)
+    # TODO: Preparation should happen on host.
+    log.info('Prepare project.')
+    pipify.print('-f', resource_filename(etc.__name__, 'bdozlib.arid'), cwd = config.container.project)
     dirs.install()
     log.info('Install platform')
     target.install_platform() # TODO: Bake these into the image.
@@ -83,8 +88,6 @@ def _main():
     setlogpath = _initlogging()
     config = Config.load(resource_filename(etc.__name__, 'root.arid')).Seizure
     setlogpath(Path(config.log.path))
-    shutil.copytree('.', config.container.project, symlinks = True, dirs_exist_ok = True)
-    pipify.print('-f', resource_filename(etc.__name__, 'bdozlib.arid'), cwd = config.container.project)
     # TODO: Run in arbitrary directory.
     os.chdir(config.container.workspace)
     di = DI()
