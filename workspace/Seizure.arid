@@ -71,3 +71,4 @@ package
     fq = $lower($(domain).$(name))
 build_mode = debug
 orientation = portrait
+title = $(name)

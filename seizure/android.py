@@ -76,6 +76,7 @@ class TargetAndroid:
         self.permissions = config.android.permissions.list()
         self.orientation = config.orientation
         self.meta_data = config.android.meta_data.dict()
+        self.title = config.title
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -251,7 +252,7 @@ class TargetAndroid:
         self._update_libraries_references(dist_dir)
         self._generate_whitelist(dist_dir)
         def downstreamargs():
-            yield 'name', self.config.get('app', 'title')
+            yield 'name', self.title
             yield 'version', version
             yield 'package', self.fqpackage
             yield 'min_sdk_version', int(self.config.getdefault('app', 'android.minapi', self.android_minapi))
