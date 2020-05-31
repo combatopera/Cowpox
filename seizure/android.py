@@ -69,6 +69,7 @@ class TargetAndroid:
         self.acceptlicense = config.android.accept_sdk_license
         self.skip_upd = config.android.skip_update
         self.ndk_api = config.android.ndk_api
+        self.requirements = list(config.requirements)
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -196,7 +197,7 @@ class TargetAndroid:
             self.build_dir,
             self.ndk_api,
             self.workspace / 'local_recipes',
-            self.config.getlist('app', 'requirements', ''),
+            self.requirements,
         )
 
     def _get_dist_dir(self):

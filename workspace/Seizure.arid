@@ -59,3 +59,7 @@ source
         kv
         atlas
 p4a bootstrap = sdl2
+requirements +=
+    python3
+    bdozlib
+    $*$map($(requires) it $lower$(it))

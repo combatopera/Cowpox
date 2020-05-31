@@ -69,8 +69,8 @@ class Config:
             return type(self)(obj)
 
     def __iter__(self):
-        for r in self._context:
-            yield r.resolve(self._context).value
+        for _, o in self._context.itero():
+            yield o.value
 
 class LegacyConfig(SafeConfigParser):
 

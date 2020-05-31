@@ -1,3 +1,4 @@
+aridity>=24
 chromalog
 Cython
 diapyr
