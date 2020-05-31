@@ -83,7 +83,7 @@ class TargetAndroid:
         self.commit = config.commit
         self.compile_options = config.android.add_compile_options.list()
         self.gradle_repositories = config.android.add_gradle_repositories.list()
-        self.packaging_options = config.android.add_packaging_options
+        self.packaging_options = config.android.add_packaging_options.list()
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
