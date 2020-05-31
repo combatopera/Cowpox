@@ -88,17 +88,20 @@ def _main():
     # TODO: Run in arbitrary directory.
     os.chdir(workspace) # FIXME LATER: Only include main.py in artifact.
     di = DI()
-    di.add(config)
-    di.add(Dirs)
-    di.add(JsonStore) # TODO: Retire.
-    di.add(Src)
-    di.add(TargetAndroid)
-    di.add(run)
-    di(Result)
+    try:
+        di.add(config)
+        di.add(Dirs)
+        di.add(JsonStore) # TODO: Retire.
+        di.add(Src)
+        di.add(TargetAndroid)
+        di.add(run)
+        return di(Result)
+    finally:
+        di.discardall()
 
 def main():
     try:
-        _main()
+        log.info("Result: %s", _main())
     except:
         log.exception('Abort:')
         raise
