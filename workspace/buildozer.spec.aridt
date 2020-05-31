@@ -4,7 +4,7 @@
 #title = $(name)
 
 # (str) Package name
-#package.name = $(Seizure package name)
+#package.name = ...
 
 # (str) Package domain (needed for android/ios packaging)
 #package.domain = org.test
@@ -38,7 +38,7 @@
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-#requirements = python3,bdozlib,$join($map($(requires) it $lower$(it)) ,)
+#requirements = ...
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
