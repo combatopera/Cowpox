@@ -86,7 +86,7 @@ def _main():
     shutil.copytree('.', config.container.project, symlinks = True, dirs_exist_ok = True)
     workspace = Path(config.container.workspace)
     soak.print(cwd = workspace)
-    pipify.print('-f', workspace / 'bdozlib.arid', cwd = config.container.project)
+    pipify.print('-f', resource_filename(etc.__name__, 'bdozlib.arid'), cwd = config.container.project)
     # TODO: Run in arbitrary directory.
     os.chdir(workspace) # FIXME LATER: Only include main.py in artifact.
     di = DI()
