@@ -57,6 +57,7 @@ android
     apptheme = @android:style/Theme.NoTitleBar
     add_compile_options := $list()
     add_gradle_repositories := $list()
+    add_packaging_options := $list()
 source
     dir = $.(.)
     include_exts +=

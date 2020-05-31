@@ -83,6 +83,7 @@ class TargetAndroid:
         self.commit = config.commit
         self.compile_options = config.android.add_compile_options.list()
         self.gradle_repositories = config.android.add_gradle_repositories.list()
+        self.packaging_options = config.android.add_packaging_options
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.config = legacyconfig
@@ -266,7 +267,7 @@ class TargetAndroid:
             yield 'permissions', list(self._permissions())
             yield 'compile_options', self.compile_options
             yield 'gradle_repositories', self.gradle_repositories
-            yield 'packaging_options', self.config.getlist('app','android.add_packaging_options', [])
+            yield 'packaging_options', self.packaging_options
             yield 'meta_data', ['='.join(korv.strip() for korv in item) for item in self.meta_data.items()]
             yield 'add_activity', self.config.getlist('app', 'android.add_activities', [])
             icon = self.config.getdefault('app', 'icon.filename', '')
