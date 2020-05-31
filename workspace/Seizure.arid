@@ -58,7 +58,7 @@ android
     add_compile_options := $list()
     add_gradle_repositories := $list()
     add_packaging_options := $list()
-    add_activites := $list()
+    add_activities := $list()
     wakelock = false
     manifest launch_mode = singleTask
     presplash_color = #000000
