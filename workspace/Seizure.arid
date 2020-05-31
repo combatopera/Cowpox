@@ -54,6 +54,7 @@ android
     permissions := $list()
     meta_data := $fork()
     entrypoint = org.kivy.android.PythonActivity
+    apptheme = @android:style/Theme.NoTitleBar
 source
     dir = $.(.)
     include_exts +=
