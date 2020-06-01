@@ -121,7 +121,7 @@ class TargetAndroid:
             archive = Mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
             log.info('Unpacking Android NDK')
             unzip._q.print(archive, cwd = ndk_dir.mkdirp())
-            rootdir = ndk_dir / f"android-ndk-r{self.android_ndk_version}"
+            rootdir, = ndk_dir.iterdir()
             for path in rootdir.iterdir():
                 path.rename(ndk_dir / path.relative_to(rootdir))
             rootdir.rmdir()
