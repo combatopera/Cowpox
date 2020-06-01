@@ -105,29 +105,28 @@ class TargetAndroid:
         sdk_dir = self.dirs.android_sdk_dir
         if sdk_dir.exists():
             log.info('Android SDK found at %s', sdk_dir)
-            return
-        log.info('Android SDK is missing, downloading')
-        archive = 'sdk-tools-linux-4333796.zip'
-        sdk_dir.mkdir(parents = True)
-        download('http://dl.google.com/android/repository/', archive, sdk_dir)
-        log.info('Unpacking Android SDK')
-        unzip._q.print(archive, cwd = sdk_dir)
-        log.info('Android SDK tools base installation done.')
+        else:
+            log.info('Android SDK is missing, downloading')
+            archive = 'sdk-tools-linux-4333796.zip'
+            download('http://dl.google.com/android/repository/', archive, sdk_dir.mkdirp())
+            log.info('Unpacking Android SDK')
+            unzip._q.print(archive, cwd = sdk_dir)
+            log.info('Android SDK tools base installation done.')
 
     def _install_android_ndk(self):
         ndk_dir = self.dirs.android_ndk_dir
         if ndk_dir.exists():
             log.info('Android NDK found at %s', ndk_dir)
-            return
-        log.info('Android NDK is missing, downloading')
-        archive = f"android-ndk-r{self.android_ndk_version}-linux-x86_64.zip"
-        download('https://dl.google.com/android/repository/', archive, self.dirs.global_platform_dir)
-        log.info('Unpacking Android NDK')
-        unzip._q.print(archive, cwd = self.dirs.global_platform_dir)
-        source = self.dirs.global_platform_dir / f"android-ndk-r{self.android_ndk_version}"
-        log.debug('Rename %s to %s', source, ndk_dir)
-        shutil.move(source, ndk_dir)
-        log.info('Android NDK installation done.')
+        else:
+            log.info('Android NDK is missing, downloading')
+            archive = f"android-ndk-r{self.android_ndk_version}-linux-x86_64.zip"
+            download('https://dl.google.com/android/repository/', archive, self.dirs.global_platform_dir)
+            log.info('Unpacking Android NDK')
+            unzip._q.print(archive, cwd = self.dirs.global_platform_dir)
+            source = self.dirs.global_platform_dir / f"android-ndk-r{self.android_ndk_version}"
+            log.debug('Rename %s to %s', source, ndk_dir)
+            shutil.move(source, ndk_dir)
+            log.info('Android NDK installation done.')
 
     def _android_list_build_tools_versions(self):
         for line in (l.strip() for l in self.sdkmanager.__list().split('\n')):
