@@ -49,8 +49,8 @@ import glob, logging, re
 
 log = logging.getLogger(__name__)
 
-def _build_dist_from_args(ctx, dist, args):
-    bs = Bootstrap.get_bootstrap(args.bootstrap, ctx)
+def _build_dist_from_args(ctx, dist, bootstrap):
+    bs = Bootstrap.get_bootstrap(bootstrap, ctx)
     build_order, python_modules = get_recipe_order(ctx, dist.recipes, bs.recipe_depends, ['genericndkbuild', 'python2'])
     assert not set(build_order) & set(python_modules)
     ctx.recipe_build_order = build_order
@@ -83,7 +83,7 @@ def _require_prebuilt_dist(args, ctx): # TODO: Not twice.
         if dist.folder_exists():
             dist.delete()
         log.info('No dist exists that meets your requirements, so one will be built.')
-        _build_dist_from_args(ctx, dist, args)
+        _build_dist_from_args(ctx, dist, args.bootstrap)
     return dist
 
 def _apk(private, build_mode, downstreamargs, ctx, dist):
