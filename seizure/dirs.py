@@ -48,12 +48,10 @@ log = logging.getLogger(__name__)
 
 class Dirs:
 
-    global_buildozer_dir = Path.home() / '.buildozer'
-
     @types(Config)
     def __init__(self, config):
         workspace = Path(config.container.workspace)
-        self.global_platform_dir = self.global_buildozer_dir / config.targetname / 'platform'
+        self.global_platform_dir = Path.home() / '.buildozer' / config.targetname / 'platform'
         self.buildozer_dir = workspace / '.buildozer'
         self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
         self.app_dir = self.buildozer_dir / config.targetname / 'app'
