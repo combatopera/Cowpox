@@ -44,7 +44,6 @@ from .graph import get_recipe_order
 from lagoon import cp, gradle
 from p4a.boot import Bootstrap
 from pathlib import Path
-from types import SimpleNamespace
 import glob, logging, re
 
 log = logging.getLogger(__name__)
@@ -68,10 +67,7 @@ def _build_dist_from_args(ctx, dist, bootstrap):
     log.info('Your distribution was created successfully, exiting.')
     log.info("Dist can be found at (for now) %s", ctx.distsdir / dist.dist_dir)
 
-def _split_argument_list(l):
-    return re.split('[ ,]+', l) if l else []
-
-def _require_prebuilt_dist(dist_name, requirements, arch, ndk_api, bootstrap, ctx): # TODO: Not twice.
+def _require_prebuilt_dist(dist_name, requirements, arch, ndk_api, bootstrap, ctx):
     dist = Distribution.get_distribution(
             ctx,
             dist_name,
@@ -123,7 +119,7 @@ def _apk(private, build_mode, downstreamargs, ctx, dist):
     cp.print(apk_file, apk_file_dest)
 
 def create(ctx, dist_name, bootstrap, arch, ndk_api, requirements):
-    _require_prebuilt_dist(dist_name, requirements, arch, ndk_api, bootstrap, ctx)
+    return _require_prebuilt_dist(dist_name, requirements, arch, ndk_api, bootstrap, ctx)
 
-def makeapk(ctx, dist_name, bootstrap, arch, ndk_api, private, release, downstreamargs):
-    _apk(private, 'release' if release else 'debug', downstreamargs, ctx, _require_prebuilt_dist(dist_name, [], arch, ndk_api, bootstrap, ctx))
+def makeapk(ctx, dist, private, release, downstreamargs):
+    _apk(private, 'release' if release else 'debug', downstreamargs, ctx, dist)

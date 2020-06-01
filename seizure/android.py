@@ -201,7 +201,7 @@ class TargetAndroid:
 
     def compile_platform(self):
         self.context.init()
-        create(
+        return create(
             self.context,
             self.dist_name,
             self.bootstrapname,
@@ -249,7 +249,7 @@ class TargetAndroid:
     def _orientation(self):
         return 'sensor' if self.orientation == 'all' else self.orientation
 
-    def build_package(self):
+    def build_package(self, dist):
         dist_dir = self._get_dist_dir()
         self._update_libraries_references(dist_dir)
         self._generate_whitelist(dist_dir)
@@ -283,10 +283,7 @@ class TargetAndroid:
                 yield 'port', '5000'
         makeapk(
             self.context,
-            self.dist_name,
-            self.bootstrapname,
-            self.arch,
-            self.ndk_api,
+            dist,
             self.dirs.app_dir,
             self.build_mode != 'debug',
             SimpleNamespace(**dict(downstreamargs())),

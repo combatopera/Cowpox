@@ -64,11 +64,11 @@ def run(config, dirs, target, src):
     log.info('Install platform')
     target.install_platform() # XXX: Bake these into the image?
     log.info('Compile platform')
-    target.compile_platform()
+    dist = target.compile_platform()
     src._copy_application_sources()
     dirs.add_sitecustomize()
     log.info('Package the application')
-    return target.build_package()
+    return target.build_package(dist)
 
 def _main():
     logging = Logging()
