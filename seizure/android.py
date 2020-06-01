@@ -43,7 +43,7 @@ from .dirs import Dirs
 from .distribution import generate_dist_folder_name
 from .jsonstore import JsonStore
 from .libs.version import parse
-from .mirror import download
+from .mirror import Mirror
 from .p4a import create, makeapk
 from diapyr import types
 from lagoon import unzip, yes
@@ -107,10 +107,9 @@ class TargetAndroid:
             log.info('Android SDK found at %s', sdk_dir)
         else:
             log.info('Android SDK is missing, downloading')
-            archive = 'sdk-tools-linux-4333796.zip'
-            download('http://dl.google.com/android/repository/', archive, sdk_dir.mkdirp())
+            archive = Mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
             log.info('Unpacking Android SDK')
-            unzip._q.print(archive, cwd = sdk_dir)
+            unzip._q.print(archive, cwd = sdk_dir.mkdirp())
             log.info('Android SDK tools base installation done.')
 
     def _install_android_ndk(self):
@@ -119,13 +118,13 @@ class TargetAndroid:
             log.info('Android NDK found at %s', ndk_dir)
         else:
             log.info('Android NDK is missing, downloading')
-            archive = f"android-ndk-r{self.android_ndk_version}-linux-x86_64.zip"
-            download('https://dl.google.com/android/repository/', archive, self.dirs.global_platform_dir)
+            archive = Mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
             log.info('Unpacking Android NDK')
-            unzip._q.print(archive, cwd = self.dirs.global_platform_dir)
-            source = self.dirs.global_platform_dir / f"android-ndk-r{self.android_ndk_version}"
-            log.debug('Rename %s to %s', source, ndk_dir)
-            shutil.move(source, ndk_dir)
+            unzip._q.print(archive, cwd = ndk_dir.mkdirp())
+            rootdir = ndk_dir / f"android-ndk-r{self.android_ndk_version}"
+            for path in rootdir.iterdir():
+                path.rename(ndk_dir / path.relative_to(rootdir))
+            rootdir.rmdir()
             log.info('Android NDK installation done.')
 
     def _android_list_build_tools_versions(self):

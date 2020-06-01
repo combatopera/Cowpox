@@ -85,12 +85,3 @@ class Mirror:
                 time.sleep(1)
             partialpath.rename(mirrorpath)
         return mirrorpath
-
-def download(url, filename, cwd):
-    url = url + filename
-    filename = Path(cwd, filename)
-    if filename.exists():
-        filename.unlink()
-    log.debug('Downloading %s', url)
-    Path(filename).symlink_to(Mirror.download(url))
-    return filename
