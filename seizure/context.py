@@ -248,9 +248,6 @@ class Context:
     def prepare_dist(self):
         self.bootstrap.prepare_dist_dir()
 
-    def get_site_packages_dir(self, arch=None):
-        return self.get_python_install_dir()
-
     def get_libs_dir(self, arch):
         return (self.libs_dir / arch).mkdirp()
 
@@ -276,7 +273,7 @@ class Context:
         else:
             name = getattr(recipe, 'site_packages_name', None) or name
         name = name.replace('.', '/')
-        site_packages_dir = self.get_site_packages_dir(arch)
+        site_packages_dir = self.get_python_install_dir()
         return (exists(join(site_packages_dir, name)) or
                 exists(join(site_packages_dir, name + '.py')) or
                 exists(join(site_packages_dir, name + '.pyc')) or
@@ -333,7 +330,7 @@ class Context:
         log.info('If this fails, it may mean that the module has compiled components and needs a recipe.')
         virtualenv.print(f"--python=python{self.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv', cwd = self.buildsdir)
         base_env = os.environ.copy()
-        base_env["PYTHONPATH"] = self.get_site_packages_dir() # XXX: Really?
+        base_env["PYTHONPATH"] = self.get_python_install_dir() # XXX: Really?
         log.info('Upgrade pip to latest version')
         pip = Program.text(Path('venv', 'bin', 'pip'))
         pip.install._U.print('pip', env = base_env, cwd = self.buildsdir)
@@ -348,7 +345,7 @@ class Context:
         env.update(recipe_env)
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
-        env['PYTHONPATH'] = f"""{(self.buildsdir / 'venv' / 'lib' / f"python{self.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{self.get_site_packages_dir()}"""
+        env['PYTHONPATH'] = f"""{(self.buildsdir / 'venv' / 'lib' / f"python{self.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{self.get_python_install_dir()}"""
         # Install the manually specified requirements first:
         if not modules:
             log.info('There are no Python modules to install, skipping')
@@ -361,5 +358,5 @@ class Context:
                     print(line, file = fileh)
             log.info('Installing Python modules with pip')
             log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
-            pip.install._v.__no_deps.print('--target', self.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env, cwd = self.buildsdir)
+            pip.install._v.__no_deps.print('--target', self.get_python_install_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env, cwd = self.buildsdir)
         standard_recipe.strip_object_files(self.archs[0], env, self.buildsdir)
