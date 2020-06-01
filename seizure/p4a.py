@@ -44,6 +44,7 @@ from .context import Context
 from .dirs import Dirs
 from .distribution import Distribution
 from .graph import get_recipe_order
+from .mirror import Mirror
 from diapyr import types
 from lagoon import cp, gradle
 from p4a.boot import Bootstrap
@@ -53,9 +54,9 @@ import glob, logging, re
 
 log = logging.getLogger(__name__)
 
-@types(Config, Dirs, this = Context)
-def createcontext(config, dirs):
-    ctx = Context()
+@types(Config, Dirs, Mirror, this = Context)
+def createcontext(config, dirs, mirror):
+    ctx = Context(mirror)
     arch = config.android.arch
     ctx.setup_dirs(dirs.platform_dir / f"build-{arch}")
     ctx.set_archs([arch])

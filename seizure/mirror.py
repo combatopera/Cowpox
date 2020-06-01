@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from diapyr import types
 from hashlib import md5
 from pathlib import Path
 from urllib.request import FancyURLopener
@@ -64,6 +65,10 @@ class Mirror:
             sys.stdout.write('- Download {}\r'.format(progression))
             sys.stdout.flush()
 
+    @types()
+    def __init__(self):
+        pass
+
     def download(self, url):
         mirrorpath = self.mirror / md5(url.encode('ascii')).hexdigest()
         if mirrorpath.exists():
@@ -83,5 +88,3 @@ class Mirror:
                 time.sleep(1)
             partialpath.rename(mirrorpath)
         return mirrorpath
-
-mirror = Mirror()

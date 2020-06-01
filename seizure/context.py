@@ -195,7 +195,7 @@ class Context:
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
 
-    def __init__(self):
+    def __init__(self, mirror):
         self.recipes = {}
         self.include_dirs = []
         self.ndk = None
@@ -211,6 +211,7 @@ class Context:
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
+        self.mirror = mirror
 
     def set_archs(self, arch_names):
         all_archs = self.archs
@@ -282,7 +283,7 @@ class Context:
         # download is arch independent
         log.info('Downloading recipes')
         for recipe in recipes:
-            recipe.download_if_necessary()
+            recipe.download_if_necessary(self.mirror)
         for arch in self.archs:
             log.info("Building all recipes for arch %s", arch.arch)
             log.info('Unpacking recipes')

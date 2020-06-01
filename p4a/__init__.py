@@ -43,7 +43,6 @@ from lagoon import basename, cp, find, git as sysgit, mkdir, mv, patch as patche
 from lagoon.program import Program
 from os.path import join
 from pathlib import Path
-from seizure.mirror import mirror
 from urllib.parse import urlparse
 from zipfile import ZipFile
 import hashlib, logging, os, re, shutil, subprocess
@@ -194,7 +193,7 @@ class Recipe(metaclass = RecipeMeta):
             return None
         return self.url.format(version=self.version)
 
-    def _download_file(self, url, target):
+    def _download_file(self, url, target, mirror):
         if not url:
             return
         log.info("Downloading %s from %s", self.name, url)
@@ -295,15 +294,15 @@ class Recipe(metaclass = RecipeMeta):
     def get_recipe_dir(self):
         return self.ctx.contribroot / 'recipes' / self.name
 
-    def download_if_necessary(self):
+    def download_if_necessary(self, mirror):
         log.info("Downloading %s", self.name)
         user_dir = os.environ.get('P4A_{}_DIR'.format(self.name.lower()))
         if user_dir is not None:
             log.info("P4A_%s_DIR is set, skipping download for %s", self.name, self.name)
             return
-        self._download()
+        self._download(mirror)
 
-    def _download(self):
+    def _download(self, mirror):
         if self.url is None:
             log.info("Skipping %s download as no URL is set", self.name)
             return
@@ -337,7 +336,7 @@ class Recipe(metaclass = RecipeMeta):
         if do_download:
             log.debug("Downloading %s from %s", self.name, url)
             rm._f.print(marker_filename)
-            self._download_file(self.versioned_url, filename)
+            self._download_file(self.versioned_url, filename, mirror)
             touch.print(marker_filename)
             if filename.exists() and filename.is_file() and expected_md5:
                 current_md5 = _md5sum(filename)
