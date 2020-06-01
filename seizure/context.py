@@ -254,7 +254,7 @@ class Context:
     def has_lib(self, arch, lib):
         return (self.get_libs_dir(arch) / lib).exists()
 
-    def has_package(self, name, arch=None):
+    def has_package(self, name):
         # If this is a file path, it'll need special handling:
         if (name.find("/") >= 0 or name.find("\\") >= 0) and \
                 name.find("://") < 0:  # (:// would indicate an url)
@@ -282,7 +282,7 @@ class Context:
                 glob.glob(f"{site_packages_dir}/{name}-*.egg"))
 
     def not_has_package(self, name, arch=None):
-        return not self.has_package(name, arch)
+        return not self.has_package(name)
 
     def build_recipes(self, build_order, python_modules):
         # Put recipes in correct build order
