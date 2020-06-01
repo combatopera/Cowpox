@@ -49,7 +49,6 @@ log = logging.getLogger(__name__)
 class Dirs:
 
     global_buildozer_dir = Path.home() / '.buildozer'
-    global_cache_dir = global_buildozer_dir / 'cache' # XXX: Used?
 
     @types(Config)
     def __init__(self, config):
@@ -63,7 +62,7 @@ class Dirs:
         self.android_ndk_dir = self.global_platform_dir / f"android-ndk-r{config.android.ndk}"
 
     def install(self):
-        for path in self.global_cache_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
+        for path in self.global_platform_dir, self.platform_dir, self.app_dir:
             path.mkdirp()
 
     def add_sitecustomize(self):
