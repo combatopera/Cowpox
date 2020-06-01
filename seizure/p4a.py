@@ -122,9 +122,9 @@ def _apk(private, build_mode, downstreamargs, ctx, dist):
     log.info("APK renamed to %s", apk_file_dest)
     cp.print(apk_file, apk_file_dest)
 
-def create(ctx, dist_name, bootstrap, arch, storage_dir, ndk_api, requirements):
+def create(ctx, dist_name, bootstrap, arch, ndk_api, requirements):
     ctx.init()
     _require_prebuilt_dist(dist_name, requirements, arch, ndk_api, bootstrap, ctx)
 
-def makeapk(ctx, dist_name, bootstrap, arch, storage_dir, ndk_api, private, release, downstreamargs):
+def makeapk(ctx, dist_name, bootstrap, arch, ndk_api, private, release, downstreamargs):
     _apk(private, 'release' if release else 'debug', downstreamargs, ctx, _require_prebuilt_dist(dist_name, [], arch, ndk_api, bootstrap, ctx))

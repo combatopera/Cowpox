@@ -205,7 +205,6 @@ class TargetAndroid:
             self.dist_name,
             self.bootstrapname,
             self.arch,
-            self.build_dir,
             self.ndk_api,
             self.requirements,
         )
@@ -286,7 +285,6 @@ class TargetAndroid:
             self.dist_name,
             self.bootstrapname,
             self.arch,
-            self.build_dir,
             self.ndk_api,
             self.dirs.app_dir,
             self.build_mode != 'debug',
