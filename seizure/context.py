@@ -39,7 +39,11 @@
 # THE SOFTWARE.
 
 from .archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
+from .config import Config
+from .dirs import Dirs
+from .mirror import Mirror
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
+from diapyr import types
 from importlib import import_module
 from lagoon import virtualenv
 from lagoon.program import Program
@@ -195,7 +199,11 @@ class Context:
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
 
-    def __init__(self, mirror):
+    @types(Config, Dirs, Mirror)
+    def __init__(self, config, dirs, mirror):
+        self.androidarch = config.android.arch
+        self.androidndkapi = config.android.ndk_api
+        self.androidapi = config.android.api
         self.recipes = {}
         self.include_dirs = []
         self.ndk = None
@@ -211,7 +219,13 @@ class Context:
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
+        self.dirs = dirs
         self.mirror = mirror
+
+    def init(self):
+        self.setup_dirs(self.dirs.platform_dir / f"build-{self.androidarch}")
+        self.set_archs([self.androidarch])
+        self.prepare_build_environment(self.androidndkapi, self.dirs.android_sdk_dir, self.androidapi, self.dirs.android_ndk_dir)
 
     def set_archs(self, arch_names):
         all_archs = self.archs

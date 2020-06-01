@@ -41,10 +41,10 @@
 from . import etc
 from .android import TargetAndroid
 from .config import Config
+from .context import Context
 from .dirs import Dirs
 from .jsonstore import JsonStore
 from .mirror import Mirror
-from .p4a import createcontext
 from .src import Src
 from .util import Logging
 from diapyr import DI, types
@@ -79,7 +79,7 @@ def _main():
     di = DI()
     try:
         di.add(config)
-        di.add(createcontext)
+        di.add(Context)
         di.add(Dirs)
         di.add(JsonStore) # TODO: Retire.
         di.add(Mirror)

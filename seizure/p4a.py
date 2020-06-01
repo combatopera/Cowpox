@@ -39,13 +39,8 @@
 # THE SOFTWARE.
 
 from .build import makeapkversion
-from .config import Config
-from .context import Context
-from .dirs import Dirs
 from .distribution import Distribution
 from .graph import get_recipe_order
-from .mirror import Mirror
-from diapyr import types
 from lagoon import cp, gradle
 from p4a.boot import Bootstrap
 from pathlib import Path
@@ -53,15 +48,6 @@ from types import SimpleNamespace
 import glob, logging, re
 
 log = logging.getLogger(__name__)
-
-@types(Config, Dirs, Mirror, this = Context)
-def createcontext(config, dirs, mirror):
-    ctx = Context(mirror)
-    arch = config.android.arch
-    ctx.setup_dirs(dirs.platform_dir / f"build-{arch}")
-    ctx.set_archs([arch])
-    ctx.prepare_build_environment(config.android.ndk_api, dirs.android_sdk_dir, config.android.api, dirs.android_ndk_dir)
-    return ctx
 
 def _build_dist_from_args(ctx, dist, args):
     bs = Bootstrap.get_bootstrap(args.bootstrap, ctx)
@@ -145,6 +131,7 @@ def create(ctx, dist_name, bootstrap, arch, storage_dir, ndk_api, requirements):
         ndk_api = ndk_api,
         requirements = requirements,
     )
+    ctx.init()
     _require_prebuilt_dist(args, ctx)
 
 def makeapk(ctx, dist_name, bootstrap, arch, storage_dir, ndk_api, private, release, downstreamargs):
