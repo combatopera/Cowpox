@@ -86,11 +86,11 @@ def _require_prebuilt_dist(args, ctx): # TODO: Not twice.
         _build_dist_from_args(ctx, dist, args)
     return dist
 
-def apk(args, downstreamargs, ctx, dist):
-    makeapkversion(downstreamargs, dist.dist_dir, args.private.expanduser().resolve())
+def _apk(private, build_mode, downstreamargs, ctx, dist):
+    makeapkversion(downstreamargs, dist.dist_dir, private.expanduser().resolve())
     env = dict(ANDROID_NDK_HOME = ctx.ndk_dir, ANDROID_HOME = ctx.sdk_dir)
-    output = gradle.__no_daemon.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[args.build_mode], env = env, cwd = dist.dist_dir)
-    apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / args.build_mode
+    output = gradle.__no_daemon.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[build_mode], env = env, cwd = dist.dist_dir)
+    apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / build_mode
     log.info('Copying APK to current directory')
     apk_re = re.compile(r'.*Package: (.*\.apk)$')
     apk_file = None
@@ -101,7 +101,7 @@ def apk(args, downstreamargs, ctx, dist):
             break
     if not apk_file:
         log.info('APK filename not found in build output. Guessing...')
-        if args.build_mode == "release":
+        if build_mode == "release":
             suffixes = ("release", "release-unsigned")
         else:
             suffixes = ("debug", )
@@ -145,4 +145,4 @@ def makeapk(ctx, dist_name, bootstrap, arch, storage_dir, ndk_api, private, rele
         private = private,
         build_mode = 'release' if release else 'debug',
     )
-    apk(args, downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
+    _apk(private, 'release' if release else 'debug', downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
