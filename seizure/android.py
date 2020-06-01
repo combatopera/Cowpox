@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from .config import Config
+from .context import Context
 from .dirs import Dirs
 from .distribution import generate_dist_folder_name
 from .jsonstore import JsonStore
@@ -56,8 +57,8 @@ log = logging.getLogger(__name__)
 
 class TargetAndroid:
 
-    @types(Config, JsonStore, Dirs, Mirror)
-    def __init__(self, config, state, dirs, mirror):
+    @types(Config, JsonStore, Dirs, Mirror, Context)
+    def __init__(self, config, state, dirs, mirror, context):
         self.APACHE_ANT_VERSION = config.APACHE_ANT_VERSION
         self.android_ndk_version = config.android.ndk
         self.android_api = config.android.api
@@ -101,6 +102,7 @@ class TargetAndroid:
         self.state = state
         self.dirs = dirs
         self.mirror = mirror
+        self.context = context
 
     def _install_android_sdk(self):
         sdk_dir = self.dirs.android_sdk_dir
@@ -199,9 +201,7 @@ class TargetAndroid:
 
     def compile_platform(self):
         create(
-            self.dirs.android_sdk_dir,
-            self.dirs.android_ndk_dir,
-            self.android_api,
+            self.context,
             self.dist_name,
             self.bootstrapname,
             self.arch,
@@ -282,9 +282,7 @@ class TargetAndroid:
             if self.bootstrapname == 'webview':
                 yield 'port', '5000'
         makeapk(
-            self.dirs.android_sdk_dir,
-            self.dirs.android_ndk_dir,
-            self.android_api,
+            self.context,
             self.dist_name,
             self.bootstrapname,
             self.arch,

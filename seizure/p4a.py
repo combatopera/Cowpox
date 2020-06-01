@@ -39,9 +39,12 @@
 # THE SOFTWARE.
 
 from .build import makeapkversion
+from .config import Config
 from .context import Context
+from .dirs import Dirs
 from .distribution import Distribution
 from .graph import get_recipe_order
+from diapyr import types
 from lagoon import cp, gradle
 from p4a.boot import Bootstrap
 from pathlib import Path
@@ -50,11 +53,13 @@ import glob, logging, re
 
 log = logging.getLogger(__name__)
 
-def _createcontext(args, sdkpath, apilevel, ndkpath):
+@types(Config, Dirs, this = Context)
+def createcontext(config, dirs):
     ctx = Context()
-    ctx.setup_dirs(args.storage_dir)
-    ctx.set_archs([args.arch])
-    ctx.prepare_build_environment(args.ndk_api, sdkpath, apilevel, ndkpath)
+    arch = config.android.arch
+    ctx.setup_dirs(dirs.platform_dir / f"build-{arch}")
+    ctx.set_archs([arch])
+    ctx.prepare_build_environment(config.android.ndk_api, dirs.android_sdk_dir, config.android.api, dirs.android_ndk_dir)
     return ctx
 
 def _build_dist_from_args(ctx, dist, args):
@@ -130,7 +135,7 @@ def apk(args, downstreamargs, ctx, dist):
     log.info("APK renamed to %s", apk_file_dest)
     cp.print(apk_file, apk_file_dest)
 
-def create(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, ndk_api, requirements):
+def create(ctx, dist_name, bootstrap, arch, storage_dir, ndk_api, requirements):
     args = SimpleNamespace(
         dist_name = dist_name,
         bootstrap = bootstrap,
@@ -139,10 +144,9 @@ def create(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, 
         ndk_api = ndk_api,
         requirements = requirements,
     )
-    ctx = _createcontext(args, sdkpath, apilevel, ndkpath)
     _require_prebuilt_dist(args, ctx)
 
-def makeapk(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir, ndk_api, private, release, downstreamargs):
+def makeapk(ctx, dist_name, bootstrap, arch, storage_dir, ndk_api, private, release, downstreamargs):
     args = SimpleNamespace(
         dist_name = dist_name,
         bootstrap = bootstrap,
@@ -153,5 +157,4 @@ def makeapk(sdkpath, ndkpath, apilevel, dist_name, bootstrap, arch, storage_dir,
         private = private,
         build_mode = 'release' if release else 'debug',
     )
-    ctx = _createcontext(args, sdkpath, apilevel, ndkpath)
     apk(args, downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
