@@ -194,7 +194,7 @@ class Recipe(metaclass = RecipeMeta):
             return None
         return self.url.format(version=self.version)
 
-    def download_file(self, url, target):
+    def _download_file(self, url, target):
         if not url:
             return
         log.info("Downloading %s from %s", self.name, url)
@@ -337,7 +337,7 @@ class Recipe(metaclass = RecipeMeta):
         if do_download:
             log.debug("Downloading %s from %s", self.name, url)
             rm._f.print(marker_filename)
-            self.download_file(self.versioned_url, filename)
+            self._download_file(self.versioned_url, filename)
             touch.print(marker_filename)
             if filename.exists() and filename.is_file() and expected_md5:
                 current_md5 = _md5sum(filename)
