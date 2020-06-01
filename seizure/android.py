@@ -200,6 +200,7 @@ class TargetAndroid:
         self._install_android_packages()
 
     def compile_platform(self):
+        self.context.init()
         create(
             self.context,
             self.dist_name,

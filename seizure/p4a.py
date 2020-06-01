@@ -123,7 +123,6 @@ def _apk(private, build_mode, downstreamargs, ctx, dist):
     cp.print(apk_file, apk_file_dest)
 
 def create(ctx, dist_name, bootstrap, arch, ndk_api, requirements):
-    ctx.init()
     _require_prebuilt_dist(dist_name, requirements, arch, ndk_api, bootstrap, ctx)
 
 def makeapk(ctx, dist_name, bootstrap, arch, ndk_api, private, release, downstreamargs):
