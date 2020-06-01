@@ -67,7 +67,7 @@ def _build_dist_from_args(ctx, dist, bootstrap):
     log.info('Your distribution was created successfully, exiting.')
     log.info("Dist can be found at (for now) %s", ctx.distsdir / dist.dist_dir)
 
-def _require_prebuilt_dist(dist_name, requirements, arch, ndk_api, bootstrap, ctx):
+def create(ctx, dist_name, bootstrap, arch, ndk_api, requirements):
     dist = Distribution.get_distribution(
             ctx,
             dist_name,
@@ -117,9 +117,6 @@ def _apk(private, build_mode, downstreamargs, ctx, dist):
     apk_file_dest = f"{apk_name}-{downstreamargs.version}-{APK_SUFFIX}" # XXX: This looks wrong?
     log.info("APK renamed to %s", apk_file_dest)
     cp.print(apk_file, apk_file_dest)
-
-def create(ctx, dist_name, bootstrap, arch, ndk_api, requirements):
-    return _require_prebuilt_dist(dist_name, requirements, arch, ndk_api, bootstrap, ctx)
 
 def makeapk(ctx, dist, private, release, downstreamargs):
     _apk(private, 'release' if release else 'debug', downstreamargs, ctx, dist)
