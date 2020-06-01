@@ -281,9 +281,6 @@ class Context:
                 exists(join(site_packages_dir, name + '.so')) or
                 glob.glob(f"{site_packages_dir}/{name}-*.egg"))
 
-    def not_has_package(self, name, arch=None):
-        return not self.has_package(name)
-
     def build_recipes(self, build_order, python_modules):
         # Put recipes in correct build order
         log.info("Recipe build order is %s", build_order)
@@ -322,7 +319,7 @@ class Context:
                 recipe.postbuild_arch(arch)
         log.info('Installing pure Python modules')
         log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
-        modules = list(filter(self.not_has_package, python_modules))
+        modules = [m for m in python_modules if not self.has_package(m)]
         if not modules:
             log.info('No Python modules and no setup.py to process, skipping')
             return
