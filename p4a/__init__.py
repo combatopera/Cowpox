@@ -301,9 +301,9 @@ class Recipe(metaclass = RecipeMeta):
         if user_dir is not None:
             log.info("P4A_%s_DIR is set, skipping download for %s", self.name, self.name)
             return
-        self.download()
+        self._download()
 
-    def download(self):
+    def _download(self):
         if self.url is None:
             log.info("Skipping %s download as no URL is set", self.name)
             return
