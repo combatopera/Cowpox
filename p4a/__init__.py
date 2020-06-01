@@ -43,7 +43,7 @@ from lagoon import basename, cp, find, git as sysgit, mkdir, mv, patch as patche
 from lagoon.program import Program
 from os.path import join
 from pathlib import Path
-from seizure.mirror import Mirror
+from seizure.mirror import mirror
 from urllib.parse import urlparse
 from zipfile import ZipFile
 import hashlib, logging, os, re, shutil, subprocess
@@ -202,7 +202,7 @@ class Recipe(metaclass = RecipeMeta):
         if parsed_url.scheme in {'http', 'https'}:
             if target.exists():
                 target.unlink()
-            target.symlink_to(Mirror.download(url))
+            target.symlink_to(mirror.download(url))
             return target
         elif parsed_url.scheme in {'git', 'git+file', 'git+ssh', 'git+http', 'git+https'}:
             if target.is_dir():

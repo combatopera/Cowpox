@@ -56,8 +56,8 @@ log = logging.getLogger(__name__)
 
 class TargetAndroid:
 
-    @types(Config, JsonStore, Dirs)
-    def __init__(self, config, state, dirs):
+    @types(Config, JsonStore, Dirs, Mirror)
+    def __init__(self, config, state, dirs, mirror):
         self.APACHE_ANT_VERSION = config.APACHE_ANT_VERSION
         self.android_ndk_version = config.android.ndk
         self.android_api = config.android.api
@@ -100,6 +100,7 @@ class TargetAndroid:
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.state = state
         self.dirs = dirs
+        self.mirror = mirror
 
     def _install_android_sdk(self):
         sdk_dir = self.dirs.android_sdk_dir
@@ -107,7 +108,7 @@ class TargetAndroid:
             log.info('Android SDK found at %s', sdk_dir)
         else:
             log.info('Android SDK is missing, downloading')
-            archive = Mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
+            archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
             log.info('Unpacking Android SDK')
             unzip._q.print(archive, cwd = sdk_dir.mkdirp())
             log.info('Android SDK tools base installation done.')
@@ -118,7 +119,7 @@ class TargetAndroid:
             log.info('Android NDK found at %s', ndk_dir)
         else:
             log.info('Android NDK is missing, downloading')
-            archive = Mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
+            archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
             log.info('Unpacking Android NDK')
             unzip._q.print(archive, cwd = ndk_dir.mkdirp())
             rootdir, = ndk_dir.iterdir()

@@ -43,6 +43,7 @@ from .android import TargetAndroid
 from .config import Config
 from .dirs import Dirs
 from .jsonstore import JsonStore
+from .mirror import Mirror
 from .src import Src
 from .util import Logging
 from diapyr import DI, types
@@ -79,6 +80,7 @@ def _main():
         di.add(config)
         di.add(Dirs)
         di.add(JsonStore) # TODO: Retire.
+        di.add(Mirror)
         di.add(Src)
         di.add(TargetAndroid)
         di.add(run)

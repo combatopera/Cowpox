@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from diapyr.util import singleton
 from hashlib import md5
 from pathlib import Path
 from urllib.request import FancyURLopener
@@ -46,7 +45,6 @@ import logging, os, sys, time
 
 log = logging.getLogger(__name__)
 
-@singleton
 class Mirror:
 
     class WgetDownloader(FancyURLopener):
@@ -85,3 +83,5 @@ class Mirror:
                 time.sleep(1)
             partialpath.rename(mirrorpath)
         return mirrorpath
+
+mirror = Mirror()
