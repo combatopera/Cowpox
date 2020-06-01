@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from .build import makeapkversion
-from .context import Context, build_recipes
+from .context import Context
 from .distribution import Distribution
 from .graph import get_recipe_order
 from lagoon import cp, gradle
@@ -71,7 +71,7 @@ def _build_dist_from_args(ctx, dist, args):
     log.info("Dist will also contain modules (%s) installed from pip", ', '.join(ctx.python_modules))
     ctx.prepare_bootstrap(bs)
     ctx.prepare_dist()
-    build_recipes(build_order, python_modules, ctx)
+    ctx.build_recipes(build_order, python_modules)
     ctx.bootstrap.run_distribute()
     log.info('Your distribution was created successfully, exiting.')
     log.info("Dist can be found at (for now) %s", ctx.distsdir / dist.dist_dir)

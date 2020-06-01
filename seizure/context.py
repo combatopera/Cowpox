@@ -272,79 +272,79 @@ class Context:
     def not_has_package(self, name, arch=None):
         return not self.has_package(name, arch)
 
-def build_recipes(build_order, python_modules, ctx):
-    # Put recipes in correct build order
-    log.info("Recipe build order is %s", build_order)
-    if python_modules:
-        python_modules = sorted(set(python_modules))
-        log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(python_modules))
-    recipes = [ctx.get_recipe(name) for name in build_order]
-    # download is arch independent
-    log.info('Downloading recipes')
-    for recipe in recipes:
-        recipe.download_if_necessary()
-    for arch in ctx.archs:
-        log.info("Building all recipes for arch %s", arch.arch)
-        log.info('Unpacking recipes')
+    def build_recipes(self, build_order, python_modules):
+        # Put recipes in correct build order
+        log.info("Recipe build order is %s", build_order)
+        if python_modules:
+            python_modules = sorted(set(python_modules))
+            log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(python_modules))
+        recipes = [self.get_recipe(name) for name in build_order]
+        # download is arch independent
+        log.info('Downloading recipes')
         for recipe in recipes:
-            recipe.get_build_container_dir(arch.arch).mkdirp()
-            recipe.prepare_build_dir(arch.arch)
-        log.info('Prebuilding recipes')
-        # 2) prebuild packages
-        for recipe in recipes:
-            log.info("Prebuilding %s for %s", recipe.name, arch.arch)
-            recipe.prebuild_arch(arch)
-            recipe.apply_patches(arch)
-        # 3) build packages
-        log.info('Building recipes')
-        for recipe in recipes:
-            log.info("Building %s for %s", recipe.name, arch.arch)
-            if recipe.should_build(arch):
-                recipe.build_arch(arch)
-                recipe.install_libraries(arch)
-            else:
-                log.info("%s said it is already built, skipping", recipe.name)
-        log.info('Postbuilding recipes')
-        for recipe in recipes:
-            log.info("Postbuilding %s for %s", recipe.name, arch.arch)
-            recipe.postbuild_arch(arch)
-    log.info('Installing pure Python modules')
-    log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
-    modules = list(filter(ctx.not_has_package, python_modules))
-    if not modules:
-        log.info('No Python modules and no setup.py to process, skipping')
-        return
-    log.info("The requirements (%s) don't have recipes, attempting to install them with pip", ', '.join(modules))
-    log.info('If this fails, it may mean that the module has compiled components and needs a recipe.')
-    virtualenv.print(f"--python=python{ctx.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv', cwd = ctx.buildsdir)
-    base_env = os.environ.copy()
-    base_env["PYTHONPATH"] = ctx.get_site_packages_dir() # XXX: Really?
-    log.info('Upgrade pip to latest version')
-    pip = Program.text(Path('venv', 'bin', 'pip'))
-    pip.install._U.print('pip', env = base_env, cwd = ctx.buildsdir)
-    log.info('Install Cython in case one of the modules needs it to build')
-    pip.install.print('Cython', env = base_env, cwd = ctx.buildsdir)
-    # Get environment variables for build (with CC/compiler set):
-    standard_recipe = CythonRecipe(ctx)
-    # (note: following line enables explicit -lpython... linker options)
-    standard_recipe.call_hostpython_via_targetpython = False
-    recipe_env = standard_recipe.get_recipe_env(ctx.archs[0])
-    env = copy.copy(base_env)
-    env.update(recipe_env)
-    # Make sure our build package dir is available, and the virtualenv
-    # site packages come FIRST (so the proper pip version is used):
-    env['PYTHONPATH'] = f"""{(ctx.buildsdir / 'venv' / 'lib' / f"python{ctx.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{ctx.get_site_packages_dir()}"""
-    # Install the manually specified requirements first:
-    if not modules:
-        log.info('There are no Python modules to install, skipping')
-    else:
-        log.info('Creating a requirements.txt file for the Python modules')
-        with (ctx.buildsdir / 'requirements.txt').open('w') as fileh:
-            for module in modules:
-                key = f"VERSION_{module}" # TODO: Retire this.
-                line = f"{module}=={os.environ[key]}" if key in os.environ else module
-                print(line, file = fileh)
-        log.info('Installing Python modules with pip')
-        log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
-        pip.install._v.__no_deps.print('--target', ctx.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env, cwd = ctx.buildsdir)
-    standard_recipe.strip_object_files(ctx.archs[0], env, ctx.buildsdir)
+            recipe.download_if_necessary()
+        for arch in self.archs:
+            log.info("Building all recipes for arch %s", arch.arch)
+            log.info('Unpacking recipes')
+            for recipe in recipes:
+                recipe.get_build_container_dir(arch.arch).mkdirp()
+                recipe.prepare_build_dir(arch.arch)
+            log.info('Prebuilding recipes')
+            # 2) prebuild packages
+            for recipe in recipes:
+                log.info("Prebuilding %s for %s", recipe.name, arch.arch)
+                recipe.prebuild_arch(arch)
+                recipe.apply_patches(arch)
+            # 3) build packages
+            log.info('Building recipes')
+            for recipe in recipes:
+                log.info("Building %s for %s", recipe.name, arch.arch)
+                if recipe.should_build(arch):
+                    recipe.build_arch(arch)
+                    recipe.install_libraries(arch)
+                else:
+                    log.info("%s said it is already built, skipping", recipe.name)
+            log.info('Postbuilding recipes')
+            for recipe in recipes:
+                log.info("Postbuilding %s for %s", recipe.name, arch.arch)
+                recipe.postbuild_arch(arch)
+        log.info('Installing pure Python modules')
+        log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
+        modules = list(filter(self.not_has_package, python_modules))
+        if not modules:
+            log.info('No Python modules and no setup.py to process, skipping')
+            return
+        log.info("The requirements (%s) don't have recipes, attempting to install them with pip", ', '.join(modules))
+        log.info('If this fails, it may mean that the module has compiled components and needs a recipe.')
+        virtualenv.print(f"--python=python{self.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv', cwd = self.buildsdir)
+        base_env = os.environ.copy()
+        base_env["PYTHONPATH"] = self.get_site_packages_dir() # XXX: Really?
+        log.info('Upgrade pip to latest version')
+        pip = Program.text(Path('venv', 'bin', 'pip'))
+        pip.install._U.print('pip', env = base_env, cwd = self.buildsdir)
+        log.info('Install Cython in case one of the modules needs it to build')
+        pip.install.print('Cython', env = base_env, cwd = self.buildsdir)
+        # Get environment variables for build (with CC/compiler set):
+        standard_recipe = CythonRecipe(self)
+        # (note: following line enables explicit -lpython... linker options)
+        standard_recipe.call_hostpython_via_targetpython = False
+        recipe_env = standard_recipe.get_recipe_env(self.archs[0])
+        env = copy.copy(base_env)
+        env.update(recipe_env)
+        # Make sure our build package dir is available, and the virtualenv
+        # site packages come FIRST (so the proper pip version is used):
+        env['PYTHONPATH'] = f"""{(self.buildsdir / 'venv' / 'lib' / f"python{self.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{self.get_site_packages_dir()}"""
+        # Install the manually specified requirements first:
+        if not modules:
+            log.info('There are no Python modules to install, skipping')
+        else:
+            log.info('Creating a requirements.txt file for the Python modules')
+            with (self.buildsdir / 'requirements.txt').open('w') as fileh:
+                for module in modules:
+                    key = f"VERSION_{module}" # TODO: Retire this.
+                    line = f"{module}=={os.environ[key]}" if key in os.environ else module
+                    print(line, file = fileh)
+            log.info('Installing Python modules with pip')
+            log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
+            pip.install._v.__no_deps.print('--target', self.get_site_packages_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env, cwd = self.buildsdir)
+        standard_recipe.strip_object_files(self.archs[0], env, self.buildsdir)
