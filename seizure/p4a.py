@@ -82,7 +82,8 @@ def create(ctx, dist_name, bootstrap, arch, ndk_api, requirements):
         _build_dist_from_args(ctx, dist, bootstrap)
     return dist
 
-def _apk(private, build_mode, downstreamargs, ctx, dist):
+def makeapk(ctx, dist, private, release, downstreamargs):
+    build_mode = 'release' if release else 'debug'
     makeapkversion(downstreamargs, dist.dist_dir, private.expanduser().resolve())
     env = dict(ANDROID_NDK_HOME = ctx.ndk_dir, ANDROID_HOME = ctx.sdk_dir)
     output = gradle.__no_daemon.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[build_mode], env = env, cwd = dist.dist_dir)
@@ -117,6 +118,3 @@ def _apk(private, build_mode, downstreamargs, ctx, dist):
     apk_file_dest = f"{apk_name}-{downstreamargs.version}-{APK_SUFFIX}" # XXX: This looks wrong?
     log.info("APK renamed to %s", apk_file_dest)
     cp.print(apk_file, apk_file_dest)
-
-def makeapk(ctx, dist, private, release, downstreamargs):
-    _apk(private, 'release' if release else 'debug', downstreamargs, ctx, dist)
