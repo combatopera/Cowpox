@@ -71,19 +71,19 @@ def _build_dist_from_args(ctx, dist, bootstrap):
 def _split_argument_list(l):
     return re.split('[ ,]+', l) if l else []
 
-def _require_prebuilt_dist(args, ctx): # TODO: Not twice.
+def _require_prebuilt_dist(dist_name, requirements, arch, ndk_api, bootstrap, ctx): # TODO: Not twice.
     dist = Distribution.get_distribution(
             ctx,
-            args.dist_name,
-            args.requirements,
-            args.arch,
-            args.ndk_api)
+            dist_name,
+            requirements,
+            arch,
+            ndk_api)
     ctx.distribution = dist
     if dist.needs_build:
         if dist.folder_exists():
             dist.delete()
         log.info('No dist exists that meets your requirements, so one will be built.')
-        _build_dist_from_args(ctx, dist, args.bootstrap)
+        _build_dist_from_args(ctx, dist, bootstrap)
     return dist
 
 def _apk(private, build_mode, downstreamargs, ctx, dist):
@@ -123,26 +123,8 @@ def _apk(private, build_mode, downstreamargs, ctx, dist):
     cp.print(apk_file, apk_file_dest)
 
 def create(ctx, dist_name, bootstrap, arch, storage_dir, ndk_api, requirements):
-    args = SimpleNamespace(
-        dist_name = dist_name,
-        bootstrap = bootstrap,
-        arch = arch,
-        storage_dir = storage_dir,
-        ndk_api = ndk_api,
-        requirements = requirements,
-    )
     ctx.init()
-    _require_prebuilt_dist(args, ctx)
+    _require_prebuilt_dist(dist_name, requirements, arch, ndk_api, bootstrap, ctx)
 
 def makeapk(ctx, dist_name, bootstrap, arch, storage_dir, ndk_api, private, release, downstreamargs):
-    args = SimpleNamespace(
-        dist_name = dist_name,
-        bootstrap = bootstrap,
-        arch = arch,
-        storage_dir = storage_dir,
-        ndk_api = ndk_api,
-        requirements = [],
-        private = private,
-        build_mode = 'release' if release else 'debug',
-    )
-    _apk(private, 'release' if release else 'debug', downstreamargs, ctx, _require_prebuilt_dist(args, ctx))
+    _apk(private, 'release' if release else 'debug', downstreamargs, ctx, _require_prebuilt_dist(dist_name, [], arch, ndk_api, bootstrap, ctx))
