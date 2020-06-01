@@ -55,7 +55,6 @@ class Dirs:
         self.buildozer_dir = workspace / '.buildozer'
         self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
         self.app_dir = self.buildozer_dir / config.targetname / 'app'
-        self.apache_ant_dir = self.global_platform_dir / f"apache-ant-{config.android.ant}"
         self.android_sdk_dir = self.global_platform_dir / 'android-sdk'
         self.android_ndk_dir = self.global_platform_dir / f"android-ndk-r{config.android.ndk}"
 

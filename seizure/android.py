@@ -46,7 +46,7 @@ from .libs.version import parse
 from .mirror import download
 from .p4a import create, makeapk
 from diapyr import types
-from lagoon import tar, unzip, yes
+from lagoon import unzip, yes
 from lagoon.program import Program
 from pathlib import Path
 from types import SimpleNamespace
@@ -100,18 +100,6 @@ class TargetAndroid:
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.state = state
         self.dirs = dirs
-
-    def _install_apache_ant(self):
-        ant_dir = self.dirs.apache_ant_dir
-        if ant_dir.exists():
-            log.info('Apache ANT found at %s', ant_dir)
-            return
-        ant_dir.mkdir(parents = True)
-        log.info('Android ANT is missing, downloading')
-        archive = f"apache-ant-{self.APACHE_ANT_VERSION}-bin.tar.gz"
-        download('http://archive.apache.org/dist/ant/binaries/', archive, ant_dir)
-        tar.xzf.print(archive, cwd = ant_dir)
-        log.info('Apache ANT installation done.')
 
     def _install_android_sdk(self):
         sdk_dir = self.dirs.android_sdk_dir
@@ -206,7 +194,6 @@ class TargetAndroid:
         self.state.sync()
 
     def install_platform(self):
-        self._install_apache_ant()
         self._install_android_sdk()
         self._install_android_ndk()
         self._install_android_packages()
