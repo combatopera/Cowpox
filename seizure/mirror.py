@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .config import Config
 from diapyr import types
 from hashlib import md5
 from pathlib import Path
@@ -53,7 +54,6 @@ class Mirror:
         version = 'Wget/1.17.1'
 
     urlretrieve = WgetDownloader().retrieve
-    mirror = Path('/mirror') # TODO: Make configurable.
 
     @staticmethod
     def report_hook(index, blksize, size):
@@ -65,9 +65,9 @@ class Mirror:
             sys.stdout.write('- Download {}\r'.format(progression))
             sys.stdout.flush()
 
-    @types()
-    def __init__(self):
-        pass
+    @types(Config)
+    def __init__(self, config):
+        self.mirror = Path(config.mirror.path)
 
     def download(self, url):
         mirrorpath = self.mirror / md5(url.encode('ascii')).hexdigest()
