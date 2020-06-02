@@ -95,37 +95,35 @@ class TargetAndroid:
         self.intent_filters = config.android.manifest.intent_filters
         self.presplash = config.presplash.filename
         self.apkdir = Path(config.apk.dir)
-        self.android_sdk_dir = Path(config.android_sdk_dir)
-        self.android_ndk_dir = Path(config.android_ndk_dir)
-        self.sdkmanager = Program.text(self.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = self.android_sdk_dir)
+        self.sdk_dir = Path(config.android_sdk_dir)
+        self.ndk_dir = Path(config.android_ndk_dir)
+        self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = self.sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.dirs = dirs
         self.mirror = mirror
         self.context = context
 
     def _install_android_sdk(self):
-        sdk_dir = self.android_sdk_dir
-        if sdk_dir.exists():
-            log.info('Android SDK found at %s', sdk_dir)
+        if self.sdk_dir.exists():
+            log.info('Android SDK found at %s', self.sdk_dir)
         else:
             log.info('Android SDK is missing, downloading')
             archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
             log.info('Unpacking Android SDK')
-            unzip._q.print(archive, cwd = sdk_dir.mkdirp())
+            unzip._q.print(archive, cwd = self.sdk_dir.mkdirp())
             log.info('Android SDK tools base installation done.')
 
     def _install_android_ndk(self):
-        ndk_dir = self.android_ndk_dir
-        if ndk_dir.exists():
-            log.info('Android NDK found at %s', ndk_dir)
+        if self.ndk_dir.exists():
+            log.info('Android NDK found at %s', self.ndk_dir)
         else:
             log.info('Android NDK is missing, downloading')
             archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
             log.info('Unpacking Android NDK')
-            unzip._q.print(archive, cwd = ndk_dir.mkdirp())
-            rootdir, = ndk_dir.iterdir()
+            unzip._q.print(archive, cwd = self.ndk_dir.mkdirp())
+            rootdir, = self.ndk_dir.iterdir()
             for path in rootdir.iterdir():
-                path.rename(ndk_dir / path.relative_to(rootdir))
+                path.rename(self.ndk_dir / path.relative_to(rootdir))
             rootdir.rmdir()
             log.info('Android NDK installation done.')
 
@@ -171,13 +169,13 @@ class TargetAndroid:
         if not available_v_build_tools:
             log.error('Did not find any build tools available to download')
         latest_v_build_tools = max(available_v_build_tools)
-        if latest_v_build_tools > self._read_version_subdir(self.android_sdk_dir / 'build-tools'):
+        if latest_v_build_tools > self._read_version_subdir(self.sdk_dir / 'build-tools'):
             if not self.skip_upd:
                 self._android_update_sdk(f"build-tools;{latest_v_build_tools}")
             else:
                 log.info('Skipping update to build tools %s due to spec setting', latest_v_build_tools)
         log.info('Downloading platform api target if necessary')
-        if not (self.android_sdk_dir / 'platforms' / f"android-{self.android_api}").exists():
+        if not (self.sdk_dir / 'platforms' / f"android-{self.android_api}").exists():
             if not self.skip_upd:
                 self.sdkmanager.print(f"platforms;android-{self.android_api}")
             else:
