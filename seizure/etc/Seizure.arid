@@ -86,3 +86,6 @@ apk dir = $(build dir)
 build dir = $/($(container src) build)
 main name = main
 mirror path = /mirror
+global_platform_dir = $/($(~) .buildozer $(targetname) platform)
+android_sdk_dir = $/($(global_platform_dir) android-sdk)
+android_ndk_dir = $/($(global_platform_dir) android-ndk-r$(android ndk))

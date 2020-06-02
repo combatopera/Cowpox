@@ -95,14 +95,16 @@ class TargetAndroid:
         self.intent_filters = config.android.manifest.intent_filters
         self.presplash = config.presplash.filename
         self.apkdir = Path(config.apk.dir)
-        self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
+        self.android_sdk_dir = Path(config.android_sdk_dir)
+        self.android_ndk_dir = Path(config.android_ndk_dir)
+        self.sdkmanager = Program.text(self.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = self.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.dirs = dirs
         self.mirror = mirror
         self.context = context
 
     def _install_android_sdk(self):
-        sdk_dir = self.dirs.android_sdk_dir
+        sdk_dir = self.android_sdk_dir
         if sdk_dir.exists():
             log.info('Android SDK found at %s', sdk_dir)
         else:
@@ -113,7 +115,7 @@ class TargetAndroid:
             log.info('Android SDK tools base installation done.')
 
     def _install_android_ndk(self):
-        ndk_dir = self.dirs.android_ndk_dir
+        ndk_dir = self.android_ndk_dir
         if ndk_dir.exists():
             log.info('Android NDK found at %s', ndk_dir)
         else:
@@ -169,13 +171,13 @@ class TargetAndroid:
         if not available_v_build_tools:
             log.error('Did not find any build tools available to download')
         latest_v_build_tools = max(available_v_build_tools)
-        if latest_v_build_tools > self._read_version_subdir(self.dirs.android_sdk_dir / 'build-tools'):
+        if latest_v_build_tools > self._read_version_subdir(self.android_sdk_dir / 'build-tools'):
             if not self.skip_upd:
                 self._android_update_sdk(f"build-tools;{latest_v_build_tools}")
             else:
                 log.info('Skipping update to build tools %s due to spec setting', latest_v_build_tools)
         log.info('Downloading platform api target if necessary')
-        if not (self.dirs.android_sdk_dir / 'platforms' / f"android-{self.android_api}").exists():
+        if not (self.android_sdk_dir / 'platforms' / f"android-{self.android_api}").exists():
             if not self.skip_upd:
                 self.sdkmanager.print(f"platforms;android-{self.android_api}")
             else:

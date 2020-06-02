@@ -53,9 +53,6 @@ class Dirs:
         buildozer_dir = Path(config.container.workspace, '.buildozer')
         self.platform_dir = buildozer_dir / config.targetname / 'platform'
         self.app_dir = buildozer_dir / config.targetname / 'app'
-        global_platform_dir = Path.home() / '.buildozer' / config.targetname / 'platform'
-        self.android_sdk_dir = global_platform_dir / 'android-sdk'
-        self.android_ndk_dir = global_platform_dir / f"android-ndk-r{config.android.ndk}"
 
     def install(self):
         for path in self.platform_dir, self.app_dir:
