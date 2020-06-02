@@ -200,8 +200,8 @@ class Context:
         self.androidarch = config.android.arch
         self.ndk_api = config.android.ndk_api
         self.android_api = config.android.api
-        self.sdk_dir = config.android_sdk_dir
-        self.ndk_dir = config.android_ndk_dir
+        self.sdk_dir = Path(config.android_sdk_dir)
+        self.ndk_dir = Path(config.android_ndk_dir)
         self.recipes = {}
         self.include_dirs = []
         self.ndk = None
