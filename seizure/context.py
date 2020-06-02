@@ -159,7 +159,7 @@ class Context:
         (self.buildsdir / 'bootstrap_builds').mkdirp()
         (self.buildsdir / 'other_builds').mkdirp()
 
-    def prepare_build_environment(self, user_ndk_api, sdkpath, apilevel, ndkpath):
+    def _prepare_build_environment(self, user_ndk_api, sdkpath, apilevel, ndkpath):
         self.ensure_dirs()
         self.sdk_dir = sdkpath
         self.android_api = apilevel
@@ -225,7 +225,7 @@ class Context:
     def init(self):
         self.setup_dirs(self.dirs.platform_dir / f"build-{self.androidarch}")
         self.set_archs([self.androidarch])
-        self.prepare_build_environment(self.androidndkapi, self.dirs.android_sdk_dir, self.androidapi, self.dirs.android_ndk_dir)
+        self._prepare_build_environment(self.androidndkapi, self.dirs.android_sdk_dir, self.androidapi, self.dirs.android_ndk_dir)
 
     def set_archs(self, arch_names):
         all_archs = self.archs
