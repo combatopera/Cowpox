@@ -42,7 +42,6 @@ from .config import Config
 from .context import Context
 from .dirs import Dirs
 from .distribution import generate_dist_folder_name
-from .jsonstore import JsonStore
 from .libs.version import parse
 from .mirror import Mirror
 from .p4a import create, makeapk
@@ -57,8 +56,8 @@ log = logging.getLogger(__name__)
 
 class TargetAndroid:
 
-    @types(Config, JsonStore, Dirs, Mirror, Context)
-    def __init__(self, config, state, dirs, mirror, context):
+    @types(Config, Dirs, Mirror, Context)
+    def __init__(self, config, dirs, mirror, context):
         self.android_ndk_version = config.android.ndk
         self.android_api = config.android.api
         self.android_minapi = config.android.minapi
@@ -98,7 +97,6 @@ class TargetAndroid:
         self.apkdir = Path(config.apk.dir)
         self.sdkmanager = Program.text(dirs.android_sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = dirs.android_sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
-        self.state = state
         self.dirs = dirs
         self.mirror = mirror
         self.context = context
@@ -159,13 +157,6 @@ class TargetAndroid:
         return max(versions)
 
     def _install_android_packages(self):
-        cache_key = 'android:sdk_installation'
-        cache_value = [
-            str(self.android_api), str(self.android_minapi), self.android_ndk_version,
-            str(self.dirs.android_sdk_dir), str(self.dirs.android_ndk_dir),
-        ]
-        if self.state.get(cache_key, None) == cache_value:
-            return
         if not self.skip_upd:
             log.info('Installing/updating SDK platform tools if necessary')
             self._android_update_sdk('tools', 'platform-tools')
@@ -190,8 +181,6 @@ class TargetAndroid:
             else:
                 log.info('Skipping install API %s platform tools due to spec setting', self.android_api)
         log.info('Android packages installation done.')
-        self.state[cache_key] = cache_value
-        self.state.sync()
 
     def install_platform(self):
         self._install_android_sdk()
@@ -297,8 +286,6 @@ class TargetAndroid:
         apkpath = self.apkdir / f"{self.dist_name}-{self.version}-{self.commit}-{self.arch}-{mode}.apk"
         shutil.copyfile(apk_dir / apk, apkpath)
         log.info('Android packaging done!')
-        self.state['android:latestapk'] = apkpath.name
-        self.state['android:latestmode'] = self.build_mode
         return apkpath
 
     def _update_libraries_references(self, dist_dir):
