@@ -59,7 +59,6 @@ class TargetAndroid:
 
     @types(Config, JsonStore, Dirs, Mirror, Context)
     def __init__(self, config, state, dirs, mirror, context):
-        self.APACHE_ANT_VERSION = config.APACHE_ANT_VERSION
         self.android_ndk_version = config.android.ndk
         self.android_api = config.android.api
         self.android_minapi = config.android.minapi
