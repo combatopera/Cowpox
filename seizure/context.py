@@ -161,17 +161,15 @@ class Context:
 
     def _prepare_build_environment(self):
         self.ensure_dirs()
-        self.sdk_dir = self.dirs.android_sdk_dir
         log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
         check_target_api(self.android_api, self.archs[0].arch)
-        apis = _apilevels(self.dirs.android_sdk_dir)
+        apis = _apilevels(self.sdk_dir)
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
         if self.android_api not in apis:
             raise Exception("Requested API target %s is not available, install it with the SDK android tool." % self.android_api)
         log.info("Requested API target %s is available, continuing.", self.android_api)
-        self.ndk_dir = self.dirs.android_ndk_dir
-        log.info("Found NDK dir in $ANDROIDNDK: %s", self.dirs.android_ndk_dir)
-        check_ndk_version(self.dirs.android_ndk_dir)
+        log.info("Found NDK dir in $ANDROIDNDK: %s", self.ndk_dir)
+        check_ndk_version(self.ndk_dir)
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
         check_ndk_api(self.ndk_api, self.android_api)
         try:
@@ -180,8 +178,8 @@ class Context:
             log.warning('Cython for python3 missing. If you are building for  a python 3 target (which is the default) then THINGS WILL BREAK.')
         arch = self.archs[0]
         toolchain_prefix = arch.toolchain_prefix
-        self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(self.dirs.android_ndk_dir, self.ndk_api, arch)
-        toolchain_versions, toolchain_path_exists = get_toolchain_versions(self.dirs.android_ndk_dir, arch)
+        self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(self.ndk_dir, self.ndk_api, arch)
+        toolchain_versions, toolchain_path_exists = get_toolchain_versions(self.ndk_dir, arch)
         toolchain_versions.sort()
         toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
         if toolchain_versions:
@@ -202,6 +200,8 @@ class Context:
         self.androidarch = config.android.arch
         self.ndk_api = config.android.ndk_api
         self.android_api = config.android.api
+        self.sdk_dir = dirs.android_sdk_dir
+        self.ndk_dir = dirs.android_ndk_dir
         self.recipes = {}
         self.include_dirs = []
         self.ndk = None
