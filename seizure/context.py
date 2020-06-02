@@ -159,31 +159,31 @@ class Context:
         (self.buildsdir / 'bootstrap_builds').mkdirp()
         (self.buildsdir / 'other_builds').mkdirp()
 
-    def _prepare_build_environment(self, user_ndk_api, sdkpath, apilevel, ndkpath):
+    def _prepare_build_environment(self):
         self.ensure_dirs()
-        self.sdk_dir = sdkpath
-        self.android_api = apilevel
-        log.info("Found Android API target in $ANDROIDAPI: %s", apilevel)
-        check_target_api(apilevel, self.archs[0].arch)
-        apis = _apilevels(sdkpath)
+        self.sdk_dir = self.dirs.android_sdk_dir
+        self.android_api = self.androidapi
+        log.info("Found Android API target in $ANDROIDAPI: %s", self.androidapi)
+        check_target_api(self.androidapi, self.archs[0].arch)
+        apis = _apilevels(self.dirs.android_sdk_dir)
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
-        if apilevel not in apis:
-            raise Exception("Requested API target %s is not available, install it with the SDK android tool." % apilevel)
-        log.info("Requested API target %s is available, continuing.", apilevel)
-        self.ndk_dir = ndkpath
-        log.info("Found NDK dir in $ANDROIDNDK: %s", ndkpath)
-        check_ndk_version(ndkpath)
+        if self.androidapi not in apis:
+            raise Exception("Requested API target %s is not available, install it with the SDK android tool." % self.androidapi)
+        log.info("Requested API target %s is available, continuing.", self.androidapi)
+        self.ndk_dir = self.dirs.android_ndk_dir
+        log.info("Found NDK dir in $ANDROIDNDK: %s", self.dirs.android_ndk_dir)
+        check_ndk_version(self.dirs.android_ndk_dir)
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
-        check_ndk_api(user_ndk_api, apilevel)
-        self.ndk_api = user_ndk_api
+        check_ndk_api(self.androidndkapi, self.androidapi)
+        self.ndk_api = self.androidndkapi
         try:
             subprocess.check_call(['python3', '-m', 'cython', '--help'])
         except subprocess.CalledProcessError:
             log.warning('Cython for python3 missing. If you are building for  a python 3 target (which is the default) then THINGS WILL BREAK.')
         arch = self.archs[0]
         toolchain_prefix = arch.toolchain_prefix
-        self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(ndkpath, self.ndk_api, arch)
-        toolchain_versions, toolchain_path_exists = get_toolchain_versions(ndkpath, arch)
+        self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(self.dirs.android_ndk_dir, self.ndk_api, arch)
+        toolchain_versions, toolchain_path_exists = get_toolchain_versions(self.dirs.android_ndk_dir, arch)
         toolchain_versions.sort()
         toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
         if toolchain_versions:
@@ -225,7 +225,7 @@ class Context:
     def init(self):
         self.setup_dirs(self.dirs.platform_dir / f"build-{self.androidarch}")
         self.set_archs([self.androidarch])
-        self._prepare_build_environment(self.androidndkapi, self.dirs.android_sdk_dir, self.androidapi, self.dirs.android_ndk_dir)
+        self._prepare_build_environment()
 
     def set_archs(self, arch_names):
         all_archs = self.archs
