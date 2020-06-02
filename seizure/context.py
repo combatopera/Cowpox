@@ -162,20 +162,18 @@ class Context:
     def _prepare_build_environment(self):
         self.ensure_dirs()
         self.sdk_dir = self.dirs.android_sdk_dir
-        self.android_api = self.androidapi
-        log.info("Found Android API target in $ANDROIDAPI: %s", self.androidapi)
-        check_target_api(self.androidapi, self.archs[0].arch)
+        log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
+        check_target_api(self.android_api, self.archs[0].arch)
         apis = _apilevels(self.dirs.android_sdk_dir)
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
-        if self.androidapi not in apis:
-            raise Exception("Requested API target %s is not available, install it with the SDK android tool." % self.androidapi)
-        log.info("Requested API target %s is available, continuing.", self.androidapi)
+        if self.android_api not in apis:
+            raise Exception("Requested API target %s is not available, install it with the SDK android tool." % self.android_api)
+        log.info("Requested API target %s is available, continuing.", self.android_api)
         self.ndk_dir = self.dirs.android_ndk_dir
         log.info("Found NDK dir in $ANDROIDNDK: %s", self.dirs.android_ndk_dir)
         check_ndk_version(self.dirs.android_ndk_dir)
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
-        check_ndk_api(self.androidndkapi, self.androidapi)
-        self.ndk_api = self.androidndkapi
+        check_ndk_api(self.ndk_api, self.android_api)
         try:
             subprocess.check_call(['python3', '-m', 'cython', '--help'])
         except subprocess.CalledProcessError:
@@ -202,8 +200,8 @@ class Context:
     @types(Config, Dirs, Mirror)
     def __init__(self, config, dirs, mirror):
         self.androidarch = config.android.arch
-        self.androidndkapi = config.android.ndk_api
-        self.androidapi = config.android.api
+        self.ndk_api = config.android.ndk_api
+        self.android_api = config.android.api
         self.recipes = {}
         self.include_dirs = []
         self.ndk = None
