@@ -51,8 +51,7 @@ class Dirs:
     @types(Config)
     def __init__(self, config):
         self.app_dir = Path(config.app_dir)
-        buildozer_dir = Path(config.container.workspace, '.buildozer')
-        self.platform_dir = buildozer_dir / config.targetname / 'platform'
+        self.platform_dir = Path(config.container.workspace, '.buildozer', config.targetname, 'platform')
 
     def install(self):
         self.platform_dir.mkdirp()
