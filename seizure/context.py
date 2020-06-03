@@ -145,11 +145,6 @@ class Context:
     def get_python_install_dir(self):
         return self.python_installs_dir / self.bootstrap.distribution.name
 
-    def setup_dirs(self, storage_dir):
-        self.buildsdir = storage_dir / 'build'
-        self.distsdir = storage_dir / 'dists'
-        self.storage_dir = storage_dir
-
     def ensure_dirs(self):
         self.storage_dir.mkdirp()
         self.buildsdir.mkdirp()
@@ -200,7 +195,9 @@ class Context:
         self.android_api = config.android.api
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
-        self.platform_dir = Path(config.platform_dir)
+        self.storage_dir = Path(config.storage_dir)
+        self.buildsdir = self.storage_dir / 'build'
+        self.distsdir = self.storage_dir / 'dists'
         self.recipes = {}
         self.include_dirs = []
         self.ndk = None
@@ -219,7 +216,6 @@ class Context:
         self.mirror = mirror
 
     def init(self):
-        self.setup_dirs(self.platform_dir / f"build-{self.androidarch}")
         self.set_archs([self.androidarch])
         self._prepare_build_environment()
 

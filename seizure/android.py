@@ -97,7 +97,7 @@ class TargetAndroid:
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.app_dir = Path(config.app_dir)
-        self.build_dir = Path(config.platform_dir, f"build-{self.arch}")
+        self.build_dir = Path(config.storage_dir)
         self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = self.sdk_dir)
         self.mirror = mirror
         self.context = context
