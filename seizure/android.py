@@ -55,20 +55,20 @@ import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
-class Tree(Path):
+@contextmanager
+def okorclean(dirpath):
+    okpath = dirpath / 'ok'
+    if okpath.exists():
+        yield True
+        return
+    dirpath.mkdirp()
+    for child in dirpath.iterdir():
+        shutil.rmtree(child)
+    yield
+    with okpath.open('w'):
+        pass
 
-    @contextmanager
-    def okorclean(self):
-        okpath = self / 'ok'
-        if okpath.exists():
-            yield True
-            return
-        self.mkdirp()
-        for child in self.iterdir():
-            shutil.rmtree(child)
-        yield
-        with okpath.open('w'):
-            pass
+Path.okorclean = okorclean
 
 class TargetAndroid:
 
@@ -111,8 +111,8 @@ class TargetAndroid:
         self.intent_filters = config.android.manifest.intent_filters
         self.presplash = config.presplash.filename
         self.apkdir = Path(config.apk.dir)
-        self.sdk_dir = Tree(config.android_sdk_dir)
-        self.ndk_dir = Tree(config.android_ndk_dir)
+        self.sdk_dir = Path(config.android_sdk_dir)
+        self.ndk_dir = Path(config.android_ndk_dir)
         self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = self.sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.dirs = dirs
