@@ -82,9 +82,9 @@ def create(ctx, dist_name, bootstrap, arch, ndk_api, requirements):
         _build_dist_from_args(ctx, dist, bootstrap)
     return dist
 
-def makeapk(ctx, dist, private, release, downstreamargs):
+def makeapk(ctx, dist, app_dir, release, downstreamargs):
     build_mode = 'release' if release else 'debug'
-    makeapkversion(downstreamargs, dist.dist_dir, private.expanduser().resolve())
+    makeapkversion(downstreamargs, dist.dist_dir, app_dir)
     env = dict(ANDROID_NDK_HOME = ctx.ndk_dir, ANDROID_HOME = ctx.sdk_dir)
     output = gradle.__no_daemon.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[build_mode], env = env, cwd = dist.dist_dir)
     apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / build_mode
