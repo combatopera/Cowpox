@@ -55,8 +55,7 @@ class Dirs:
         self.platform_dir = buildozer_dir / config.targetname / 'platform'
 
     def install(self):
-        for path in self.platform_dir:
-            path.mkdirp()
+        self.platform_dir.mkdirp()
 
     def add_sitecustomize(self):
         with resource_stream(__name__, 'sitecustomize.py') as f, (self.app_dir.mkdirp() / 'sitecustomize.py').open('wb') as g:
