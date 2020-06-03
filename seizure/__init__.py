@@ -50,7 +50,7 @@ def okorclean(dirpath):
     else:
         dirpath.mkdirp()
         for child in dirpath.iterdir():
-            shutil.rmtree(child)
+            shutil.rmtree(child) if child.is_dir() else child.unlink()
         yield
         okpath.mkdir()
 
