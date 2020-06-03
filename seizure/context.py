@@ -138,12 +138,8 @@ class Context:
     def aars_dir(self):
         return (self.buildsdir / 'aars' / self.bootstrap.distribution.name).mkdirp()
 
-    @property
-    def python_installs_dir(self):
-        return (self.buildsdir / 'python-installs').mkdirp()
-
     def get_python_install_dir(self):
-        return self.python_installs_dir / self.bootstrap.distribution.name
+        return (self.buildsdir / 'python-installs').mkdirp() / self.bootstrap.distribution.name
 
     def _prepare_build_environment(self):
         self.distsdir.mkdirp()
