@@ -139,7 +139,6 @@ def makeapkversion(args, distdir, app_dir):
         blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
     with (distdir / 'whitelist.txt').open() as f:
         blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-    args.private = app_dir
     if bootstrapname != "webview":
         if not (app_dir / 'main.py').exists() and not (app_dir / 'main.pyo').exists():
             raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
