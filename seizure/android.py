@@ -97,7 +97,7 @@ class TargetAndroid:
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.app_dir = Path(config.app_dir)
-        self.build_dir = Path(config.storage_dir)
+        self.distsdir = Path(config.distsdir)
         self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = self.sdk_dir)
         self.mirror = mirror
         self.context = context
@@ -201,10 +201,10 @@ class TargetAndroid:
 
     def _get_dist_dir(self):
         expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self.arch])
-        expected_dist_dir = self.build_dir / 'dists' / expected_dist_name
+        expected_dist_dir = self.distsdir / expected_dist_name
         if expected_dist_dir.exists():
             return expected_dist_dir
-        old_dist_dir = self.build_dir / 'dists' / self.dist_name
+        old_dist_dir = self.distsdir / self.dist_name
         if old_dist_dir.exists():
             return old_dist_dir
         return expected_dist_dir

@@ -196,8 +196,8 @@ class Context:
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.storage_dir = Path(config.storage_dir)
+        self.distsdir = Path(config.distsdir)
         self.buildsdir = self.storage_dir / 'build'
-        self.distsdir = self.storage_dir / 'dists'
         self.recipes = {}
         self.include_dirs = []
         self.ndk = None
