@@ -45,6 +45,7 @@ from .distribution import generate_dist_folder_name
 from .libs.version import parse
 from .mirror import Mirror
 from .p4a import create, makeapk
+from contextlib import contextmanager
 from diapyr import types
 from lagoon import unzip, yes
 from lagoon.program import Program
@@ -53,6 +54,21 @@ from types import SimpleNamespace
 import logging, os, shutil
 
 log = logging.getLogger(__name__)
+
+class Tree(Path):
+
+    @contextmanager
+    def okorclean(self):
+        okpath = self / 'ok'
+        if okpath.exists():
+            yield True
+            return
+        self.mkdirp()
+        for child in self.iterdir():
+            shutil.rmtree(child)
+        yield
+        with okpath.open('w'):
+            pass
 
 class TargetAndroid:
 
@@ -95,8 +111,8 @@ class TargetAndroid:
         self.intent_filters = config.android.manifest.intent_filters
         self.presplash = config.presplash.filename
         self.apkdir = Path(config.apk.dir)
-        self.sdk_dir = Path(config.android_sdk_dir)
-        self.ndk_dir = Path(config.android_ndk_dir)
+        self.sdk_dir = Tree(config.android_sdk_dir)
+        self.ndk_dir = Tree(config.android_ndk_dir)
         self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = self.sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.dirs = dirs
@@ -104,23 +120,25 @@ class TargetAndroid:
         self.context = context
 
     def _install_android_sdk(self):
-        if self.sdk_dir.exists():
-            log.info('Android SDK found at %s', self.sdk_dir)
-        else:
+        with self.sdk_dir.okorclean() as ok:
+            if ok:
+                log.info('Android SDK found at %s', self.sdk_dir)
+                return
             log.info('Android SDK is missing, downloading')
             archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
             log.info('Unpacking Android SDK')
-            unzip._q.print(archive, cwd = self.sdk_dir.mkdirp())
+            unzip._q.print(archive, cwd = self.sdk_dir)
             log.info('Android SDK tools base installation done.')
 
     def _install_android_ndk(self):
-        if self.ndk_dir.exists():
-            log.info('Android NDK found at %s', self.ndk_dir)
-        else:
+        with self.ndk_dir.okorclean() as ok:
+            if ok:
+                log.info('Android NDK found at %s', self.ndk_dir)
+                return
             log.info('Android NDK is missing, downloading')
             archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
             log.info('Unpacking Android NDK')
-            unzip._q.print(archive, cwd = self.ndk_dir.mkdirp())
+            unzip._q.print(archive, cwd = self.ndk_dir)
             rootdir, = self.ndk_dir.iterdir()
             for path in rootdir.iterdir():
                 path.rename(self.ndk_dir / path.relative_to(rootdir))
