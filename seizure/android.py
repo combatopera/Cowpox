@@ -45,7 +45,6 @@ from .distribution import generate_dist_folder_name
 from .libs.version import parse
 from .mirror import Mirror
 from .p4a import create, makeapk
-from contextlib import contextmanager
 from diapyr import types
 from lagoon import unzip, yes
 from lagoon.program import Program
@@ -54,21 +53,6 @@ from types import SimpleNamespace
 import logging, os, shutil
 
 log = logging.getLogger(__name__)
-
-@contextmanager
-def okorclean(dirpath):
-    okpath = dirpath / 'ok'
-    if okpath.exists():
-        yield True
-        return
-    dirpath.mkdirp()
-    for child in dirpath.iterdir():
-        shutil.rmtree(child)
-    yield
-    with okpath.open('w'):
-        pass
-
-Path.okorclean = okorclean
 
 class TargetAndroid:
 
