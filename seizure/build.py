@@ -124,7 +124,7 @@ def _make_tar(tfn, source_dirs, blacklist, distinfo):
                         tf.addfile(tinfo)
             tf.add(fn, afn)
 
-def makeapkversion(args, distdir, private):
+def makeapkversion(args, distdir, app_dir):
     render = Render(distdir)
     distinfo = DistInfo(distdir)
     ndk_api = int(distinfo.forkey('ndk_api'))
@@ -139,9 +139,9 @@ def makeapkversion(args, distdir, private):
         blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
     with (distdir / 'whitelist.txt').open() as f:
         blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-    args.private = private
+    args.private = app_dir
     if bootstrapname != "webview":
-        if not (private.resolve() / 'main.py').exists() and not (private.resolve() / 'main.pyo').exists():
+        if not (app_dir / 'main.py').exists() and not (app_dir / 'main.pyo').exists():
             raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
     assets_dir = (distdir / 'src' / 'main' / 'assets').mkdirp()
     for p in (assets_dir / n for n in ['public.mp3', 'private.mp3']):
@@ -154,7 +154,7 @@ def makeapkversion(args, distdir, private):
                 print(f"P4A_IS_WINDOWED={args.window}", file = f)
                 print(f"P4A_ORIENTATION={args.orientation}", file = f)
             print(f"P4A_MINSDK={args.min_sdk_version}", file = f)
-        tar_dirs = [env_vars_tarpath, private]
+        tar_dirs = [env_vars_tarpath, app_dir]
         for python_bundle_dir in (distdir / n for n in ['private', '_python_bundle']):
             if python_bundle_dir.exists():
                 tar_dirs.append(python_bundle_dir)
@@ -200,7 +200,7 @@ def makeapkversion(args, distdir, private):
     manifest_path = distdir / 'src' / 'main' / 'AndroidManifest.xml'
     render_args = {
         "args": args,
-        "service": any((args.private.resolve() / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
+        "service": any((app_dir / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
         "service_names": service_names,
         "android_api": android_api
     }
