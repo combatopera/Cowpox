@@ -40,7 +40,6 @@
 
 from .config import Config
 from .context import Context
-from .dirs import Dirs
 from .distribution import generate_dist_folder_name
 from .libs.version import parse
 from .mirror import Mirror
@@ -56,8 +55,8 @@ log = logging.getLogger(__name__)
 
 class TargetAndroid:
 
-    @types(Config, Dirs, Mirror, Context)
-    def __init__(self, config, dirs, mirror, context):
+    @types(Config, Mirror, Context)
+    def __init__(self, config, mirror, context):
         self.android_ndk_version = config.android.ndk
         self.android_api = config.android.api
         self.android_minapi = config.android.minapi
@@ -98,8 +97,8 @@ class TargetAndroid:
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.app_dir = Path(config.app_dir)
+        self.build_dir = Path(config.platform_dir, f"build-{self.arch}")
         self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = self.sdk_dir)
-        self.build_dir = dirs.platform_dir / f"build-{self.arch}"
         self.mirror = mirror
         self.context = context
 

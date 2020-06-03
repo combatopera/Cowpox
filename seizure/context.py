@@ -40,7 +40,6 @@
 
 from .archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
 from .config import Config
-from .dirs import Dirs
 from .mirror import Mirror
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from diapyr import types
@@ -58,8 +57,7 @@ log = logging.getLogger(__name__)
 
 def get_ndk_platform_dir(ndk_dir, ndk_api, arch):
     ndk_platform_dir_exists = True
-    platform_dir = arch.platform_dir
-    ndk_platform = ndk_dir / 'platforms' / f"android-{ndk_api}" / platform_dir
+    ndk_platform = ndk_dir / 'platforms' / f"android-{ndk_api}" / arch.platform_dir
     if not ndk_platform.exists():
         log.warning("ndk_platform doesn't exist: %s", ndk_platform)
         ndk_platform_dir_exists = False
@@ -195,13 +193,14 @@ class Context:
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
 
-    @types(Config, Dirs, Mirror)
-    def __init__(self, config, dirs, mirror):
+    @types(Config, Mirror)
+    def __init__(self, config, mirror):
         self.androidarch = config.android.arch
         self.ndk_api = config.android.ndk_api
         self.android_api = config.android.api
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
+        self.platform_dir = Path(config.platform_dir)
         self.recipes = {}
         self.include_dirs = []
         self.ndk = None
@@ -217,11 +216,10 @@ class Context:
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
-        self.dirs = dirs
         self.mirror = mirror
 
     def init(self):
-        self.setup_dirs(self.dirs.platform_dir / f"build-{self.androidarch}")
+        self.setup_dirs(self.platform_dir / f"build-{self.androidarch}")
         self.set_archs([self.androidarch])
         self._prepare_build_environment()
 
