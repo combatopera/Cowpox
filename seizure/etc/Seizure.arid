@@ -38,7 +38,6 @@
 : OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 : THE SOFTWARE.
 
-targetname = android
 RECOMMENDED_NDK_VERSION = 19b
 android
     ndk = $(RECOMMENDED_NDK_VERSION)
@@ -89,4 +88,4 @@ mirror path = /mirror
 android_sdk_dir = $/($(build dir) android-sdk)
 android_ndk_dir = $/($(build dir) android-ndk-r$(android ndk))
 app_dir = $/($(build dir) app)
-platform_dir = $/($(container workspace) .buildozer $(targetname) platform)
+platform_dir = $/($(build dir) platform)
