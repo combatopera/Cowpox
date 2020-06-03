@@ -145,15 +145,10 @@ class Context:
     def get_python_install_dir(self):
         return self.python_installs_dir / self.bootstrap.distribution.name
 
-    def ensure_dirs(self):
-        self.storage_dir.mkdirp()
-        self.buildsdir.mkdirp()
+    def _prepare_build_environment(self):
         self.distsdir.mkdirp()
         (self.buildsdir / 'bootstrap_builds').mkdirp()
         (self.buildsdir / 'other_builds').mkdirp()
-
-    def _prepare_build_environment(self):
-        self.ensure_dirs()
         log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
         check_target_api(self.android_api, self.archs[0].arch)
         apis = _apilevels(self.sdk_dir)
