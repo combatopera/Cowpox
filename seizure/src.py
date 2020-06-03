@@ -40,8 +40,8 @@
 
 from . import skel
 from .config import Config
-from .dirs import Dirs
 from diapyr import types
+from pathlib import Path
 from pkg_resources import resource_filename
 import logging
 
@@ -49,12 +49,12 @@ log = logging.getLogger(__name__)
 
 class Src:
 
-    @types(Config, Dirs)
-    def __init__(self, config, dirs):
+    @types(Config)
+    def __init__(self, config):
+        self.app_dir = Path(config.app_dir)
         self.config = config
-        self.dirs = dirs
 
     def _copy_application_sources(self):
-        topath = self.dirs.app_dir / 'main.py'
+        topath = self.app_dir.mkdirp() / 'main.py'
         log.debug("Create: %s", topath)
         self.config.processtemplate(resource_filename(skel.__name__, 'main.py.aridt'), topath)

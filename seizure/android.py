@@ -97,9 +97,9 @@ class TargetAndroid:
         self.apkdir = Path(config.apk.dir)
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
+        self.app_dir = Path(config.app_dir)
         self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = self.sdk_dir)
         self.build_dir = dirs.platform_dir / f"build-{self.arch}"
-        self.dirs = dirs
         self.mirror = mirror
         self.context = context
 
@@ -274,7 +274,7 @@ class TargetAndroid:
         makeapk(
             self.context,
             dist,
-            self.dirs.app_dir,
+            self.app_dir,
             self.build_mode != 'debug',
             SimpleNamespace(**dict(downstreamargs())),
         )

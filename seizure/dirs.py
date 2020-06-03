@@ -50,16 +50,16 @@ class Dirs:
 
     @types(Config)
     def __init__(self, config):
+        self.app_dir = Path(config.app_dir)
         buildozer_dir = Path(config.container.workspace, '.buildozer')
         self.platform_dir = buildozer_dir / config.targetname / 'platform'
-        self.app_dir = buildozer_dir / config.targetname / 'app'
 
     def install(self):
-        for path in self.platform_dir, self.app_dir:
+        for path in self.platform_dir:
             path.mkdirp()
 
     def add_sitecustomize(self):
-        with resource_stream(__name__, 'sitecustomize.py') as f, (self.app_dir / 'sitecustomize.py').open('wb') as g:
+        with resource_stream(__name__, 'sitecustomize.py') as f, (self.app_dir.mkdirp() / 'sitecustomize.py').open('wb') as g:
             shutil.copyfileobj(f, g)
         main_py = self.app_dir / 'service' / 'main.py'
         if not main_py.exists():
