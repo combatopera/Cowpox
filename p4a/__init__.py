@@ -351,15 +351,16 @@ class Recipe(metaclass = RecipeMeta):
     def unpack(self, arch):
         log.info("Unpacking %s for %s", self.name, arch)
         build_dir = self.get_build_container_dir(arch)
+        directory_name = self.get_build_dir(arch)
         user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
         if user_dir is not None:
             log.info("P4A_%s_DIR exists, symlinking instead", self.name.lower())
-            if not self.get_build_dir(arch).exists():
+            if not directory_name.exists():
                 rm._rf.print(build_dir)
                 mkdir._p.print(build_dir)
                 rmdir.print(build_dir)
                 build_dir.mkdirp()
-                cp._a.print(user_dir, self.get_build_dir(arch))
+                cp._a.print(user_dir, directory_name)
             return
         if self.url is None:
             log.info("Skipping %s unpack as no URL is set", self.name)
@@ -369,7 +370,6 @@ class Recipe(metaclass = RecipeMeta):
         ma = re.match('^(.+)#md5=([0-9a-f]{32})$', filename)
         if ma:                  # fragmented URL?
             filename = ma.group(1)
-        directory_name = self.get_build_dir(arch)
         if not directory_name.exists() or not directory_name.is_dir():
             extraction_filename = self.ctx.packages_path / self.name / filename
             if extraction_filename.is_file():
