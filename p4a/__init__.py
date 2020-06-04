@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from distutils.version import LooseVersion
-from lagoon import basename, cp, find, git as sysgit, mkdir, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
+from lagoon import basename, cp, find, git as sysgit, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
 from lagoon.program import Program
 from os.path import join
 from pathlib import Path
@@ -357,8 +357,6 @@ class Recipe(metaclass = RecipeMeta):
             log.info("P4A_%s_DIR exists, symlinking instead", self.name.lower())
             if not directory_name.exists():
                 rm._rf.print(build_dir)
-                mkdir._p.print(build_dir)
-                rmdir.print(build_dir)
                 build_dir.mkdirp()
                 cp._a.print(user_dir, directory_name)
             return
