@@ -354,13 +354,12 @@ class Recipe(metaclass = RecipeMeta):
         user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
         if user_dir is not None:
             log.info("P4A_%s_DIR exists, symlinking instead", self.name.lower())
-            if self.get_build_dir(arch).exists():
-                return
-            rm._rf.print(build_dir)
-            mkdir._p.print(build_dir)
-            rmdir.print(build_dir)
-            build_dir.mkdirp()
-            cp._a.print(user_dir, self.get_build_dir(arch))
+            if not self.get_build_dir(arch).exists():
+                rm._rf.print(build_dir)
+                mkdir._p.print(build_dir)
+                rmdir.print(build_dir)
+                build_dir.mkdirp()
+                cp._a.print(user_dir, self.get_build_dir(arch))
             return
         if self.url is None:
             log.info("Skipping %s unpack as no URL is set", self.name)
