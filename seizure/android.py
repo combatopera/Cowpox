@@ -282,10 +282,8 @@ class TargetAndroid:
         else:
             mode_sign = "release"
             mode = self._get_release_mode()
-        apk = f'{dist_dir.name}-{mode}.apk'
-        apk_dir = dist_dir / "build" / "outputs" / "apk" / mode_sign
         apkpath = self.apkdir / f"{self.dist_name}-{self.version}-{self.commit}-{self.arch}-{mode}.apk"
-        shutil.copyfile(apk_dir / apk, apkpath)
+        shutil.copyfile(dist_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{dist_dir.name}-{mode}.apk", apkpath)
         log.info('Android packaging done!')
         return apkpath
 
