@@ -74,8 +74,6 @@ def _main():
     logging = Logging()
     config = Config.load(resource_filename(etc.__name__, 'root.arid')).Seizure
     logging.setpath(Path(config.log.path))
-    # TODO: Run in arbitrary directory.
-    os.chdir(config.container.workspace)
     di = DI()
     try:
         di.add(config)

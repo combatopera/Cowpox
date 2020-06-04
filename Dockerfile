@@ -67,10 +67,8 @@ ARG GROUP=bdgp
 ARG UID=7654
 ARG GID=3210
 RUN groupadd -g $GID $GROUP && useradd -g $GID -u $UID --create-home --shell /bin/bash $USER
-WORKDIR /workspace
 RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.gradle /mirror /project) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"'
-RUN { echo workspace = /workspace; echo project = /project; echo src = /src; } | tee /image.arid
+RUN { echo project = /project; echo src = /src; } | tee /image.arid
 USER $USER
 ENTRYPOINT ["Seizure"]
 ENV P4A_bdozlib_DIR /project
-WORKDIR /src
