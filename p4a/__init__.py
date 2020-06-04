@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from distutils.version import LooseVersion
-from lagoon import basename, cp, find, git as sysgit, mv, patch as patchexe, rm, rmdir, tar, touch, unzip
+from lagoon import basename, cp, find, git as sysgit, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
 from os.path import join
 from pathlib import Path
@@ -348,7 +348,7 @@ class Recipe(metaclass = RecipeMeta):
         else:
             log.info("%s download already cached, skipping", self.name)
 
-    def unpack(self, arch):
+    def _unpack(self, arch):
         log.info("Unpacking %s for %s", self.name, arch)
         build_dir = self.get_build_container_dir(arch)
         directory_name = self.get_build_dir(arch)
@@ -358,7 +358,7 @@ class Recipe(metaclass = RecipeMeta):
             if not directory_name.exists():
                 rm._rf.print(build_dir)
                 build_dir.mkdirp()
-                cp._a.print(user_dir, directory_name)
+                directory_name.symlink_to(user_dir)
             return
         if self.url is None:
             log.info("Skipping %s unpack as no URL is set", self.name)
@@ -489,7 +489,7 @@ class Recipe(metaclass = RecipeMeta):
         it (or use a Recipe subclass with different behaviour) if you
         want to do something else.
         '''
-        self.unpack(arch)
+        self._unpack(arch)
 
     def install_libs(self, arch, *libs):
         libs_dir = self.ctx.get_libs_dir(arch.arch)
