@@ -58,6 +58,7 @@ class Result: pass
 @types(Config, Dirs, TargetAndroid, Src, this = Result)
 def run(config, dirs, target, src):
     log.info('Copy project.')
+    # FIXME: Do not copy build dir.
     shutil.copytree(config.container.src, config.container.project, symlinks = True, dirs_exist_ok = True)
     dirs.install()
     log.info('Install platform')
