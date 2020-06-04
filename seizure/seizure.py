@@ -57,7 +57,6 @@ class Result: pass
 
 @types(Config, Dirs, TargetAndroid, Src, this = Result)
 def run(config, dirs, target, src):
-    dirs.install()
     log.info('Install platform')
     target.install_platform() # XXX: Bake these into the image?
     log.info('Compile platform')
