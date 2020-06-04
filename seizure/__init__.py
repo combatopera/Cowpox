@@ -44,7 +44,7 @@ import shutil
 
 @contextmanager
 def okorclean(dirpath):
-    okpath = dirpath / 'ok'
+    okpath = dirpath / 'OK'
     if okpath.is_dir():
         yield True
     else:
