@@ -484,11 +484,7 @@ class Recipe(metaclass = RecipeMeta):
             self.install_stl_lib(arch)
 
     def prepare_build_dir(self, arch):
-        '''Copies the recipe data into a build dir for the given arch. By
-        default, this unpacks a downloaded recipe. You should override
-        it (or use a Recipe subclass with different behaviour) if you
-        want to do something else.
-        '''
+        self.get_build_container_dir(arch).mkdirp()
         self._unpack(arch)
 
     def install_libs(self, arch, *libs):
@@ -529,6 +525,7 @@ class Recipe(metaclass = RecipeMeta):
 class IncludedFilesBehaviour:
 
     def prepare_build_dir(self, arch):
+        self.get_build_container_dir(arch).mkdirp()
         rm._rf.print(self.get_build_dir(arch))
         cp._a.print(self.get_recipe_dir() / self.src_filename, self.get_build_dir(arch))
 

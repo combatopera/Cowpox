@@ -279,7 +279,6 @@ class Context:
             log.info("Building all recipes for arch %s", arch.arch)
             log.info('Unpacking recipes')
             for recipe in recipes:
-                recipe.get_build_container_dir(arch.arch).mkdirp()
                 recipe.prepare_build_dir(arch.arch)
             log.info('Prebuilding recipes')
             # 2) prebuild packages
