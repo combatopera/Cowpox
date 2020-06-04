@@ -49,7 +49,7 @@ from .util import Logging
 from diapyr import DI, types
 from pathlib import Path
 from pkg_resources import resource_filename
-import logging, os, shutil
+import logging, shutil
 
 log = logging.getLogger(__name__)
 
