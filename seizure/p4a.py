@@ -41,10 +41,9 @@
 from .build import makeapkversion
 from .distribution import Distribution
 from .graph import get_recipe_order
-from lagoon import cp, gradle
+from lagoon import gradle
 from p4a.boot import Bootstrap
-from pathlib import Path
-import glob, logging, re
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -86,35 +85,4 @@ def makeapk(ctx, dist, app_dir, release, downstreamargs):
     build_mode = 'release' if release else 'debug'
     makeapkversion(downstreamargs, dist.dist_dir, app_dir)
     env = dict(ANDROID_NDK_HOME = ctx.ndk_dir, ANDROID_HOME = ctx.sdk_dir)
-    output = gradle.__no_daemon.tee(dict(debug = 'assembleDebug', release = 'assembleRelease')[build_mode], env = env, cwd = dist.dist_dir)
-    apk_dir = dist.dist_dir / "build" / "outputs" / "apk" / build_mode
-    log.info('Copying APK to current directory')
-    apk_re = re.compile(r'.*Package: (.*\.apk)$')
-    apk_file = None
-    for line in reversed(output.splitlines()):
-        m = apk_re.match(line)
-        if m:
-            apk_file = m.groups()[0]
-            break
-    if not apk_file:
-        log.info('APK filename not found in build output. Guessing...')
-        if build_mode == "release":
-            suffixes = ("release", "release-unsigned")
-        else:
-            suffixes = ("debug", )
-        for suffix in suffixes:
-            apks = glob.glob(str(apk_dir / f"*-{suffix}.apk"))
-            if apks:
-                if len(apks) > 1:
-                    log.info("More than one built APK found... guessing you just built %s", apks[-1])
-                apk_file = apks[-1]
-                break
-        else:
-            raise Exception('''Couldn't find the built APK''')
-    log.info("Found APK file: %s", apk_file)
-    log.info('Add version number to APK')
-    APK_SUFFIX = '.apk'
-    apk_name = Path(apk_file).name[:-len(APK_SUFFIX)]
-    apk_file_dest = f"{apk_name}-{downstreamargs.version}-{APK_SUFFIX}" # XXX: This looks wrong?
-    log.info("APK renamed to %s", apk_file_dest)
-    cp.print(apk_file, apk_file_dest)
+    gradle.__no_daemon.print(dict(debug = 'assembleDebug', release = 'assembleRelease')[build_mode], env = env, cwd = dist.dist_dir)
