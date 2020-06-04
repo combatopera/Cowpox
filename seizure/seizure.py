@@ -49,7 +49,7 @@ from .util import Logging
 from diapyr import DI, types
 from pathlib import Path
 from pkg_resources import resource_filename
-import logging, shutil
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -57,9 +57,6 @@ class Result: pass
 
 @types(Config, Dirs, TargetAndroid, Src, this = Result)
 def run(config, dirs, target, src):
-    log.info('Copy project.')
-    # FIXME: Do not copy build dir.
-    shutil.copytree(config.container.src, config.container.project, symlinks = True, dirs_exist_ok = True)
     dirs.install()
     log.info('Install platform')
     target.install_platform() # XXX: Bake these into the image?
