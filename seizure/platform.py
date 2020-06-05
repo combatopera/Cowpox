@@ -140,3 +140,11 @@ class Platform:
             log.warning('Could not find toolchain subdirectory!')
             toolchain_path_exists = False
         return toolchain_versions, toolchain_path_exists
+
+    def get_ndk_platform_dir(self, ndk_api, arch):
+        ndk_platform_dir_exists = True
+        ndk_platform = self.ndk_dir / 'platforms' / f"android-{ndk_api}" / arch.platform_dir
+        if not ndk_platform.exists():
+            log.warning("ndk_platform doesn't exist: %s", ndk_platform)
+            ndk_platform_dir_exists = False
+        return ndk_platform, ndk_platform_dir_exists

@@ -56,14 +56,6 @@ import copy, glob, logging, os, subprocess
 
 log = logging.getLogger(__name__)
 
-def get_ndk_platform_dir(ndk_dir, ndk_api, arch):
-    ndk_platform_dir_exists = True
-    ndk_platform = ndk_dir / 'platforms' / f"android-{ndk_api}" / arch.platform_dir
-    if not ndk_platform.exists():
-        log.warning("ndk_platform doesn't exist: %s", ndk_platform)
-        ndk_platform_dir_exists = False
-    return ndk_platform, ndk_platform_dir_exists
-
 class Context:
 
     contribroot = Path(resource_filename('pythonforandroid', '.'))
@@ -131,7 +123,7 @@ class Context:
             log.warning('Cython for python3 missing. If you are building for  a python 3 target (which is the default) then THINGS WILL BREAK.')
         arch = self.archs[0]
         toolchain_prefix = arch.toolchain_prefix
-        self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(self.ndk_dir, self.ndk_api, arch)
+        self.ndk_platform, ndk_platform_dir_exists = self.platform.get_ndk_platform_dir(self.ndk_api, arch)
         toolchain_versions, toolchain_path_exists = self.platform.get_toolchain_versions(arch)
         toolchain_versions.sort()
         toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
