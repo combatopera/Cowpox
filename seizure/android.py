@@ -159,9 +159,6 @@ class TargetAndroid:
             words[-1] = words[-1].upper()
             yield '.'.join(words)
 
-    def _orientation(self):
-        return 'sensor' if self.orientation == 'all' else self.orientation
-
     def build_package(self, dist):
         dist_dir = self._get_dist_dir()
         self._update_libraries_references(dist_dir)
@@ -184,7 +181,7 @@ class TargetAndroid:
             yield 'intent_filters', None if self.intent_filters is None else self.projectdir / self.intent_filters
             yield 'activity_launch_mode', self.launch_mode
             if self.bootstrapname != 'service_only':
-                yield 'orientation', self._orientation()
+                yield 'orientation', 'sensor' if self.orientation == 'all' else self.orientation
                 yield 'window', not self.fullscreen
                 yield 'presplash', None if self.presplash is None else self.projectdir / self.presplash
                 yield 'presplash_color', self.presplash_color
