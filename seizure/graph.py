@@ -49,13 +49,10 @@ def _fix_deplist(deps):
 
 class RecipeOrder(dict):
 
-    def __init__(self, ctx):
-        self.ctx = ctx
-
-    def conflicts(self):
+    def conflicts(self, ctx):
         for name in self:
             try:
-                conflicts = [dep.lower() for dep in self.ctx.get_recipe(name).conflicts]
+                conflicts = [dep.lower() for dep in ctx.get_recipe(name).conflicts]
             except ModuleNotFoundError:
                 conflicts = []
             if any(c in self for c in conflicts):
@@ -87,7 +84,7 @@ def _recursively_collect_orders(name, ctx, all_inputs, orders, blacklist):
         if name in order:
             new_orders.append(deepcopy(order))
             continue
-        if order.conflicts():
+        if order.conflicts(ctx):
             continue
         if any(conflict in order for conflict in conflicts):
             continue
@@ -172,7 +169,7 @@ def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
     _obvious_conflict_checker(ctx, names, blacklist)
     possible_orders = []
     for name_set in product(*names):
-        new_possible_orders = [RecipeOrder(ctx)]
+        new_possible_orders = [RecipeOrder()]
         for name in name_set:
             new_possible_orders = _recursively_collect_orders(name, ctx, name_set, new_possible_orders, blacklist)
         possible_orders.extend(new_possible_orders)
