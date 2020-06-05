@@ -136,29 +136,20 @@ class Arch:
         else:
             env['CC'] = f"{ccache}{self.clang_exe}"
             env['CXX'] = f"{ccache}{self.clang_exe_cxx}"
-        command_prefix = self.command_prefix
-        env['AR'] = '{}-ar'.format(command_prefix)
-        env['RANLIB'] = '{}-ranlib'.format(command_prefix)
-        env['STRIP'] = f"{command_prefix}-strip --strip-unneeded"
-        env['MAKE'] = 'make -j{}'.format(str(cpu_count()))
-        env['READELF'] = '{}-readelf'.format(command_prefix)
-        env['NM'] = '{}-nm'.format(command_prefix)
-        env['LD'] = '{}-ld'.format(command_prefix)
-        # Android's arch/toolchain
+        env['AR'] = f"{self.command_prefix}-ar"
+        env['RANLIB'] = f"{self.command_prefix}-ranlib"
+        env['STRIP'] = f"{self.command_prefix}-strip --strip-unneeded"
+        env['MAKE'] = f"make -j{cpu_count()}"
+        env['READELF'] = f"{self.command_prefix}-readelf"
+        env['NM'] = f"{self.command_prefix}-nm"
+        env['LD'] = f"{self.command_prefix}-ld"
         env['ARCH'] = self.arch
-        env['NDK_API'] = 'android-{}'.format(str(self.ctx.ndk_api))
+        env['NDK_API'] = f"android-{self.ctx.ndk_api}"
         env['TOOLCHAIN_PREFIX'] = self.ctx.toolchain_prefix
         env['TOOLCHAIN_VERSION'] = self.ctx.toolchain_version
-        # Custom linker options
         env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
-        # Host python (used by some recipes)
         hostpython_recipe = self.ctx.get_recipe(f"host{self.ctx.python_recipe.name}")
-        env['BUILDLIB_PATH'] = join(
-            hostpython_recipe.get_build_dir(self.arch),
-            'native-build',
-            'build',
-            f"lib.{Recipe.build_platform}-{self.ctx.python_recipe.major_minor_version_string}",
-        )
+        env['BUILDLIB_PATH'] = hostpython_recipe.get_build_dir(self.arch) / 'native-build' / 'build' / f"lib.{Recipe.build_platform}-{self.ctx.python_recipe.major_minor_version_string}"
         env['PATH'] = f"{self.clang_path}{os.pathsep}{os.environ['PATH']}"
         return env
 
