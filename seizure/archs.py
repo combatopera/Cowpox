@@ -49,20 +49,16 @@ class Arch:
 
     common_cflags = [
         '-target {target}',
-        '-fomit-frame-pointer'
+        '-fomit-frame-pointer',
     ]
-
     common_cppflags = [
         '-DANDROID',
         '-D__ANDROID_API__={ctx.ndk_api}',
         '-I{ctx.ndk_dir}/sysroot/usr/include/{command_prefix}',
         '-I{python_includes}',
     ]
-
     common_ldflags = ['-L{ctx_libs_dir}']
-
     common_ldlibs = ['-lm']
-
     common_ldshared = [
         '-pthread',
         '-shared',
@@ -73,12 +69,6 @@ class Arch:
 
     def __init__(self, ctx):
         self.ctx = ctx
-
-        # Allows injecting additional linker paths used by any recipe.
-        # This can also be modified by recipes (like the librt recipe)
-        # to make sure that some sort of global resource is available &
-        # linked for all others.
-        self.extra_global_link_paths = []
 
     def __str__(self):
         return self.arch
@@ -119,15 +109,10 @@ class Arch:
 
     def get_env(self, with_flags_in_cc=True):
         env = {}
-
-        # CFLAGS/CXXFLAGS: the processor flags
         env['CFLAGS'] = ' '.join(self.common_cflags).format(target=self.target)
         if self.arch_cflags:
-            # each architecture may have has his own CFLAGS
             env['CFLAGS'] += ' ' + ' '.join(self.arch_cflags)
         env['CXXFLAGS'] = env['CFLAGS']
-
-        # CPPFLAGS (for macros and includes)
         env['CPPFLAGS'] = ' '.join(self.common_cppflags).format(
             ctx=self.ctx,
             command_prefix=self.command_prefix,
@@ -136,23 +121,7 @@ class Arch:
                 'include/python{}'.format(self.ctx.python_recipe.version[0:3]),
             ),
         )
-
-        # LDFLAGS: Link the extra global link paths first before anything else
-        # (such that overriding system libraries with them is possible)
-        env['LDFLAGS'] = (
-            ' '
-            + " ".join(
-                [
-                    "-L'"
-                    + l.replace("'", "'\"'\"'")
-                    + "'"  # no shlex.quote in py2
-                    for l in self.extra_global_link_paths
-                ]
-            )
-            + ' ' + ' '.join(self.common_ldflags).format(
-                ctx_libs_dir=self.ctx.get_libs_dir(self.arch)
-            )
-        )
+        env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=self.ctx.get_libs_dir(self.arch))
         env['LDLIBS'] = ' '.join(self.common_ldlibs)
         if int(os.environ.get('USE_CCACHE', '1')):
             ccache = f"{self.ccachepath} "
