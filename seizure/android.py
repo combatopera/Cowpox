@@ -71,12 +71,6 @@ def _build_dist_from_args(ctx, dist, bootstrap):
     log.info('Your distribution was created successfully, exiting.')
     log.info("Dist can be found at (for now) %s", ctx.distsdir / dist.dist_dir)
 
-def makeapk(ctx, dist, app_dir, release, downstreamargs):
-    build_mode = 'release' if release else 'debug'
-    makeapkversion(downstreamargs, dist.dist_dir, app_dir)
-    env = dict(ANDROID_NDK_HOME = ctx.ndk_dir, ANDROID_HOME = ctx.sdk_dir)
-    gradle.__no_daemon.print(dict(debug = 'assembleDebug', release = 'assembleRelease')[build_mode], env = env, cwd = dist.dist_dir)
-
 class TargetAndroid:
 
     @types(Config, Context)
@@ -200,13 +194,9 @@ class TargetAndroid:
             yield 'depends', self.depends if self.depends else None
             if self.bootstrapname == 'webview':
                 yield 'port', '5000'
-        makeapk(
-            self.context,
-            dist,
-            self.app_dir,
-            self.build_mode != 'debug',
-            SimpleNamespace(**dict(downstreamargs())),
-        )
+        makeapkversion(SimpleNamespace(**dict(downstreamargs())), dist.dist_dir, self.app_dir)
+        gradle.__no_daemon.print('assembleRelease' if self.build_mode != 'debug' else 'assembleDebug',
+                env = dict(ANDROID_NDK_HOME = self.context.ndk_dir, ANDROID_HOME = self.context.sdk_dir), cwd = dist.dist_dir)
         if self.build_mode == 'debug':
             mode_sign = mode = 'debug'
         else:
