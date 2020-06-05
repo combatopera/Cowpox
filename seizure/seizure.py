@@ -56,10 +56,11 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Config, Dirs, Platform, TargetAndroid, Src, this = Result)
-def run(config, dirs, platform, target, src):
+@types(Config, Context, Dirs, Platform, TargetAndroid, Src, this = Result)
+def run(config, context, dirs, platform, target, src):
     platform.install()
     log.info('Compile platform')
+    context.init()
     dist = target.compile_platform()
     src._copy_application_sources()
     dirs.add_sitecustomize()

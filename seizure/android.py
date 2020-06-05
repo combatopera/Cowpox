@@ -92,7 +92,6 @@ class TargetAndroid:
         self.context = context
 
     def compile_platform(self):
-        self.context.init()
         return create(
             self.context,
             self.dist_name,
