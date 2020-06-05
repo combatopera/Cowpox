@@ -149,8 +149,6 @@ class Context:
         self.packages_path = Path(config.packages_path)
         self.recipes = {}
         self.include_dirs = []
-        self.toolchain_prefix = None
-        self.toolchain_version = None
         self.env = os.environ.copy()
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
