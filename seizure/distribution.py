@@ -38,9 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from os.path import exists, join
-from pathlib import Path
-import glob, json, logging, shutil
+import json, logging, shutil
 
 log = logging.getLogger(__name__)
 
@@ -134,15 +132,14 @@ class Distribution:
 
     @classmethod
     def _get_distributions(cls, ctx):
-        folders = glob.glob(str(ctx.distsdir / '*'))
         dists = []
-        for folder in folders:
-            if exists(join(folder, 'dist_info.json')):
-                with open(join(folder, 'dist_info.json')) as fileh:
+        for folder in ctx.distsdir.iterdir():
+            if (folder / 'dist_info.json').exists():
+                with (folder / 'dist_info.json').open() as fileh:
                     dist_info = json.load(fileh)
                 dist = cls(ctx)
                 dist.name = dist_info['dist_name']
-                dist.dist_dir = Path(folder)
+                dist.dist_dir = folder
                 dist.needs_build = False
                 dist.recipes = dist_info['recipes']
                 if 'archs' in dist_info:
