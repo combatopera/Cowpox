@@ -89,20 +89,24 @@ class Platform:
             log.info('Android NDK installation done.')
 
     def _install_android_packages(self):
-        log.info('Installing/updating SDK platform tools if necessary')
+        log.info('Install/update SDK platform tools.')
         if self.acceptlicense:
             with yes.bg(check = False) as yesproc:
                 self.sdkmanager.__licenses.print(stdin = yesproc.stdout)
         self.sdkmanager.tools.platform_tools.print()
         self.sdkmanager.__update.print()
-        log.info('Updating SDK build tools if necessary')
         buildtoolslatest = max(map(parse_version, re.findall(r'\bbuild-tools;(\S+)', self.sdkmanager.__list())))
-        if buildtoolslatest > max(parse_version(p.name) for p in (self.sdk_dir / 'build-tools').iterdir()):
+        buildtoolsactual = max(parse_version(p.name) for p in (self.sdk_dir / 'build-tools').iterdir())
+        if buildtoolslatest > buildtoolsactual:
+            log.info("Update build-tools to: %s", buildtoolslatest)
             self.sdkmanager.print(f"build-tools;{buildtoolslatest}")
-        log.info('Downloading platform api target if necessary')
+        else:
+            log.debug("Already have latest build-tools: %s", buildtoolsactual)
         if not (self.sdk_dir / 'platforms' / self.platformname).exists():
+            log.info("Download platform: %s", self.platformname)
             self.sdkmanager.print(f"platforms;{self.platformname}")
-        log.info('Android packages installation done.')
+        else:
+            log.debug("Already have platform: %s", self.platformname)
 
     def install(self):
         self._install_android_sdk()
