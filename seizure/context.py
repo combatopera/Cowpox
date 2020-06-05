@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .archs import ArchARM, ArchARMv7_a, ArchAarch_64, Archx86, Archx86_64
+from .archs import all_archs
 from .config import Config
 from .mirror import Mirror
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
@@ -194,13 +194,6 @@ class Context:
         self.ndk = None
         self.toolchain_prefix = None
         self.toolchain_version = None
-        self.archs = (
-            ArchARM(self),
-            ArchARMv7_a(self),
-            Archx86(self),
-            Archx86_64(self),
-            ArchAarch_64(self),
-        )
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
@@ -211,10 +204,9 @@ class Context:
         self._prepare_build_environment()
 
     def set_archs(self, arch_names):
-        all_archs = self.archs
         new_archs = set()
         for name in arch_names:
-            matching = [arch for arch in all_archs if arch.arch == name]
+            matching = [arch(self) for arch in all_archs if arch.arch == name]
             for match in matching:
                 new_archs.add(match)
         self.archs = list(new_archs)

@@ -279,3 +279,5 @@ class ArchAarch_64(Arch):
     #     env = super(ArchAarch_64, self).get_env(with_flags_in_cc)
     #     env['EXTRA_CFLAGS'] = self.arch_cflags[-1]
     #     return env
+
+all_archs = ArchARM, ArchARMv7_a, Archx86, Archx86_64, ArchAarch_64
