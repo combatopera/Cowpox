@@ -64,7 +64,7 @@ class TargetAndroid:
         self.ndk_api = config.android.ndk_api
         self.requirements = config.requirements.list()
         self.fqpackage = config.package.fq
-        self.build_mode = config.build_mode
+        self.releasemode = 'debug' != config.build_mode
         self.p4a_whitelist = config.android.whitelist.list()
         self.permissions = config.android.permissions.list()
         self.orientation = config.orientation
@@ -185,16 +185,16 @@ class TargetAndroid:
                 yield 'window', not self.fullscreen
                 yield 'presplash', None if self.presplash is None else self.projectdir / self.presplash
                 yield 'presplash_color', self.presplash_color
-            yield 'sign', True if self.build_mode != 'debug' and self._check_p4a_sign_env(True) else None
+            yield 'sign', True if self.releasemode and self._check_p4a_sign_env(True) else None
             yield 'services', self.services
             yield 'android_used_libs', self.android_used_libs
             yield 'depends', self.depends if self.depends else None
             if self.bootstrapname == 'webview':
                 yield 'port', '5000'
         makeapkversion(SimpleNamespace(**dict(downstreamargs())), dist.dist_dir, self.app_dir)
-        gradle.__no_daemon.print('assembleRelease' if self.build_mode != 'debug' else 'assembleDebug',
+        gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug',
                 env = dict(ANDROID_NDK_HOME = self.context.ndk_dir, ANDROID_HOME = self.context.sdk_dir), cwd = dist.dist_dir)
-        if self.build_mode == 'debug':
+        if not self.releasemode:
             mode_sign = mode = 'debug'
         else:
             mode_sign = "release"
