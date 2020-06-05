@@ -43,14 +43,6 @@ import json, logging, shutil
 log = logging.getLogger(__name__)
 
 class Distribution:
-    '''State container for information about a distribution (i.e. an
-    Android project).
-
-    This is separate from a Bootstrap because the Bootstrap is
-    concerned with building and populating the dist directory, whereas
-    the dist itself could also come from e.g. a binary download.
-    '''
-    ctx = None
 
     name = None  # A name identifying the dist. May not be None.
     needs_build = False  # Whether the dist needs compiling
