@@ -47,18 +47,6 @@ import os
 
 class Arch:
 
-    toolchain_prefix = None
-    '''The prefix for the toolchain dir in the NDK.'''
-
-    command_prefix = None
-    '''The prefix for NDK commands such as gcc.'''
-
-    arch = ""
-    '''Name of the arch such as: `armeabi-v7a`, `arm64-v8a`, `x86`...'''
-
-    arch_cflags = []
-    '''Specific arch `cflags`, expect to be overwrote in subclass if needed.'''
-
     common_cflags = [
         '-target {target}',
         '-fomit-frame-pointer'
@@ -222,6 +210,7 @@ class BaseArchARM(Arch):
 class ArchARM(BaseArchARM):
 
     arch = "armeabi"
+    arch_cflags = []
 
 class ArchARMv7_a(BaseArchARM):
 
