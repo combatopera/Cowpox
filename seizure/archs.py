@@ -219,8 +219,8 @@ class ArchARM(Arch):
             ndk_api=self.ctx.ndk_api,
         )
 
-
 class ArchARMv7_a(ArchARM):
+
     arch = 'armeabi-v7a'
     arch_cflags = [
         '-march=armv7-a',
@@ -230,8 +230,8 @@ class ArchARMv7_a(ArchARM):
         '-fPIC',
     ]
 
-
 class Archx86(Arch):
+
     arch = 'x86'
     toolchain_prefix = 'x86'
     command_prefix = 'i686-linux-android'
@@ -244,8 +244,8 @@ class Archx86(Arch):
         '-m32',
     ]
 
-
 class Archx86_64(Arch):
+
     arch = 'x86_64'
     toolchain_prefix = 'x86_64'
     command_prefix = 'x86_64-linux-android'
@@ -259,25 +259,14 @@ class Archx86_64(Arch):
         '-fPIC',
     ]
 
-
 class ArchAarch_64(Arch):
+
     arch = 'arm64-v8a'
     toolchain_prefix = 'aarch64-linux-android'
     command_prefix = 'aarch64-linux-android'
     platform_dir = 'arch-arm64'
     arch_cflags = [
         '-march=armv8-a',
-        # '-I' + join(dirname(__file__), 'includes', 'arm64-v8a'),
     ]
-
-    # Note: This `EXTRA_CFLAGS` below should target the commented `include`
-    # above in `arch_cflags`. The original lines were added during the Sdl2's
-    # bootstrap creation, and modified/commented during the migration to the
-    # NDK r19 build system, because it seems that we don't need it anymore,
-    # do we need them?
-    # def get_env(self, with_flags_in_cc=True):
-    #     env = super(ArchAarch_64, self).get_env(with_flags_in_cc)
-    #     env['EXTRA_CFLAGS'] = self.arch_cflags[-1]
-    #     return env
 
 all_archs = ArchARM, ArchARMv7_a, Archx86, Archx86_64, ArchAarch_64
