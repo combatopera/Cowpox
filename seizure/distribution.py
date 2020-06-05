@@ -104,7 +104,7 @@ class Distribution:
         for dist in possible_dists:
             if ndk_api is not None and dist.ndk_api != ndk_api:
                 continue
-            if arch_name is not None and arch_name not in dist.archs:
+            if arch_name not in dist.archs:
                 continue
             if set(recipes).issubset(set(dist.recipes)):
                 log.info("%s has compatible recipes, using this one", dist.name)
@@ -119,7 +119,7 @@ class Distribution:
                 i += 1
             name = filen.format(i)
         dist.name = name
-        dist.dist_dir = ctx.distsdir / generate_dist_folder_name(name, None if arch_name is None else [arch_name])
+        dist.dist_dir = ctx.distsdir / generate_dist_folder_name(name, [arch_name])
         dist.recipes = recipes
         dist.ndk_api = ctx.ndk_api
         dist.archs = [arch_name]
