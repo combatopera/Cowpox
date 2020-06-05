@@ -43,7 +43,7 @@ from diapyr import types
 from hashlib import md5
 from pathlib import Path
 from urllib.request import FancyURLopener
-import logging, os, sys, time
+import logging, sys, time
 
 log = logging.getLogger(__name__)
 
@@ -61,9 +61,8 @@ class Mirror:
             progression = '{0} bytes'.format(index * blksize)
         else:
             progression = '{0:.2f}%'.format(index * blksize * 100. / float(size))
-        if "CI" not in os.environ:
-            sys.stdout.write('- Download {}\r'.format(progression))
-            sys.stdout.flush()
+        sys.stdout.write('- Download {}\r'.format(progression))
+        sys.stdout.flush()
 
     @types(Config)
     def __init__(self, config):
