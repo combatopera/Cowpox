@@ -141,7 +141,8 @@ class Context:
     def get_python_install_dir(self):
         return (self.buildsdir / 'python-installs').mkdirp() / self.bootstrap.distribution.name
 
-    def _prepare_build_environment(self):
+    def init(self):
+        log.info("Will compile for the following archs: %s", ', '.join(arch.arch for arch in self.archs))
         self.distsdir.mkdirp()
         (self.buildsdir / 'bootstrap_builds').mkdirp()
         (self.buildsdir / 'other_builds').mkdirp()
@@ -181,7 +182,7 @@ class Context:
 
     @types(Config, Mirror)
     def __init__(self, config, mirror):
-        self.androidarch = config.android.arch
+        self.archs = [arch(self) for arch in all_archs if arch.arch == config.android.arch]
         self.ndk_api = config.android.ndk_api
         self.android_api = config.android.api
         self.sdk_dir = Path(config.android_sdk_dir)
@@ -198,14 +199,6 @@ class Context:
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
         self.mirror = mirror
-
-    def init(self):
-        self.set_archs()
-        self._prepare_build_environment()
-
-    def set_archs(self):
-        self.archs = [arch(self) for arch in all_archs if arch.arch == self.androidarch]
-        log.info("Will compile for the following archs: %s", ', '.join(arch.arch for arch in self.archs))
 
     def prepare_bootstrap(self, bs):
         bs.ctx = self
