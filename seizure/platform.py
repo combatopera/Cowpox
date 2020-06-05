@@ -95,13 +95,14 @@ class Platform:
                 self.sdkmanager.__licenses.print(stdin = yesproc.stdout)
         self.sdkmanager.tools.platform_tools.print()
         self.sdkmanager.__update.print()
-        buildtoolslatest = max(map(parse_version, re.findall(r'\bbuild-tools;(\S+)', self.sdkmanager.__list())))
-        buildtoolsactual = max(parse_version(p.name) for p in (self.sdk_dir / 'build-tools').iterdir())
-        if buildtoolslatest > buildtoolsactual:
-            log.info("Update build-tools to: %s", buildtoolslatest)
-            self.sdkmanager.print(f"build-tools;{buildtoolslatest}")
+        buildtoolsdir = self.sdk_dir / 'build-tools'
+        actualo, actuals = max([parse_version(p.name), p.name] for p in buildtoolsdir.iterdir()) if buildtoolsdir.exists() else [None, None]
+        latesto, latests = max([parse_version(v), v] for v in re.findall(r'\bbuild-tools;(\S+)', self.sdkmanager.__list()))
+        if actualo is None or latesto > actualo:
+            log.info("Update build-tools to: %s", latests)
+            self.sdkmanager.print(f"build-tools;{latests}")
         else:
-            log.debug("Already have latest build-tools: %s", buildtoolsactual)
+            log.debug("Already have latest build-tools: %s", actuals)
         if not (self.sdk_dir / 'platforms' / self.platformname).exists():
             log.info("Download platform: %s", self.platformname)
             self.sdkmanager.print(f"platforms;{self.platformname}")
