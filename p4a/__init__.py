@@ -61,7 +61,6 @@ class RecipeMeta(type):
 
 class Recipe(metaclass = RecipeMeta):
 
-    build_platform = f"{os.uname()[0]}-{os.uname()[-1]}".lower()
     _url = None
     '''The address from which the recipe may be downloaded. This is not
     essential, it may be omitted if the source is available some other

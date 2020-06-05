@@ -42,11 +42,11 @@ from glob import glob
 from lagoon import which
 from multiprocessing import cpu_count
 from os.path import join
-from p4a import Recipe
 import os
 
 class Arch:
 
+    build_platform = f"{os.uname()[0]}-{os.uname()[-1]}".lower()
     common_cflags = [
         '-target {target}',
         '-fomit-frame-pointer',
@@ -94,7 +94,7 @@ class Arch:
     @property
     def clang_path(self):
         llvm_dirname = os.path.basename(glob(str(self.ctx.ndk_dir / 'toolchains' / 'llvm*'))[-1])
-        return self.ctx.ndk_dir / 'toolchains' / llvm_dirname / 'prebuilt' / Recipe.build_platform / 'bin'
+        return self.ctx.ndk_dir / 'toolchains' / llvm_dirname / 'prebuilt' / self.build_platform / 'bin'
 
     @property
     def clang_exe(self):
@@ -149,7 +149,7 @@ class Arch:
         env['TOOLCHAIN_VERSION'] = self.ctx.toolchain_version
         env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
         hostpython_recipe = self.ctx.get_recipe(f"host{self.ctx.python_recipe.name}")
-        env['BUILDLIB_PATH'] = hostpython_recipe.get_build_dir(self.arch) / 'native-build' / 'build' / f"lib.{Recipe.build_platform}-{self.ctx.python_recipe.major_minor_version_string}"
+        env['BUILDLIB_PATH'] = hostpython_recipe.get_build_dir(self.arch) / 'native-build' / 'build' / f"lib.{self.build_platform}-{self.ctx.python_recipe.major_minor_version_string}"
         env['PATH'] = f"{self.clang_path}{os.pathsep}{os.environ['PATH']}"
         return env
 
