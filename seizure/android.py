@@ -124,7 +124,7 @@ class TargetAndroid:
         log.info("Dist can be found at (for now) %s", self.context.distsdir / dist.dist_dir)
 
     def _get_dist_dir(self):
-        expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self.arch])
+        expected_dist_name = generate_dist_folder_name(self.dist_name, self.arch)
         expected_dist_dir = self.distsdir / expected_dist_name
         if expected_dist_dir.exists():
             return expected_dist_dir
