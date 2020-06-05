@@ -97,7 +97,8 @@ class Distribution:
         possible_dists = _possible_dists
         if possible_dists:
             log.info('Of the existing distributions, the following meet the given requirements:')
-            _pretty_log_dists(possible_dists)
+            for dist in possible_dists:
+                log.info("\t%s: min API %s, includes recipes (%s), built for archs (%s)", dist.name, 'unknown' if dist.ndk_api is None else dist.ndk_api, ', '.join(dist.recipes), ', '.join(dist.archs) if dist.archs else 'UNKNOWN')
         else:
             log.info('No existing dists meet the given requirements!')
         # If any dist has perfect recipes, arch and NDK API, return it
@@ -166,7 +167,3 @@ class Distribution:
                 hostpython = str(self.ctx.hostpython),
                 python_version = self.ctx.python_recipe.major_minor_version_string,
             ), f)
-
-def _pretty_log_dists(dists):
-    for dist in dists:
-        log.info("\t%s: min API %s, includes recipes (%s), built for archs (%s)", dist.name, 'unknown' if dist.ndk_api is None else dist.ndk_api, ', '.join(dist.recipes), ', '.join(dist.archs) if dist.archs else 'UNKNOWN')
