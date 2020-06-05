@@ -59,7 +59,7 @@ class Platform:
         self.skip_upd = config.android.skip_update
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
-        self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = self.sdk_dir) # XXX: Is cwd needed?
+        self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         self.mirror = mirror
 
     def _install_android_sdk(self):
