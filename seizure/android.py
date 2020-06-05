@@ -52,25 +52,6 @@ import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
-def _build_dist_from_args(ctx, dist, bootstrap):
-    bs = Bootstrap.get_bootstrap(bootstrap, ctx)
-    build_order, python_modules = get_recipe_order(ctx, dist.recipes, bs.recipe_depends, ['genericndkbuild', 'python2'])
-    assert not set(build_order) & set(python_modules)
-    ctx.recipe_build_order = build_order
-    ctx.python_modules = python_modules
-    log.info("The selected bootstrap is %s", bs.name)
-    log.info("Creating dist with %s bootstrap", bs.name)
-    bs.distribution = dist
-    log.info("Dist will have name %s and requirements (%s)", dist.name, ', '.join(dist.recipes))
-    log.info("Dist contains the following requirements as recipes: %s", ctx.recipe_build_order)
-    log.info("Dist will also contain modules (%s) installed from pip", ', '.join(ctx.python_modules))
-    ctx.prepare_bootstrap(bs)
-    ctx.prepare_dist()
-    ctx.build_recipes(build_order, python_modules)
-    ctx.bootstrap.run_distribute()
-    log.info('Your distribution was created successfully, exiting.')
-    log.info("Dist can be found at (for now) %s", ctx.distsdir / dist.dist_dir)
-
 class TargetAndroid:
 
     @types(Config, Context)
@@ -120,8 +101,27 @@ class TargetAndroid:
             if dist.folder_exists():
                 dist.delete()
             log.info('No dist exists that meets your requirements, so one will be built.')
-            _build_dist_from_args(self.context, dist, self.bootstrapname)
+            self._build_dist_from_args(dist)
         return dist
+
+    def _build_dist_from_args(self, dist):
+        bs = Bootstrap.get_bootstrap(self.bootstrapname, self.context)
+        build_order, python_modules = get_recipe_order(self.context, dist.recipes, bs.recipe_depends, ['genericndkbuild', 'python2'])
+        assert not set(build_order) & set(python_modules)
+        self.context.recipe_build_order = build_order
+        self.context.python_modules = python_modules
+        log.info("The selected bootstrap is %s", bs.name)
+        log.info("Creating dist with %s bootstrap", bs.name)
+        bs.distribution = dist
+        log.info("Dist will have name %s and requirements (%s)", dist.name, ', '.join(dist.recipes))
+        log.info("Dist contains the following requirements as recipes: %s", self.context.recipe_build_order)
+        log.info("Dist will also contain modules (%s) installed from pip", ', '.join(self.context.python_modules))
+        self.context.prepare_bootstrap(bs)
+        self.context.prepare_dist()
+        self.context.build_recipes(build_order, python_modules)
+        self.context.bootstrap.run_distribute()
+        log.info('Your distribution was created successfully, exiting.')
+        log.info("Dist can be found at (for now) %s", self.context.distsdir / dist.dist_dir)
 
     def _get_dist_dir(self):
         expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self.arch])
