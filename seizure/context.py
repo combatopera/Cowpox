@@ -41,6 +41,7 @@
 from .archs import all_archs
 from .config import Config
 from .mirror import Mirror
+from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from diapyr import types
 from importlib import import_module
@@ -51,7 +52,7 @@ from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
 from pythonforandroid.pythonpackage import get_package_name
-import copy, glob, logging, os, re, subprocess
+import copy, glob, logging, os, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -75,19 +76,6 @@ def get_toolchain_versions(ndk_dir, arch):
         log.warning('Could not find toolchain subdirectory!')
         toolchain_path_exists = False
     return toolchain_versions, toolchain_path_exists
-
-def _apilevels(sdk_dir):
-    avdmanagerpath = sdk_dir / 'tools' / 'bin' / 'avdmanager'
-    if avdmanagerpath.exists():
-        targets = Program.text(avdmanagerpath)('list', 'target').split('\n')
-    elif (sdk_dir / 'tools' / 'android').exists():
-        android = Program.text(sdk_dir / 'tools' / 'android')
-        targets = android.list().split('\n')
-    else:
-        raise Exception('Could not find `android` or `sdkmanager` binaries in Android SDK', 'Make sure the path to the Android SDK is correct')
-    apis = [s for s in targets if re.match(r'^ *API level: ', s)]
-    apis = [re.findall(r'[0-9]+', s) for s in apis]
-    return [int(s[0]) for s in apis if s]
 
 class Context:
 
@@ -141,7 +129,7 @@ class Context:
         (self.buildsdir / 'other_builds').mkdirp()
         log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
         check_target_api(self.android_api, self.archs[0].arch)
-        apis = _apilevels(self.sdk_dir)
+        apis = self.platform.apilevels()
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
         if self.android_api not in apis:
             raise Exception("Requested API target %s is not available, install it with the SDK android tool." % self.android_api)
@@ -173,8 +161,8 @@ class Context:
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
 
-    @types(Config, Mirror)
-    def __init__(self, config, mirror):
+    @types(Config, Mirror, Platform)
+    def __init__(self, config, mirror, platform):
         self.archs = [arch(self) for arch in all_archs if arch.arch == config.android.arch]
         self.ndk_api = config.android.ndk_api
         self.android_api = config.android.api
@@ -194,6 +182,7 @@ class Context:
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
         self.mirror = mirror
+        self.platform = platform
 
     def prepare_bootstrap(self, bs):
         bs.ctx = self

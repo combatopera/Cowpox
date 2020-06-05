@@ -114,3 +114,16 @@ class Platform:
         self._install_android_ndk()
         if not self.skip_upd:
             self._install_android_packages()
+
+    def apilevels(self):
+        avdmanagerpath = self.sdk_dir / 'tools' / 'bin' / 'avdmanager'
+        if avdmanagerpath.exists():
+            targets = Program.text(avdmanagerpath)('list', 'target').split('\n')
+        elif (self.sdk_dir / 'tools' / 'android').exists():
+            android = Program.text(self.sdk_dir / 'tools' / 'android')
+            targets = android.list().split('\n')
+        else:
+            raise Exception('Could not find `android` or `sdkmanager` binaries in Android SDK', 'Make sure the path to the Android SDK is correct')
+        apis = [s for s in targets if re.match(r'^ *API level: ', s)]
+        apis = [re.findall(r'[0-9]+', s) for s in apis]
+        return [int(s[0]) for s in apis if s]
