@@ -62,7 +62,7 @@ def run(config, context, dirs, platform, target, src):
     log.info('Compile platform')
     context.init()
     dist = target.compile_platform()
-    src._copy_application_sources()
+    src.copy_application_sources()
     dirs.add_sitecustomize()
     log.info('Package the application')
     return target.build_package(dist)

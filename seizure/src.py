@@ -54,7 +54,7 @@ class Src:
         self.app_dir = Path(config.app_dir)
         self.config = config
 
-    def _copy_application_sources(self):
+    def copy_application_sources(self):
         topath = self.app_dir.mkdirp() / 'main.py'
         log.debug("Create: %s", topath)
         self.config.processtemplate(resource_filename(skel.__name__, 'main.py.aridt'), topath)
