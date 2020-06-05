@@ -200,18 +200,11 @@ class Context:
         self.mirror = mirror
 
     def init(self):
-        self.set_archs([self.androidarch])
+        self.set_archs()
         self._prepare_build_environment()
 
-    def set_archs(self, arch_names):
-        new_archs = set()
-        for name in arch_names:
-            matching = [arch(self) for arch in all_archs if arch.arch == name]
-            for match in matching:
-                new_archs.add(match)
-        self.archs = list(new_archs)
-        if not self.archs:
-            raise Exception('Asked to compile for no Archs, so failing.')
+    def set_archs(self):
+        self.archs = [arch(self) for arch in all_archs if arch.arch == self.androidarch]
         log.info("Will compile for the following archs: %s", ', '.join(arch.arch for arch in self.archs))
 
     def prepare_bootstrap(self, bs):
