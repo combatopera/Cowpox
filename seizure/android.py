@@ -98,8 +98,7 @@ class TargetAndroid:
         dist = Distribution.get_distribution(self.context, self.dist_name, self.requirements, self.arch, self.ndk_api)
         self.context.distribution = dist
         if dist.needs_build:
-            if dist.folder_exists():
-                dist.delete()
+            dist.deleteifexists()
             log.info('No dist exists that meets your requirements, so one will be built.')
             self._build_dist_from_args(dist)
         return dist

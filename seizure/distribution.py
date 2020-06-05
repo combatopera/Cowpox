@@ -114,11 +114,9 @@ class Distribution:
         dist.archs = [arch_name]
         return dist
 
-    def folder_exists(self):
-        return self.dist_dir.exists()
-
-    def delete(self):
-        shutil.rmtree(self.dist_dir)
+    def deleteifexists(self):
+        if self.dist_dir.exists():
+            shutil.rmtree(self.dist_dir)
 
     @classmethod
     def _get_distributions(cls, ctx):
