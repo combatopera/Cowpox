@@ -47,7 +47,7 @@ from diapyr import types
 from importlib import import_module
 from lagoon import virtualenv
 from lagoon.program import Program
-from os.path import join, exists, split
+from os.path import join, exists
 from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
@@ -63,19 +63,6 @@ def get_ndk_platform_dir(ndk_dir, ndk_api, arch):
         log.warning("ndk_platform doesn't exist: %s", ndk_platform)
         ndk_platform_dir_exists = False
     return ndk_platform, ndk_platform_dir_exists
-
-def get_toolchain_versions(ndk_dir, arch):
-    toolchain_versions = []
-    toolchain_path_exists = True
-    toolchain_prefix = arch.toolchain_prefix
-    toolchain_path = ndk_dir / 'toolchains'
-    if toolchain_path.is_dir():
-        toolchain_contents = glob.glob(f"{toolchain_path}/{toolchain_prefix}-*")
-        toolchain_versions = [split(path)[-1][len(toolchain_prefix) + 1:] for path in toolchain_contents]
-    else:
-        log.warning('Could not find toolchain subdirectory!')
-        toolchain_path_exists = False
-    return toolchain_versions, toolchain_path_exists
 
 class Context:
 
@@ -145,7 +132,7 @@ class Context:
         arch = self.archs[0]
         toolchain_prefix = arch.toolchain_prefix
         self.ndk_platform, ndk_platform_dir_exists = get_ndk_platform_dir(self.ndk_dir, self.ndk_api, arch)
-        toolchain_versions, toolchain_path_exists = get_toolchain_versions(self.ndk_dir, arch)
+        toolchain_versions, toolchain_path_exists = self.platform.get_toolchain_versions(arch)
         toolchain_versions.sort()
         toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
         if toolchain_versions:

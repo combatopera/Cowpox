@@ -127,3 +127,16 @@ class Platform:
         apis = [s for s in targets if re.match(r'^ *API level: ', s)]
         apis = [re.findall(r'[0-9]+', s) for s in apis]
         return [int(s[0]) for s in apis if s]
+
+    def get_toolchain_versions(self, arch):
+        toolchain_versions = []
+        toolchain_path_exists = True
+        prefix = f"{arch.toolchain_prefix}-"
+        toolchain_path = self.ndk_dir / 'toolchains'
+        if toolchain_path.is_dir():
+            toolchain_contents = toolchain_path.glob(f"{prefix}*")
+            toolchain_versions = [path.name[len(prefix):] for path in toolchain_contents]
+        else:
+            log.warning('Could not find toolchain subdirectory!')
+            toolchain_path_exists = False
+        return toolchain_versions, toolchain_path_exists
