@@ -45,7 +45,7 @@ from lagoon import unzip, yes
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import parse_version
-import logging
+import logging, re
 
 log = logging.getLogger(__name__)
 
@@ -88,13 +88,6 @@ class Platform:
             rootdir.rmdir()
             log.info('Android NDK installation done.')
 
-    def _android_list_build_tools_versions(self):
-        for line in (l.strip() for l in self.sdkmanager.__list().split('\n')):
-            if line.startswith('build-tools;'):
-                package_name = line.split(' ')[0]
-                assert package_name.count(';') == 1, f'could not parse package "{package_name}"'
-                yield parse_version(package_name.split(';')[1])
-
     def _install_android_packages(self):
         log.info('Installing/updating SDK platform tools if necessary')
         if self.acceptlicense:
@@ -103,12 +96,12 @@ class Platform:
         self.sdkmanager.tools.platform_tools.print()
         self.sdkmanager.__update.print()
         log.info('Updating SDK build tools if necessary')
-        latest_v_build_tools = max(self._android_list_build_tools_versions())
-        if latest_v_build_tools > max(parse_version(p.name) for p in (self.sdk_dir / 'build-tools').iterdir()):
-            self.sdkmanager.print(f"build-tools;{latest_v_build_tools}")
+        buildtoolslatest = max(map(parse_version, re.findall(r'\bbuild-tools;(\S+)', self.sdkmanager.__list())))
+        if buildtoolslatest > max(parse_version(p.name) for p in (self.sdk_dir / 'build-tools').iterdir()):
+            self.sdkmanager.print(f"build-tools;{buildtoolslatest}")
         log.info('Downloading platform api target if necessary')
-        if not (self.sdk_dir / 'platforms' / platformname).exists():
-            self.sdkmanager.print(f"platforms;{platformname}")
+        if not (self.sdk_dir / 'platforms' / self.platformname).exists():
+            self.sdkmanager.print(f"platforms;{self.platformname}")
         log.info('Android packages installation done.')
 
     def install(self):
