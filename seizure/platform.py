@@ -118,32 +118,23 @@ class Platform:
         return max(versions)
 
     def _install_android_packages(self):
-        if not self.skip_upd:
-            log.info('Installing/updating SDK platform tools if necessary')
-            self._android_update_sdk('tools', 'platform-tools')
-            self._android_update_sdk('--update')
-        else:
-            log.info('Skipping Android SDK update due to spec file setting')
-            log.info('Note: this also prevents installing missing SDK components')
+        log.info('Installing/updating SDK platform tools if necessary')
+        self._android_update_sdk('tools', 'platform-tools')
+        self._android_update_sdk('--update')
         log.info('Updating SDK build tools if necessary')
         available_v_build_tools = list(self._android_list_build_tools_versions())
         if not available_v_build_tools:
             log.error('Did not find any build tools available to download')
         latest_v_build_tools = max(available_v_build_tools)
         if latest_v_build_tools > self._read_version_subdir(self.sdk_dir / 'build-tools'):
-            if not self.skip_upd:
-                self._android_update_sdk(f"build-tools;{latest_v_build_tools}")
-            else:
-                log.info('Skipping update to build tools %s due to spec setting', latest_v_build_tools)
+            self._android_update_sdk(f"build-tools;{latest_v_build_tools}")
         log.info('Downloading platform api target if necessary')
         if not (self.sdk_dir / 'platforms' / f"android-{self.android_api}").exists():
-            if not self.skip_upd:
-                self.sdkmanager.print(f"platforms;android-{self.android_api}")
-            else:
-                log.info('Skipping install API %s platform tools due to spec setting', self.android_api)
+            self.sdkmanager.print(f"platforms;android-{self.android_api}")
         log.info('Android packages installation done.')
 
     def install(self):
         self._install_android_sdk()
         self._install_android_ndk()
-        self._install_android_packages()
+        if not self.skip_upd:
+            self._install_android_packages()
