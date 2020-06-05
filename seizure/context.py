@@ -76,17 +76,15 @@ def get_toolchain_versions(ndk_dir, arch):
         toolchain_path_exists = False
     return toolchain_versions, toolchain_path_exists
 
-def get_targets(sdk_dir):
+def _apilevels(sdk_dir):
     avdmanagerpath = sdk_dir / 'tools' / 'bin' / 'avdmanager'
     if avdmanagerpath.exists():
-        return Program.text(avdmanagerpath)('list', 'target').split('\n')
-    if (sdk_dir / 'tools' / 'android').exists():
+        targets = Program.text(avdmanagerpath)('list', 'target').split('\n')
+    elif (sdk_dir / 'tools' / 'android').exists():
         android = Program.text(sdk_dir / 'tools' / 'android')
-        return android.list().split('\n')
-    raise Exception('Could not find `android` or `sdkmanager` binaries in Android SDK', 'Make sure the path to the Android SDK is correct')
-
-def _apilevels(sdk_dir):
-    targets = get_targets(sdk_dir)
+        targets = android.list().split('\n')
+    else:
+        raise Exception('Could not find `android` or `sdkmanager` binaries in Android SDK', 'Make sure the path to the Android SDK is correct')
     apis = [s for s in targets if re.match(r'^ *API level: ', s)]
     apis = [re.findall(r'[0-9]+', s) for s in apis]
     return [int(s[0]) for s in apis if s]
