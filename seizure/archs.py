@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from glob import glob
 from lagoon import which
 from multiprocessing import cpu_count
 from os.path import join
@@ -93,8 +92,8 @@ class Arch:
 
     @property
     def clang_path(self):
-        llvm_dirname = os.path.basename(glob(str(self.ctx.ndk_dir / 'toolchains' / 'llvm*'))[-1])
-        return self.ctx.ndk_dir / 'toolchains' / llvm_dirname / 'prebuilt' / self.build_platform / 'bin'
+        llvm_dir, = (self.ctx.ndk_dir / 'toolchains').glob('llvm*')
+        return llvm_dir / 'prebuilt' / self.build_platform / 'bin'
 
     @property
     def clang_exe(self):
