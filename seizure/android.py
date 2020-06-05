@@ -90,7 +90,6 @@ class TargetAndroid:
         self.intent_filters = config.android.manifest.intent_filters
         self.presplash = config.presplash.filename
         self.apkdir = Path(config.apk.dir)
-        self.app_dir = Path(config.app_dir)
         self.distsdir = Path(config.distsdir)
         self.context = context
         self.apkmaker = apkmaker
@@ -180,7 +179,7 @@ class TargetAndroid:
             yield 'depends', self.depends if self.depends else None
             if self.bootstrapname == 'webview':
                 yield 'port', '5000'
-        self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())), dist.dist_dir, self.app_dir)
+        self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())), dist.dist_dir)
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug',
                 env = dict(ANDROID_NDK_HOME = self.context.ndk_dir, ANDROID_HOME = self.context.sdk_dir), cwd = dist.dist_dir)
         if not self.releasemode:

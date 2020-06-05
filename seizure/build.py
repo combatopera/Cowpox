@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .config import Config
 from diapyr import types
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
@@ -129,11 +130,11 @@ def _make_tar(tfn, source_dirs, blacklist, distinfo):
 
 class APKMaker:
 
-    @types()
-    def __init__(self):
-        pass
+    @types(Config)
+    def __init__(self, config):
+        self.app_dir = Path(config.app_dir)
 
-    def makeapkversion(self, args, distdir, app_dir):
+    def makeapkversion(self, args, distdir):
         render = Render(distdir)
         distinfo = DistInfo(distdir)
         ndk_api = int(distinfo.forkey('ndk_api'))
@@ -149,7 +150,7 @@ class APKMaker:
         with (distdir / 'whitelist.txt').open() as f:
             blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
         if bootstrapname != "webview":
-            if not (app_dir / 'main.py').exists() and not (app_dir / 'main.pyo').exists():
+            if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
         assets_dir = (distdir / 'src' / 'main' / 'assets').mkdirp()
         for p in (assets_dir / n for n in ['public.mp3', 'private.mp3']):
@@ -162,7 +163,7 @@ class APKMaker:
                     print(f"P4A_IS_WINDOWED={args.window}", file = f)
                     print(f"P4A_ORIENTATION={args.orientation}", file = f)
                 print(f"P4A_MINSDK={args.min_sdk_version}", file = f)
-            tar_dirs = [env_vars_tarpath, app_dir]
+            tar_dirs = [env_vars_tarpath, self.app_dir]
             for python_bundle_dir in (distdir / n for n in ['private', '_python_bundle']):
                 if python_bundle_dir.exists():
                     tar_dirs.append(python_bundle_dir)
@@ -207,7 +208,7 @@ class APKMaker:
         manifest_path = distdir / 'src' / 'main' / 'AndroidManifest.xml'
         render_args = {
             "args": args,
-            "service": any((app_dir / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
+            "service": any((self.app_dir / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
             "service_names": service_names,
             "android_api": android_api
         }
