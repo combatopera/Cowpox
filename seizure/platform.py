@@ -143,7 +143,7 @@ class Platform:
                 log.info('Skipping install API %s platform tools due to spec setting', self.android_api)
         log.info('Android packages installation done.')
 
-    def install_platform(self):
+    def install(self):
         self._install_android_sdk()
         self._install_android_ndk()
         self._install_android_packages()

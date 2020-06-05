@@ -59,7 +59,7 @@ class Result: pass
 @types(Config, Dirs, Platform, TargetAndroid, Src, this = Result)
 def run(config, dirs, platform, target, src):
     log.info('Install platform.')
-    platform.install_platform()
+    platform.install()
     log.info('Compile platform')
     dist = target.compile_platform()
     src._copy_application_sources()
