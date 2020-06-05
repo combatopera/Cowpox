@@ -122,10 +122,7 @@ class Platform:
         self._android_update_sdk('tools', 'platform-tools')
         self._android_update_sdk('--update')
         log.info('Updating SDK build tools if necessary')
-        available_v_build_tools = list(self._android_list_build_tools_versions())
-        if not available_v_build_tools:
-            log.error('Did not find any build tools available to download')
-        latest_v_build_tools = max(available_v_build_tools)
+        latest_v_build_tools = max(self._android_list_build_tools_versions())
         if latest_v_build_tools > self._read_version_subdir(self.sdk_dir / 'build-tools'):
             self._android_update_sdk(f"build-tools;{latest_v_build_tools}")
         log.info('Downloading platform api target if necessary')
