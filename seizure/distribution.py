@@ -119,7 +119,7 @@ class Distribution:
                 i += 1
             name = filen.format(i)
         dist.name = name
-        dist.dist_dir = ctx.distsdir / generate_dist_folder_name(name, arch_name)
+        dist.dist_dir = ctx.distsdir / f"{name}__{arch_name}"
         dist.recipes = recipes
         dist.ndk_api = ctx.ndk_api
         dist.archs = [arch_name]
@@ -170,6 +170,3 @@ class Distribution:
 def _pretty_log_dists(dists):
     for dist in dists:
         log.info("\t%s: min API %s, includes recipes (%s), built for archs (%s)", dist.name, 'unknown' if dist.ndk_api is None else dist.ndk_api, ', '.join(dist.recipes), ', '.join(dist.archs) if dist.archs else 'UNKNOWN')
-
-def generate_dist_folder_name(base_dist_name, arch_name):
-    return f"{base_dist_name}__{arch_name}"
