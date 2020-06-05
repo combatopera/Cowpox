@@ -122,10 +122,6 @@ class Context:
             return recipe
 
     @property
-    def packages_path(self):
-        return self.storage_dir / 'packages'
-
-    @property
     def libs_dir(self):
         return (self.buildsdir / 'libs_collections' / self.bootstrap.distribution.name).mkdirp()
 
@@ -189,6 +185,7 @@ class Context:
         self.storage_dir = Path(config.storage_dir)
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
+        self.packages_path = Path(config.packages_path)
         self.recipes = {}
         self.include_dirs = []
         self.ndk = None
