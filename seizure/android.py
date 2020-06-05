@@ -71,21 +71,6 @@ def _build_dist_from_args(ctx, dist, bootstrap):
     log.info('Your distribution was created successfully, exiting.')
     log.info("Dist can be found at (for now) %s", ctx.distsdir / dist.dist_dir)
 
-def create(ctx, dist_name, bootstrap, arch, ndk_api, requirements):
-    dist = Distribution.get_distribution(
-            ctx,
-            dist_name,
-            requirements,
-            arch,
-            ndk_api)
-    ctx.distribution = dist
-    if dist.needs_build:
-        if dist.folder_exists():
-            dist.delete()
-        log.info('No dist exists that meets your requirements, so one will be built.')
-        _build_dist_from_args(ctx, dist, bootstrap)
-    return dist
-
 def makeapk(ctx, dist, app_dir, release, downstreamargs):
     build_mode = 'release' if release else 'debug'
     makeapkversion(downstreamargs, dist.dist_dir, app_dir)
@@ -135,14 +120,14 @@ class TargetAndroid:
         self.context = context
 
     def compile_platform(self):
-        return create(
-            self.context,
-            self.dist_name,
-            self.bootstrapname,
-            self.arch,
-            self.ndk_api,
-            self.requirements,
-        )
+        dist = Distribution.get_distribution(self.context, self.dist_name, self.requirements, self.arch, self.ndk_api)
+        self.context.distribution = dist
+        if dist.needs_build:
+            if dist.folder_exists():
+                dist.delete()
+            log.info('No dist exists that meets your requirements, so one will be built.')
+            _build_dist_from_args(self.context, dist, self.bootstrapname)
+        return dist
 
     def _get_dist_dir(self):
         expected_dist_name = generate_dist_folder_name(self.dist_name, arch_names = [self.arch])
