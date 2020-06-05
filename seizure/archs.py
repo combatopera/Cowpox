@@ -122,19 +122,15 @@ class Arch:
         )
         env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=self.ctx.get_libs_dir(self.arch))
         env['LDLIBS'] = ' '.join(self.common_ldlibs)
-        if int(os.environ.get('USE_CCACHE', '1')):
-            ccache = f"{self.ccachepath} "
-            env['USE_CCACHE'] = '1'
-            env['NDK_CCACHE'] = self.ccachepath
-            env.update({k: v for k, v in os.environ.items() if k.startswith('CCACHE_')})
-        else:
-            ccache = ''
+        env['USE_CCACHE'] = '1'
+        env['NDK_CCACHE'] = self.ccachepath
+        env.update({k: v for k, v in os.environ.items() if k.startswith('CCACHE_')})
         if with_flags_in_cc:
-            env['CC'] = f"{ccache}{self.clang_exe} {env['CFLAGS']}"
-            env['CXX'] = f"{ccache}{self.clang_exe_cxx} {env['CXXFLAGS']}"
+            env['CC'] = f"{self.ccachepath} {self.clang_exe} {env['CFLAGS']}"
+            env['CXX'] = f"{self.ccachepath} {self.clang_exe_cxx} {env['CXXFLAGS']}"
         else:
-            env['CC'] = f"{ccache}{self.clang_exe}"
-            env['CXX'] = f"{ccache}{self.clang_exe_cxx}"
+            env['CC'] = f"{self.ccachepath} {self.clang_exe}"
+            env['CXX'] = f"{self.ccachepath} {self.clang_exe_cxx}"
         env['AR'] = f"{self.command_prefix}-ar"
         env['RANLIB'] = f"{self.command_prefix}-ranlib"
         env['STRIP'] = f"{self.command_prefix}-strip --strip-unneeded"
