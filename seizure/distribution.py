@@ -55,8 +55,6 @@ class Distribution:
 
     recipes = []
 
-    description = ''  # A long description
-
     def __init__(self, ctx):
         self.ctx = ctx
 
