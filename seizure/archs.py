@@ -40,7 +40,6 @@
 
 from lagoon import which
 from multiprocessing import cpu_count
-from os.path import join
 import os
 
 class Arch:
@@ -115,10 +114,7 @@ class Arch:
         env['CPPFLAGS'] = ' '.join(self.common_cppflags).format(
             ctx=self.ctx,
             command_prefix=self.command_prefix,
-            python_includes=join(
-                self.ctx.get_python_install_dir(),
-                'include/python{}'.format(self.ctx.python_recipe.version[0:3]),
-            ),
+            python_includes = self.ctx.get_python_install_dir() / 'include' / f"python{self.ctx.python_recipe.version[:3]}",
         )
         env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=self.ctx.get_libs_dir(self.arch))
         env['LDLIBS'] = ' '.join(self.common_ldlibs)
