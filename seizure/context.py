@@ -52,7 +52,7 @@ from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
 from pythonforandroid.pythonpackage import get_package_name
-import copy, glob, logging, os, subprocess
+import copy, glob, logging, os
 
 log = logging.getLogger(__name__)
 
@@ -117,10 +117,6 @@ class Context:
         check_ndk_version(self.ndk_dir)
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
         check_ndk_api(self.ndk_api, self.android_api)
-        try:
-            subprocess.check_call(['python3', '-m', 'cython', '--help'])
-        except subprocess.CalledProcessError:
-            log.warning('Cython for python3 missing. If you are building for  a python 3 target (which is the default) then THINGS WILL BREAK.')
         arch = self.archs[0]
         toolchain_prefix = arch.toolchain_prefix
         self.ndk_platform, ndk_platform_dir_exists = self.platform.get_ndk_platform_dir(self.ndk_api, arch)
