@@ -95,12 +95,6 @@ class Platform:
                 assert package_name.count(';') == 1, f'could not parse package "{package_name}"'
                 yield parse(package_name.split(';')[1])
 
-    def _android_update_sdk(self, *args):
-        if self.acceptlicense:
-            with yes.bg(check = False) as yesproc:
-                self.sdkmanager.__licenses.print(stdin = yesproc.stdout)
-        self.sdkmanager.print(*args)
-
     @staticmethod
     def _read_version_subdir(path):
         versions = []
@@ -119,12 +113,15 @@ class Platform:
 
     def _install_android_packages(self):
         log.info('Installing/updating SDK platform tools if necessary')
-        self._android_update_sdk('tools', 'platform-tools')
-        self._android_update_sdk('--update')
+        if self.acceptlicense:
+            with yes.bg(check = False) as yesproc:
+                self.sdkmanager.__licenses.print(stdin = yesproc.stdout)
+        self.sdkmanager.tools.platform_tools.print()
+        self.sdkmanager.__update.print()
         log.info('Updating SDK build tools if necessary')
         latest_v_build_tools = max(self._android_list_build_tools_versions())
         if latest_v_build_tools > self._read_version_subdir(self.sdk_dir / 'build-tools'):
-            self._android_update_sdk(f"build-tools;{latest_v_build_tools}")
+            self.sdkmanager.print(f"build-tools;{latest_v_build_tools}")
         log.info('Downloading platform api target if necessary')
         if not (self.sdk_dir / 'platforms' / f"android-{self.android_api}").exists():
             self.sdkmanager.print(f"platforms;android-{self.android_api}")
