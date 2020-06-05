@@ -39,12 +39,12 @@
 # THE SOFTWARE.
 
 from .config import Config
-from .libs.version import parse
 from .mirror import Mirror
 from diapyr import types
 from lagoon import unzip, yes
 from lagoon.program import Program
 from pathlib import Path
+from pkg_resources import parse_version
 import logging
 
 log = logging.getLogger(__name__)
@@ -93,22 +93,22 @@ class Platform:
             if line.startswith('build-tools;'):
                 package_name = line.split(' ')[0]
                 assert package_name.count(';') == 1, f'could not parse package "{package_name}"'
-                yield parse(package_name.split(';')[1])
+                yield parse_version(package_name.split(';')[1])
 
     @staticmethod
     def _read_version_subdir(path):
         versions = []
         if not path.exists():
             log.debug("build-tools folder not found %s", path)
-            return parse("0")
+            return parse_version("0")
         for v in (p.name for p in path.iterdir()):
             try:
-                versions.append(parse(v))
+                versions.append(parse_version(v))
             except:
                 pass
         if not versions:
             log.error('Unable to find the latest version for %s', path)
-            return parse("0")
+            return parse_version("0")
         return max(versions)
 
     def _install_android_packages(self):
