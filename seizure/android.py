@@ -41,7 +41,7 @@
 from .build import makeapkversion
 from .config import Config
 from .context import Context
-from .distribution import generate_dist_folder_name, Distribution
+from .distribution import Distribution
 from .graph import get_recipe_order
 from diapyr import types
 from lagoon import gradle
@@ -123,15 +123,6 @@ class TargetAndroid:
         log.info('Your distribution was created successfully, exiting.')
         log.info("Dist can be found at (for now) %s", self.context.distsdir / dist.dist_dir)
 
-    def _get_dist_dir(self):
-        expected_dist_dir = self.distsdir / generate_dist_folder_name(self.dist_name, self.arch)
-        if expected_dist_dir.exists():
-            return expected_dist_dir
-        old_dist_dir = self.distsdir / self.dist_name
-        if old_dist_dir.exists():
-            return old_dist_dir
-        return expected_dist_dir
-
     def _get_release_mode(self):
         return 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'
 
@@ -159,9 +150,8 @@ class TargetAndroid:
             yield '.'.join(words)
 
     def build_package(self, dist):
-        dist_dir = self._get_dist_dir()
-        self._update_libraries_references(dist_dir)
-        self._generate_whitelist(dist_dir)
+        self._update_libraries_references(dist.dist_dir)
+        self._generate_whitelist(dist.dist_dir)
         def downstreamargs():
             yield 'name', self.title
             yield 'version', self.version
@@ -199,7 +189,7 @@ class TargetAndroid:
             mode_sign = "release"
             mode = self._get_release_mode()
         apkpath = self.apkdir / f"{self.dist_name}-{self.version}-{self.commit}-{self.arch}-{mode}.apk"
-        shutil.copyfile(dist_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{dist_dir.name}-{mode}.apk", apkpath)
+        shutil.copyfile(dist.dist_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{dist.dist_dir.name}-{mode}.apk", apkpath)
         log.info('Android packaging done!')
         return apkpath
 
