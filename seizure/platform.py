@@ -54,7 +54,7 @@ class Platform:
     @types(Config, Mirror)
     def __init__(self, config, mirror):
         self.android_ndk_version = config.android.ndk
-        self.android_api = config.android.api
+        self.platformname = f"android-{config.android.api}"
         self.acceptlicense = config.android.accept_sdk_license
         self.skip_upd = config.android.skip_update
         self.sdk_dir = Path(config.android_sdk_dir)
@@ -123,8 +123,8 @@ class Platform:
         if latest_v_build_tools > self._read_version_subdir(self.sdk_dir / 'build-tools'):
             self.sdkmanager.print(f"build-tools;{latest_v_build_tools}")
         log.info('Downloading platform api target if necessary')
-        if not (self.sdk_dir / 'platforms' / f"android-{self.android_api}").exists():
-            self.sdkmanager.print(f"platforms;android-{self.android_api}")
+        if not (self.sdk_dir / 'platforms' / platformname).exists():
+            self.sdkmanager.print(f"platforms;{platformname}")
         log.info('Android packages installation done.')
 
     def install(self):
