@@ -95,22 +95,6 @@ class Platform:
                 assert package_name.count(';') == 1, f'could not parse package "{package_name}"'
                 yield parse_version(package_name.split(';')[1])
 
-    @staticmethod
-    def _read_version_subdir(path):
-        versions = []
-        if not path.exists():
-            log.debug("build-tools folder not found %s", path)
-            return parse_version("0")
-        for v in (p.name for p in path.iterdir()):
-            try:
-                versions.append(parse_version(v))
-            except:
-                pass
-        if not versions:
-            log.error('Unable to find the latest version for %s', path)
-            return parse_version("0")
-        return max(versions)
-
     def _install_android_packages(self):
         log.info('Installing/updating SDK platform tools if necessary')
         if self.acceptlicense:
@@ -120,7 +104,7 @@ class Platform:
         self.sdkmanager.__update.print()
         log.info('Updating SDK build tools if necessary')
         latest_v_build_tools = max(self._android_list_build_tools_versions())
-        if latest_v_build_tools > self._read_version_subdir(self.sdk_dir / 'build-tools'):
+        if latest_v_build_tools > max(parse_version(p.name) for p in (self.sdk_dir / 'build-tools').iterdir()):
             self.sdkmanager.print(f"build-tools;{latest_v_build_tools}")
         log.info('Downloading platform api target if necessary')
         if not (self.sdk_dir / 'platforms' / platformname).exists():
