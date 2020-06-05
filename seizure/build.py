@@ -178,7 +178,6 @@ def makeapkversion(args, distdir, app_dir):
     args.numeric_version = numver() # TODO: Do not abuse args for this.
     if args.intent_filters:
         args.intent_filters = args.intent_filters.read_text()
-    args.extra_source_dirs = []
     service_names = []
     for sid, spec in enumerate(args.services):
         name, entrypoint, *options = spec.split(':')
