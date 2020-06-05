@@ -205,8 +205,8 @@ class Arch:
         env['PATH'] = f"{self.clang_path}{os.pathsep}{os.environ['PATH']}"
         return env
 
-class ArchARM(Arch):
-    arch = "armeabi"
+class BaseArchARM(Arch):
+
     toolchain_prefix = 'arm-linux-androideabi'
     command_prefix = 'arm-linux-androideabi'
     platform_dir = 'arch-arm'
@@ -219,7 +219,11 @@ class ArchARM(Arch):
             ndk_api=self.ctx.ndk_api,
         )
 
-class ArchARMv7_a(ArchARM):
+class ArchARM(BaseArchARM):
+
+    arch = "armeabi"
+
+class ArchARMv7_a(BaseArchARM):
 
     arch = 'armeabi-v7a'
     arch_cflags = [
