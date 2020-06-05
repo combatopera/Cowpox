@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from diapyr import types
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from lagoon import patch
@@ -126,132 +127,138 @@ def _make_tar(tfn, source_dirs, blacklist, distinfo):
                         tf.addfile(tinfo)
             tf.add(fn, afn)
 
-def makeapkversion(args, distdir, app_dir):
-    render = Render(distdir)
-    distinfo = DistInfo(distdir)
-    ndk_api = int(distinfo.forkey('ndk_api'))
-    bootstrapname = distinfo.forkey('bootstrap')
-    blacklist = Blacklist(bootstrapname)
-    args.allow_backup = 'true'
-    args.extra_manifest_xml = ''
-    if ndk_api != args.min_sdk_version:
-        log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
-        raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
-    with (distdir / 'blacklist.txt').open() as f:
-        blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-    with (distdir / 'whitelist.txt').open() as f:
-        blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-    if bootstrapname != "webview":
-        if not (app_dir / 'main.py').exists() and not (app_dir / 'main.pyo').exists():
-            raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
-    assets_dir = (distdir / 'src' / 'main' / 'assets').mkdirp()
-    for p in (assets_dir / n for n in ['public.mp3', 'private.mp3']):
-        if p.exists():
-            p.unlink()
-    with TemporaryDirectory() as env_vars_tarpath:
-        env_vars_tarpath = Path(env_vars_tarpath)
-        with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:
-            if bootstrapname != 'service_only':
-                print(f"P4A_IS_WINDOWED={args.window}", file = f)
-                print(f"P4A_ORIENTATION={args.orientation}", file = f)
-            print(f"P4A_MINSDK={args.min_sdk_version}", file = f)
-        tar_dirs = [env_vars_tarpath, app_dir]
-        for python_bundle_dir in (distdir / n for n in ['private', '_python_bundle']):
-            if python_bundle_dir.exists():
-                tar_dirs.append(python_bundle_dir)
+class APKMaker:
+
+    @types()
+    def __init__(self):
+        pass
+
+    def makeapkversion(self, args, distdir, app_dir):
+        render = Render(distdir)
+        distinfo = DistInfo(distdir)
+        ndk_api = int(distinfo.forkey('ndk_api'))
+        bootstrapname = distinfo.forkey('bootstrap')
+        blacklist = Blacklist(bootstrapname)
+        args.allow_backup = 'true'
+        args.extra_manifest_xml = ''
+        if ndk_api != args.min_sdk_version:
+            log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
+            raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
+        with (distdir / 'blacklist.txt').open() as f:
+            blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
+        with (distdir / 'whitelist.txt').open() as f:
+            blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
+        if bootstrapname != "webview":
+            if not (app_dir / 'main.py').exists() and not (app_dir / 'main.pyo').exists():
+                raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
+        assets_dir = (distdir / 'src' / 'main' / 'assets').mkdirp()
+        for p in (assets_dir / n for n in ['public.mp3', 'private.mp3']):
+            if p.exists():
+                p.unlink()
+        with TemporaryDirectory() as env_vars_tarpath:
+            env_vars_tarpath = Path(env_vars_tarpath)
+            with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:
+                if bootstrapname != 'service_only':
+                    print(f"P4A_IS_WINDOWED={args.window}", file = f)
+                    print(f"P4A_ORIENTATION={args.orientation}", file = f)
+                print(f"P4A_MINSDK={args.min_sdk_version}", file = f)
+            tar_dirs = [env_vars_tarpath, app_dir]
+            for python_bundle_dir in (distdir / n for n in ['private', '_python_bundle']):
+                if python_bundle_dir.exists():
+                    tar_dirs.append(python_bundle_dir)
+            if bootstrapname == "webview":
+                tar_dirs.append(distdir / 'webview_includes')
+            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo)
+        res_dir = distdir / 'src' / 'main' / 'res'
+        default_icon = distdir / 'templates' / 'kivy-icon.png'
+        shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
+        if bootstrapname != "service_only":
+            default_presplash = distdir / 'templates' / 'kivy-presplash.jpg'
+            shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
+        def numver():
+            version_code = 0
+            for i in args.version.split('.'):
+                version_code *= 100
+                version_code += int(i)
+            lookup = {'x86_64': 9, 'arm64-v8a': 8, 'armeabi-v7a': 7, 'x86': 6}
+            return f"{lookup.get(distinfo.forkey('archs')[0], 1)}{args.min_sdk_version}{version_code}"
+        args.numeric_version = numver() # TODO: Do not abuse args for this.
+        if args.intent_filters:
+            args.intent_filters = args.intent_filters.read_text()
+        service_names = []
+        for sid, spec in enumerate(args.services):
+            name, entrypoint, *options = spec.split(':')
+            service_names.append(name)
+            render(
+                'Service.tmpl.java',
+                distdir / 'src' / 'main' / 'java' / args.package.replace('.', os.sep) / f"Service{name.capitalize()}.java",
+                name = name,
+                entrypoint = entrypoint,
+                args = args,
+                foreground = 'foreground' in options,
+                sticky = 'sticky' in options,
+                service_id = 1 + sid,
+            )
+        android_api = int((distdir / 'project.properties').read_text().strip().split('-')[1])
+        sdk_dir = Path((distdir / 'local.properties').read_text().strip()[8:])
+        ignored = {".DS_Store", ".ds_store"}
+        build_tools_version = max((x.name for x in (sdk_dir / 'build-tools').iterdir() if x.name not in ignored), key = LooseVersion)
+        url_scheme = 'kivy'
+        manifest_path = distdir / 'src' / 'main' / 'AndroidManifest.xml'
+        render_args = {
+            "args": args,
+            "service": any((app_dir / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
+            "service_names": service_names,
+            "android_api": android_api
+        }
+        if bootstrapname == "sdl2":
+            render_args["url_scheme"] = url_scheme
+        render(
+            'AndroidManifest.tmpl.xml',
+            manifest_path,
+            **render_args,
+        )
+        render(
+            'build.tmpl.gradle',
+            distdir / 'build.gradle',
+            args = args,
+            aars = [],
+            jars = [],
+            android_api = android_api,
+            build_tools_version = build_tools_version,
+        )
+        render_args = {"args": args, "private_version": str(time.time())} # XXX: Must we use time?
+        if bootstrapname == "sdl2":
+            render_args["url_scheme"] = url_scheme
+        render(
+            'strings.tmpl.xml',
+            res_dir / 'values' / 'strings.xml',
+            **render_args,
+        )
+        if (distdir / "templates" / "custom_rules.tmpl.xml").exists():
+            render(
+                'custom_rules.tmpl.xml',
+                distdir / 'custom_rules.xml',
+                args = args,
+            )
         if bootstrapname == "webview":
-            tar_dirs.append(distdir / 'webview_includes')
-        _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, distinfo)
-    res_dir = distdir / 'src' / 'main' / 'res'
-    default_icon = distdir / 'templates' / 'kivy-icon.png'
-    shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
-    if bootstrapname != "service_only":
-        default_presplash = distdir / 'templates' / 'kivy-presplash.jpg'
-        shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
-    def numver():
-        version_code = 0
-        for i in args.version.split('.'):
-            version_code *= 100
-            version_code += int(i)
-        lookup = {'x86_64': 9, 'arm64-v8a': 8, 'armeabi-v7a': 7, 'x86': 6}
-        return f"{lookup.get(distinfo.forkey('archs')[0], 1)}{args.min_sdk_version}{version_code}"
-    args.numeric_version = numver() # TODO: Do not abuse args for this.
-    if args.intent_filters:
-        args.intent_filters = args.intent_filters.read_text()
-    service_names = []
-    for sid, spec in enumerate(args.services):
-        name, entrypoint, *options = spec.split(':')
-        service_names.append(name)
-        render(
-            'Service.tmpl.java',
-            distdir / 'src' / 'main' / 'java' / args.package.replace('.', os.sep) / f"Service{name.capitalize()}.java",
-            name = name,
-            entrypoint = entrypoint,
-            args = args,
-            foreground = 'foreground' in options,
-            sticky = 'sticky' in options,
-            service_id = 1 + sid,
-        )
-    android_api = int((distdir / 'project.properties').read_text().strip().split('-')[1])
-    sdk_dir = Path((distdir / 'local.properties').read_text().strip()[8:])
-    ignored = {".DS_Store", ".ds_store"}
-    build_tools_version = max((x.name for x in (sdk_dir / 'build-tools').iterdir() if x.name not in ignored), key = LooseVersion)
-    url_scheme = 'kivy'
-    manifest_path = distdir / 'src' / 'main' / 'AndroidManifest.xml'
-    render_args = {
-        "args": args,
-        "service": any((app_dir / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
-        "service_names": service_names,
-        "android_api": android_api
-    }
-    if bootstrapname == "sdl2":
-        render_args["url_scheme"] = url_scheme
-    render(
-        'AndroidManifest.tmpl.xml',
-        manifest_path,
-        **render_args,
-    )
-    render(
-        'build.tmpl.gradle',
-        distdir / 'build.gradle',
-        args = args,
-        aars = [],
-        jars = [],
-        android_api = android_api,
-        build_tools_version = build_tools_version,
-    )
-    render_args = {"args": args, "private_version": str(time.time())} # XXX: Must we use time?
-    if bootstrapname == "sdl2":
-        render_args["url_scheme"] = url_scheme
-    render(
-        'strings.tmpl.xml',
-        res_dir / 'values' / 'strings.xml',
-        **render_args,
-    )
-    if (distdir / "templates" / "custom_rules.tmpl.xml").exists():
-        render(
-            'custom_rules.tmpl.xml',
-            distdir / 'custom_rules.xml',
-            args = args,
-        )
-    if bootstrapname == "webview":
-        render(
-            'WebViewLoader.tmpl.java',
-            distdir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android' / 'WebViewLoader.java',
-            args = args,
-        )
-    if args.sign:
-        render('build.properties', distdir / 'build.properties')
-    elif (distdir / 'build.properties').exists():
-        (distdir / 'build.properties').unlink()
-    src_patches = distdir / 'src' / 'patches'
-    if src_patches.exists():
-        log.info("Applying Java source code patches...")
-        for patch_path in src_patches.iterdir():
-            log.info("Applying patch: %s", patch_path)
-            try:
-                patch._N._p1._t._i.print(patch_path, cwd = distdir)
-            except subprocess.CalledProcessError as e:
-                if e.returncode != 1:
-                    raise e
-                log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
+            render(
+                'WebViewLoader.tmpl.java',
+                distdir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android' / 'WebViewLoader.java',
+                args = args,
+            )
+        if args.sign:
+            render('build.properties', distdir / 'build.properties')
+        elif (distdir / 'build.properties').exists():
+            (distdir / 'build.properties').unlink()
+        src_patches = distdir / 'src' / 'patches'
+        if src_patches.exists():
+            log.info("Applying Java source code patches...")
+            for patch_path in src_patches.iterdir():
+                log.info("Applying patch: %s", patch_path)
+                try:
+                    patch._N._p1._t._i.print(patch_path, cwd = distdir)
+                except subprocess.CalledProcessError as e:
+                    if e.returncode != 1:
+                        raise e
+                    log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)

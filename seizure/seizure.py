@@ -40,6 +40,7 @@
 
 from . import etc
 from .android import TargetAndroid
+from .build import APKMaker
 from .config import Config
 from .context import Context
 from .dirs import Dirs
@@ -74,6 +75,7 @@ def _main():
     di = DI()
     try:
         di.add(config)
+        di.add(APKMaker)
         di.add(Context)
         di.add(Dirs)
         di.add(Mirror)

@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .build import makeapkversion
+from .build import APKMaker
 from .config import Config
 from .context import Context
 from .distribution import Distribution
@@ -54,8 +54,8 @@ log = logging.getLogger(__name__)
 
 class TargetAndroid:
 
-    @types(Config, Context)
-    def __init__(self, config, context):
+    @types(Config, Context, APKMaker)
+    def __init__(self, config, context, apkmaker):
         self.android_api = config.android.api
         self.android_minapi = config.android.minapi
         self.arch = config.android.arch
@@ -93,6 +93,7 @@ class TargetAndroid:
         self.app_dir = Path(config.app_dir)
         self.distsdir = Path(config.distsdir)
         self.context = context
+        self.apkmaker = apkmaker
 
     def compile_platform(self):
         dist = Distribution.get_distribution(self.context, self.dist_name, self.requirements, self.arch, self.ndk_api)
@@ -179,7 +180,7 @@ class TargetAndroid:
             yield 'depends', self.depends if self.depends else None
             if self.bootstrapname == 'webview':
                 yield 'port', '5000'
-        makeapkversion(SimpleNamespace(**dict(downstreamargs())), dist.dist_dir, self.app_dir)
+        self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())), dist.dist_dir, self.app_dir)
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug',
                 env = dict(ANDROID_NDK_HOME = self.context.ndk_dir, ANDROID_HOME = self.context.sdk_dir), cwd = dist.dist_dir)
         if not self.releasemode:
