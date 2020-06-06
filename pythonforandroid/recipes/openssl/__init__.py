@@ -53,7 +53,7 @@ class OpenSSLRecipe(Recipe):
         return None if self.url is None else self.url.format(url_version = self.url_version)
 
     def get_build_dir(self, arch):
-        return self.get_build_container_dir(arch.name) / f"{self.name}{self.version}"
+        return self.get_build_container_dir(arch) / f"{self.name}{self.version}"
 
     def include_flags(self, arch):
         openssl_includes = self.get_build_dir(arch) / 'include'

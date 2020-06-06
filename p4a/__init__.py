@@ -275,7 +275,7 @@ class Recipe(metaclass = RecipeMeta):
         return [recipe for recipe in recipes if recipe in self.opt_depends]
 
     def get_build_container_dir(self, arch):
-        return self.ctx.buildsdir / 'other_builds' / self.get_dir_name() / f"{arch}__ndk_target_{self.ctx.ndk_api}"
+        return self.ctx.buildsdir / 'other_builds' / self.get_dir_name() / f"{arch.name}__ndk_target_{self.ctx.ndk_api}"
 
     def get_dir_name(self):
         choices = self.check_recipe_choices()
@@ -283,7 +283,7 @@ class Recipe(metaclass = RecipeMeta):
         return dir_name
 
     def get_build_dir(self, arch):
-        return self.get_build_container_dir(arch.name) / self.name
+        return self.get_build_container_dir(arch) / self.name
 
     def get_recipe_dir(self):
         return self.ctx.contribroot / 'recipes' / self.name
@@ -344,7 +344,7 @@ class Recipe(metaclass = RecipeMeta):
 
     def _unpack(self, arch):
         log.info("Unpacking %s for %s", self.name, arch.name)
-        build_dir = self.get_build_container_dir(arch.name)
+        build_dir = self.get_build_container_dir(arch)
         directory_name = self.get_build_dir(arch)
         user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
         if user_dir is not None:
@@ -478,7 +478,7 @@ class Recipe(metaclass = RecipeMeta):
             self.install_stl_lib(arch)
 
     def prepare_build_dir(self, arch):
-        self.get_build_container_dir(arch.name).mkdirp()
+        self.get_build_container_dir(arch).mkdirp()
         self._unpack(arch)
 
     def install_libs(self, arch, *libs):
@@ -509,7 +509,7 @@ class Recipe(metaclass = RecipeMeta):
 class IncludedFilesBehaviour:
 
     def prepare_build_dir(self, arch):
-        self.get_build_container_dir(arch.name).mkdirp()
+        self.get_build_container_dir(arch).mkdirp()
         rm._rf.print(self.get_build_dir(arch))
         cp._a.print(self.get_recipe_dir() / self.src_filename, self.get_build_dir(arch))
 
@@ -534,7 +534,7 @@ class BootstrapNDKRecipe(Recipe):
         if self.dir_name is None:
             raise ValueError('{} recipe doesn\'t define a dir_name, but '
                              'this is necessary'.format(self.name))
-        return self.get_build_container_dir(arch.name) / self.dir_name
+        return self.get_build_container_dir(arch) / self.dir_name
 
     def get_jni_dir(self):
         return self.ctx.bootstrap.build_dir / 'jni'
@@ -806,7 +806,7 @@ class CythonRecipe(PythonRecipe):
         env['LIBLINK'] = 'NOTNONE'
         env['NDKPLATFORM'] = self.ctx.ndk_platform
         env['COPYLIBS'] = '1'
-        env['LIBLINK_PATH'] = str((self.get_build_container_dir(arch.name) / f"objects_{self.name}").mkdirp())
+        env['LIBLINK_PATH'] = str((self.get_build_container_dir(arch) / f"objects_{self.name}").mkdirp())
         return env
 
 class TargetPythonRecipe(Recipe):
