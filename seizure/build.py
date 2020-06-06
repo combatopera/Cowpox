@@ -128,6 +128,14 @@ class APKMaker:
         self.sdk_dir = Path(config.android_sdk_dir)
         self.android_api = config.android.api
 
+    @staticmethod
+    def _numver(args, dist):
+        version_code = 0
+        for i in args.version.split('.'):
+            version_code *= 100
+            version_code += int(i)
+        return f"{dist.ctx.arch.numver}{args.min_sdk_version}{version_code}"
+
     def makeapkversion(self, args, dist):
         distdir = dist.dist_dir
         render = Render(distdir)
@@ -167,13 +175,7 @@ class APKMaker:
         if bootstrapname != "service_only":
             default_presplash = distdir / 'templates' / 'kivy-presplash.jpg'
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
-        def numver():
-            version_code = 0
-            for i in args.version.split('.'):
-                version_code *= 100
-                version_code += int(i)
-            return f"{dist.ctx.arch.numver}{args.min_sdk_version}{version_code}"
-        args.numeric_version = numver() # TODO: Do not abuse args for this.
+        args.numeric_version = self._numver(args, dist) # TODO: Do not abuse args for this.
         if args.intent_filters:
             args.intent_filters = args.intent_filters.read_text()
         service_names = []
