@@ -425,7 +425,7 @@ class Recipe(metaclass = RecipeMeta):
             touch.print(build_dir / '.patched')
 
     def should_build(self, arch):
-        return not all(p.exists() for p in self._get_libraries(arch)) if self.builtlibpaths else True
+        return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries(arch)) # XXX: Weird logic?
 
     def build_arch(self, arch):
         '''Run any build tasks for the Recipe. By default, this checks if
