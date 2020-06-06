@@ -38,6 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .config import Config
+from diapyr import types
 from lagoon import which
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -60,6 +62,7 @@ class Arch:
     ]
     ccachepath, = which('ccache').splitlines()
 
+    @types(Config)
     def __init__(self, config):
         self.ndk_api = config.android.ndk_api
         self.ndk_dir = Path(config.android_ndk_dir)

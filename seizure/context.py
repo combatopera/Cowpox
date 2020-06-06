@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .archs import all_archs
+from .archs import Arch
 from .config import Config
 from .mirror import Mirror
 from .platform import Platform
@@ -135,9 +135,8 @@ class Context:
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
 
-    @types(Config, Mirror, Platform)
-    def __init__(self, config, mirror, platform):
-        self.arch = all_archs[config.android.arch](config)
+    @types(Config, Mirror, Platform, Arch)
+    def __init__(self, config, mirror, platform, arch):
         self.ndk_api = config.android.ndk_api
         self.android_api = config.android.api
         self.sdk_dir = Path(config.android_sdk_dir)
@@ -153,6 +152,7 @@ class Context:
         self.env.pop("CFLAGS", None)
         self.mirror = mirror
         self.platform = platform
+        self.arch = arch
 
     def prepare_bootstrap(self, bs):
         bs.ctx = self

@@ -40,6 +40,7 @@
 
 from . import etc
 from .android import TargetAndroid
+from .archs import all_archs
 from .build import APKMaker
 from .config import Config
 from .context import Context
@@ -75,6 +76,7 @@ def _main():
     di = DI()
     try:
         di.add(config)
+        di.add(all_archs[config.android.arch])
         di.add(APKMaker)
         di.add(Context)
         di.add(Dirs)
