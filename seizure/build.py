@@ -47,7 +47,6 @@ from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
 from lagoon import patch
-from lagoon.program import Program
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import aridity, jinja2, logging, os, shutil, subprocess, tarfile, time
@@ -98,12 +97,10 @@ def _listfiles(d):
     for subdir in subdirlist:
         yield from _listfiles(subdir)
 
-def _make_tar(tfn, source_dirs, blacklist, hostpython):
+def _make_tar(tfn, source_dirs, blacklist):
     files = []
-    compileall = Program.text(hostpython)._OO._m.compileall._b._f
     for sd in source_dirs:
         sd = sd.resolve()
-        compileall.print(sd) # XXX: Hasn't this already been done?
         files.extend([x, x.resolve().relative_to(sd)] for x in _listfiles(sd) if not blacklist.has(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = set()
@@ -179,7 +176,7 @@ class APKMaker:
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
                 tar_dirs.append(distdir / 'webview_includes')
-            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.context.hostpython)
+            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist)
         res_dir = distdir / 'src' / 'main' / 'res'
         default_icon = distdir / 'templates' / 'kivy-icon.png'
         shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
