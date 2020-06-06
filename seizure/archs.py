@@ -90,7 +90,7 @@ class Arch:
             f"-I{self.ndk_dir / 'sysroot' / 'usr' / 'include' / self.command_prefix}",
             f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
         ])
-        env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=ctx.get_libs_dir(self))
+        env['LDFLAGS'] = ' '.join(self.common_ldflags).format(ctx_libs_dir=ctx.get_libs_dir(self))
         env['LDLIBS'] = ' '.join(self.common_ldlibs)
         env['USE_CCACHE'] = '1'
         env['NDK_CCACHE'] = self.ccachepath
