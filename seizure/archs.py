@@ -88,10 +88,6 @@ class Arch:
         llvm_dir, = (self.ctx.ndk_dir / 'toolchains').glob('llvm*')
         return llvm_dir / 'prebuilt' / self.build_platform / 'bin'
 
-    @property
-    def clang_exe_cxx(self):
-        return self.get_clang_exe(plus_plus=True)
-
     def get_clang_exe(self, with_target = False, plus_plus = False):
         return self.clang_path / f"""{f"{self.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
 
@@ -112,7 +108,7 @@ class Arch:
         env['NDK_CCACHE'] = self.ccachepath
         env.update({k: v for k, v in os.environ.items() if k.startswith('CCACHE_')})
         env['CC'] = f"{self.ccachepath} {self.get_clang_exe()} {env['CFLAGS']}"
-        env['CXX'] = f"{self.ccachepath} {self.clang_exe_cxx} {env['CXXFLAGS']}"
+        env['CXX'] = f"{self.ccachepath} {self.get_clang_exe(plus_plus = True)} {env['CXXFLAGS']}"
         env['AR'] = f"{self.command_prefix}-ar"
         env['RANLIB'] = f"{self.command_prefix}-ranlib"
         env['STRIP'] = f"{self.command_prefix}-strip --strip-unneeded"
