@@ -117,10 +117,9 @@ class Context:
         check_ndk_version(self.ndk_dir)
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
         check_ndk_api(self.ndk_api, self.android_api)
-        arch = self.arch
-        toolchain_prefix = arch.toolchain_prefix
-        self.ndk_platform, ndk_platform_dir_exists = self.platform.get_ndk_platform_dir(self.ndk_api, arch)
-        toolchain_versions, toolchain_path_exists = self.platform.get_toolchain_versions(arch)
+        toolchain_prefix = self.arch.toolchain_prefix
+        self.ndk_platform, ndk_platform_dir_exists = self.platform.get_ndk_platform_dir(self.ndk_api, self.arch)
+        toolchain_versions, toolchain_path_exists = self.platform.get_toolchain_versions(self.arch)
         toolchain_versions.sort()
         toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
         if toolchain_versions:
