@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .archs import all_archs
 from .config import Config
 from diapyr import types
 from distutils.version import LooseVersion
@@ -47,7 +46,7 @@ from lagoon import patch
 from lagoon.program import Program
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import jinja2, json, logging, os, shutil, subprocess, tarfile, time
+import jinja2, logging, os, shutil, subprocess, tarfile, time
 
 log = logging.getLogger(__name__)
 

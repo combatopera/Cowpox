@@ -43,7 +43,6 @@ from fnmatch import fnmatch
 from lagoon import cp, find, make, mv, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
-from os.path import exists
 from pathlib import Path
 from shutil import copy2
 import lagoon, logging, os
