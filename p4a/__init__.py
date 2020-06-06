@@ -494,13 +494,12 @@ class Recipe(metaclass = RecipeMeta):
 
     def _get_libraries(self, arch):
         recipe_libs = set()
-        if not self.built_libraries:
-            return recipe_libs
-        for lib, rel_path in self.built_libraries.items():
-            abs_path = self.get_build_dir(arch) / rel_path / lib
-            if rel_path in {".", "", None}:
-                abs_path = self.get_build_dir(arch) / lib
-            recipe_libs.add(abs_path)
+        if self.built_libraries:
+            for lib, rel_path in self.built_libraries.items():
+                abs_path = self.get_build_dir(arch) / rel_path / lib
+                if rel_path in {".", "", None}:
+                    abs_path = self.get_build_dir(arch) / lib
+                recipe_libs.add(abs_path)
         return recipe_libs
 
     def get_recipe(self, name):
