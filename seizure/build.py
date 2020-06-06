@@ -134,16 +134,16 @@ class APKMaker:
     @types(Config)
     def __init__(self, config):
         self.app_dir = Path(config.app_dir)
+        self.ndk_api = config.android.ndk_api
 
     def makeapkversion(self, args, dist):
         distdir = dist.dist_dir
         render = Render(distdir)
         distinfo = DistInfo(distdir)
-        ndk_api = int(distinfo.forkey('ndk_api'))
         bootstrapname = distinfo.forkey('bootstrap')
         blacklist = Blacklist(bootstrapname)
-        if ndk_api != args.min_sdk_version:
-            log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
+        if self.ndk_api != args.min_sdk_version:
+            log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, args.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
         with (distdir / 'blacklist.txt').open() as f:
             blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
