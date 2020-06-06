@@ -425,7 +425,7 @@ class Recipe(metaclass = RecipeMeta):
             touch.print(build_dir / '.patched')
 
     def should_build(self, arch):
-        return not all(lib.exists() for lib in self._get_libraries(arch)) if self.builtlibpaths else True
+        return not all(p.exists() for p in self._get_libraries(arch)) if self.builtlibpaths else True
 
     def build_arch(self, arch):
         '''Run any build tasks for the Recipe. By default, this checks if
@@ -436,9 +436,7 @@ class Recipe(metaclass = RecipeMeta):
             getattr(self, build)()
 
     def install_libraries(self, arch):
-        if self.builtlibpaths:
-            shared_libs = [lib for lib in self._get_libraries(arch) if str(lib).endswith(".so")]
-            self._install_libs(arch, shared_libs)
+        self._install_libs(arch, [p for p in self._get_libraries(arch) if p.name.endswith('.so')])
 
     def postbuild_arch(self, arch):
         '''Run any post-build tasks for the Recipe. By default, this checks if
