@@ -87,7 +87,7 @@ class Arch:
         env['CPPFLAGS'] = ' '.join([
             '-DANDROID',
             f"-D__ANDROID_API__={self.ndk_api}",
-            f"-I{self.ndk_dir}/sysroot/usr/include/{self.command_prefix}",
+            f"-I{self.ndk_dir / 'sysroot' / 'usr' / 'include' / self.command_prefix}",
             f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
         ])
         env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=ctx.get_libs_dir(self))
