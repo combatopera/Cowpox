@@ -244,15 +244,10 @@ class Context:
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
         env['PYTHONPATH'] = f"""{(self.buildsdir / 'venv' / 'lib' / f"python{self.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{self.get_python_install_dir()}"""
-        # Install the manually specified requirements first:
-        if not modules:
-            log.info('There are no Python modules to install, skipping')
-        else:
-            log.info('Creating a requirements.txt file for the Python modules')
-            with (self.buildsdir / 'requirements.txt').open('w') as f:
-                for module in modules:
-                    print(module, file = f) # TODO: Versioning.
+        if modules:
             log.info('Installing Python modules with pip')
             log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
-            pip.install._v.__no_deps.print('--target', self.get_python_install_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env, cwd = self.buildsdir)
+            pip.install._v.__no_deps.print('--target', self.get_python_install_dir(), *modules, env = env)
+        else:
+            log.info('There are no Python modules to install, skipping')
         standard_recipe.strip_object_files(self.arch, env, self.buildsdir)
