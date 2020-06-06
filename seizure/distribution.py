@@ -52,7 +52,7 @@ class Distribution:
     recipes = []
 
     def __init__(self, ctx):
-        self.ctx = ctx
+        self.ctx = ctx # XXX: Is this really needed?
 
     def __str__(self):
         return '<Distribution: name {} with recipes ({})>'.format(
