@@ -83,13 +83,12 @@ class Arch:
     def target(self):
         return f"{self.command_prefix}{self.ndk_api}"
 
-    @property
-    def clang_path(self):
+    def _clang_path(self):
         llvm_dir, = (self.ctx.ndk_dir / 'toolchains').glob('llvm*')
         return llvm_dir / 'prebuilt' / self.build_platform / 'bin'
 
     def get_clang_exe(self, with_target = False, plus_plus = False):
-        return self.clang_path / f"""{f"{self.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
+        return self._clang_path() / f"""{f"{self.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
 
     def get_env(self, ctx):
         env = {}
@@ -123,7 +122,7 @@ class Arch:
         env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
         hostpython_recipe = ctx.get_recipe(f"host{ctx.python_recipe.name}")
         env['BUILDLIB_PATH'] = hostpython_recipe.get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}"
-        env['PATH'] = f"{self.clang_path}{os.pathsep}{os.environ['PATH']}"
+        env['PATH'] = f"{self._clang_path()}{os.pathsep}{os.environ['PATH']}"
         return env
 
 class BaseArchARM(Arch):
