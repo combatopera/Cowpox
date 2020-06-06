@@ -462,7 +462,7 @@ class Recipe(metaclass = RecipeMeta):
         '''
         if not self.built_libraries:
             return
-        shared_libs = [lib for lib in self.get_libraries(arch) if str(lib).endswith(".so")]
+        shared_libs = [lib for lib in self.get_libraries(arch.name) if str(lib).endswith(".so")]
         self.install_libs(arch, *shared_libs)
 
     def postbuild_arch(self, arch):
