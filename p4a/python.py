@@ -317,9 +317,8 @@ class HostPythonRecipe(Recipe):
         return self.get_path_to_python() / self._exe_name
 
     def should_build(self, arch):
-        if exists(self.python_exe):
-            # no need to build, but we must set hostpython for our Context
-            self.ctx.hostpython = self.python_exe
+        if self.python_exe.exists():
+            self.ctx.hostpython = self.python_exe # FIXME: Sucks.
             return False
         return True
 
@@ -349,4 +348,4 @@ class HostPythonRecipe(Recipe):
         make.print('-j', cpu_count(), '-C', build_dir, cwd = recipe_build_dir)
         exe, = (exe for exe in (self.get_path_to_python() / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
         cp.print(exe, self.python_exe)
-        self.ctx.hostpython = self.python_exe
+        self.ctx.hostpython = self.python_exe # FIXME: Sucks.
