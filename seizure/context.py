@@ -177,7 +177,7 @@ class Context:
             pass
         else:
             name = getattr(recipe, 'site_packages_name', None) or name
-        name = name.replace('.', '/')
+        name = name.replace('.', '/') # FIXME: Bad.
         site_packages_dir = self.get_python_install_dir()
         return ((site_packages_dir / name).exists()
                 or (site_packages_dir / f"{name}.py").exists()
