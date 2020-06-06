@@ -79,14 +79,9 @@ class Arch:
                 d.format(arch=self))
             for d in self.ctx.include_dirs]
 
-    @property
-    def target(self):
-        # As of NDK r19, the toolchains installed by default with the
-        # NDK may be used in-place. The make_standalone_toolchain.py script
-        # is no longer needed for interfacing with arbitrary build systems.
-        # See: https://developer.android.com/ndk/guides/other_build_systems
+    def target(self, ndk_api):
         return '{triplet}{ndk_api}'.format(
-            triplet=self.command_prefix, ndk_api=self.ctx.ndk_api
+            triplet=self.command_prefix, ndk_api=ndk_api
         )
 
     @property
@@ -103,11 +98,11 @@ class Arch:
         return self.get_clang_exe(plus_plus=True)
 
     def get_clang_exe(self, with_target = False, plus_plus = False):
-        return self.clang_path / f"""{f"{self.target}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
+        return self.clang_path / f"""{f"{self.target(self.ctx.ndk_api)}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
 
     def get_env(self, ctx):
         env = {}
-        env['CFLAGS'] = ' '.join(self.common_cflags).format(target=self.target)
+        env['CFLAGS'] = ' '.join(self.common_cflags).format(target=self.target(ctx.ndk_api))
         if self.arch_cflags:
             env['CFLAGS'] += ' ' + ' '.join(self.arch_cflags)
         env['CXXFLAGS'] = env['CFLAGS']
@@ -146,12 +141,11 @@ class BaseArchARM(Arch):
     command_prefix = 'arm-linux-androideabi'
     platform_dir = 'arch-arm'
 
-    @property
-    def target(self):
+    def target(self, ndk_api):
         target_data = self.command_prefix.split('-')
         return '{triplet}{ndk_api}'.format(
             triplet='-'.join(['armv7a', target_data[1], target_data[2]]),
-            ndk_api=self.ctx.ndk_api,
+            ndk_api=ndk_api,
         )
 
 class ArchARM(BaseArchARM):
