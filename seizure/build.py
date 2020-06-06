@@ -41,8 +41,8 @@
 from .archs import Arch
 from .config import Config
 from .context import Context
+from .platform import Platform
 from diapyr import types
-from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from lagoon import patch
 from lagoon.program import Program
@@ -121,8 +121,8 @@ def _make_tar(tfn, source_dirs, blacklist, hostpython):
 
 class APKMaker:
 
-    @types(Config, Context, Arch)
-    def __init__(self, config, context, arch):
+    @types(Config, Context, Arch, Platform)
+    def __init__(self, config, context, arch, platform):
         self.app_dir = Path(config.app_dir)
         self.ndk_api = config.android.ndk_api
         self.sdk_dir = Path(config.android_sdk_dir)
@@ -130,6 +130,7 @@ class APKMaker:
         self.min_sdk_version = config.android.minapi
         self.context = context
         self.arch = arch
+        self.platform = platform
 
     def _numver(self, args):
         version_code = 0
@@ -194,8 +195,6 @@ class APKMaker:
                 sticky = 'sticky' in options,
                 service_id = 1 + sid,
             )
-        ignored = {".DS_Store", ".ds_store"}
-        build_tools_version = max((x.name for x in (self.sdk_dir / 'build-tools').iterdir() if x.name not in ignored), key = LooseVersion)
         url_scheme = 'kivy'
         render_args = {
             "args": args,
@@ -217,7 +216,7 @@ class APKMaker:
             aars = [],
             jars = [],
             android_api = self.android_api,
-            build_tools_version = build_tools_version,
+            build_tools_version = self.platform.build_tools_version(),
         )
         render_args = {"args": args, "private_version": str(time.time())} # XXX: Must we use time?
         if bootstrapname == "sdl2":

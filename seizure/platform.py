@@ -41,6 +41,7 @@
 from .config import Config
 from .mirror import Mirror
 from diapyr import types
+from distutils.version import LooseVersion
 from lagoon import unzip, yes
 from lagoon.program import Program
 from pathlib import Path
@@ -114,6 +115,10 @@ class Platform:
         self._install_android_ndk()
         if not self.skip_upd:
             self._install_android_packages()
+
+    def build_tools_version(self):
+        ignored = {'.DS_Store', '.ds_store'}
+        return max((p.name for p in (self.sdk_dir / 'build-tools').iterdir() if p.name not in ignored), key = LooseVersion)
 
     def apilevels(self):
         avdmanagerpath = self.sdk_dir / 'tools' / 'bin' / 'avdmanager'
