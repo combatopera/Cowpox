@@ -40,6 +40,7 @@
 
 from lagoon import which
 from multiprocessing import cpu_count
+from pathlib import Path
 import os
 
 class Arch:
@@ -67,6 +68,7 @@ class Arch:
 
     def __init__(self, config, ctx):
         self.ndk_api = config.android.ndk_api
+        self.ndk_dir = Path(config.android_ndk_dir)
         self.ctx = ctx
 
     def __str__(self): # TODO: Retire.
@@ -76,7 +78,7 @@ class Arch:
         return f"{self.command_prefix}{self.ndk_api}"
 
     def _clang_path(self):
-        llvm_dir, = (self.ctx.ndk_dir / 'toolchains').glob('llvm*')
+        llvm_dir, = (self.ndk_dir / 'toolchains').glob('llvm*')
         return llvm_dir / 'prebuilt' / self.build_platform / 'bin'
 
     def get_clang_exe(self, with_target = False, plus_plus = False):
