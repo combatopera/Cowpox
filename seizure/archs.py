@@ -128,6 +128,7 @@ class ArchARM(BaseArchARM):
 
     name = "armeabi"
     arch_cflags = []
+    numver = 1
 
 class ArchARMv7_a(BaseArchARM):
 
@@ -139,6 +140,7 @@ class ArchARMv7_a(BaseArchARM):
         '-mthumb',
         '-fPIC',
     ]
+    numver = 7
 
 class Archx86(Arch):
 
@@ -153,6 +155,7 @@ class Archx86(Arch):
         '-mfpmath=sse',
         '-m32',
     ]
+    numver = 6
 
 class Archx86_64(Arch):
 
@@ -168,6 +171,7 @@ class Archx86_64(Arch):
         '-mtune=intel',
         '-fPIC',
     ]
+    numver = 9
 
 class ArchAarch_64(Arch):
 
@@ -178,5 +182,6 @@ class ArchAarch_64(Arch):
     arch_cflags = [
         '-march=armv8-a',
     ]
+    numver = 8
 
 all_archs = {a.name: a for a in [ArchARM, ArchARMv7_a, Archx86, Archx86_64, ArchAarch_64]}

@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .archs import all_archs
 from .config import Config
 from diapyr import types
 from distutils.version import LooseVersion
@@ -179,8 +180,7 @@ class APKMaker:
             for i in args.version.split('.'):
                 version_code *= 100
                 version_code += int(i)
-            lookup = {'x86_64': 9, 'arm64-v8a': 8, 'armeabi-v7a': 7, 'x86': 6}
-            return f"{lookup.get(distinfo.forkey('archs')[0], 1)}{args.min_sdk_version}{version_code}"
+            return f"{all_archs[distinfo.forkey('archs')[0]].numver}{args.min_sdk_version}{version_code}"
         args.numeric_version = numver() # TODO: Do not abuse args for this.
         if args.intent_filters:
             args.intent_filters = args.intent_filters.read_text()
