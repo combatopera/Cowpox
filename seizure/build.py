@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .archs import Arch
 from .config import Config
 from .context import Context
 from diapyr import types
@@ -122,20 +123,21 @@ def _make_tar(tfn, source_dirs, blacklist, hostpython):
 
 class APKMaker:
 
-    @types(Config, Context)
-    def __init__(self, config, context):
+    @types(Config, Context, Arch)
+    def __init__(self, config, context, arch):
         self.app_dir = Path(config.app_dir)
         self.ndk_api = config.android.ndk_api
         self.sdk_dir = Path(config.android_sdk_dir)
         self.android_api = config.android.api
         self.context = context
+        self.arch = arch
 
     def _numver(self, args):
         version_code = 0
         for i in args.version.split('.'):
             version_code *= 100
             version_code += int(i)
-        return f"{self.context.arch.numver}{args.min_sdk_version}{version_code}"
+        return f"{self.arch.numver}{args.min_sdk_version}{version_code}"
 
     def makeapkversion(self, args, dist):
         distdir = dist.dist_dir
