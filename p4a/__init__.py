@@ -210,7 +210,7 @@ class Recipe(metaclass = RecipeMeta):
         return [recipe for recipe in recipes if recipe in self.opt_depends]
 
     def get_build_container_dir(self, arch):
-        return self.ctx.buildsdir / 'other_builds' / self.get_dir_name() / f"{arch.name}__ndk_target_{self.ctx.ndk_api}"
+        return self.ctx.other_builds / self.get_dir_name() / f"{arch.name}__ndk_target_{self.ctx.ndk_api}"
 
     def get_dir_name(self):
         choices = self.check_recipe_choices()

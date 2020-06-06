@@ -326,7 +326,7 @@ class HostPythonRecipe(Recipe):
     def get_build_container_dir(self, arch):
         choices = self.check_recipe_choices()
         dir_name = '-'.join([self.name] + choices)
-        return self.ctx.buildsdir / 'other_builds' / dir_name / 'desktop'
+        return self.ctx.other_builds / dir_name / 'desktop'
 
     def get_build_dir(self, arch):
         return self.get_build_container_dir(None) / self.name
