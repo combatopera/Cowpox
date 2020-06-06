@@ -226,12 +226,6 @@ class APKMaker:
             res_dir / 'values' / 'strings.xml',
             **render_args,
         )
-        if (distdir / "templates" / "custom_rules.tmpl.xml").exists():
-            render(
-                'custom_rules.tmpl.xml',
-                distdir / 'custom_rules.xml',
-                args = args,
-            )
         if bootstrapname == "webview":
             render(
                 'WebViewLoader.tmpl.java',
