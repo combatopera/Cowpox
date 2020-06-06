@@ -138,7 +138,7 @@ class Context:
 
     @types(Config, Mirror, Platform)
     def __init__(self, config, mirror, platform):
-        self.arch, = [arch(self) for arch in all_archs if arch.arch == config.android.arch]
+        self.arch = all_archs[config.android.arch](self)
         self.ndk_api = config.android.ndk_api
         self.android_api = config.android.api
         self.sdk_dir = Path(config.android_sdk_dir)

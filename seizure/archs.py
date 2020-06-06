@@ -213,4 +213,4 @@ class ArchAarch_64(Arch):
         '-march=armv8-a',
     ]
 
-all_archs = ArchARM, ArchARMv7_a, Archx86, Archx86_64, ArchAarch_64
+all_archs = {a.arch: a for a in [ArchARM, ArchARMv7_a, Archx86, Archx86_64, ArchAarch_64]}
