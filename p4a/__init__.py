@@ -457,12 +457,8 @@ class Recipe(metaclass = RecipeMeta):
         self._unpack(arch)
 
     def _install_libs(self, arch, libs):
-        libs_dir = self.ctx.get_libs_dir(arch)
-        if not libs:
-            log.warning('_install_libs called with no libraries to install!')
-            return
-        args = libs + (libs_dir,)
-        cp.print(*args)
+        if libs:
+            cp.print(*libs, self.ctx.get_libs_dir(arch))
 
     def has_libs(self, arch, *libs):
         return all(map(lambda l: self.ctx.has_lib(arch, l), libs))
