@@ -43,14 +43,14 @@ from .config import Config
 from .context import Context
 from .platform import Platform
 from aridimpl.model import Function, Text
-from aridity import Context, Repl
+from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
 from lagoon import patch
 from lagoon.program import Program
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import jinja2, logging, os, shutil, subprocess, tarfile, time
+import aridity, jinja2, logging, os, shutil, subprocess, tarfile, time
 
 log = logging.getLogger(__name__)
 
@@ -226,7 +226,7 @@ class APKMaker:
             android_api = self.android_api,
             build_tools_version = self.platform.build_tools_version(),
         )
-        c = Context()
+        c = aridity.Context()
         c['"',] = Function(_xmlquote)
         with Repl(c) as repl:
             repl.printf("app_name = %s", self.title)
