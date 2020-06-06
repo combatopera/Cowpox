@@ -66,7 +66,7 @@ class Distribution:
     def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api):
         possible_dists = cls._get_distributions(ctx)
         if name is not None and name:
-            possible_dists = [d for d in possible_dists if (d.name == name) and (arch_name in d.archs)]
+            possible_dists = [d for d in possible_dists if d.name == name and arch_name == d.archname]
         _possible_dists = []
         for dist in possible_dists:
             if (
@@ -82,14 +82,14 @@ class Distribution:
         if possible_dists:
             log.info('Of the existing distributions, the following meet the given requirements:')
             for dist in possible_dists:
-                log.info("\t%s: min API %s, includes recipes (%s), built for archs (%s)", dist.name, 'unknown' if dist.ndk_api is None else dist.ndk_api, ', '.join(dist.recipes), ', '.join(dist.archs) if dist.archs else 'UNKNOWN')
+                log.info("\t%s: min API %s, includes recipes (%s), built for arch (%s)", dist.name, 'unknown' if dist.ndk_api is None else dist.ndk_api, ', '.join(dist.recipes), dist.archname)
         else:
             log.info('No existing dists meet the given requirements!')
         # If any dist has perfect recipes, arch and NDK API, return it
         for dist in possible_dists:
             if ndk_api is not None and dist.ndk_api != ndk_api:
                 continue
-            if arch_name not in dist.archs:
+            if arch_name != dist.archname:
                 continue
             if set(recipes).issubset(set(dist.recipes)):
                 log.info("%s has compatible recipes, using this one", dist.name)
@@ -107,7 +107,7 @@ class Distribution:
         dist.dist_dir = ctx.distsdir / f"{name}__{arch_name}"
         dist.recipes = recipes
         dist.ndk_api = ctx.ndk_api
-        dist.archs = [arch_name]
+        dist.archname = arch_name
         return dist
 
     def deleteifexists(self):
@@ -126,8 +126,8 @@ class Distribution:
                 dist.dist_dir = folder
                 dist.needs_build = False
                 dist.recipes = dist_info['recipes']
-                if 'archs' in dist_info:
-                    dist.archs = dist_info['archs']
+                if 'archname' in dist_info:
+                    dist.archname = dist_info['archname']
                 if 'ndk_api' in dist_info:
                     dist.ndk_api = dist_info['ndk_api']
                 else:
@@ -141,7 +141,7 @@ class Distribution:
         with (self.dist_dir / 'dist_info.json').open('w') as f:
             json.dump(dict(
                 dist_name = self.name,
-                archs = [self.ctx.arch.name],
+                archname = self.ctx.arch.name,
                 ndk_api = self.ctx.ndk_api,
                 recipes = self.ctx.recipe_build_order + self.ctx.python_modules,
             ), f)
