@@ -343,9 +343,9 @@ class Recipe(metaclass = RecipeMeta):
             log.info("%s download already cached, skipping", self.name)
 
     def _unpack(self, arch):
-        log.info("Unpacking %s for %s", self.name, arch)
-        build_dir = self.get_build_container_dir(arch)
-        directory_name = self.get_build_dir(arch)
+        log.info("Unpacking %s for %s", self.name, arch.name)
+        build_dir = self.get_build_container_dir(arch.name)
+        directory_name = self.get_build_dir(arch.name)
         user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
         if user_dir is not None:
             log.info("P4A_%s_DIR exists, symlinking instead", self.name.lower())
@@ -479,7 +479,7 @@ class Recipe(metaclass = RecipeMeta):
 
     def prepare_build_dir(self, arch):
         self.get_build_container_dir(arch.name).mkdirp()
-        self._unpack(arch.name)
+        self._unpack(arch)
 
     def install_libs(self, arch, *libs):
         libs_dir = self.ctx.get_libs_dir(arch.name)
