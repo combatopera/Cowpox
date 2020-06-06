@@ -112,8 +112,7 @@ class Arch:
         env['TOOLCHAIN_PREFIX'] = ctx.toolchain_prefix
         env['TOOLCHAIN_VERSION'] = ctx.toolchain_version
         env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
-        hostpython_recipe = ctx.get_recipe(f"host{ctx.python_recipe.name}")
-        env['BUILDLIB_PATH'] = hostpython_recipe.get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}"
+        env['BUILDLIB_PATH'] = ctx.get_recipe(f"host{ctx.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}"
         env['PATH'] = f"{self._clang_path()}{os.pathsep}{os.environ['PATH']}"
         return env
 
