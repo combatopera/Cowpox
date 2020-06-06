@@ -140,7 +140,7 @@ class APKMaker:
         distdir = dist.dist_dir
         render = Render(distdir)
         distinfo = DistInfo(distdir)
-        bootstrapname = distinfo.forkey('bootstrap')
+        bootstrapname = dist.ctx.bootstrap.name
         blacklist = Blacklist(bootstrapname)
         if self.ndk_api != args.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, args.min_sdk_version)
