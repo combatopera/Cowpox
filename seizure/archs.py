@@ -81,9 +81,7 @@ class Arch:
             for d in self.ctx.include_dirs]
 
     def target(self):
-        return '{triplet}{ndk_api}'.format(
-            triplet=self.command_prefix, ndk_api=self.ndk_api
-        )
+        return f"{self.command_prefix}{self.ndk_api}"
 
     @property
     def clang_path(self):
