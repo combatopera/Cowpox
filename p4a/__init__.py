@@ -150,7 +150,7 @@ class Recipe(metaclass = RecipeMeta):
 
     def install_stl_lib(self, arch):
         if not self.ctx.has_lib(arch, f"lib{self.stl_lib_name}.so"):
-            self._install_libs(arch, self.get_stl_library(arch))
+            self._install_libs(arch, [self.get_stl_library(arch)])
 
     @property
     def version(self):
@@ -438,7 +438,7 @@ class Recipe(metaclass = RecipeMeta):
     def install_libraries(self, arch):
         if self.builtlibpaths:
             shared_libs = [lib for lib in self._get_libraries(arch) if str(lib).endswith(".so")]
-            self._install_libs(arch, *shared_libs)
+            self._install_libs(arch, shared_libs)
 
     def postbuild_arch(self, arch):
         '''Run any post-build tasks for the Recipe. By default, this checks if
@@ -456,7 +456,7 @@ class Recipe(metaclass = RecipeMeta):
         self.get_build_container_dir(arch).mkdirp()
         self._unpack(arch)
 
-    def _install_libs(self, arch, *libs):
+    def _install_libs(self, arch, libs):
         libs_dir = self.ctx.get_libs_dir(arch)
         if not libs:
             log.warning('_install_libs called with no libraries to install!')
