@@ -55,9 +55,7 @@ class ServiceOnlyBootstrap(Bootstrap):
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
         (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.ctx.sdk_dir}")
-        arch = self.ctx.archs[0]
-        if len(self.ctx.archs) > 1:
-            raise ValueError('built for more than one arch, but bootstrap cannot handle that yet')
+        arch = self.ctx.arch
         log.info("Bootstrap running with arch %s", arch)
         log.info('Copying python distribution')
         self.distribute_libs(arch, self.ctx.get_libs_dir(arch.arch))

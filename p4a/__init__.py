@@ -248,12 +248,9 @@ class Recipe(metaclass = RecipeMeta):
 
     @property
     def _filtered_archs(self):
-        '''Return archs of self.ctx that are valid build archs
-        for the Recipe.'''
         result = []
-        for arch in self.ctx.archs:
-            if not self.archs or (arch.arch in self.archs):
-                result.append(arch)
+        if not self.archs or self.ctx.arch.arch in self.archs:
+            result.append(self.ctx.arch)
         return result
 
     def check_recipe_choices(self):

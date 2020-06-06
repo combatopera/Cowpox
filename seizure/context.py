@@ -101,13 +101,18 @@ class Context:
     def get_python_install_dir(self):
         return (self.buildsdir / 'python-installs').mkdirp() / self.bootstrap.distribution.name
 
+    @property
+    def arch(self):
+        a, = self.archs
+        return a
+
     def init(self):
         log.info("Will compile for the following archs: %s", ', '.join(arch.arch for arch in self.archs))
         self.distsdir.mkdirp()
         (self.buildsdir / 'bootstrap_builds').mkdirp()
         (self.buildsdir / 'other_builds').mkdirp()
         log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
-        check_target_api(self.android_api, self.archs[0].arch)
+        check_target_api(self.android_api, self.arch.arch)
         apis = self.platform.apilevels()
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
         if self.android_api not in apis:
@@ -117,7 +122,7 @@ class Context:
         check_ndk_version(self.ndk_dir)
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
         check_ndk_api(self.ndk_api, self.android_api)
-        arch = self.archs[0]
+        arch = self.arch
         toolchain_prefix = arch.toolchain_prefix
         self.ndk_platform, ndk_platform_dir_exists = self.platform.get_ndk_platform_dir(self.ndk_api, arch)
         toolchain_versions, toolchain_path_exists = self.platform.get_toolchain_versions(arch)
@@ -253,7 +258,7 @@ class Context:
         standard_recipe = CythonRecipe(self)
         # (note: following line enables explicit -lpython... linker options)
         standard_recipe.call_hostpython_via_targetpython = False
-        recipe_env = standard_recipe.get_recipe_env(self.archs[0])
+        recipe_env = standard_recipe.get_recipe_env(self.arch)
         env = copy.copy(base_env)
         env.update(recipe_env)
         # Make sure our build package dir is available, and the virtualenv
@@ -272,4 +277,4 @@ class Context:
             log.info('Installing Python modules with pip')
             log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
             pip.install._v.__no_deps.print('--target', self.get_python_install_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env, cwd = self.buildsdir)
-        standard_recipe.strip_object_files(self.archs[0], env, self.buildsdir)
+        standard_recipe.strip_object_files(self.arch, env, self.buildsdir)

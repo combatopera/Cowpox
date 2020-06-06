@@ -52,9 +52,7 @@ class SDL2GradleBootstrap(Bootstrap):
 
     def run_distribute(self):
         log.info("Creating Android project (%s)", self.name)
-        arch = self.ctx.archs[0]
-        if len(self.ctx.archs) > 1:
-            raise ValueError("SDL2/gradle support only one arch")
+        arch = self.ctx.arch
         log.info("Copying SDL2/gradle build for %s", arch)
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
