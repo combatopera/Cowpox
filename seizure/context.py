@@ -168,7 +168,7 @@ class Context:
         return (self.libs_dir / arch).mkdirp()
 
     def has_lib(self, arch, lib):
-        return (self.get_libs_dir(arch) / lib).exists()
+        return (self.get_libs_dir(arch.name) / lib).exists()
 
     def has_package(self, name):
         # If this is a file path, it'll need special handling:

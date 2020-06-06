@@ -168,9 +168,7 @@ class Recipe(metaclass = RecipeMeta):
         )
 
     def install_stl_lib(self, arch):
-        if not self.ctx.has_lib(
-            arch.name, 'lib{name}.so'.format(name=self.stl_lib_name)
-        ):
+        if not self.ctx.has_lib(arch, f"lib{self.stl_lib_name}.so"):
             self.install_libs(arch, self.get_stl_library(arch))
 
     @property
@@ -492,7 +490,7 @@ class Recipe(metaclass = RecipeMeta):
         cp.print(*args)
 
     def has_libs(self, arch, *libs):
-        return all(map(lambda l: self.ctx.has_lib(arch.name, l), libs))
+        return all(map(lambda l: self.ctx.has_lib(arch, l), libs))
 
     def get_libraries(self, arch_name, in_context=False):
         """Return the full path of the library depending on the architecture.
