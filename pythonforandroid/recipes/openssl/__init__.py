@@ -46,7 +46,7 @@ class OpenSSLRecipe(Recipe):
     version = '1.1'
     url_version = '1.1.1f'
     url = 'https://www.openssl.org/source/openssl-{url_version}.tar.gz'
-    built_libraries = {f"libcrypto{version}.so": '.', f"libssl{version}.so": '.'}
+    builtlibpaths = [f"libcrypto{version}.so", f"libssl{version}.so"]
 
     @property
     def versioned_url(self):

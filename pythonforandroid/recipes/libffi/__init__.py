@@ -42,6 +42,7 @@ from lagoon import autoreconf, make
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from p4a import Recipe
+from pathlib import Path
 import os
 
 class LibffiRecipe(Recipe):
@@ -50,7 +51,7 @@ class LibffiRecipe(Recipe):
     version = '8fa8837'
     url = 'https://github.com/libffi/libffi/archive/{version}.tar.gz'
     patches = ['remove-version-info.patch']
-    built_libraries = {'libffi.so': '.libs'}
+    builtlibpaths = [Path('.libs', 'libffi.so')]
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
