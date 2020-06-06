@@ -116,7 +116,7 @@ class Arch:
             command_prefix=self.command_prefix,
             python_includes = self.ctx.get_python_install_dir() / 'include' / f"python{self.ctx.python_recipe.version[:3]}",
         )
-        env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=self.ctx.get_libs_dir(self.name))
+        env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=self.ctx.get_libs_dir(self))
         env['LDLIBS'] = ' '.join(self.common_ldlibs)
         env['USE_CCACHE'] = '1'
         env['NDK_CCACHE'] = self.ccachepath

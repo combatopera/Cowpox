@@ -165,10 +165,10 @@ class Context:
         self.bootstrap.prepare_dist_dir()
 
     def get_libs_dir(self, arch):
-        return (self.libs_dir / arch).mkdirp()
+        return (self.libs_dir / arch.name).mkdirp()
 
     def has_lib(self, arch, lib):
-        return (self.get_libs_dir(arch.name) / lib).exists()
+        return (self.get_libs_dir(arch) / lib).exists()
 
     def has_package(self, name):
         # If this is a file path, it'll need special handling:

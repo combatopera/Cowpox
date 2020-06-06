@@ -482,7 +482,7 @@ class Recipe(metaclass = RecipeMeta):
         self._unpack(arch)
 
     def install_libs(self, arch, *libs):
-        libs_dir = self.ctx.get_libs_dir(arch.name)
+        libs_dir = self.ctx.get_libs_dir(arch)
         if not libs:
             log.warning('install_libs called with no libraries to install!')
             return
@@ -801,7 +801,7 @@ class CythonRecipe(PythonRecipe):
 
     def get_recipe_env(self, arch):
         env = super().get_recipe_env(arch)
-        env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch.name)} -L{self.ctx.libs_dir}  -L{self.ctx.bootstrap.build_dir / 'obj' / 'local' / arch.name} "
+        env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch)} -L{self.ctx.libs_dir}  -L{self.ctx.bootstrap.build_dir / 'obj' / 'local' / arch.name} "
         env['LDSHARED'] = env['CC'] + ' -shared'
         env['LIBLINK'] = 'NOTNONE'
         env['NDKPLATFORM'] = self.ctx.ndk_platform
