@@ -72,14 +72,6 @@ class Arch:
     def __str__(self): # TODO: Retire.
         return self.name
 
-    @property
-    def include_dirs(self):
-        return [
-            "{}/{}".format(
-                self.ctx.include_dir,
-                d.format(arch=self))
-            for d in self.ctx.include_dirs]
-
     def target(self):
         return f"{self.command_prefix}{self.ndk_api}"
 
