@@ -65,7 +65,8 @@ class Arch:
     ]
     ccachepath, = which('ccache').splitlines()
 
-    def __init__(self, ctx):
+    def __init__(self, config, ctx):
+        self.ndk_api = config.android.ndk_api
         self.ctx = ctx
 
     def __str__(self): # TODO: Retire.
@@ -79,9 +80,9 @@ class Arch:
                 d.format(arch=self))
             for d in self.ctx.include_dirs]
 
-    def target(self, ndk_api):
+    def target(self):
         return '{triplet}{ndk_api}'.format(
-            triplet=self.command_prefix, ndk_api=ndk_api
+            triplet=self.command_prefix, ndk_api=self.ndk_api
         )
 
     @property
@@ -98,11 +99,11 @@ class Arch:
         return self.get_clang_exe(plus_plus=True)
 
     def get_clang_exe(self, with_target = False, plus_plus = False):
-        return self.clang_path / f"""{f"{self.target(self.ctx.ndk_api)}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
+        return self.clang_path / f"""{f"{self.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
 
     def get_env(self, ctx):
         env = {}
-        env['CFLAGS'] = ' '.join(self.common_cflags).format(target=self.target(ctx.ndk_api))
+        env['CFLAGS'] = ' '.join(self.common_cflags).format(target=self.target())
         if self.arch_cflags:
             env['CFLAGS'] += ' ' + ' '.join(self.arch_cflags)
         env['CXXFLAGS'] = env['CFLAGS']
@@ -126,7 +127,7 @@ class Arch:
         env['NM'] = f"{self.command_prefix}-nm"
         env['LD'] = f"{self.command_prefix}-ld"
         env['ARCH'] = self.name
-        env['NDK_API'] = f"android-{ctx.ndk_api}"
+        env['NDK_API'] = f"android-{self.ndk_api}"
         env['TOOLCHAIN_PREFIX'] = ctx.toolchain_prefix
         env['TOOLCHAIN_VERSION'] = ctx.toolchain_version
         env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
@@ -141,11 +142,11 @@ class BaseArchARM(Arch):
     command_prefix = 'arm-linux-androideabi'
     platform_dir = 'arch-arm'
 
-    def target(self, ndk_api):
+    def target(self):
         target_data = self.command_prefix.split('-')
         return '{triplet}{ndk_api}'.format(
             triplet='-'.join(['armv7a', target_data[1], target_data[2]]),
-            ndk_api=ndk_api,
+            ndk_api=self.ndk_api,
         )
 
 class ArchARM(BaseArchARM):
