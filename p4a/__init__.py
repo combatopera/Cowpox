@@ -111,46 +111,9 @@ class Recipe(metaclass = RecipeMeta):
 
     archs = ['armeabi']  # Not currently implemented properly
     builtlibpaths = ()
-    need_stl_shared = False
-    '''Some libraries or python packages may need to be linked with android's
-    stl. We can automatically do this for any recipe if we set this property to
-    `True`'''
-
-    stl_lib_name = 'c++_shared'
-    '''
-    The default STL shared lib to use: `c++_shared`.
-
-    .. note:: Android NDK version > 17 only supports 'c++_shared', because
-        starting from NDK r18 the `gnustl_shared` lib has been deprecated.
-    '''
-
-    stl_lib_source = '{ctx.ndk_dir}/sources/cxx-stl/llvm-libc++'
-    '''
-    The source directory of the selected stl lib, defined in property
-    `stl_lib_name`
-    '''
 
     def __init__(self, ctx):
         self.ctx = ctx
-
-    @property
-    def stl_include_dir(self):
-        return join(self.stl_lib_source.format(ctx=self.ctx), 'include')
-
-    def get_stl_lib_dir(self, arch):
-        return join(
-            self.stl_lib_source.format(ctx=self.ctx), 'libs', arch.name
-        )
-
-    def get_stl_library(self, arch):
-        return join(
-            self.get_stl_lib_dir(arch),
-            'lib{name}.so'.format(name=self.stl_lib_name),
-        )
-
-    def install_stl_lib(self, arch):
-        if not self.ctx.has_lib(arch, f"lib{self.stl_lib_name}.so"):
-            self._install_libs(arch, [self.get_stl_library(arch)])
 
     @property
     def version(self):
@@ -378,22 +341,9 @@ class Recipe(metaclass = RecipeMeta):
             log.info("%s is already unpacked, skipping", self.name)
 
     def get_recipe_env(self, arch):
-        """Return the env specialized for the recipe
-        """
         if arch is None:
             arch = self._filtered_archs[0]
-        env = arch.get_env(self.ctx)
-        if self.need_stl_shared:
-            env['CPPFLAGS'] = env.get('CPPFLAGS', '')
-            env['CPPFLAGS'] += ' -I{}'.format(self.stl_include_dir)
-
-            env['CXXFLAGS'] = env['CFLAGS'] + ' -frtti -fexceptions'
-            env['CXX'] += ' -frtti -fexceptions'
-            env['LDFLAGS'] += ' -L{}'.format(self.get_stl_lib_dir(arch))
-            env['LIBS'] = env.get('LIBS', '') + " -l{}".format(
-                self.stl_lib_name
-            )
-        return env
+        return arch.get_env(self.ctx)
 
     def prebuild_arch(self, arch):
         prebuild = f"prebuild_{arch.name.replace('-', '_')}"
@@ -436,8 +386,6 @@ class Recipe(metaclass = RecipeMeta):
         postbuild = f"postbuild_{arch.name}"
         if hasattr(self, postbuild):
             getattr(self, postbuild)()
-        if self.need_stl_shared:
-            self.install_stl_lib(arch)
 
     def prepare_build_dir(self, arch):
         self.get_build_container_dir(arch).mkdirp()
@@ -679,13 +627,8 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
 
-class CppCompiledComponentsPythonRecipe(CompiledComponentsPythonRecipe):
-    """ Extensions that require the cxx-stl """
-    call_hostpython_via_targetpython = False
-    need_stl_shared = True
-
-
 class CythonRecipe(PythonRecipe):
+
     pre_build_ext = False
     cythonize = True
     cython_args = []
