@@ -107,7 +107,7 @@ class Context:
         return a
 
     def init(self):
-        log.info("Will compile for the following archs: %s", ', '.join(arch.arch for arch in self.archs))
+        log.info("Will compile for the following arch: %s", self.arch.arch)
         self.distsdir.mkdirp()
         (self.buildsdir / 'bootstrap_builds').mkdirp()
         (self.buildsdir / 'other_builds').mkdirp()
