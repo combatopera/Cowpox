@@ -323,13 +323,13 @@ class HostPythonRecipe(Recipe):
             return False
         return True
 
-    def get_build_container_dir(self, arch=None):
+    def get_build_container_dir(self, arch):
         choices = self.check_recipe_choices()
         dir_name = '-'.join([self.name] + choices)
         return self.ctx.buildsdir / 'other_builds' / dir_name / 'desktop'
 
     def get_build_dir(self, arch = None):
-        return self.get_build_container_dir() / self.name
+        return self.get_build_container_dir(None) / self.name
 
     def get_path_to_python(self):
         return self.get_build_dir() / self.build_subdir
