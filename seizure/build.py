@@ -230,7 +230,7 @@ class APKMaker:
             repl.printf("private_version = %s", time.time()) # XXX: Must we use time?
             repl.printf("presplash_color = %s", self.presplash_color)
             repl.printf("urlScheme = %s", url_scheme)
-            repl.printf("redirect %s", res_dir / 'values' / 'strings.xml')
+            repl.printf("redirect %s", (res_dir / 'values' / 'strings.xml').pmkdirp())
             repl.printf("< %s", dist.dist_dir / 'templates' / 'strings.xml.aridt')
         if self.bootstrapname == 'webview':
             render(
