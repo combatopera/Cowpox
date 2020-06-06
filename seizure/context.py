@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .archs import Arch
+from .arch import Arch
 from .config import Config
 from .mirror import Mirror
 from .platform import Platform

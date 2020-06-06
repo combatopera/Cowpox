@@ -40,7 +40,7 @@
 
 from . import etc
 from .android import TargetAndroid
-from .archs import all_archs
+from .arch import all_archs
 from .build import APKMaker
 from .config import Config
 from .context import Context
