@@ -230,10 +230,10 @@ class Context:
         base_env = os.environ.copy()
         base_env["PYTHONPATH"] = self.get_python_install_dir() # XXX: Really?
         log.info('Upgrade pip to latest version')
-        pip = Program.text(Path('venv', 'bin', 'pip'))
-        pip.install._U.print('pip', env = base_env, cwd = self.buildsdir)
+        pip = Program.text(self.buildsdir / 'venv' / 'bin' / 'pip')
+        pip.install._U.print('pip', env = base_env)
         log.info('Install Cython in case one of the modules needs it to build')
-        pip.install.print('Cython', env = base_env, cwd = self.buildsdir)
+        pip.install.print('Cython', env = base_env)
         # Get environment variables for build (with CC/compiler set):
         standard_recipe = CythonRecipe(self)
         # (note: following line enables explicit -lpython... linker options)
