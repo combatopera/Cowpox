@@ -59,7 +59,6 @@ log = logging.getLogger(__name__)
 class Context:
 
     contribroot = Path(resource_filename('pythonforandroid', '.'))
-    distribution = None
 
     def all_bootstraps(self):
         return {path.name for path in (self.contribroot / 'bootstraps').iterdir() if path.name not in {'__pycache__', 'common'} and path.is_dir()}
