@@ -169,12 +169,12 @@ class GuestPythonRecipe(TargetPythonRecipe):
         if 'sqlite3' in self.ctx.recipe_build_order:
             log.info('Activating flags for sqlite3')
             recipe = self.get_recipe('sqlite3')
-            add_flags(f" -I{recipe.get_build_dir(arch.name)}", f" -L{recipe.get_lib_dir(arch)}", ' -lsqlite3')
+            add_flags(f" -I{recipe.get_build_dir(arch)}", f" -L{recipe.get_lib_dir(arch)}", ' -lsqlite3')
         if 'libffi' in self.ctx.recipe_build_order:
             log.info('Activating flags for libffi')
             recipe = self.get_recipe('libffi')
-            env['PKG_CONFIG_PATH'] = recipe.get_build_dir(arch.name)
-            add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs(arch))), f" -L{recipe.get_build_dir(arch.name) / '.libs'}", ' -lffi')
+            env['PKG_CONFIG_PATH'] = recipe.get_build_dir(arch)
+            add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs(arch))), f" -L{recipe.get_build_dir(arch) / '.libs'}", ' -lffi')
         if 'openssl' in self.ctx.recipe_build_order:
             log.info('Activating flags for openssl')
             recipe = self.get_recipe('openssl')
@@ -209,7 +209,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
 
     def build_arch(self, arch):
         assert self.ctx.ndk_api >= self.MIN_NDK_API
-        recipe_build_dir = self.get_build_dir(arch.name)
+        recipe_build_dir = self.get_build_dir(arch)
         build_dir = (recipe_build_dir / 'android-build').mkdirp()
         sys_prefix = '/usr/local'
         sys_exec_prefix = '/usr/local'
@@ -223,10 +223,10 @@ class GuestPythonRecipe(TargetPythonRecipe):
         cp.print(build_dir / 'pyconfig.h', recipe_build_dir / 'Include')
 
     def include_root(self, arch):
-        return self.get_build_dir(arch.name) / 'Include'
+        return self.get_build_dir(arch) / 'Include'
 
     def link_root(self, arch):
-        return self.get_build_dir(arch.name) / 'android-build'
+        return self.get_build_dir(arch) / 'android-build'
 
     def _compile_python_files(self, cwd, dir):
         args = ['-b'] if self.ctx.python_recipe.name == 'python3' else []
@@ -234,9 +234,9 @@ class GuestPythonRecipe(TargetPythonRecipe):
 
     def create_python_bundle(self, dirn, arch):
         dirn = (dirn / '_python_bundle' / '_python_bundle').mkdirp()
-        modules_build_dir = self.get_build_dir(arch.name) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.major_minor_version_string}"
+        modules_build_dir = self.get_build_dir(arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.major_minor_version_string}"
         self._compile_python_files(dirn, modules_build_dir)
-        self._compile_python_files(dirn, self.get_build_dir(arch.name) / 'Lib')
+        self._compile_python_files(dirn, self.get_build_dir(arch) / 'Lib')
         self._compile_python_files(dirn, self.ctx.get_python_install_dir())
         modules_dir = (dirn / 'modules').mkdirp()
         c_ext = self.compiled_extension
@@ -246,7 +246,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
             log.info(" - copy %s", filen)
             copy2(filen, modules_dir)
         stdlib_zip = dirn / 'stdlib.zip'
-        libdir = self.get_build_dir(arch.name) / 'Lib'
+        libdir = self.get_build_dir(arch) / 'Lib'
         stdlib_filens = list(_walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(stdlib_zip, *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
@@ -260,7 +260,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         python_lib_name = f"libpython{self.major_minor_version_string}"
         if self.major_minor_version_string[0] == '3':
             python_lib_name += 'm'
-        cp.print(self.get_build_dir(arch.name) / 'android-build' / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.name)
+        cp.print(self.get_build_dir(arch) / 'android-build' / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.name)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(dirn / 'site-packages')
         return dirn / 'site-packages'
@@ -335,7 +335,7 @@ class HostPythonRecipe(Recipe):
         return self.get_build_dir(None) / self.build_subdir
 
     def build_arch(self, arch):
-        recipe_build_dir = self.get_build_dir(arch.name)
+        recipe_build_dir = self.get_build_dir(arch)
         build_dir = (recipe_build_dir / self.build_subdir).mkdirp()
         if not (build_dir / 'config.status').exists():
             Program.text(recipe_build_dir / 'configure').print(cwd = build_dir)

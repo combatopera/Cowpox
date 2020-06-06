@@ -221,7 +221,7 @@ class Recipe(metaclass = RecipeMeta):
 
     def apply_patch(self, filename, arch, build_dir = None):
         log.info("Applying patch %s", filename)
-        patchexe._t._p1.print('-d', self.get_build_dir(arch.name) if build_dir is None else build_dir, '-i', self.get_recipe_dir() / filename)
+        patchexe._t._p1.print('-d', self.get_build_dir(arch) if build_dir is None else build_dir, '-i', self.get_recipe_dir() / filename)
 
     def copy_file(self, filename, dest):
         log.info("Copy %s to %s", filename, dest)
@@ -283,7 +283,7 @@ class Recipe(metaclass = RecipeMeta):
         return dir_name
 
     def get_build_dir(self, arch):
-        return self.get_build_container_dir(arch) / self.name
+        return self.get_build_container_dir(arch.name) / self.name
 
     def get_recipe_dir(self):
         return self.ctx.contribroot / 'recipes' / self.name
@@ -345,7 +345,7 @@ class Recipe(metaclass = RecipeMeta):
     def _unpack(self, arch):
         log.info("Unpacking %s for %s", self.name, arch.name)
         build_dir = self.get_build_container_dir(arch.name)
-        directory_name = self.get_build_dir(arch.name)
+        directory_name = self.get_build_dir(arch)
         user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
         if user_dir is not None:
             log.info("P4A_%s_DIR exists, symlinking instead", self.name.lower())
@@ -425,7 +425,7 @@ class Recipe(metaclass = RecipeMeta):
             log.info("%s has no %s, skipping", self.name, prebuild)
 
     def is_patched(self, arch):
-        build_dir = self.get_build_dir(arch.name)
+        build_dir = self.get_build_dir(arch)
         return (build_dir / '.patched').exists()
 
     def apply_patches(self, arch):
@@ -434,7 +434,7 @@ class Recipe(metaclass = RecipeMeta):
             if self.is_patched(arch):
                 log.info("%s already patched, skipping", self.name)
                 return
-            build_dir = self.get_build_dir(arch.name)
+            build_dir = self.get_build_dir(arch)
             for patch in self.patches:
                 if isinstance(patch, (tuple, list)): # TODO: Yuk.
                     patch, patch_check = patch
@@ -497,9 +497,9 @@ class Recipe(metaclass = RecipeMeta):
         if not self.built_libraries:
             return recipe_libs
         for lib, rel_path in self.built_libraries.items():
-            abs_path = self.get_build_dir(arch.name) / rel_path / lib
+            abs_path = self.get_build_dir(arch) / rel_path / lib
             if rel_path in {".", "", None}:
-                abs_path = self.get_build_dir(arch.name) / lib
+                abs_path = self.get_build_dir(arch) / lib
             recipe_libs.add(abs_path)
         return recipe_libs
 
@@ -510,8 +510,8 @@ class IncludedFilesBehaviour:
 
     def prepare_build_dir(self, arch):
         self.get_build_container_dir(arch.name).mkdirp()
-        rm._rf.print(self.get_build_dir(arch.name))
-        cp._a.print(self.get_recipe_dir() / self.src_filename, self.get_build_dir(arch.name))
+        rm._rf.print(self.get_build_dir(arch))
+        cp._a.print(self.get_recipe_dir() / self.src_filename, self.get_build_dir(arch))
 
 class BootstrapNDKRecipe(Recipe):
     '''A recipe class for recipes built in an Android project jni dir with
@@ -534,7 +534,7 @@ class BootstrapNDKRecipe(Recipe):
         if self.dir_name is None:
             raise ValueError('{} recipe doesn\'t define a dir_name, but '
                              'this is necessary'.format(self.name))
-        return self.get_build_container_dir(arch) / self.dir_name
+        return self.get_build_container_dir(arch.name) / self.dir_name
 
     def get_jni_dir(self):
         return self.ctx.bootstrap.build_dir / 'jni'
@@ -561,15 +561,15 @@ class NDKRecipe(Recipe):
         return False
 
     def get_lib_dir(self, arch):
-        return self.get_build_dir(arch.name) / 'obj' / 'local' / arch.name
+        return self.get_build_dir(arch) / 'obj' / 'local' / arch.name
 
     def get_jni_dir(self, arch):
-        return self.get_build_dir(arch.name) / 'jni'
+        return self.get_build_dir(arch) / 'jni'
 
     def build_arch(self, arch, *extra_args):
         super().build_arch(arch)
         Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ctx.ndk_api}", f"APP_ABI={arch.name}", *extra_args,
-                env = self.get_recipe_env(arch), cwd = self.get_build_dir(arch.name))
+                env = self.get_recipe_env(arch), cwd = self.get_build_dir(arch))
 
 class PythonRecipe(Recipe):
     site_packages_name = None
@@ -686,7 +686,7 @@ class PythonRecipe(Recipe):
         if env is None:
             env = self.get_recipe_env(arch)
         log.info("Installing %s into site-packages", self.name)
-        builddir = self.get_build_dir(arch.name)
+        builddir = self.get_build_dir(arch)
         hostpython = Program.text(self.hostpython_location)
         hpenv = env.copy()
         hostpython.print('setup.py', 'install', '-O2', f"--root={self.ctx.get_python_install_dir()}", '--install-lib=.', *self.setup_extra_args, env = hpenv, cwd = builddir)
@@ -698,7 +698,7 @@ class PythonRecipe(Recipe):
 
     def install_hostpython_package(self, arch):
         env = self.get_hostrecipe_env(arch)
-        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', *self.setup_extra_args, env = env, cwd = self.get_build_dir(arch.name))
+        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', *self.setup_extra_args, env = env, cwd = self.get_build_dir(arch))
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
@@ -713,7 +713,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     def build_compiled_components(self, arch):
         log.info("Building compiled components in %s", self.name)
         env = self.get_recipe_env(arch)
-        builddir = self.get_build_dir(arch.name)
+        builddir = self.get_build_dir(arch)
         hostpython = Program.text(self.hostpython_location).partial(env = env, cwd = builddir)
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
@@ -727,7 +727,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def rebuild_compiled_components(self, arch, env):
         log.info("Rebuilding compiled components in %s", self.name)
-        hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir(arch.name))
+        hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir(arch))
         hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
 
@@ -754,7 +754,7 @@ class CythonRecipe(PythonRecipe):
     def build_cython_components(self, arch):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env(arch)
-        builddir = self.get_build_dir(arch.name)
+        builddir = self.get_build_dir(arch)
         hostpython = Program.text(self.ctx.hostpython).partial(env = env, cwd = builddir)
         hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
