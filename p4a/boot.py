@@ -154,44 +154,6 @@ class Bootstrap:
         self.distribution.save_info()
 
     @classmethod
-    def _get_usable_bootstraps_for_recipes(cls, recipes, ctx):
-        '''Returns all bootstrap whose recipe requirements do not conflict
-        with the given recipes, in no particular order.'''
-        log.info('Trying to find a bootstrap that matches the given recipes.')
-        bootstraps = [cls.get_bootstrap(name, ctx) for name in ctx.all_bootstraps()]
-        acceptable_bootstraps = set()
-        # Find out which bootstraps are acceptable:
-        for bs in bootstraps:
-            if not bs.can_be_chosen_automatically:
-                continue
-            possible_dependency_lists = expand_dependencies(bs.recipe_depends, ctx)
-            for possible_dependencies in possible_dependency_lists:
-                ok = True
-                # Check if the bootstap's dependencies have an internal conflict:
-                for recipe in possible_dependencies:
-                    recipe = ctx.get_recipe(recipe)
-                    if any([conflict in recipes for conflict in recipe.conflicts]):
-                        ok = False
-                        break
-                # Check if bootstrap's dependencies conflict with chosen
-                # packages:
-                for recipe in recipes:
-                    try:
-                        recipe = ctx.get_recipe(recipe)
-                    except ValueError:
-                        conflicts = []
-                    else:
-                        conflicts = recipe.conflicts
-                    if any([conflict in possible_dependencies
-                            for conflict in conflicts]):
-                        ok = False
-                        break
-                if ok and bs not in acceptable_bootstraps:
-                    acceptable_bootstraps.add(bs)
-        log.info("Found %s acceptable bootstraps: %s", len(acceptable_bootstraps), [bs.name for bs in acceptable_bootstraps])
-        return acceptable_bootstraps
-
-    @classmethod
     def get_bootstrap(cls, name, ctx):
         bootstrap = import_module(f"pythonforandroid.bootstraps.{name}").bootstrap
         bootstrap.bootstrap_dir = ctx.contribroot / 'bootstraps' / name
