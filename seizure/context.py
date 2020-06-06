@@ -64,7 +64,6 @@ class Context:
     aars_dir = None
     ndk_platform = None
     bootstrap_build_dir = None
-    recipe_build_order = None
 
     def all_bootstraps(self):
         return {path.name for path in (self.contribroot / 'bootstraps').iterdir() if path.name not in {'__pycache__', 'common'} and path.is_dir()}
