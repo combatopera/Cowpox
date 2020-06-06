@@ -181,7 +181,7 @@ class APKMaker:
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
                 tar_dirs.append(distdir / 'webview_includes')
-            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.context.hostpython)
+            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.context.hostpython) # FIXME: No hostpython on rebuild.
         res_dir = distdir / 'src' / 'main' / 'res'
         default_icon = distdir / 'templates' / 'kivy-icon.png'
         shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
