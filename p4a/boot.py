@@ -71,26 +71,6 @@ default_recipe_priorities = [
 # known graphical lib or web lib is used - in which case service_only
 # is the most reasonable guess.
 
-
-def _cmp_bootstraps_by_priority(a, b):
-    def rank_bootstrap(bootstrap):
-        """ Returns a ranking index for each bootstrap,
-            with higher priority ranked with higher number. """
-        if bootstrap.name in default_recipe_priorities:
-            return default_recipe_priorities.index(bootstrap.name) + 1
-        return 0
-
-    # Rank bootstraps in order:
-    rank_a = rank_bootstrap(a)
-    rank_b = rank_bootstrap(b)
-    if rank_a != rank_b:
-        return (rank_b - rank_a)
-    else:
-        if a.name < b.name:  # alphabetic sort for determinism
-            return -1
-        else:
-            return 1
-
 class Bootstrap:
 
     name = ''
