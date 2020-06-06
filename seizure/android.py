@@ -103,7 +103,7 @@ class TargetAndroid:
         return dist
 
     def _build_dist_from_args(self, dist):
-        bs = Bootstrap.get_bootstrap(self.bootstrapname, self.context)
+        bs = Bootstrap.get_bootstrap(self.bootstrapname, self.context, dist)
         build_order, python_modules = get_recipe_order(self.context, dist.recipes, bs.recipe_depends, ['genericndkbuild', 'python2'])
         assert not set(build_order) & set(python_modules)
         # TODO: Context should init itself.
@@ -111,7 +111,6 @@ class TargetAndroid:
         self.context.python_modules = python_modules
         log.info("The selected bootstrap is %s", bs.name)
         log.info("Creating dist with %s bootstrap", bs.name)
-        bs.distribution = dist
         log.info("Dist will have name %s and requirements (%s)", dist.name, ', '.join(dist.recipes))
         log.info("Dist contains the following requirements as recipes: %s", self.context.recipe_build_order)
         log.info("Dist will also contain modules (%s) installed from pip", ', '.join(self.context.python_modules))

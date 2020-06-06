@@ -69,7 +69,6 @@ class Bootstrap:
     jni_subdir = '/jni'
     ctx = None
     build_dir = None
-    distribution = None
     recipe_depends = [("python2", "python3"), 'android']
     can_be_chosen_automatically = True
 
@@ -126,10 +125,11 @@ class Bootstrap:
         self.distribution.save_info()
 
     @classmethod
-    def get_bootstrap(cls, name, ctx):
+    def get_bootstrap(cls, name, ctx, distribution):
         bootstrap = import_module(f"pythonforandroid.bootstraps.{name}").bootstrap
         bootstrap.bootstrap_dir = ctx.contribroot / 'bootstraps' / name
         bootstrap.ctx = ctx
+        bootstrap.distribution = distribution
         return bootstrap
 
     def distribute_libs(self, arch, src_dir):
