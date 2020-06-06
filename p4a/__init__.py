@@ -335,11 +335,7 @@ class Recipe(metaclass = RecipeMeta):
         return arch.get_env(self.ctx)
 
     def prebuild_arch(self, arch):
-        prebuild = f"prebuild_{arch.name.replace('-', '_')}"
-        if hasattr(self, prebuild):
-            getattr(self, prebuild)()
-        else:
-            log.info("%s has no %s, skipping", self.name, prebuild)
+        pass
 
     def is_patched(self, arch):
         build_dir = self.get_build_dir(arch)
@@ -372,9 +368,7 @@ class Recipe(metaclass = RecipeMeta):
         self._install_libs(arch, [p for p in self._get_libraries(arch) if p.name.endswith('.so')])
 
     def postbuild_arch(self, arch):
-        postbuild = f"postbuild_{arch.name}"
-        if hasattr(self, postbuild):
-            getattr(self, postbuild)()
+        pass
 
     def prepare_build_dir(self, arch):
         self.get_build_container_dir(arch).mkdirp()

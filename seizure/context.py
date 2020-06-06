@@ -211,12 +211,10 @@ class Context:
         for recipe in recipes:
             recipe.prepare_build_dir(self.arch)
         log.info('Prebuilding recipes')
-        # 2) prebuild packages
         for recipe in recipes:
             log.info("Prebuilding %s for %s", recipe.name, self.arch.name)
             recipe.prebuild_arch(self.arch)
             recipe.apply_patches(self.arch)
-        # 3) build packages
         log.info('Building recipes')
         for recipe in recipes:
             log.info("Building %s for %s", recipe.name, self.arch.name)
