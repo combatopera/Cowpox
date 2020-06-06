@@ -126,6 +126,7 @@ class APKMaker:
         self.app_dir = Path(config.app_dir)
         self.ndk_api = config.android.ndk_api
         self.sdk_dir = Path(config.android_sdk_dir)
+        self.android_api = config.android.api
 
     def makeapkversion(self, args, dist):
         distdir = dist.dist_dir
@@ -189,7 +190,6 @@ class APKMaker:
                 sticky = 'sticky' in options,
                 service_id = 1 + sid,
             )
-        android_api = int((distdir / 'project.properties').read_text().strip().split('-')[1])
         ignored = {".DS_Store", ".ds_store"}
         build_tools_version = max((x.name for x in (self.sdk_dir / 'build-tools').iterdir() if x.name not in ignored), key = LooseVersion)
         url_scheme = 'kivy'
@@ -198,7 +198,7 @@ class APKMaker:
             "args": args,
             "service": any((self.app_dir / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
             "service_names": service_names,
-            "android_api": android_api
+            "android_api": self.android_api,
         }
         if bootstrapname == "sdl2":
             render_args["url_scheme"] = url_scheme
@@ -213,7 +213,7 @@ class APKMaker:
             args = args,
             aars = [],
             jars = [],
-            android_api = android_api,
+            android_api = self.android_api,
             build_tools_version = build_tools_version,
         )
         render_args = {"args": args, "private_version": str(time.time())} # XXX: Must we use time?
