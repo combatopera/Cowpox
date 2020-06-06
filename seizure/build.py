@@ -197,7 +197,6 @@ class APKMaker:
         ignored = {".DS_Store", ".ds_store"}
         build_tools_version = max((x.name for x in (self.sdk_dir / 'build-tools').iterdir() if x.name not in ignored), key = LooseVersion)
         url_scheme = 'kivy'
-        manifest_path = distdir / 'src' / 'main' / 'AndroidManifest.xml'
         render_args = {
             "args": args,
             "service": any((self.app_dir / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
@@ -208,7 +207,7 @@ class APKMaker:
             render_args["url_scheme"] = url_scheme
         render(
             'AndroidManifest.tmpl.xml',
-            manifest_path,
+            dist.dist_dir / 'src' / 'main' / 'AndroidManifest.xml',
             **render_args,
         )
         render(
