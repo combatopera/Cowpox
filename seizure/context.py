@@ -101,11 +101,6 @@ class Context:
     def get_python_install_dir(self):
         return (self.buildsdir / 'python-installs').mkdirp() / self.bootstrap.distribution.name
 
-    @property
-    def arch(self):
-        a, = self.archs
-        return a
-
     def init(self):
         log.info("Will compile for the following arch: %s", self.arch.arch)
         self.distsdir.mkdirp()
@@ -143,7 +138,7 @@ class Context:
 
     @types(Config, Mirror, Platform)
     def __init__(self, config, mirror, platform):
-        self.archs = [arch(self) for arch in all_archs if arch.arch == config.android.arch]
+        self.arch, = [arch(self) for arch in all_archs if arch.arch == config.android.arch]
         self.ndk_api = config.android.ndk_api
         self.android_api = config.android.api
         self.sdk_dir = Path(config.android_sdk_dir)
