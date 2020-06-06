@@ -141,11 +141,7 @@ class BaseArchARM(Arch):
     platform_dir = 'arch-arm'
 
     def target(self):
-        target_data = self.command_prefix.split('-')
-        return '{triplet}{ndk_api}'.format(
-            triplet='-'.join(['armv7a', target_data[1], target_data[2]]),
-            ndk_api=self.ndk_api,
-        )
+        return f"armv7a-linux-androideabi{self.ndk_api}"
 
 class ArchARM(BaseArchARM):
 
