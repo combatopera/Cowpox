@@ -241,10 +241,6 @@ class APKMaker:
                 distdir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android' / 'WebViewLoader.java',
                 args = args,
             )
-        if args.sign:
-            render('build.properties', distdir / 'build.properties')
-        elif (distdir / 'build.properties').exists():
-            (distdir / 'build.properties').unlink()
         src_patches = distdir / 'src' / 'patches'
         if src_patches.exists():
             log.info("Applying Java source code patches...")
