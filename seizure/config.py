@@ -44,7 +44,6 @@ from aridity import Context, Repl
 from lagoon import git
 
 def _githash(context, pathresolvable):
-    # FIXME: Do this without copying .git into container.
     return Text(git.rev_parse.__short.HEAD(cwd = pathresolvable.resolve(context).cat()).rstrip())
 
 class Config:
