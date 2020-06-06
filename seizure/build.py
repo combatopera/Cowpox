@@ -51,15 +51,6 @@ import jinja2, json, logging, os, shutil, subprocess, tarfile, time
 
 log = logging.getLogger(__name__)
 
-class DistInfo:
-
-    def __init__(self, distdir):
-        with (distdir / 'dist_info.json').open() as f:
-            self.d = json.load(f)
-
-    def forkey(self, key):
-        return self.d[key]
-
 class Blacklist:
 
     def __init__(self, bootstrapname):
@@ -139,7 +130,6 @@ class APKMaker:
     def makeapkversion(self, args, dist):
         distdir = dist.dist_dir
         render = Render(distdir)
-        distinfo = DistInfo(distdir)
         bootstrapname = dist.ctx.bootstrap.name
         blacklist = Blacklist(bootstrapname)
         if self.ndk_api != args.min_sdk_version:
@@ -181,7 +171,7 @@ class APKMaker:
             for i in args.version.split('.'):
                 version_code *= 100
                 version_code += int(i)
-            return f"{all_archs[distinfo.forkey('archs')[0]].numver}{args.min_sdk_version}{version_code}"
+            return f"{dist.ctx.arch.numver}{args.min_sdk_version}{version_code}"
         args.numeric_version = numver() # TODO: Do not abuse args for this.
         if args.intent_filters:
             args.intent_filters = args.intent_filters.read_text()
