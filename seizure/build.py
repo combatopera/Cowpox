@@ -42,6 +42,8 @@ from .archs import Arch
 from .config import Config
 from .context import Context
 from .platform import Platform
+from aridimpl.model import Function, Text
+from aridity import Context, Repl
 from diapyr import types
 from fnmatch import fnmatch
 from lagoon import patch
@@ -119,6 +121,10 @@ def _make_tar(tfn, source_dirs, blacklist, hostpython):
                         tf.addfile(tinfo)
             tf.add(fn, afn)
 
+def _xmlquote(context, resolvable):
+    from xml.sax.saxutils import escape
+    return Text(escape(resolvable.resolve(context).cat())) # FIXME LATER: Insufficient for attributes.
+
 class APKMaker:
 
     @types(Config, Context, Arch, Platform)
@@ -128,6 +134,8 @@ class APKMaker:
         self.sdk_dir = Path(config.android_sdk_dir)
         self.android_api = config.android.api
         self.min_sdk_version = config.android.minapi
+        self.title = config.title
+        self.presplash_color = config.android.presplash_color
         self.context = context
         self.arch = arch
         self.platform = platform
@@ -218,14 +226,15 @@ class APKMaker:
             android_api = self.android_api,
             build_tools_version = self.platform.build_tools_version(),
         )
-        render_args = {"args": args, "private_version": str(time.time())} # XXX: Must we use time?
-        if bootstrapname == "sdl2":
-            render_args["url_scheme"] = url_scheme
-        render(
-            'strings.tmpl.xml',
-            res_dir / 'values' / 'strings.xml',
-            **render_args,
-        )
+        c = Context()
+        c['"',] = Function(_xmlquote)
+        with Repl(c) as repl:
+            repl.printf("app_name = %s", self.title)
+            repl.printf("private_version = %s", time.time()) # XXX: Must we use time?
+            repl.printf("presplash_color = %s", self.presplash_color)
+            repl.printf("urlScheme = %s", url_scheme)
+            repl.printf("redirect %s", res_dir / 'values' / 'strings.xml')
+            repl.printf("< %s", dist.dist_dir / 'templates' / 'strings.xml.aridt')
         if bootstrapname == "webview":
             render(
                 'WebViewLoader.tmpl.java',
