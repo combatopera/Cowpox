@@ -396,10 +396,7 @@ class Recipe(metaclass = RecipeMeta):
         return env
 
     def prebuild_arch(self, arch):
-        '''Run any pre-build tasks for the Recipe. By default, this checks if
-        any prebuild_archname methods exist for the archname of the current
-        architecture, and runs them if so.'''
-        prebuild = "prebuild_{}".format(arch.name.replace('-', '_'))
+        prebuild = f"prebuild_{arch.name.replace('-', '_')}"
         if hasattr(self, prebuild):
             getattr(self, prebuild)()
         else:
@@ -428,10 +425,7 @@ class Recipe(metaclass = RecipeMeta):
         return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries(arch)) # XXX: Weird logic?
 
     def build_arch(self, arch):
-        '''Run any build tasks for the Recipe. By default, this checks if
-        any build_archname methods exist for the archname of the current
-        architecture, and runs them if so.'''
-        build = "build_{}".format(arch.name)
+        build = f"build_{arch.name}"
         if hasattr(self, build):
             getattr(self, build)()
 
@@ -439,14 +433,9 @@ class Recipe(metaclass = RecipeMeta):
         self._install_libs(arch, [p for p in self._get_libraries(arch) if p.name.endswith('.so')])
 
     def postbuild_arch(self, arch):
-        '''Run any post-build tasks for the Recipe. By default, this checks if
-        any postbuild_archname methods exist for the archname of the
-        current architecture, and runs them if so.
-        '''
-        postbuild = "postbuild_{}".format(arch.name)
+        postbuild = f"postbuild_{arch.name}"
         if hasattr(self, postbuild):
             getattr(self, postbuild)()
-
         if self.need_stl_shared:
             self.install_stl_lib(arch)
 
@@ -636,8 +625,6 @@ class PythonRecipe(Recipe):
         return True
 
     def build_arch(self, arch):
-        '''Install the Python module by calling setup.py install with
-        the target Python dir.'''
         super().build_arch(arch)
         self.install_python_package(arch)
 
@@ -705,14 +692,11 @@ class CythonRecipe(PythonRecipe):
     call_hostpython_via_targetpython = False
 
     def build_arch(self, arch):
-        '''Build any cython components, then install the Python module by
-        calling setup.py install with the target Python dir.
-        '''
         Recipe.build_arch(self, arch)
-        self.build_cython_components(arch)
+        self._build_cython_components(arch)
         self.install_python_package(arch)
 
-    def build_cython_components(self, arch):
+    def _build_cython_components(self, arch):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env(arch)
         builddir = self.get_build_dir(arch)
