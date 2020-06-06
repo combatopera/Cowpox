@@ -70,7 +70,6 @@ class Bootstrap:
     ctx = None
     build_dir = None
     recipe_depends = [("python2", "python3"), 'android']
-    can_be_chosen_automatically = True
 
     @property
     def dist_dir(self):
