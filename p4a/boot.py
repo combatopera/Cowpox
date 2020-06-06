@@ -43,7 +43,7 @@ from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import functools, logging, os, shlex, shutil, subprocess
+import logging, os, shlex, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -190,38 +190,6 @@ class Bootstrap:
                     acceptable_bootstraps.add(bs)
         log.info("Found %s acceptable bootstraps: %s", len(acceptable_bootstraps), [bs.name for bs in acceptable_bootstraps])
         return acceptable_bootstraps
-
-    @classmethod
-    def get_bootstrap_from_recipes(cls, recipes, ctx):
-        known_web_packages = {'flask'}  # to pick webview over service_only
-        recipes_with_deps_lists = expand_dependencies(recipes, ctx)
-        acceptable_bootstraps = cls._get_usable_bootstraps_for_recipes(recipes, ctx)
-        def have_dependency_in_recipes(dep):
-            for dep_list in recipes_with_deps_lists:
-                if dep in dep_list:
-                    return True
-            return False
-        # Special rule: return SDL2 bootstrap if there's an sdl2 dep:
-        if (have_dependency_in_recipes("sdl2") and
-                "sdl2" in [b.name for b in acceptable_bootstraps]
-                ):
-            log.info('Using sdl2 bootstrap since it is in dependencies')
-            return cls.get_bootstrap("sdl2", ctx)
-        # Special rule: return "webview" if we depend on common web recipe:
-        for possible_web_dep in known_web_packages:
-            if have_dependency_in_recipes(possible_web_dep):
-                # We have a web package dep!
-                if "webview" in [b.name for b in acceptable_bootstraps]:
-                    log.info("Using webview bootstrap since common web packages were found %s", known_web_packages.intersection(recipes))
-                    return cls.get_bootstrap("webview", ctx)
-        prioritized_acceptable_bootstraps = sorted(
-            list(acceptable_bootstraps),
-            key=functools.cmp_to_key(_cmp_bootstraps_by_priority)
-        )
-        if prioritized_acceptable_bootstraps:
-            log.info("Using the highest ranked/first of these: %s", prioritized_acceptable_bootstraps[0].name)
-            return prioritized_acceptable_bootstraps[0]
-        return None
 
     @classmethod
     def get_bootstrap(cls, name, ctx):
