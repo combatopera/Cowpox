@@ -60,10 +60,9 @@ class Arch:
     ]
     ccachepath, = which('ccache').splitlines()
 
-    def __init__(self, config, ctx):
+    def __init__(self, config):
         self.ndk_api = config.android.ndk_api
         self.ndk_dir = Path(config.android_ndk_dir)
-        self.ctx = ctx
 
     def __str__(self): # TODO: Retire.
         return self.name
