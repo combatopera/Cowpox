@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from .config import Config
+from .context import Context
 from diapyr import types
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
@@ -121,25 +122,25 @@ def _make_tar(tfn, source_dirs, blacklist, hostpython):
 
 class APKMaker:
 
-    @types(Config)
-    def __init__(self, config):
+    @types(Config, Context)
+    def __init__(self, config, context):
         self.app_dir = Path(config.app_dir)
         self.ndk_api = config.android.ndk_api
         self.sdk_dir = Path(config.android_sdk_dir)
         self.android_api = config.android.api
+        self.context = context
 
-    @staticmethod
-    def _numver(args, dist):
+    def _numver(self, args):
         version_code = 0
         for i in args.version.split('.'):
             version_code *= 100
             version_code += int(i)
-        return f"{dist.ctx.arch.numver}{args.min_sdk_version}{version_code}"
+        return f"{self.context.arch.numver}{args.min_sdk_version}{version_code}"
 
     def makeapkversion(self, args, dist):
         distdir = dist.dist_dir
         render = Render(distdir)
-        bootstrapname = dist.ctx.bootstrap.name
+        bootstrapname = self.context.bootstrap.name
         blacklist = Blacklist(bootstrapname)
         if self.ndk_api != args.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, args.min_sdk_version)
@@ -168,14 +169,14 @@ class APKMaker:
                     tar_dirs.append(python_bundle_dir)
             if bootstrapname == "webview":
                 tar_dirs.append(distdir / 'webview_includes')
-            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, dist.ctx.hostpython)
+            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.context.hostpython)
         res_dir = distdir / 'src' / 'main' / 'res'
         default_icon = distdir / 'templates' / 'kivy-icon.png'
         shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
         if bootstrapname != "service_only":
             default_presplash = distdir / 'templates' / 'kivy-presplash.jpg'
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
-        args.numeric_version = self._numver(args, dist) # TODO: Do not abuse args for this.
+        args.numeric_version = self._numver(args) # TODO: Do not abuse args for this.
         if args.intent_filters:
             args.intent_filters = args.intent_filters.read_text()
         service_names = []
