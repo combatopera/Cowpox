@@ -89,10 +89,6 @@ class Arch:
         return llvm_dir / 'prebuilt' / self.build_platform / 'bin'
 
     @property
-    def clang_exe(self):
-        return self.get_clang_exe()
-
-    @property
     def clang_exe_cxx(self):
         return self.get_clang_exe(plus_plus=True)
 
@@ -115,7 +111,7 @@ class Arch:
         env['USE_CCACHE'] = '1'
         env['NDK_CCACHE'] = self.ccachepath
         env.update({k: v for k, v in os.environ.items() if k.startswith('CCACHE_')})
-        env['CC'] = f"{self.ccachepath} {self.clang_exe} {env['CFLAGS']}"
+        env['CC'] = f"{self.ccachepath} {self.get_clang_exe()} {env['CFLAGS']}"
         env['CXX'] = f"{self.ccachepath} {self.clang_exe_cxx} {env['CXXFLAGS']}"
         env['AR'] = f"{self.command_prefix}-ar"
         env['RANLIB'] = f"{self.command_prefix}-ranlib"
