@@ -129,6 +129,7 @@ class APKMaker:
         self.ndk_api = config.android.ndk_api
         self.sdk_dir = Path(config.android_sdk_dir)
         self.android_api = config.android.api
+        self.min_sdk_version = config.android.minapi
         self.context = context
         self.arch = arch
 
@@ -137,15 +138,15 @@ class APKMaker:
         for i in args.version.split('.'):
             version_code *= 100
             version_code += int(i)
-        return f"{self.arch.numver}{args.min_sdk_version}{version_code}"
+        return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
     def makeapkversion(self, args, dist):
         distdir = dist.dist_dir
         render = Render(distdir)
         bootstrapname = self.context.bootstrap.name
         blacklist = Blacklist(bootstrapname)
-        if self.ndk_api != args.min_sdk_version:
-            log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, args.min_sdk_version)
+        if self.ndk_api != self.min_sdk_version:
+            log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
         with (distdir / 'blacklist.txt').open() as f:
             blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
@@ -164,7 +165,7 @@ class APKMaker:
                 if bootstrapname != 'service_only':
                     print(f"P4A_IS_WINDOWED={args.window}", file = f)
                     print(f"P4A_ORIENTATION={args.orientation}", file = f)
-                print(f"P4A_MINSDK={args.min_sdk_version}", file = f)
+                print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
             tar_dirs = [env_vars_tarpath, self.app_dir]
             for python_bundle_dir in (distdir / n for n in ['private', '_python_bundle']):
                 if python_bundle_dir.exists():
