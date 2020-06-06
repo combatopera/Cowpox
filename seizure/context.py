@@ -249,11 +249,9 @@ class Context:
             log.info('There are no Python modules to install, skipping')
         else:
             log.info('Creating a requirements.txt file for the Python modules')
-            with (self.buildsdir / 'requirements.txt').open('w') as fileh:
+            with (self.buildsdir / 'requirements.txt').open('w') as f:
                 for module in modules:
-                    key = f"VERSION_{module}" # TODO: Retire this.
-                    line = f"{module}=={os.environ[key]}" if key in os.environ else module
-                    print(line, file = fileh)
+                    print(module, file = f) # TODO: Versioning.
             log.info('Installing Python modules with pip')
             log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
             pip.install._v.__no_deps.print('--target', self.get_python_install_dir(), '-r', 'requirements.txt', '-f', '/wheels', env = env, cwd = self.buildsdir)

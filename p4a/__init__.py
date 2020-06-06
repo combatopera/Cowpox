@@ -115,8 +115,7 @@ class Recipe(metaclass = RecipeMeta):
 
     @property
     def version(self):
-        key = 'VERSION_' + self.name
-        return os.environ.get(key, self._version)
+        return self._version
 
     @property
     def url(self):
