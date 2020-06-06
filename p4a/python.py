@@ -147,7 +147,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
     def get_recipe_env(self, arch):
         env = os.environ.copy()
         env['HOSTARCH'] = arch.command_prefix
-        env['CC'] = arch.get_clang_exe(with_target=True)
+        env['CC'] = arch.get_clang_exe(with_target = True)
         prebuilt = self.ctx.ndk_dir / 'toolchains' / f"{self.ctx.toolchain_prefix}-{self.ctx.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin'
         env['PATH'] = os.pathsep.join([f"""{self.get_recipe(f"host{self.name}").get_path_to_python()}""", str(prebuilt), env['PATH']])
         env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ctx.ndk_api}"
