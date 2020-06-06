@@ -444,7 +444,7 @@ class Recipe(metaclass = RecipeMeta):
             touch.print(build_dir / '.patched')
 
     def should_build(self, arch):
-        return not all(lib.exists() for lib in self.get_libraries(arch.name)) if self.built_libraries else True
+        return not all(lib.exists() for lib in self._get_libraries(arch)) if self.built_libraries else True
 
     def build_arch(self, arch):
         '''Run any build tasks for the Recipe. By default, this checks if
@@ -462,7 +462,7 @@ class Recipe(metaclass = RecipeMeta):
         '''
         if not self.built_libraries:
             return
-        shared_libs = [lib for lib in self.get_libraries(arch.name) if str(lib).endswith(".so")]
+        shared_libs = [lib for lib in self._get_libraries(arch) if str(lib).endswith(".so")]
         self.install_libs(arch, *shared_libs)
 
     def postbuild_arch(self, arch):
@@ -492,24 +492,14 @@ class Recipe(metaclass = RecipeMeta):
     def has_libs(self, arch, *libs):
         return all(map(lambda l: self.ctx.has_lib(arch, l), libs))
 
-    def get_libraries(self, arch_name, in_context=False):
-        """Return the full path of the library depending on the architecture.
-        Per default, the build library path it will be returned, unless
-        `get_libraries` has been called with kwarg `in_context` set to
-        True.
-
-        .. note:: this method should be used for library recipes only
-        """
+    def _get_libraries(self, arch):
         recipe_libs = set()
         if not self.built_libraries:
             return recipe_libs
         for lib, rel_path in self.built_libraries.items():
-            if not in_context:
-                abs_path = self.get_build_dir(arch_name) / rel_path / lib
-                if rel_path in {".", "", None}:
-                    abs_path = self.get_build_dir(arch_name) / lib
-            else:
-                abs_path = self.ctx.get_libs_dir(arch_name) / lib
+            abs_path = self.get_build_dir(arch.name) / rel_path / lib
+            if rel_path in {".", "", None}:
+                abs_path = self.get_build_dir(arch.name) / lib
             recipe_libs.add(abs_path)
         return recipe_libs
 
