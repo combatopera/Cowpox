@@ -50,12 +50,6 @@ class Arch:
         '-target {target}',
         '-fomit-frame-pointer',
     ]
-    common_cppflags = [
-        '-DANDROID',
-        '-D__ANDROID_API__={ctx.ndk_api}',
-        '-I{ctx.ndk_dir}/sysroot/usr/include/{command_prefix}',
-        '-I{python_includes}',
-    ]
     common_ldflags = ['-L{ctx_libs_dir}']
     common_ldlibs = ['-lm']
     common_ldshared = [
@@ -90,11 +84,12 @@ class Arch:
         if self.arch_cflags:
             env['CFLAGS'] += ' ' + ' '.join(self.arch_cflags)
         env['CXXFLAGS'] = env['CFLAGS']
-        env['CPPFLAGS'] = ' '.join(self.common_cppflags).format(
-            ctx=ctx,
-            command_prefix=self.command_prefix,
-            python_includes = ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}",
-        )
+        env['CPPFLAGS'] = ' '.join([
+            '-DANDROID',
+            f"-D__ANDROID_API__={self.ndk_api}",
+            f"-I{self.ndk_dir}/sysroot/usr/include/{self.command_prefix}",
+            f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
+        ])
         env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=ctx.get_libs_dir(self))
         env['LDLIBS'] = ' '.join(self.common_ldlibs)
         env['USE_CCACHE'] = '1'
