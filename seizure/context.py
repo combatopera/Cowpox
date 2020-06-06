@@ -63,7 +63,6 @@ class Context:
     libs_dir = None
     aars_dir = None
     ndk_platform = None
-    bootstrap = None
     bootstrap_build_dir = None
     recipe_build_order = None
 

@@ -136,6 +136,7 @@ class APKMaker:
         self.min_sdk_version = config.android.minapi
         self.title = config.title
         self.presplash_color = config.android.presplash_color
+        self.bootstrapname = config.p4a.bootstrap
         self.context = context
         self.arch = arch
         self.platform = platform
@@ -150,8 +151,7 @@ class APKMaker:
     def makeapkversion(self, args, dist):
         distdir = dist.dist_dir
         render = Render(distdir)
-        bootstrapname = self.context.bootstrap.name
-        blacklist = Blacklist(bootstrapname)
+        blacklist = Blacklist(self.bootstrapname)
         if self.ndk_api != self.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
@@ -159,7 +159,7 @@ class APKMaker:
             blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
         with (distdir / 'whitelist.txt').open() as f:
             blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-        if bootstrapname != "webview":
+        if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
         assets_dir = (distdir / 'src' / 'main' / 'assets').mkdirp()
@@ -169,7 +169,7 @@ class APKMaker:
         with TemporaryDirectory() as env_vars_tarpath:
             env_vars_tarpath = Path(env_vars_tarpath)
             with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:
-                if bootstrapname != 'service_only':
+                if self.bootstrapname != 'service_only':
                     print(f"P4A_IS_WINDOWED={args.window}", file = f)
                     print(f"P4A_ORIENTATION={args.orientation}", file = f)
                 print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
@@ -177,13 +177,13 @@ class APKMaker:
             for python_bundle_dir in (distdir / n for n in ['private', '_python_bundle']):
                 if python_bundle_dir.exists():
                     tar_dirs.append(python_bundle_dir)
-            if bootstrapname == "webview":
+            if self.bootstrapname == 'webview':
                 tar_dirs.append(distdir / 'webview_includes')
             _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.context.hostpython)
         res_dir = distdir / 'src' / 'main' / 'res'
         default_icon = distdir / 'templates' / 'kivy-icon.png'
         shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
-        if bootstrapname != "service_only":
+        if self.bootstrapname != 'service_only':
             default_presplash = distdir / 'templates' / 'kivy-presplash.jpg'
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
         args.numeric_version = self._numver(args) # TODO: Do not abuse args for this.
@@ -210,7 +210,7 @@ class APKMaker:
             "service_names": service_names,
             "android_api": self.android_api,
         }
-        if bootstrapname == "sdl2":
+        if self.bootstrapname == 'sdl2':
             render_args["url_scheme"] = url_scheme
         render(
             'AndroidManifest.tmpl.xml',
@@ -235,7 +235,7 @@ class APKMaker:
             repl.printf("urlScheme = %s", url_scheme)
             repl.printf("redirect %s", res_dir / 'values' / 'strings.xml')
             repl.printf("< %s", dist.dist_dir / 'templates' / 'strings.xml.aridt')
-        if bootstrapname == "webview":
+        if self.bootstrapname == 'webview':
             render(
                 'WebViewLoader.tmpl.java',
                 distdir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android' / 'WebViewLoader.java',
