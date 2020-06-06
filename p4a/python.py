@@ -328,11 +328,11 @@ class HostPythonRecipe(Recipe):
         dir_name = '-'.join([self.name] + choices)
         return self.ctx.buildsdir / 'other_builds' / dir_name / 'desktop'
 
-    def get_build_dir(self, arch = None):
+    def get_build_dir(self, arch):
         return self.get_build_container_dir(None) / self.name
 
     def get_path_to_python(self):
-        return self.get_build_dir() / self.build_subdir
+        return self.get_build_dir(None) / self.build_subdir
 
     def build_arch(self, arch):
         recipe_build_dir = self.get_build_dir(arch.name)
