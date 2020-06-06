@@ -105,18 +105,18 @@ class Arch:
     def get_clang_exe(self, with_target = False, plus_plus = False):
         return self.clang_path / f"""{f"{self.target}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
 
-    def get_env(self):
+    def get_env(self, ctx):
         env = {}
         env['CFLAGS'] = ' '.join(self.common_cflags).format(target=self.target)
         if self.arch_cflags:
             env['CFLAGS'] += ' ' + ' '.join(self.arch_cflags)
         env['CXXFLAGS'] = env['CFLAGS']
         env['CPPFLAGS'] = ' '.join(self.common_cppflags).format(
-            ctx=self.ctx,
+            ctx=ctx,
             command_prefix=self.command_prefix,
-            python_includes = self.ctx.get_python_install_dir() / 'include' / f"python{self.ctx.python_recipe.version[:3]}",
+            python_includes = ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}",
         )
-        env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=self.ctx.get_libs_dir(self))
+        env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=ctx.get_libs_dir(self))
         env['LDLIBS'] = ' '.join(self.common_ldlibs)
         env['USE_CCACHE'] = '1'
         env['NDK_CCACHE'] = self.ccachepath
@@ -131,12 +131,12 @@ class Arch:
         env['NM'] = f"{self.command_prefix}-nm"
         env['LD'] = f"{self.command_prefix}-ld"
         env['ARCH'] = self.name
-        env['NDK_API'] = f"android-{self.ctx.ndk_api}"
-        env['TOOLCHAIN_PREFIX'] = self.ctx.toolchain_prefix
-        env['TOOLCHAIN_VERSION'] = self.ctx.toolchain_version
+        env['NDK_API'] = f"android-{ctx.ndk_api}"
+        env['TOOLCHAIN_PREFIX'] = ctx.toolchain_prefix
+        env['TOOLCHAIN_VERSION'] = ctx.toolchain_version
         env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
-        hostpython_recipe = self.ctx.get_recipe(f"host{self.ctx.python_recipe.name}")
-        env['BUILDLIB_PATH'] = hostpython_recipe.get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{self.ctx.python_recipe.major_minor_version_string}"
+        hostpython_recipe = ctx.get_recipe(f"host{ctx.python_recipe.name}")
+        env['BUILDLIB_PATH'] = hostpython_recipe.get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}"
         env['PATH'] = f"{self.clang_path}{os.pathsep}{os.environ['PATH']}"
         return env
 

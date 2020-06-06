@@ -271,7 +271,7 @@ class Bootstrap:
 
     def strip_libraries(self, arch):
         log.info('Stripping libraries')
-        env = arch.get_env()
+        env = arch.get_env(self.ctx)
         tokens = shlex.split(env['STRIP'])
         strip = Program.text(self.ctx.ndk_dir / 'toolchains' / f"{self.ctx.toolchain_prefix}-{self.ctx.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]).partial(*tokens[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
