@@ -478,8 +478,8 @@ class Recipe(metaclass = RecipeMeta):
             self.install_stl_lib(arch)
 
     def prepare_build_dir(self, arch):
-        self.get_build_container_dir(arch).mkdirp()
-        self._unpack(arch)
+        self.get_build_container_dir(arch.name).mkdirp()
+        self._unpack(arch.name)
 
     def install_libs(self, arch, *libs):
         libs_dir = self.ctx.get_libs_dir(arch.name)
@@ -509,9 +509,9 @@ class Recipe(metaclass = RecipeMeta):
 class IncludedFilesBehaviour:
 
     def prepare_build_dir(self, arch):
-        self.get_build_container_dir(arch).mkdirp()
-        rm._rf.print(self.get_build_dir(arch))
-        cp._a.print(self.get_recipe_dir() / self.src_filename, self.get_build_dir(arch))
+        self.get_build_container_dir(arch.name).mkdirp()
+        rm._rf.print(self.get_build_dir(arch.name))
+        cp._a.print(self.get_recipe_dir() / self.src_filename, self.get_build_dir(arch.name))
 
 class BootstrapNDKRecipe(Recipe):
     '''A recipe class for recipes built in an Android project jni dir with
