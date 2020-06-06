@@ -214,30 +214,29 @@ class Context:
         log.info('Downloading recipes')
         for recipe in recipes:
             recipe.download_if_necessary(self.mirror)
-        for arch in self.archs:
-            log.info("Building all recipes for arch %s", arch.arch)
-            log.info('Unpacking recipes')
-            for recipe in recipes:
-                recipe.prepare_build_dir(arch.arch)
-            log.info('Prebuilding recipes')
-            # 2) prebuild packages
-            for recipe in recipes:
-                log.info("Prebuilding %s for %s", recipe.name, arch.arch)
-                recipe.prebuild_arch(arch)
-                recipe.apply_patches(arch)
-            # 3) build packages
-            log.info('Building recipes')
-            for recipe in recipes:
-                log.info("Building %s for %s", recipe.name, arch.arch)
-                if recipe.should_build(arch):
-                    recipe.build_arch(arch)
-                    recipe.install_libraries(arch)
-                else:
-                    log.info("%s said it is already built, skipping", recipe.name)
-            log.info('Postbuilding recipes')
-            for recipe in recipes:
-                log.info("Postbuilding %s for %s", recipe.name, arch.arch)
-                recipe.postbuild_arch(arch)
+        log.info("Building all recipes for arch %s", self.arch.arch)
+        log.info('Unpacking recipes')
+        for recipe in recipes:
+            recipe.prepare_build_dir(self.arch.arch)
+        log.info('Prebuilding recipes')
+        # 2) prebuild packages
+        for recipe in recipes:
+            log.info("Prebuilding %s for %s", recipe.name, self.arch.arch)
+            recipe.prebuild_arch(self.arch)
+            recipe.apply_patches(self.arch)
+        # 3) build packages
+        log.info('Building recipes')
+        for recipe in recipes:
+            log.info("Building %s for %s", recipe.name, self.arch.arch)
+            if recipe.should_build(self.arch):
+                recipe.build_arch(self.arch)
+                recipe.install_libraries(self.arch)
+            else:
+                log.info("%s said it is already built, skipping", recipe.name)
+        log.info('Postbuilding recipes')
+        for recipe in recipes:
+            log.info("Postbuilding %s for %s", recipe.name, self.arch.arch)
+            recipe.postbuild_arch(self.arch)
         log.info('Installing pure Python modules')
         log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
         modules = [m for m in python_modules if not self.has_package(m)]
