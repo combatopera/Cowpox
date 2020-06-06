@@ -60,8 +60,6 @@ class Context:
 
     contribroot = Path(resource_filename('pythonforandroid', '.'))
     distribution = None
-    libs_dir = None
-    aars_dir = None
     ndk_platform = None
     bootstrap_build_dir = None
 
