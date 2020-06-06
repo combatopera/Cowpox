@@ -108,8 +108,6 @@ class Recipe(metaclass = RecipeMeta):
     packages will NOT be available at build time, but will be added to the
     list of pure-Python packages to install via pip. If you need these packages
     at build time, you must create a recipe.'''
-
-    archs = ['armeabi']  # Not currently implemented properly
     builtlibpaths = ()
 
     def __init__(self, ctx):
@@ -187,13 +185,6 @@ class Recipe(metaclass = RecipeMeta):
         '''The name of the recipe, the same as the folder containing it.'''
         modname = self.__class__.__module__
         return modname.split(".", 2)[-1]
-
-    @property
-    def _filtered_archs(self):
-        result = []
-        if not self.archs or self.ctx.arch.name in self.archs:
-            result.append(self.ctx.arch)
-        return result
 
     def check_recipe_choices(self):
         '''Checks what recipes are being built to see which of the alternative
@@ -341,8 +332,6 @@ class Recipe(metaclass = RecipeMeta):
             log.info("%s is already unpacked, skipping", self.name)
 
     def get_recipe_env(self, arch):
-        if arch is None:
-            arch = self._filtered_archs[0]
         return arch.get_env(self.ctx)
 
     def prebuild_arch(self, arch):
