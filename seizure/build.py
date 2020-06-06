@@ -103,6 +103,8 @@ def _make_tar(tfn, source_dirs, blacklist, hostpython):
     compileall = Program.text(hostpython)._OO._m.compileall._b._f
     for sd in source_dirs:
         sd = sd.resolve()
+        for path in sd.rglob('*.py'):
+            os.utime(path, (0, 0)) # Determinism.
         compileall.print(sd)
         files.extend([x, x.resolve().relative_to(sd)] for x in _listfiles(sd) if not blacklist.has(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
