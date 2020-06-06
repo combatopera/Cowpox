@@ -49,10 +49,6 @@ class Distribution:
     url = None
     dist_dir = None  # Where the dist dir ultimately is. Should not be None.
     ndk_api = None
-
-    archs = []
-    '''The names of the arch targets that the dist is built for.'''
-
     recipes = []
 
     def __init__(self, ctx):
