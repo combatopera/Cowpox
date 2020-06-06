@@ -140,7 +140,6 @@ class APKMaker:
         ndk_api = int(distinfo.forkey('ndk_api'))
         bootstrapname = distinfo.forkey('bootstrap')
         blacklist = Blacklist(bootstrapname)
-        args.allow_backup = 'true'
         args.extra_manifest_xml = ''
         if ndk_api != args.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", ndk_api, args.min_sdk_version)
