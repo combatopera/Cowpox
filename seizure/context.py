@@ -47,12 +47,11 @@ from diapyr import types
 from importlib import import_module
 from lagoon import virtualenv
 from lagoon.program import Program
-from os.path import join, exists
 from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
 from pythonforandroid.pythonpackage import get_package_name
-import copy, glob, logging, os
+import logging, os
 
 log = logging.getLogger(__name__)
 
@@ -180,12 +179,12 @@ class Context:
             name = getattr(recipe, 'site_packages_name', None) or name
         name = name.replace('.', '/')
         site_packages_dir = self.get_python_install_dir()
-        return (exists(join(site_packages_dir, name)) or
-                exists(join(site_packages_dir, name + '.py')) or
-                exists(join(site_packages_dir, name + '.pyc')) or
-                exists(join(site_packages_dir, name + '.pyo')) or
-                exists(join(site_packages_dir, name + '.so')) or
-                glob.glob(f"{site_packages_dir}/{name}-*.egg"))
+        return ((site_packages_dir / name).exists()
+                or (site_packages_dir / f"{name}.py").exists()
+                or (site_packages_dir / f"{name}.pyc").exists()
+                or (site_packages_dir / f"{name}.pyo").exists()
+                or (site_packages_dir / f"{name}.so").exists()
+                or list(site_packages_dir.glob(f"{name}-*.egg")))
 
     def build_recipes(self, build_order, python_modules):
         # Put recipes in correct build order
@@ -240,7 +239,7 @@ class Context:
         # (note: following line enables explicit -lpython... linker options)
         standard_recipe.call_hostpython_via_targetpython = False
         recipe_env = standard_recipe.get_recipe_env(self.arch)
-        env = copy.copy(base_env)
+        env = base_env.copy()
         env.update(recipe_env)
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
