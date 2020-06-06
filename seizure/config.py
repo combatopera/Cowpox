@@ -67,7 +67,7 @@ class Config:
         except NoSuchPathException:
             raise AttributeError(name) # XXX: Misleading?
         try:
-            return obj.value
+            return obj.value # TODO: Does not work for all kinds of scalar.
         except AttributeError:
             return type(self)(self._context, path)
 
@@ -75,6 +75,7 @@ class Config:
         return self._context.resolved(*self._prefix)
 
     def list(self):
+        # TODO LATER: Should return Configs for non-scalars.
         return [o.value for _, o in self._localcontext().itero()]
 
     def dict(self):
