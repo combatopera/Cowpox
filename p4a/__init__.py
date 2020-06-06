@@ -247,7 +247,7 @@ class Recipe(metaclass = RecipeMeta):
         return modname.split(".", 2)[-1]
 
     @property
-    def filtered_archs(self):
+    def _filtered_archs(self):
         '''Return archs of self.ctx that are valid build archs
         for the Recipe.'''
         result = []
@@ -405,7 +405,7 @@ class Recipe(metaclass = RecipeMeta):
         """Return the env specialized for the recipe
         """
         if arch is None:
-            arch = self.filtered_archs[0]
+            arch = self._filtered_archs[0]
         env = arch.get_env(with_flags_in_cc=True)
         if self.need_stl_shared:
             env['CPPFLAGS'] = env.get('CPPFLAGS', '')
@@ -696,9 +696,6 @@ class PythonRecipe(Recipe):
         self.install_python_package(arch)
 
     def install_python_package(self, arch, name=None, env=None, is_dir=True):
-        '''Automate the installation of a Python package (or a cython
-        package where the cython components are pre-built).'''
-        # arch = self.filtered_archs[0]  # old kivy-ios way
         if name is None:
             name = self.name
         if env is None:
