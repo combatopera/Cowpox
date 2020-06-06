@@ -107,6 +107,7 @@ class TargetAndroid:
         bs = Bootstrap.get_bootstrap(self.bootstrapname, self.context)
         build_order, python_modules = get_recipe_order(self.context, dist.recipes, bs.recipe_depends, ['genericndkbuild', 'python2'])
         assert not set(build_order) & set(python_modules)
+        # TODO: Context should init itself.
         self.context.recipe_build_order = build_order
         self.context.python_modules = python_modules
         log.info("The selected bootstrap is %s", bs.name)
