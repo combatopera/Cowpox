@@ -122,9 +122,6 @@ class TargetAndroid:
         log.info('Your distribution was created successfully, exiting.')
         log.info("Dist can be found at (for now) %s", self.context.distsdir / dist.dist_dir)
 
-    def _get_release_mode(self):
-        return 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'
-
     @staticmethod
     def _check_p4a_sign_env(error):
         keys = ["KEYALIAS", "KEYSTORE_PASSWD", "KEYSTORE", "KEYALIAS_PASSWD"]
@@ -185,8 +182,8 @@ class TargetAndroid:
         if not self.releasemode:
             mode_sign = mode = 'debug'
         else:
-            mode_sign = "release"
-            mode = self._get_release_mode()
+            mode_sign = 'release'
+            mode = 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'
         apkpath = self.apkdir / f"{self.dist_name}-{self.version}-{self.commit}-{self.arch}-{mode}.apk"
         shutil.copyfile(dist.dist_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{dist.dist_dir.name}-{mode}.apk", apkpath)
         log.info('Android packaging done!')
