@@ -135,7 +135,8 @@ class APKMaker:
     def __init__(self, config):
         self.app_dir = Path(config.app_dir)
 
-    def makeapkversion(self, args, distdir):
+    def makeapkversion(self, args, dist):
+        distdir = dist.dist_dir
         render = Render(distdir)
         distinfo = DistInfo(distdir)
         ndk_api = int(distinfo.forkey('ndk_api'))
