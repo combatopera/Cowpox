@@ -54,7 +54,7 @@ class LibffiRecipe(Recipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-        build_dir = self.get_build_dir(arch.arch)
+        build_dir = self.get_build_dir(arch.name)
         if not (build_dir / 'configure').exists():
             Program.text(f".{os.sep}autogen.sh").print(env = env, cwd = build_dir)
         autoreconf._vif.print(env = env, cwd = build_dir)
@@ -63,4 +63,4 @@ class LibffiRecipe(Recipe):
         make.print('-j', cpu_count(), 'libffi.la', env = env, cwd = build_dir)
 
     def get_include_dirs(self, arch):
-        return [self.get_build_dir(arch.arch) / 'include']
+        return [self.get_build_dir(arch.name) / 'include']

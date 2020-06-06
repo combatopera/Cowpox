@@ -102,12 +102,12 @@ class Context:
         return (self.buildsdir / 'python-installs').mkdirp() / self.bootstrap.distribution.name
 
     def init(self):
-        log.info("Will compile for the following arch: %s", self.arch.arch)
+        log.info("Will compile for the following arch: %s", self.arch.name)
         self.distsdir.mkdirp()
         (self.buildsdir / 'bootstrap_builds').mkdirp()
         (self.buildsdir / 'other_builds').mkdirp()
         log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
-        check_target_api(self.android_api, self.arch.arch)
+        check_target_api(self.android_api, self.arch.name)
         apis = self.platform.apilevels()
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
         if self.android_api not in apis:
@@ -208,20 +208,20 @@ class Context:
         log.info('Downloading recipes')
         for recipe in recipes:
             recipe.download_if_necessary(self.mirror)
-        log.info("Building all recipes for arch %s", self.arch.arch)
+        log.info("Building all recipes for arch %s", self.arch.name)
         log.info('Unpacking recipes')
         for recipe in recipes:
-            recipe.prepare_build_dir(self.arch.arch)
+            recipe.prepare_build_dir(self.arch.name)
         log.info('Prebuilding recipes')
         # 2) prebuild packages
         for recipe in recipes:
-            log.info("Prebuilding %s for %s", recipe.name, self.arch.arch)
+            log.info("Prebuilding %s for %s", recipe.name, self.arch.name)
             recipe.prebuild_arch(self.arch)
             recipe.apply_patches(self.arch)
         # 3) build packages
         log.info('Building recipes')
         for recipe in recipes:
-            log.info("Building %s for %s", recipe.name, self.arch.arch)
+            log.info("Building %s for %s", recipe.name, self.arch.name)
             if recipe.should_build(self.arch):
                 recipe.build_arch(self.arch)
                 recipe.install_libraries(self.arch)
@@ -229,7 +229,7 @@ class Context:
                 log.info("%s said it is already built, skipping", recipe.name)
         log.info('Postbuilding recipes')
         for recipe in recipes:
-            log.info("Postbuilding %s for %s", recipe.name, self.arch.arch)
+            log.info("Postbuilding %s for %s", recipe.name, self.arch.name)
             recipe.postbuild_arch(self.arch)
         log.info('Installing pure Python modules')
         log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')

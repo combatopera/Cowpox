@@ -158,7 +158,7 @@ class Recipe(metaclass = RecipeMeta):
 
     def get_stl_lib_dir(self, arch):
         return join(
-            self.stl_lib_source.format(ctx=self.ctx), 'libs', arch.arch
+            self.stl_lib_source.format(ctx=self.ctx), 'libs', arch.name
         )
 
     def get_stl_library(self, arch):
@@ -169,7 +169,7 @@ class Recipe(metaclass = RecipeMeta):
 
     def install_stl_lib(self, arch):
         if not self.ctx.has_lib(
-            arch.arch, 'lib{name}.so'.format(name=self.stl_lib_name)
+            arch.name, 'lib{name}.so'.format(name=self.stl_lib_name)
         ):
             self.install_libs(arch, self.get_stl_library(arch))
 
@@ -223,7 +223,7 @@ class Recipe(metaclass = RecipeMeta):
 
     def apply_patch(self, filename, arch, build_dir = None):
         log.info("Applying patch %s", filename)
-        patchexe._t._p1.print('-d', self.get_build_dir(arch.arch) if build_dir is None else build_dir, '-i', self.get_recipe_dir() / filename)
+        patchexe._t._p1.print('-d', self.get_build_dir(arch.name) if build_dir is None else build_dir, '-i', self.get_recipe_dir() / filename)
 
     def copy_file(self, filename, dest):
         log.info("Copy %s to %s", filename, dest)
@@ -249,7 +249,7 @@ class Recipe(metaclass = RecipeMeta):
     @property
     def _filtered_archs(self):
         result = []
-        if not self.archs or self.ctx.arch.arch in self.archs:
+        if not self.archs or self.ctx.arch.name in self.archs:
             result.append(self.ctx.arch)
         return result
 
@@ -420,39 +420,39 @@ class Recipe(metaclass = RecipeMeta):
         '''Run any pre-build tasks for the Recipe. By default, this checks if
         any prebuild_archname methods exist for the archname of the current
         architecture, and runs them if so.'''
-        prebuild = "prebuild_{}".format(arch.arch.replace('-', '_'))
+        prebuild = "prebuild_{}".format(arch.name.replace('-', '_'))
         if hasattr(self, prebuild):
             getattr(self, prebuild)()
         else:
             log.info("%s has no %s, skipping", self.name, prebuild)
 
     def is_patched(self, arch):
-        build_dir = self.get_build_dir(arch.arch)
+        build_dir = self.get_build_dir(arch.name)
         return (build_dir / '.patched').exists()
 
     def apply_patches(self, arch):
         if self.patches:
-            log.info("Applying patches for %s[%s]", self.name, arch.arch)
+            log.info("Applying patches for %s[%s]", self.name, arch.name)
             if self.is_patched(arch):
                 log.info("%s already patched, skipping", self.name)
                 return
-            build_dir = self.get_build_dir(arch.arch)
+            build_dir = self.get_build_dir(arch.name)
             for patch in self.patches:
                 if isinstance(patch, (tuple, list)): # TODO: Yuk.
                     patch, patch_check = patch
                     if not patch_check(arch=arch, recipe=self):
                         continue
-                self.apply_patch(patch, arch.arch, build_dir)
+                self.apply_patch(patch, arch.name, build_dir)
             touch.print(build_dir / '.patched')
 
     def should_build(self, arch):
-        return not all(lib.exists() for lib in self.get_libraries(arch.arch)) if self.built_libraries else True
+        return not all(lib.exists() for lib in self.get_libraries(arch.name)) if self.built_libraries else True
 
     def build_arch(self, arch):
         '''Run any build tasks for the Recipe. By default, this checks if
         any build_archname methods exist for the archname of the current
         architecture, and runs them if so.'''
-        build = "build_{}".format(arch.arch)
+        build = "build_{}".format(arch.name)
         if hasattr(self, build):
             getattr(self, build)()
 
@@ -472,7 +472,7 @@ class Recipe(metaclass = RecipeMeta):
         any postbuild_archname methods exist for the archname of the
         current architecture, and runs them if so.
         '''
-        postbuild = "postbuild_{}".format(arch.arch)
+        postbuild = "postbuild_{}".format(arch.name)
         if hasattr(self, postbuild):
             getattr(self, postbuild)()
 
@@ -484,7 +484,7 @@ class Recipe(metaclass = RecipeMeta):
         self._unpack(arch)
 
     def install_libs(self, arch, *libs):
-        libs_dir = self.ctx.get_libs_dir(arch.arch)
+        libs_dir = self.ctx.get_libs_dir(arch.name)
         if not libs:
             log.warning('install_libs called with no libraries to install!')
             return
@@ -492,7 +492,7 @@ class Recipe(metaclass = RecipeMeta):
         cp.print(*args)
 
     def has_libs(self, arch, *libs):
-        return all(map(lambda l: self.ctx.has_lib(arch.arch, l), libs))
+        return all(map(lambda l: self.ctx.has_lib(arch.name, l), libs))
 
     def get_libraries(self, arch_name, in_context=False):
         """Return the full path of the library depending on the architecture.
@@ -553,8 +553,8 @@ class BootstrapNDKRecipe(Recipe):
 
     def recipe_env_with_python(self, arch):
         env = super().get_recipe_env(arch)
-        env['PYTHON_INCLUDE_ROOT'] = self.ctx.python_recipe.include_root(arch.arch)
-        env['PYTHON_LINK_ROOT'] = self.ctx.python_recipe.link_root(arch.arch)
+        env['PYTHON_INCLUDE_ROOT'] = self.ctx.python_recipe.include_root(arch.name)
+        env['PYTHON_LINK_ROOT'] = self.ctx.python_recipe.link_root(arch.name)
         env['EXTRA_LDLIBS'] = ' -lpython{}'.format(self.ctx.python_recipe.major_minor_version_string)
         if 'python3' in self.ctx.python_recipe.name:
             env['EXTRA_LDLIBS'] += 'm'
@@ -573,15 +573,15 @@ class NDKRecipe(Recipe):
         return False
 
     def get_lib_dir(self, arch):
-        return self.get_build_dir(arch.arch) / 'obj' / 'local' / arch.arch
+        return self.get_build_dir(arch.name) / 'obj' / 'local' / arch.name
 
     def get_jni_dir(self, arch):
-        return self.get_build_dir(arch.arch) / 'jni'
+        return self.get_build_dir(arch.name) / 'jni'
 
     def build_arch(self, arch, *extra_args):
         super().build_arch(arch)
-        Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ctx.ndk_api}", f"APP_ABI={arch.arch}", *extra_args,
-                env = self.get_recipe_env(arch), cwd = self.get_build_dir(arch.arch))
+        Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ctx.ndk_api}", f"APP_ABI={arch.name}", *extra_args,
+                env = self.get_recipe_env(arch), cwd = self.get_build_dir(arch.name))
 
 class PythonRecipe(Recipe):
     site_packages_name = None
@@ -655,10 +655,10 @@ class PythonRecipe(Recipe):
         if not self.call_hostpython_via_targetpython:
             python_name = self.ctx.python_recipe.name
             env['CFLAGS'] += ' -I{}'.format(
-                self.ctx.python_recipe.include_root(arch.arch)
+                self.ctx.python_recipe.include_root(arch.name)
             )
             env['LDFLAGS'] += ' -L{} -lpython{}'.format(
-                self.ctx.python_recipe.link_root(arch.arch),
+                self.ctx.python_recipe.link_root(arch.name),
                 self.ctx.python_recipe.major_minor_version_string,
             )
             if python_name == 'python3':
@@ -698,7 +698,7 @@ class PythonRecipe(Recipe):
         if env is None:
             env = self.get_recipe_env(arch)
         log.info("Installing %s into site-packages", self.name)
-        builddir = self.get_build_dir(arch.arch)
+        builddir = self.get_build_dir(arch.name)
         hostpython = Program.text(self.hostpython_location)
         hpenv = env.copy()
         hostpython.print('setup.py', 'install', '-O2', f"--root={self.ctx.get_python_install_dir()}", '--install-lib=.', *self.setup_extra_args, env = hpenv, cwd = builddir)
@@ -710,7 +710,7 @@ class PythonRecipe(Recipe):
 
     def install_hostpython_package(self, arch):
         env = self.get_hostrecipe_env(arch)
-        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', *self.setup_extra_args, env = env, cwd = self.get_build_dir(arch.arch))
+        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', *self.setup_extra_args, env = env, cwd = self.get_build_dir(arch.name))
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
@@ -725,7 +725,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     def build_compiled_components(self, arch):
         log.info("Building compiled components in %s", self.name)
         env = self.get_recipe_env(arch)
-        builddir = self.get_build_dir(arch.arch)
+        builddir = self.get_build_dir(arch.name)
         hostpython = Program.text(self.hostpython_location).partial(env = env, cwd = builddir)
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
@@ -739,7 +739,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def rebuild_compiled_components(self, arch, env):
         log.info("Rebuilding compiled components in %s", self.name)
-        hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir(arch.arch))
+        hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir(arch.name))
         hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
 
@@ -766,7 +766,7 @@ class CythonRecipe(PythonRecipe):
     def build_cython_components(self, arch):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env(arch)
-        builddir = self.get_build_dir(arch.arch)
+        builddir = self.get_build_dir(arch.name)
         hostpython = Program.text(self.ctx.hostpython).partial(env = env, cwd = builddir)
         hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
@@ -813,12 +813,12 @@ class CythonRecipe(PythonRecipe):
 
     def get_recipe_env(self, arch):
         env = super().get_recipe_env(arch)
-        env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch.arch)} -L{self.ctx.libs_dir}  -L{self.ctx.bootstrap.build_dir / 'obj' / 'local' / arch.arch} "
+        env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch.name)} -L{self.ctx.libs_dir}  -L{self.ctx.bootstrap.build_dir / 'obj' / 'local' / arch.name} "
         env['LDSHARED'] = env['CC'] + ' -shared'
         env['LIBLINK'] = 'NOTNONE'
         env['NDKPLATFORM'] = self.ctx.ndk_platform
         env['COPYLIBS'] = '1'
-        env['LIBLINK_PATH'] = str((self.get_build_container_dir(arch.arch) / f"objects_{self.name}").mkdirp())
+        env['LIBLINK_PATH'] = str((self.get_build_container_dir(arch.name) / f"objects_{self.name}").mkdirp())
         return env
 
 class TargetPythonRecipe(Recipe):

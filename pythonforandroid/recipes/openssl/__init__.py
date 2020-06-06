@@ -56,11 +56,11 @@ class OpenSSLRecipe(Recipe):
         return self.get_build_container_dir(arch) / f"{self.name}{self.version}"
 
     def include_flags(self, arch):
-        openssl_includes = self.get_build_dir(arch.arch) / 'include'
+        openssl_includes = self.get_build_dir(arch.name) / 'include'
         return f" -I{openssl_includes} -I{openssl_includes / 'internal'} -I{openssl_includes / 'openssl'}"
 
     def link_dirs_flags(self, arch):
-        return f" -L{self.get_build_dir(arch.arch)}"
+        return f" -L{self.get_build_dir(arch.name)}"
 
     def link_libs_flags(self):
         return f" -lcrypto{self.version} -lssl{self.version}"
@@ -73,7 +73,7 @@ class OpenSSLRecipe(Recipe):
         return env
 
     def _select_build_arch(self, arch):
-        aname = arch.arch
+        aname = arch.name
         if 'arm64' in aname:
             return 'android-arm64'
         if 'v7a' in aname:
@@ -88,7 +88,7 @@ class OpenSSLRecipe(Recipe):
 
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
-        cwd = self.get_build_dir(arch.arch)
+        cwd = self.get_build_dir(arch.name)
         perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(arch), f"-D__ANDROID_API__={self.ctx.ndk_api}", env = env, cwd = cwd)
         self.apply_patch('disable-sover.patch', arch)
         make.print('build_libs', env = env, cwd = cwd)

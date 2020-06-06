@@ -65,7 +65,7 @@ is_darwin = is_platform('Darwin')
 
 def is_arch(xarch):
     def is_x(arch, **kwargs):
-        return arch.arch == xarch
+        return arch.name == xarch
     return is_x
 
 

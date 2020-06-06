@@ -68,8 +68,8 @@ class Arch:
     def __init__(self, ctx):
         self.ctx = ctx
 
-    def __str__(self):
-        return self.arch
+    def __str__(self): # TODO: Retire.
+        return self.name
 
     @property
     def include_dirs(self):
@@ -116,7 +116,7 @@ class Arch:
             command_prefix=self.command_prefix,
             python_includes = self.ctx.get_python_install_dir() / 'include' / f"python{self.ctx.python_recipe.version[:3]}",
         )
-        env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=self.ctx.get_libs_dir(self.arch))
+        env['LDFLAGS'] = '  ' + ' '.join(self.common_ldflags).format(ctx_libs_dir=self.ctx.get_libs_dir(self.name))
         env['LDLIBS'] = ' '.join(self.common_ldlibs)
         env['USE_CCACHE'] = '1'
         env['NDK_CCACHE'] = self.ccachepath
@@ -134,13 +134,13 @@ class Arch:
         env['READELF'] = f"{self.command_prefix}-readelf"
         env['NM'] = f"{self.command_prefix}-nm"
         env['LD'] = f"{self.command_prefix}-ld"
-        env['ARCH'] = self.arch
+        env['ARCH'] = self.name
         env['NDK_API'] = f"android-{self.ctx.ndk_api}"
         env['TOOLCHAIN_PREFIX'] = self.ctx.toolchain_prefix
         env['TOOLCHAIN_VERSION'] = self.ctx.toolchain_version
         env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
         hostpython_recipe = self.ctx.get_recipe(f"host{self.ctx.python_recipe.name}")
-        env['BUILDLIB_PATH'] = hostpython_recipe.get_build_dir(self.arch) / 'native-build' / 'build' / f"lib.{self.build_platform}-{self.ctx.python_recipe.major_minor_version_string}"
+        env['BUILDLIB_PATH'] = hostpython_recipe.get_build_dir(self.name) / 'native-build' / 'build' / f"lib.{self.build_platform}-{self.ctx.python_recipe.major_minor_version_string}"
         env['PATH'] = f"{self.clang_path}{os.pathsep}{os.environ['PATH']}"
         return env
 
@@ -160,12 +160,12 @@ class BaseArchARM(Arch):
 
 class ArchARM(BaseArchARM):
 
-    arch = "armeabi"
+    name = "armeabi"
     arch_cflags = []
 
 class ArchARMv7_a(BaseArchARM):
 
-    arch = 'armeabi-v7a'
+    name = 'armeabi-v7a'
     arch_cflags = [
         '-march=armv7-a',
         '-mfloat-abi=softfp',
@@ -176,7 +176,7 @@ class ArchARMv7_a(BaseArchARM):
 
 class Archx86(Arch):
 
-    arch = 'x86'
+    name = 'x86'
     toolchain_prefix = 'x86'
     command_prefix = 'i686-linux-android'
     platform_dir = 'arch-x86'
@@ -190,7 +190,7 @@ class Archx86(Arch):
 
 class Archx86_64(Arch):
 
-    arch = 'x86_64'
+    name = 'x86_64'
     toolchain_prefix = 'x86_64'
     command_prefix = 'x86_64-linux-android'
     platform_dir = 'arch-x86_64'
@@ -205,7 +205,7 @@ class Archx86_64(Arch):
 
 class ArchAarch_64(Arch):
 
-    arch = 'arm64-v8a'
+    name = 'arm64-v8a'
     toolchain_prefix = 'aarch64-linux-android'
     command_prefix = 'aarch64-linux-android'
     platform_dir = 'arch-arm64'
@@ -213,4 +213,4 @@ class ArchAarch_64(Arch):
         '-march=armv8-a',
     ]
 
-all_archs = {a.arch: a for a in [ArchARM, ArchARMv7_a, Archx86, Archx86_64, ArchAarch_64]}
+all_archs = {a.name: a for a in [ArchARM, ArchARMv7_a, Archx86, Archx86_64, ArchAarch_64]}

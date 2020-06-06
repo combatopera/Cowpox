@@ -142,7 +142,7 @@ class Distribution:
             json.dump(dict(
                 dist_name = self.name,
                 bootstrap = self.ctx.bootstrap.name,
-                archs = [self.ctx.arch.arch],
+                archs = [self.ctx.arch.name],
                 ndk_api = self.ctx.ndk_api,
                 recipes = self.ctx.recipe_build_order + self.ctx.python_modules,
                 hostpython = str(self.ctx.hostpython),

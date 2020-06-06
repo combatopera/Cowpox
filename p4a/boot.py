@@ -232,7 +232,7 @@ class Bootstrap:
 
     def distribute_libs(self, arch, src_dir):
         log.info('Copying libs')
-        tgt_dir = (self.dist_dir / 'libs' / arch.arch).mkdirp()
+        tgt_dir = (self.dist_dir / 'libs' / arch.name).mkdirp()
         for lib in src_dir.iterdir():
             cp._a.print(lib, tgt_dir)
 
@@ -261,8 +261,8 @@ class Bootstrap:
             log.debug("  to %s", jar_tgt)
             libspath = (self.build_dir / 'libs').mkdirp()
             cp._a.print(jar_src, jar_tgt)
-            so_src_dir = Path(temp_dir, 'jni', arch.arch)
-            so_tgt_dir = (libspath / arch.arch).mkdirp()
+            so_src_dir = Path(temp_dir, 'jni', arch.name)
+            so_tgt_dir = (libspath / arch.name).mkdirp()
             log.debug("copy %s .so", name)
             log.debug("  from %s", so_src_dir)
             log.debug("  to %s", so_tgt_dir)
