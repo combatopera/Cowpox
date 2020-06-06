@@ -382,7 +382,7 @@ class Recipe(metaclass = RecipeMeta):
         """
         if arch is None:
             arch = self._filtered_archs[0]
-        env = arch.get_env(with_flags_in_cc=True)
+        env = arch.get_env()
         if self.need_stl_shared:
             env['CPPFLAGS'] = env.get('CPPFLAGS', '')
             env['CPPFLAGS'] += ' -I{}'.format(self.stl_include_dir)

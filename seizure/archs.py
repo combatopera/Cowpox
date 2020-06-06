@@ -105,7 +105,7 @@ class Arch:
     def get_clang_exe(self, with_target = False, plus_plus = False):
         return self.clang_path / f"""{f"{self.target}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
 
-    def get_env(self, with_flags_in_cc=True):
+    def get_env(self):
         env = {}
         env['CFLAGS'] = ' '.join(self.common_cflags).format(target=self.target)
         if self.arch_cflags:
@@ -121,12 +121,8 @@ class Arch:
         env['USE_CCACHE'] = '1'
         env['NDK_CCACHE'] = self.ccachepath
         env.update({k: v for k, v in os.environ.items() if k.startswith('CCACHE_')})
-        if with_flags_in_cc:
-            env['CC'] = f"{self.ccachepath} {self.clang_exe} {env['CFLAGS']}"
-            env['CXX'] = f"{self.ccachepath} {self.clang_exe_cxx} {env['CXXFLAGS']}"
-        else:
-            env['CC'] = f"{self.ccachepath} {self.clang_exe}"
-            env['CXX'] = f"{self.ccachepath} {self.clang_exe_cxx}"
+        env['CC'] = f"{self.ccachepath} {self.clang_exe} {env['CFLAGS']}"
+        env['CXX'] = f"{self.ccachepath} {self.clang_exe_cxx} {env['CXXFLAGS']}"
         env['AR'] = f"{self.command_prefix}-ar"
         env['RANLIB'] = f"{self.command_prefix}-ranlib"
         env['STRIP'] = f"{self.command_prefix}-strip --strip-unneeded"
