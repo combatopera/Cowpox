@@ -541,8 +541,8 @@ class BootstrapNDKRecipe(Recipe):
 
     def recipe_env_with_python(self, arch):
         env = super().get_recipe_env(arch)
-        env['PYTHON_INCLUDE_ROOT'] = self.ctx.python_recipe.include_root(arch.name)
-        env['PYTHON_LINK_ROOT'] = self.ctx.python_recipe.link_root(arch.name)
+        env['PYTHON_INCLUDE_ROOT'] = self.ctx.python_recipe.include_root(arch)
+        env['PYTHON_LINK_ROOT'] = self.ctx.python_recipe.link_root(arch)
         env['EXTRA_LDLIBS'] = ' -lpython{}'.format(self.ctx.python_recipe.major_minor_version_string)
         if 'python3' in self.ctx.python_recipe.name:
             env['EXTRA_LDLIBS'] += 'm'
@@ -643,10 +643,10 @@ class PythonRecipe(Recipe):
         if not self.call_hostpython_via_targetpython:
             python_name = self.ctx.python_recipe.name
             env['CFLAGS'] += ' -I{}'.format(
-                self.ctx.python_recipe.include_root(arch.name)
+                self.ctx.python_recipe.include_root(arch)
             )
             env['LDFLAGS'] += ' -L{} -lpython{}'.format(
-                self.ctx.python_recipe.link_root(arch.name),
+                self.ctx.python_recipe.link_root(arch),
                 self.ctx.python_recipe.major_minor_version_string,
             )
             if python_name == 'python3':
@@ -819,7 +819,7 @@ class TargetPythonRecipe(Recipe):
         '''The root directory from which to include headers.'''
         raise NotImplementedError('Not implemented in TargetPythonRecipe')
 
-    def link_root(self):
+    def link_root(self, arch):
         raise NotImplementedError('Not implemented in TargetPythonRecipe')
 
     @property

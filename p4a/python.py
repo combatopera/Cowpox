@@ -201,7 +201,7 @@ class GuestPythonRecipe(TargetPythonRecipe):
         return 'libpython{version}.so'.format(version=py_version)
 
     def should_build(self, arch):
-        return not (self.link_root(arch.name) / self._libpython).is_file()
+        return not (self.link_root(arch) / self._libpython).is_file()
 
     def prebuild_arch(self, arch):
         super(TargetPythonRecipe, self).prebuild_arch(arch)
@@ -222,11 +222,11 @@ class GuestPythonRecipe(TargetPythonRecipe):
         make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env, cwd = build_dir)
         cp.print(build_dir / 'pyconfig.h', recipe_build_dir / 'Include')
 
-    def include_root(self, arch_name):
-        return self.get_build_dir(arch_name) / 'Include'
+    def include_root(self, arch):
+        return self.get_build_dir(arch.name) / 'Include'
 
-    def link_root(self, arch_name):
-        return self.get_build_dir(arch_name) / 'android-build'
+    def link_root(self, arch):
+        return self.get_build_dir(arch.name) / 'android-build'
 
     def _compile_python_files(self, cwd, dir):
         args = ['-b'] if self.ctx.python_recipe.name == 'python3' else []
