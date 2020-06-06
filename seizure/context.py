@@ -103,7 +103,7 @@ class Context:
         log.info("Will compile for the following arch: %s", self.arch.name)
         self.distsdir.mkdirp()
         (self.buildsdir / 'bootstrap_builds').mkdirp()
-        (self.buildsdir / 'other_builds').mkdirp()
+        self.other_builds.mkdirp()
         log.info("Found Android API target in $ANDROIDAPI: %s", self.android_api)
         check_target_api(self.android_api, self.arch.name)
         apis = self.platform.apilevels()
@@ -143,6 +143,7 @@ class Context:
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.packages_path = Path(config.packages_path)
+        self.other_builds = Path(config.other_builds)
         self.recipes = {}
         self.env = os.environ.copy()
         self.env.pop("LDFLAGS", None)
