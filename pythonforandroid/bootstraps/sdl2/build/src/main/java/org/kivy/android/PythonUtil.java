@@ -115,21 +115,18 @@ public class PythonUtil {
                 }
             }
         }
-
         try {
             System.load(filesDirPath + "/lib/python2.7/lib-dynload/_io.so");
             System.load(filesDirPath + "/lib/python2.7/lib-dynload/unicodedata.so");
         } catch(UnsatisfiedLinkError e) {
             Log.v(TAG, "Failed to load _io.so or unicodedata.so...but that's okay.");
         }
-
         try {
-            // System.loadLibrary("ctypes");
             System.load(filesDirPath + "/lib/python2.7/lib-dynload/_ctypes.so");
         } catch(UnsatisfiedLinkError e) {
             Log.v(TAG, "Unsatisfied linker when loading ctypes");
         }
-
         Log.v(TAG, "Loaded everything!");
     }
+
 }

@@ -47,7 +47,6 @@ import java.util.ArrayList;
 import java.io.FilenameFilter;
 import java.util.regex.Pattern;
 
-
 public class PythonUtil {
 	private static final String TAG = "pythonutil";
 
@@ -110,7 +109,7 @@ public class PythonUtil {
                 }
             }
         }
-
         Log.v(TAG, "Loaded everything!");
-	}
+    }
+
 }
