@@ -125,6 +125,7 @@ class APKMaker:
     def __init__(self, config):
         self.app_dir = Path(config.app_dir)
         self.ndk_api = config.android.ndk_api
+        self.sdk_dir = Path(config.android_sdk_dir)
 
     def makeapkversion(self, args, dist):
         distdir = dist.dist_dir
@@ -189,9 +190,8 @@ class APKMaker:
                 service_id = 1 + sid,
             )
         android_api = int((distdir / 'project.properties').read_text().strip().split('-')[1])
-        sdk_dir = Path((distdir / 'local.properties').read_text().strip()[8:])
         ignored = {".DS_Store", ".ds_store"}
-        build_tools_version = max((x.name for x in (sdk_dir / 'build-tools').iterdir() if x.name not in ignored), key = LooseVersion)
+        build_tools_version = max((x.name for x in (self.sdk_dir / 'build-tools').iterdir() if x.name not in ignored), key = LooseVersion)
         url_scheme = 'kivy'
         manifest_path = distdir / 'src' / 'main' / 'AndroidManifest.xml'
         render_args = {
