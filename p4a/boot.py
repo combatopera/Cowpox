@@ -63,14 +63,6 @@ def _copy_files(src_root, dest_root, override):
             else:
                 dest_file.mkdirp()
 
-default_recipe_priorities = [
-    "webview", "sdl2", "service_only"  # last is highest
-]
-# ^^ NOTE: these are just the default priorities if no special rules
-# apply (which you can find in the code below), so basically if no
-# known graphical lib or web lib is used - in which case service_only
-# is the most reasonable guess.
-
 class Bootstrap:
 
     name = ''
