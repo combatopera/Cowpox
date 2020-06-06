@@ -227,16 +227,18 @@ class GuestPythonRecipe(TargetPythonRecipe):
     def link_root(self, arch):
         return self.get_build_dir(arch) / 'android-build'
 
-    def _compile_python_files(self, cwd, dir):
-        args = ['-b'] if self.ctx.python_recipe.name == 'python3' else []
-        Program.text(self.ctx.hostpython)._OO._m.compileall.print(*args, '-f', dir, cwd = cwd, check = False)
+    def _compile_python_files(self, dirpath):
+        args = ['-b'] if self.ctx.python_recipe.name == 'python3' else [] # XXX: Simplify?
+        for path in dirpath.rglob('*.py'):
+            os.utime(path, (0, 0)) # Determinism.
+        Program.text(self.ctx.hostpython)._OO._m.compileall.print(*args, '-f', dirpath, check = False) # XXX: Why not check?
 
     def create_python_bundle(self, dirn, arch):
         dirn = (dirn / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.get_build_dir(arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.major_minor_version_string}"
-        self._compile_python_files(dirn, modules_build_dir)
-        self._compile_python_files(dirn, self.get_build_dir(arch) / 'Lib')
-        self._compile_python_files(dirn, self.ctx.get_python_install_dir())
+        self._compile_python_files(dirn / modules_build_dir)
+        self._compile_python_files(dirn / self.get_build_dir(arch) / 'Lib')
+        self._compile_python_files(dirn / self.ctx.get_python_install_dir())
         modules_dir = (dirn / 'modules').mkdirp()
         c_ext = self.compiled_extension
         module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob(f"*{c_ext}")]
