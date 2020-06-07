@@ -38,12 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .util import format_obj
 from distutils.version import LooseVersion
 from lagoon import basename, cp, find, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
 from os.path import join
 from pathlib import Path
+from seizure.util import format_obj
 from zipfile import ZipFile
 import hashlib, logging, os, re, shutil, subprocess
 
