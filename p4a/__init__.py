@@ -92,21 +92,6 @@ class Recipe:
         log.info("Applying patch %s", filename)
         patchexe._t._p1.print('-d', self.get_build_dir(arch) if build_dir is None else build_dir, '-i', self.get_recipe_dir() / filename)
 
-    def copy_file(self, filename, dest):
-        log.info("Copy %s to %s", filename, dest)
-        filename = self.get_recipe_dir() / filename
-        dest = self.build_dir / dest
-        shutil.copy(filename, dest)
-
-    def append_file(self, filename, dest):
-        log.info("Append %s to %s", filename, dest)
-        filename = self.get_recipe_dir() / filename
-        dest = self.build_dir / dest
-        with open(filename, "rb") as fd:
-            data = fd.read()
-        with open(dest, "ab") as fd:
-            fd.write(data)
-
     def check_recipe_choices(self):
         '''Checks what recipes are being built to see which of the alternative
         and optional dependencies are being used,
