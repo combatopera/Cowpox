@@ -415,7 +415,6 @@ class PythonRecipe(Recipe):
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
-    pre_build_ext = False
     build_cmd = 'build_ext'
 
     def install_python_package(self, arch):
@@ -445,7 +444,6 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
 class CythonRecipe(PythonRecipe):
 
-    pre_build_ext = False
     cythonize = True
     cython_args = []
     call_hostpython_via_targetpython = False
