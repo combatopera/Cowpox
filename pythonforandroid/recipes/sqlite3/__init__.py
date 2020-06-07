@@ -54,7 +54,7 @@ class Sqlite3Recipe(NDKRecipe):
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
         mkdir._p.print(self.get_build_dir(arch) / 'jni')
-        shutil.copyfile(self.get_recipe_dir() / 'Android.mk', self.get_build_dir(arch) / 'jni' / 'Android.mk')
+        shutil.copyfile(self.resourcepath('Android.mk'), self.get_build_dir(arch) / 'jni' / 'Android.mk')
 
     def build_arch(self, arch, *extra_args):
         super().build_arch(arch)

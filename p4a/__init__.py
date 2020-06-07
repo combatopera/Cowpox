@@ -42,9 +42,10 @@ from distutils.version import LooseVersion
 from lagoon import cp, find, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
 from pathlib import Path
+from pkg_resources import resource_filename
 from seizure.util import format_obj
 from zipfile import ZipFile
-import hashlib, logging, os, shutil, subprocess
+import hashlib, logging, os, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -78,7 +79,7 @@ class Recipe:
 
     @property
     def name(self):
-        fqmodule = type(self).__module__
+        fqmodule = self._fqmodulename()
         return fqmodule[fqmodule.rfind('.') + 1:]
 
     @property
@@ -88,9 +89,15 @@ class Recipe:
     def __init__(self, ctx):
         self.ctx = ctx
 
+    def _fqmodulename(self):
+        return type(self).__module__
+
+    def resourcepath(self, relpath):
+        return Path(resource_filename(self._fqmodulename(), str(relpath)))
+
     def apply_patch(self, filename, arch):
         log.info("Applying patch %s", filename)
-        patchexe._t._p1.print('-d', self.get_build_dir(arch), '-i', self.get_recipe_dir() / filename)
+        patchexe._t._p1.print('-d', self.get_build_dir(arch), '-i', self.resourcepath(filename))
 
     def check_recipe_choices(self):
         '''Checks what recipes are being built to see which of the alternative
@@ -125,9 +132,6 @@ class Recipe:
 
     def get_build_dir(self, arch):
         return self.get_build_container_dir(arch) / self.name
-
-    def get_recipe_dir(self):
-        return self.ctx.contribroot / 'recipes' / self.name
 
     def download_if_necessary(self, mirror):
         log.info("Downloading %s", self.name)
@@ -249,7 +253,7 @@ class IncludedFilesBehaviour:
     def prepare_build_dir(self, arch, mirror):
         self.get_build_container_dir(arch).mkdirp()
         rm._rf.print(self.get_build_dir(arch))
-        cp._a.print(self.get_recipe_dir() / self.src_filename, self.get_build_dir(arch))
+        cp._a.print(self.resourcepath(self.src_filename), self.get_build_dir(arch))
 
 class BootstrapNDKRecipe(Recipe):
     '''A recipe class for recipes built in an Android project jni dir with
@@ -403,7 +407,7 @@ class PythonRecipe(Recipe):
         if self.ctx.insitepackages(self.name):
             log.info('Python package already exists in site-packages')
             return False
-        log.info("%s apparently isn't already in site-packages", name)
+        log.info("%s apparently isn't already in site-packages", self.name)
         return True
 
     def build_arch(self, arch):
