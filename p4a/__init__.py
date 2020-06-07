@@ -96,9 +96,9 @@ class Recipe:
     def resourcepath(self, relpath):
         return Path(resource_filename(self._fqmodulename(), str(relpath)))
 
-    def apply_patch(self, filename, arch):
-        log.info("Applying patch %s", filename)
-        patchexe._t._p1.print('-d', self.get_build_dir(arch), '-i', self.resourcepath(filename))
+    def apply_patch(self, relpath, arch):
+        log.info("Applying patch %s", relpath)
+        patchexe._t._p1.print('-d', self.get_build_dir(arch), '-i', self.resourcepath(relpath))
 
     def check_recipe_choices(self):
         '''Checks what recipes are being built to see which of the alternative
