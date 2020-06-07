@@ -93,9 +93,7 @@ class Bootstrap:
         return sorted(recipes)
 
     def get_build_dir_name(self):
-        choices = self.check_recipe_choices()
-        dir_name = '-'.join([self.name] + choices)
-        return dir_name
+        return '-'.join([self.name, *self.check_recipe_choices()]) # TODO: Looks very familiar.
 
     def get_build_dir(self):
         return self.ctx.buildsdir / 'bootstrap_builds' / self.get_build_dir_name()
