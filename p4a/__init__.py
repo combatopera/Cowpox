@@ -467,10 +467,6 @@ class CythonRecipe(PythonRecipe):
     call_hostpython_via_targetpython = False
 
     def install_python_package(self, arch):
-        self._build_cython_components(arch)
-        super().install_python_package(arch)
-
-    def _build_cython_components(self, arch):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env(arch)
         builddir = self.get_build_dir(arch)
@@ -492,6 +488,7 @@ class CythonRecipe(PythonRecipe):
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
         self.strip_object_files(env, builddir)
+        super().install_python_package(arch)
 
     @staticmethod
     def strip_object_files(env, build_dir):
