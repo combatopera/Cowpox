@@ -63,7 +63,7 @@ def _walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
             else:
                 yield Path(dirn, filen)
 
-class TargetPythonRecipe(Recipe):
+class GuestPythonRecipe(Recipe):
 
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
@@ -73,37 +73,7 @@ class TargetPythonRecipe(Recipe):
     def major_minor_version_string(self):
         return '.'.join(str(v) for v in LooseVersion(self.version).version[:2])
 
-class GuestPythonRecipe(TargetPythonRecipe):
-    '''
-    Class for target python recipes. Sets ctx.python_recipe to point to itself,
-    so as to know later what kind of Python was built or used.
-
-    This base class is used for our main python recipes (python2 and python3)
-    which shares most of the build process.
-
-    .. versionadded:: 0.6.0
-        Refactored from the inclement's python3 recipe with a few changes:
-
-        - Splits the python's build process several methods: :meth:`build_arch`
-          and :meth:`get_recipe_env`.
-        - Adds the attribute :attr:`configure_args`, which has been moved from
-          the method :meth:`build_arch` into a static class variable.
-        - Adds some static class variables used to create the python bundle and
-          modifies the method :meth:`create_python_bundle`, to adapt to the new
-          situation. The added static class variables are:
-          :attr:`stdlib_dir_blacklist`, :attr:`stdlib_filen_blacklist`,
-          :attr:`site_packages_dir_blacklist`and
-          :attr:`site_packages_filen_blacklist`.
-    '''
-
     MIN_NDK_API = 21
-    '''Sets the minimal ndk api number needed to use the recipe.
-
-    .. warning:: This recipe can be built only against API 21+, so it means
-        that any class which inherits from class:`GuestPythonRecipe` will have
-        this limitation.
-    '''
-
     configure_args = ()
     '''The configure arguments needed to build the python recipe. Those are
     used in method :meth:`build_arch` (if not overwritten like python3's
