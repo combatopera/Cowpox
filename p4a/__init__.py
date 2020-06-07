@@ -216,10 +216,8 @@ class Recipe:
         if self.url is None:
             log.info("Skipping %s unpack as no URL is set", self.name)
             return
-        # TODO: Parse the URL instead.
-        filename = basename(self.url)[:-1]
         if not directory_name.exists() or not directory_name.is_dir():
-            extraction_filename = self.ctx.packages_path / self.name / filename
+            extraction_filename = self.mirror.getpath(self.url)
             if extraction_filename.name.endswith('.zip'):
                 try:
                     unzip.print(extraction_filename, cwd = build_dir)

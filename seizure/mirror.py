@@ -53,10 +53,8 @@ class Mirror:
 
         version = 'Wget/1.17.1'
 
-    urlretrieve = WgetDownloader().retrieve
-
     @staticmethod
-    def report_hook(index, blksize, size):
+    def _report_hook(index, blksize, size):
         if size <= 0:
             progression = '{0} bytes'.format(index * blksize)
         else:
@@ -67,17 +65,21 @@ class Mirror:
     @types(Config)
     def __init__(self, config):
         self.mirror = Path(config.mirror.path)
+        self.urlretrieve = self.WgetDownloader().retrieve
+
+    def getpath(self, url):
+        return self.mirror / md5(url.encode('ascii')).hexdigest()
 
     def download(self, url):
-        mirrorpath = self.mirror / md5(url.encode('ascii')).hexdigest()
+        mirrorpath = self.getpath()
         if mirrorpath.exists():
             log.info("Already downloaded: %s", url)
         else:
-            partialpath = mirrorpath.with_name(mirrorpath.name + '.part')
+            partialpath = mirrorpath.with_name(f"{mirrorpath.name}.part")
             attempts = 0
             while True:
                 try:
-                    self.urlretrieve(url, partialpath, self.report_hook)
+                    self.urlretrieve(url, partialpath, self._report_hook)
                     break
                 except OSError:
                     attempts += 1
