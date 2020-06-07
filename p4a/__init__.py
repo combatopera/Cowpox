@@ -162,12 +162,7 @@ class Recipe:
         if self.url is None:
             log.info("Skipping %s download as no URL is set", self.name)
             return
-        path = self.mirror.getpath(self.url)
-        if path.is_file():
-            log.info("%s download already cached, skipping", self.name)
-        else:
-            log.debug("Downloading %s from %s", self.name, self.url)
-            self.mirror.download(self.url)
+        path = self.mirror.download(self.url)
         if self.md5sum is not None:
             current_md5 = _md5sum(path)
             if current_md5 != self.md5sum:
