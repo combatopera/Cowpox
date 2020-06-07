@@ -310,9 +310,6 @@ class NDKRecipe(Recipe):
                 env = self.get_recipe_env(arch), cwd = self.get_build_dir(arch))
 
 class PythonRecipe(Recipe):
-    site_packages_name = None
-    '''The name of the module's folder when installed in the Python
-    site-packages (e.g. for pyjnius it is 'jnius')'''
 
     call_hostpython_via_targetpython = True
     '''If True, tries to install the module using the hostpython binary
@@ -403,10 +400,7 @@ class PythonRecipe(Recipe):
         return env
 
     def should_build(self, arch):
-        name = self.site_packages_name
-        if name is None:
-            name = self.name
-        if self.ctx.insitepackages(name):
+        if self.ctx.insitepackages(self.name):
             log.info('Python package already exists in site-packages')
             return False
         log.info("%s apparently isn't already in site-packages", name)

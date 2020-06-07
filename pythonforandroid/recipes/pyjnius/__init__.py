@@ -51,7 +51,6 @@ class PyjniusRecipe(CythonRecipe):
     urlformat = "https://github.com/kivy/pyjnius/archive/{version}.zip"
     name = 'pyjnius'
     depends = [('genericndkbuild', 'sdl2'), 'six']
-    site_packages_name = 'jnius'
     patches = [
         ('sdl2_jnienv_getter.patch', will_build('sdl2')),
         ('genericndkbuild_jnienv_getter.patch', will_build('genericndkbuild')),
