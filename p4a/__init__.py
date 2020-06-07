@@ -167,7 +167,7 @@ class Recipe:
                 log.debug("Expected md5sum: %s", self.md5sum)
                 raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
 
-    def _unpack(self, arch):
+    def _unpack(self, arch, mirror):
         log.info("Unpacking %s for %s", self.name, arch.name)
         build_dir = self.get_build_container_dir(arch)
         directory_name = self.get_build_dir(arch)
@@ -183,7 +183,7 @@ class Recipe:
             log.info("Skipping %s unpack as no URL is set", self.name)
             return
         if not directory_name.is_dir():
-            extraction_filename = self.mirror.getpath(self.url)
+            extraction_filename = mirror.getpath(self.url)
             if extraction_filename.name.endswith('.zip'):
                 try:
                     unzip.print(extraction_filename, cwd = build_dir)
@@ -247,9 +247,9 @@ class Recipe:
     def postbuild_arch(self, arch):
         pass
 
-    def prepare_build_dir(self, arch):
+    def prepare_build_dir(self, arch, mirror):
         self.get_build_container_dir(arch).mkdirp()
-        self._unpack(arch)
+        self._unpack(arch, mirror)
 
     def _install_libs(self, arch, libs):
         if libs:
@@ -266,7 +266,7 @@ class Recipe:
 
 class IncludedFilesBehaviour:
 
-    def prepare_build_dir(self, arch):
+    def prepare_build_dir(self, arch, mirror):
         self.get_build_container_dir(arch).mkdirp()
         rm._rf.print(self.get_build_dir(arch))
         cp._a.print(self.get_recipe_dir() / self.src_filename, self.get_build_dir(arch))

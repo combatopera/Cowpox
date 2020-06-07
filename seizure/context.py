@@ -174,7 +174,7 @@ class Context:
         log.info("Building all recipes for arch %s", self.arch.name)
         log.info('Unpacking recipes')
         for recipe in recipes:
-            recipe.prepare_build_dir(self.arch)
+            recipe.prepare_build_dir(self.arch, self.mirror)
         log.info('Prebuilding recipes')
         for recipe in recipes:
             log.info("Prebuilding %s for %s", recipe.name, self.arch.name)
