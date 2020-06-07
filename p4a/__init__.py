@@ -49,35 +49,7 @@ import hashlib, logging, os, re, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
-class RecipeMeta(type):
-
-    def __new__(cls, name, bases, dct):
-        if name != 'Recipe':
-            if 'url' in dct:
-                dct['_url'] = dct.pop('url')
-            if 'version' in dct:
-                dct['_version'] = dct.pop('version')
-        return super(RecipeMeta, cls).__new__(cls, name, bases, dct)
-
-class Recipe(metaclass = RecipeMeta):
-
-    _url = None
-    '''The address from which the recipe may be downloaded. This is not
-    essential, it may be omitted if the source is available some other
-    way, such as via the :class:`IncludedFilesBehaviour` mixin.
-
-    If the url includes the version, you may (and probably should)
-    replace this with ``{version}``, which will automatically be
-    replaced by the :attr:`version` string during download.
-
-    .. note:: Methods marked (internal) are used internally and you
-              probably don't need to call them, but they are available
-              if you want.
-    '''
-
-    _version = None
-    '''A string giving the version of the software the recipe describes,
-    e.g. ``2.0.3`` or ``master``.'''
+class Recipe:
 
     md5sum = None
     '''The md5sum of the source from the :attr:`url`. Non-essential, but
@@ -112,14 +84,6 @@ class Recipe(metaclass = RecipeMeta):
 
     def __init__(self, ctx):
         self.ctx = ctx
-
-    @property
-    def version(self):
-        return self._version
-
-    @property
-    def url(self):
-        return self._url
 
     @property
     def versioned_url(self):
