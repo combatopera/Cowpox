@@ -164,7 +164,7 @@ class Recipe:
             return
         path = self.mirror.getpath(self.url)
         if path.is_file():
-            if self.md5sum:
+            if self.md5sum is not None:
                 current_md5 = _md5sum(path)
                 if current_md5 != self.md5sum:
                     log.debug("Generated md5sum: %s", current_md5)
@@ -174,13 +174,12 @@ class Recipe:
         else:
             log.debug("Downloading %s from %s", self.name, self.url)
             self.mirror.download(self.url)
-            if self.md5sum:
+            if self.md5sum is not None:
                 current_md5 = _md5sum(path)
-                if self.md5sum is not None:
-                    if current_md5 != self.md5sum:
-                        log.debug("Generated md5sum: %s", current_md5)
-                        log.debug("Expected md5sum: %s", self.md5sum)
-                        raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
+                if current_md5 != self.md5sum:
+                    log.debug("Generated md5sum: %s", current_md5)
+                    log.debug("Expected md5sum: %s", self.md5sum)
+                    raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
 
     def _unpack(self, arch):
         log.info("Unpacking %s for %s", self.name, arch.name)
