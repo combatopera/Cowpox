@@ -170,16 +170,7 @@ class Recipe:
             log.info("Skipping %s download as no URL is set", self.name)
             return
         url = self.url
-        ma = re.match('^(.+)#md5=([0-9a-f]{32})$', url)
-        if ma:                  # fragmented URL?
-            if self.md5sum:
-                raise ValueError(
-                    ('Received md5sum from both the {} recipe '
-                     'and its url').format(self.name))
-            url = ma.group(1)
-            expected_md5 = ma.group(2)
-        else:
-            expected_md5 = self.md5sum
+        expected_md5 = self.md5sum
         packagepath = (self.ctx.packages_path / self.name).mkdirp()
         filename = packagepath / basename(url)[:-1]
         do_download = True
@@ -228,9 +219,6 @@ class Recipe:
             return
         # TODO: Parse the URL instead.
         filename = basename(self.url)[:-1]
-        ma = re.match('^(.+)#md5=([0-9a-f]{32})$', filename)
-        if ma:                  # fragmented URL?
-            filename = ma.group(1)
         if not directory_name.exists() or not directory_name.is_dir():
             extraction_filename = self.ctx.packages_path / self.name / filename
             if extraction_filename.is_file():
