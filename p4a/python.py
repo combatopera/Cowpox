@@ -266,12 +266,8 @@ class HostPythonRecipe(Recipe):
     urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
 
     @property
-    def _exe_name(self):
-        return f"python{self.version.split('.')[0]}"
-
-    @property
     def python_exe(self):
-        return self.get_path_to_python() / self._exe_name
+        return self.get_path_to_python() / f"python{self.version.split('.')[0]}"
 
     def should_build(self, arch):
         if self.python_exe.exists():
