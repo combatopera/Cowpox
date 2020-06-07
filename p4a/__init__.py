@@ -411,11 +411,9 @@ class PythonRecipe(Recipe):
         super().build_arch(arch)
         self.install_python_package(arch)
 
-    def install_python_package(self, arch, name=None, env=None, is_dir=True):
-        if name is None:
-            name = self.name
-        if env is None:
-            env = self.get_recipe_env(arch)
+    def install_python_package(self, arch):
+        name = self.name
+        env = self.get_recipe_env(arch)
         log.info("Installing %s into site-packages", self.name)
         builddir = self.get_build_dir(arch)
         hostpython = Program.text(self.hostpython_location)
