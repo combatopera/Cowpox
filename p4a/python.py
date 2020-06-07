@@ -220,10 +220,6 @@ class GuestPythonRecipe(TargetPythonRecipe):
     def should_build(self, arch):
         return not (self.link_root(arch) / self._libpython).is_file()
 
-    def prebuild_arch(self, arch):
-        super(TargetPythonRecipe, self).prebuild_arch(arch)
-        self.ctx.python_recipe = self # Sucks.
-
     def build_arch(self, arch):
         assert self.ctx.ndk_api >= self.MIN_NDK_API
         recipe_build_dir = self.get_build_dir(arch)
