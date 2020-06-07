@@ -276,6 +276,9 @@ class HostPythonRecipe(Recipe):
             return False
         return True
 
+    def get_build_container_dir(self, arch):
+        return super().get_build_container_dir(DesktopArch)
+
     def get_path_to_python(self):
         return self.get_build_dir(DesktopArch) / self.build_subdir
 
