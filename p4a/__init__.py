@@ -156,13 +156,10 @@ class Recipe:
         if user_dir is not None:
             log.info("P4A_%s_DIR is set, skipping download for %s", self.name, self.name)
             return
-        self._download(mirror)
-
-    def _download(self, mirror):
         if self.url is None:
             log.info("Skipping %s download as no URL is set", self.name)
             return
-        path = self.mirror.download(self.url)
+        path = mirror.download(self.url)
         if self.md5sum is not None:
             current_md5 = _md5sum(path)
             if current_md5 != self.md5sum:
