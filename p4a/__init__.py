@@ -197,17 +197,13 @@ class Recipe:
     def prebuild_arch(self, arch):
         pass
 
-    def is_patched(self, arch):
-        build_dir = self.get_build_dir(arch)
-        return (build_dir / '.patched').exists()
-
     def apply_patches(self, arch):
         if self.patches:
             log.info("Applying patches for %s[%s]", self.name, arch.name)
-            if self.is_patched(arch):
+            build_dir = self.get_build_dir(arch)
+            if (build_dir / '.patched').exists():
                 log.info("%s already patched, skipping", self.name)
                 return
-            build_dir = self.get_build_dir(arch)
             for patch in self.patches:
                 if isinstance(patch, (tuple, list)): # TODO: Yuk.
                     patch, patch_check = patch
