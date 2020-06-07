@@ -140,7 +140,7 @@ class Recipe:
         if user_dir is not None:
             log.info("P4A_%s_DIR is set, skipping download for %s", self.name, self.name)
             return
-        if self.url is None:
+        if self.url is None or not urlparse(self.url).scheme:
             log.info("Skipping %s download as no URL is set", self.name)
             return
         path = mirror.download(self.url)
@@ -154,7 +154,7 @@ class Recipe:
 
     def _unpack(self, arch, mirror):
         directory_name = self.get_build_dir(arch)
-        if not urlparse(self.url).scheme:
+        if self.url is not None and not urlparse(self.url).scheme:
             rm._rf.print(directory_name)
             cp._a.print(self.resourcepath(self.url.replace('/', os.sep)), directory_name)
             return
