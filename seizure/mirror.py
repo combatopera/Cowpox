@@ -71,7 +71,7 @@ class Mirror:
         return self.mirror / md5(url.encode('ascii')).hexdigest()
 
     def download(self, url):
-        mirrorpath = self._getpath()
+        mirrorpath = self._getpath(url)
         if mirrorpath.exists():
             log.info("Already downloaded: %s", url)
         else:
