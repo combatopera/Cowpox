@@ -145,7 +145,7 @@ class Recipe:
             return
         path = mirror.download(self.url)
         if self.md5sum is not None:
-            current_md5 = _md5sum(path)
+            current_md5 = hashlib.md5(path.read_bytes()).hexdigest()
             if current_md5 != self.md5sum:
                 log.debug("Generated md5sum: %s", current_md5)
                 log.debug("Expected md5sum: %s", self.md5sum)
@@ -549,6 +549,3 @@ class TargetPythonRecipe(Recipe):
     @property
     def major_minor_version_string(self):
         return '.'.join(str(v) for v in LooseVersion(self.version).version[:2])
-
-def _md5sum(filen):
-    return hashlib.md5(filen.read_bytes()).hexdigest()
