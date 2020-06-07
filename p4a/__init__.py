@@ -277,14 +277,13 @@ class BootstrapNDKRecipe(Recipe):
 class NDKRecipe(Recipe):
     '''A recipe class for any NDK project not included in the bootstrap.'''
 
-    generated_libraries = []
+    generated_libraries = ()
 
     def should_build(self, arch):
         lib_dir = self.get_lib_dir(arch)
         for lib in self.generated_libraries:
             if not (lib_dir / lib).exists():
                 return True
-        return False
 
     def get_lib_dir(self, arch):
         return self.get_build_dir(arch) / 'obj' / 'local' / arch.name
