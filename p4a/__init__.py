@@ -44,7 +44,6 @@ from lagoon import basename, cp, find, git as sysgit, mv, patch as patchexe, rm,
 from lagoon.program import Program
 from os.path import join
 from pathlib import Path
-from urllib.parse import urlparse
 from zipfile import ZipFile
 import hashlib, logging, os, re, shutil, subprocess
 
@@ -92,30 +91,9 @@ class Recipe:
 
     def _download_file(self, url, target, mirror):
         log.info("Downloading %s from %s", self.name, url)
-        parsed_url = urlparse(url)
-        if parsed_url.scheme in {'http', 'https'}:
-            if target.exists():
-                target.unlink()
-            target.symlink_to(mirror.download(url))
-            return target
-        elif parsed_url.scheme in {'git', 'git+file', 'git+ssh', 'git+http', 'git+https'}:
-            if target.is_dir():
-                git = sysgit.partial(cwd = target)
-                git.fetch.__tags.print()
-                if self.version:
-                    git.checkout.print(self.version)
-                git.pull.print()
-                git.pull.__recurse_submodules.print()
-                git.submodule.update.__recursive.print()
-            else:
-                if url.startswith('git+'):
-                    url = url[4:]
-                sysgit.clone.__recursive.print(url, target)
-                if self.version:
-                    git = sysgit.partial(cwd = target)
-                    git.checkout.print(self.version)
-                    git.submodule.update.__recursive.print()
-            return target
+        if target.exists():
+            target.unlink()
+        target.symlink_to(mirror.download(url))
 
     def apply_patch(self, filename, arch, build_dir = None):
         log.info("Applying patch %s", filename)
