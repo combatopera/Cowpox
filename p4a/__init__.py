@@ -88,9 +88,9 @@ class Recipe:
     def __init__(self, ctx):
         self.ctx = ctx
 
-    def apply_patch(self, filename, arch, build_dir = None):
+    def apply_patch(self, filename, arch):
         log.info("Applying patch %s", filename)
-        patchexe._t._p1.print('-d', self.get_build_dir(arch) if build_dir is None else build_dir, '-i', self.get_recipe_dir() / filename)
+        patchexe._t._p1.print('-d', self.get_build_dir(arch), '-i', self.get_recipe_dir() / filename)
 
     def check_recipe_choices(self):
         '''Checks what recipes are being built to see which of the alternative
