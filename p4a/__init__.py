@@ -173,24 +173,17 @@ class Recipe:
         packagepath = (self.ctx.packages_path / self.name).mkdirp()
         filename = packagepath / basename(url)[:-1]
         do_download = True
-        marker_filename = packagepath / f".mark-{filename.name}"
         if filename.exists() and filename.is_file():
-            if not marker_filename.exists():
-                filename.unlink()
-            elif expected_md5:
+            if expected_md5:
                 current_md5 = _md5sum(filename)
                 if current_md5 != expected_md5:
                     log.debug("Generated md5sum: %s", current_md5)
                     log.debug("Expected md5sum: %s", expected_md5)
                     raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
-                do_download = False
-            else:
-                do_download = False
+            do_download = False
         if do_download:
             log.debug("Downloading %s from %s", self.name, url)
-            rm._f.print(marker_filename)
             self._download_file(self.url, filename, mirror)
-            touch.print(marker_filename)
             if filename.exists() and filename.is_file() and expected_md5:
                 current_md5 = _md5sum(filename)
                 if expected_md5 is not None:
