@@ -46,7 +46,6 @@ class Distribution:
 
     name = None  # A name identifying the dist. May not be None.
     needs_build = False  # Whether the dist needs compiling
-    url = None
     dist_dir = None  # Where the dist dir ultimately is. Should not be None.
     ndk_api = None
     recipes = []
