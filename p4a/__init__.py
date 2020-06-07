@@ -123,12 +123,7 @@ class Recipe:
         return [recipe for recipe in recipes if recipe in self.opt_depends]
 
     def get_build_container_dir(self, arch):
-        return self.ctx.other_builds / self.get_dir_name() / f"{arch.name}__ndk_target_{self.ctx.ndk_api}"
-
-    def get_dir_name(self):
-        choices = self.check_recipe_choices()
-        dir_name = '-'.join([self.name] + choices)
-        return dir_name
+        return self.ctx.other_builds / '-'.join([self.name, *self.check_recipe_choices()]) / f"{arch.name}__ndk_target_{self.ctx.ndk_api}"
 
     def get_build_dir(self, arch):
         return self.get_build_container_dir(arch) / self.name
