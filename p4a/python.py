@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from . import Recipe
+from .arch import DesktopArch
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from lagoon import cp, find, make, mv, zip
@@ -275,11 +276,8 @@ class HostPythonRecipe(Recipe):
             return False
         return True
 
-    def get_build_container_dir(self, arch):
-        return super().get_build_container_dir(arch).parent / 'desktop'
-
     def get_path_to_python(self):
-        return self.get_build_dir(None) / self.build_subdir
+        return self.get_build_dir(DesktopArch) / self.build_subdir
 
     def build_arch(self, arch):
         recipe_build_dir = self.get_build_dir(arch)

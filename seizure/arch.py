@@ -40,6 +40,7 @@
 
 from .config import Config
 from diapyr import types
+from diapyr.util import singleton
 from lagoon import which
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -114,6 +115,15 @@ class Arch:
         env['BUILDLIB_PATH'] = ctx.get_recipe(f"host{ctx.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}"
         env['PATH'] = f"{self._clang_path()}{os.pathsep}{os.environ['PATH']}"
         return env
+
+    def builddirname(self):
+        return f"{self.name}__ndk_target_{self.ndk_api}"
+
+@singleton
+class DesktopArch:
+
+    def builddirname(self):
+        return 'desktop'
 
 class BaseArchARM(Arch):
 
