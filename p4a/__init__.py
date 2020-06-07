@@ -166,7 +166,7 @@ class Recipe:
         expected_md5 = self.md5sum
         filename = self.mirror.getpath(self.url)
         do_download = True
-        if filename.exists() and filename.is_file():
+        if filename.is_file():
             if expected_md5:
                 current_md5 = _md5sum(filename)
                 if current_md5 != expected_md5:
@@ -177,7 +177,7 @@ class Recipe:
         if do_download:
             log.debug("Downloading %s from %s", self.name, url)
             self.mirror.download(self.url)
-            if filename.exists() and filename.is_file() and expected_md5:
+            if filename.is_file() and expected_md5:
                 current_md5 = _md5sum(filename)
                 if expected_md5 is not None:
                     if current_md5 != expected_md5:
@@ -202,7 +202,7 @@ class Recipe:
         if self.url is None:
             log.info("Skipping %s unpack as no URL is set", self.name)
             return
-        if not directory_name.exists() or not directory_name.is_dir():
+        if not directory_name.is_dir():
             extraction_filename = self.mirror.getpath(self.url)
             if extraction_filename.name.endswith('.zip'):
                 try:
