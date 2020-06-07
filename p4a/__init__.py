@@ -216,9 +216,7 @@ class Recipe:
         return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries(arch)) # XXX: Weird logic?
 
     def build_arch(self, arch):
-        build = f"build_{arch.name}"
-        if hasattr(self, build):
-            getattr(self, build)()
+        pass
 
     def install_libraries(self, arch):
         self._install_libs(arch, [p for p in self._get_libraries(arch) if p.name.endswith('.so')])
