@@ -219,7 +219,9 @@ class Recipe:
         pass
 
     def install_libraries(self, arch):
-        self._install_libs(arch, [p for p in self._get_libraries(arch) if p.name.endswith('.so')])
+        libs = [p for p in self._get_libraries(arch) if p.name.endswith('.so')]
+        if libs:
+            cp.print(*libs, self.ctx.get_libs_dir(arch))
 
     def postbuild_arch(self, arch):
         pass
@@ -227,10 +229,6 @@ class Recipe:
     def prepare_build_dir(self, arch, mirror):
         self.get_build_container_dir(arch).mkdirp()
         self._unpack(arch, mirror)
-
-    def _install_libs(self, arch, libs):
-        if libs:
-            cp.print(*libs, self.ctx.get_libs_dir(arch))
 
     def has_libs(self, arch, *libs):
         return all(map(lambda l: self.ctx.has_lib(arch, l), libs))
