@@ -276,7 +276,7 @@ class HostPythonRecipe(Recipe):
         return True
 
     def get_build_container_dir(self, arch):
-        return self.ctx.other_builds / '-'.join([self.name, *self.check_recipe_choices()]) / 'desktop'
+        return super().get_build_container_dir(arch).parent / 'desktop'
 
     def get_path_to_python(self):
         return self.get_build_dir(None) / self.build_subdir
