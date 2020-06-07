@@ -45,7 +45,7 @@ from os.path import join
 from pathlib import Path
 from seizure.util import format_obj
 from zipfile import ZipFile
-import hashlib, logging, os, re, shutil, subprocess
+import hashlib, logging, os, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
