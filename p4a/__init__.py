@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from distutils.version import LooseVersion
 from lagoon import cp, find, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
 from pathlib import Path
@@ -532,20 +531,3 @@ class CythonRecipe(PythonRecipe):
         env['COPYLIBS'] = '1'
         env['LIBLINK_PATH'] = str((self.get_build_container_dir(arch) / f"objects_{self.name}").mkdirp())
         return env
-
-class TargetPythonRecipe(Recipe):
-
-    def prebuild_arch(self, arch):
-        super().prebuild_arch(arch)
-        self.ctx.python_recipe = self # XXX: Can this suck less?
-
-    def include_root(self, arch):
-        '''The root directory from which to include headers.'''
-        raise NotImplementedError('Not implemented in TargetPythonRecipe')
-
-    def link_root(self, arch):
-        raise NotImplementedError('Not implemented in TargetPythonRecipe')
-
-    @property
-    def major_minor_version_string(self):
-        return '.'.join(str(v) for v in LooseVersion(self.version).version[:2])

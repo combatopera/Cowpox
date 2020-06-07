@@ -38,7 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Recipe, TargetPythonRecipe
+from . import Recipe
+from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from lagoon import cp, find, make, mv, zip
 from lagoon.program import Program
@@ -61,6 +62,23 @@ def _walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
                     break
             else:
                 yield Path(dirn, filen)
+
+class TargetPythonRecipe(Recipe):
+
+    def prebuild_arch(self, arch):
+        super().prebuild_arch(arch)
+        self.ctx.python_recipe = self # XXX: Can this suck less?
+
+    def include_root(self, arch):
+        '''The root directory from which to include headers.'''
+        raise NotImplementedError('Not implemented in TargetPythonRecipe')
+
+    def link_root(self, arch):
+        raise NotImplementedError('Not implemented in TargetPythonRecipe')
+
+    @property
+    def major_minor_version_string(self):
+        return '.'.join(str(v) for v in LooseVersion(self.version).version[:2])
 
 class GuestPythonRecipe(TargetPythonRecipe):
     '''
