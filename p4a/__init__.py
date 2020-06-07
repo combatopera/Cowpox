@@ -91,8 +91,6 @@ class Recipe:
         return format_obj(self.urlformat, self)
 
     def _download_file(self, url, target, mirror):
-        if not url:
-            return
         log.info("Downloading %s from %s", self.name, url)
         parsed_url = urlparse(url)
         if parsed_url.scheme in {'http', 'https'}:
