@@ -38,18 +38,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from p4a import CythonRecipe, IncludedFilesBehaviour
+from p4a import CythonRecipe
 from p4a.patch import will_build
 from types import MappingProxyType
 import logging
 
 log = logging.getLogger(__name__)
 
-class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
+class AndroidRecipe(CythonRecipe):
 
     version = None # XXX: Needed?
-    url = None
-    src_filename = 'src' # XXX: Replace with relative url?
+    url = 'src'
     depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
     config_env = MappingProxyType({}) # XXX: Needed?
 

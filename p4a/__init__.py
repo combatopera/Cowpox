@@ -44,6 +44,7 @@ from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import resource_filename
 from seizure.util import format_obj
+from urllib.parse import urlparse
 from zipfile import ZipFile
 import hashlib, logging, os, subprocess
 
@@ -152,9 +153,13 @@ class Recipe:
             log.debug("[%s] MD5 OK.", self.name)
 
     def _unpack(self, arch, mirror):
+        directory_name = self.get_build_dir(arch)
+        if not urlparse(self.url).scheme:
+            rm._rf.print(directory_name)
+            cp._a.print(self.resourcepath(self.url.replace('/', os.sep)), directory_name)
+            return
         log.info("Unpacking %s for %s", self.name, arch.name)
         build_dir = self.get_build_container_dir(arch)
-        directory_name = self.get_build_dir(arch)
         user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
         if user_dir is not None:
             log.info("P4A_%s_DIR exists, symlinking instead", self.name.lower())
@@ -247,13 +252,6 @@ class Recipe:
 
     def get_recipe(self, name):
         return self.ctx.get_recipe(name)
-
-class IncludedFilesBehaviour:
-
-    def prepare_build_dir(self, arch, mirror):
-        self.get_build_container_dir(arch).mkdirp()
-        rm._rf.print(self.get_build_dir(arch))
-        cp._a.print(self.resourcepath(self.src_filename), self.get_build_dir(arch))
 
 class BootstrapNDKRecipe(Recipe):
     '''A recipe class for recipes built in an Android project jni dir with
