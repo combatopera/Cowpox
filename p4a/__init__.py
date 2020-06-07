@@ -412,13 +412,10 @@ class PythonRecipe(Recipe):
         self.install_python_package(arch)
 
     def install_python_package(self, arch):
-        name = self.name
-        env = self.get_recipe_env(arch)
         log.info("Installing %s into site-packages", self.name)
-        builddir = self.get_build_dir(arch)
-        hostpython = Program.text(self.hostpython_location)
-        hpenv = env.copy()
-        hostpython.print('setup.py', 'install', '-O2', f"--root={self.ctx.get_python_install_dir()}", '--install-lib=.', *self.setup_extra_args, env = hpenv, cwd = builddir)
+        Program.text(self.hostpython_location).print(
+                'setup.py', 'install', '-O2', f"--root={self.ctx.get_python_install_dir()}", '--install-lib=.', *self.setup_extra_args,
+                env = self.get_recipe_env(arch), cwd = self.get_build_dir(arch))
         if self.install_in_hostpython:
             self.install_hostpython_package(arch)
 
