@@ -47,9 +47,9 @@ log = logging.getLogger(__name__)
 
 class AndroidRecipe(IncludedFilesBehaviour, CythonRecipe):
 
-    version = None
+    version = None # XXX: Needed?
     url = None
-    src_filename = 'src'
+    src_filename = 'src' # XXX: Replace with relative url?
     depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
     config_env = MappingProxyType({}) # XXX: Needed?
 
