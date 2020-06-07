@@ -444,7 +444,6 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
 class CythonRecipe(PythonRecipe):
 
-    cython_args = []
     call_hostpython_via_targetpython = False
 
     def install_python_package(self, arch):
@@ -487,7 +486,7 @@ class CythonRecipe(PythonRecipe):
             del cyenv['PYTHONPATH']
         cyenv.pop('PYTHONNOUSERSITE', None)
         python_command = Program.text(f"python{self.ctx.python_recipe.major_minor_version_string.split('.')[0]}")
-        python_command.print("-m", "Cython.Build.Cythonize", filename, *self.cython_args, env = cyenv)
+        python_command.print("-m", "Cython.Build.Cythonize", filename, env = cyenv)
 
     def cythonize_build(self, env, build_dir):
         log.info('Running cython where appropriate')
