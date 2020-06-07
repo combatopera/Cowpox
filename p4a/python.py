@@ -69,13 +69,6 @@ class TargetPythonRecipe(Recipe):
         super().prebuild_arch(arch)
         self.ctx.python_recipe = self # XXX: Can this suck less?
 
-    def include_root(self, arch):
-        '''The root directory from which to include headers.'''
-        raise NotImplementedError('Not implemented in TargetPythonRecipe')
-
-    def link_root(self, arch):
-        raise NotImplementedError('Not implemented in TargetPythonRecipe')
-
     @property
     def major_minor_version_string(self):
         return '.'.join(str(v) for v in LooseVersion(self.version).version[:2])
