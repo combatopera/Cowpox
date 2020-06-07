@@ -40,4 +40,6 @@
 
 from p4a import CythonRecipe
 
-class RecipeImpl(CythonRecipe): pass # XXX: Is subclassing necessary?
+class RecipeImpl(CythonRecipe):
+
+    url = None
