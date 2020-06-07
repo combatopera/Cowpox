@@ -164,10 +164,10 @@ class Recipe:
             return
         url = self.url
         expected_md5 = self.md5sum
-        filename = self.mirror.getpath(self.url)
-        if filename.is_file():
+        path = self.mirror.getpath(self.url)
+        if path.is_file():
             if expected_md5:
-                current_md5 = _md5sum(filename)
+                current_md5 = _md5sum(path)
                 if current_md5 != expected_md5:
                     log.debug("Generated md5sum: %s", current_md5)
                     log.debug("Expected md5sum: %s", expected_md5)
@@ -176,8 +176,8 @@ class Recipe:
         else:
             log.debug("Downloading %s from %s", self.name, url)
             self.mirror.download(self.url)
-            if filename.is_file() and expected_md5:
-                current_md5 = _md5sum(filename)
+            if expected_md5:
+                current_md5 = _md5sum(path)
                 if expected_md5 is not None:
                     if current_md5 != expected_md5:
                         log.debug("Generated md5sum: %s", current_md5)
