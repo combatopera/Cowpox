@@ -65,7 +65,7 @@ class Context:
         try:
             return self.recipes[name]
         except KeyError:
-            module = import_module(f"pythonforandroid.recipes.{name.lower()}")
+            module = import_module(f"pythonforandroid.recipes.{name.lower()}") # FIXME: Needs a specific Exception.
             cls = Recipe
             for n in dir(module):
                 obj = getattr(module, n)

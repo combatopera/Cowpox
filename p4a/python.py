@@ -39,13 +39,13 @@
 # THE SOFTWARE.
 
 from . import Recipe
-from .arch import DesktopArch
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from lagoon import cp, find, make, mv, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
+from seizure.arch import DesktopArch
 from shutil import copy2
 import lagoon, logging, os
 
