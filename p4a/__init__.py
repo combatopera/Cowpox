@@ -434,10 +434,9 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     pre_build_ext = False
     build_cmd = 'build_ext'
 
-    def build_arch(self, arch):
-        Recipe.build_arch(self, arch)
+    def install_python_package(self, arch):
         self.build_compiled_components(arch)
-        self.install_python_package(arch)
+        super().install_python_package(arch)
 
     def build_compiled_components(self, arch):
         log.info("Building compiled components in %s", self.name)
@@ -467,10 +466,9 @@ class CythonRecipe(PythonRecipe):
     cython_args = []
     call_hostpython_via_targetpython = False
 
-    def build_arch(self, arch):
-        Recipe.build_arch(self, arch)
+    def install_python_package(self, arch):
         self._build_cython_components(arch)
-        self.install_python_package(arch)
+        super().install_python_package(arch)
 
     def _build_cython_components(self, arch):
         log.info("Cythonizing anything necessary in %s", self.name)
