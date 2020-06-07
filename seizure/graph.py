@@ -156,8 +156,7 @@ def _obvious_conflict_checker(ctx, name_tuples, blacklist):
             deps_were_added_by[added_tuple] = adding_recipe
             to_be_added += [(dep, adder_first_recipe_name or name) for dep in recipe_dependencies if dep not in deps]
 
-def get_recipe_order(ctx, names, bs_recipe_depends, blacklist):
-    names = set(names) | set(bs_recipe_depends)
+def get_recipe_order(ctx, names, blacklist):
     names = _fix_deplist([([name] if not isinstance(name, (list, tuple)) else name) for name in names])
     blacklist = set() if blacklist is None else {bitem.lower() for bitem in blacklist}
     names_before_blacklist = list(names)
