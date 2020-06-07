@@ -444,7 +444,6 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
 class CythonRecipe(PythonRecipe):
 
-    cythonize = True
     cython_args = []
     call_hostpython_via_targetpython = False
 
@@ -491,9 +490,6 @@ class CythonRecipe(PythonRecipe):
         python_command.print("-m", "Cython.Build.Cythonize", filename, *self.cython_args, env = cyenv)
 
     def cythonize_build(self, env, build_dir):
-        if not self.cythonize:
-            log.info('Running cython cancelled per recipe setting')
-            return
         log.info('Running cython where appropriate')
         for filename in build_dir.rglob('*.pyx'):
             self.cythonize_file(env, filename)
