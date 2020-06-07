@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .util import DictView
+from .util import format_obj
 from unittest import TestCase
 
 class TestUtil(TestCase):
@@ -48,4 +48,4 @@ class TestUtil(TestCase):
             static = 100
             def __init__(self, dynamic):
                 self.dynamic = dynamic
-        self.assertEqual('100 200', DictView.format("{static} {dynamic}", Cls(200)))
+        self.assertEqual('100 200', format_obj("{static} {dynamic}", Cls(200)))

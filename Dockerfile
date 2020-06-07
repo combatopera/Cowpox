@@ -52,7 +52,7 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-FROM base
+FROM base AS test
 RUN pip install pyflakes pytest
 COPY . .
 RUN find -name '*.py' \

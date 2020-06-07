@@ -61,10 +61,6 @@ class Logging:
 
 class DictView(Mapping):
 
-    @classmethod
-    def format(cls, format_string, obj):
-        return format_string.format_map(cls(obj))
-
     def __init__(self, obj):
         self.obj = obj
 
@@ -79,3 +75,6 @@ class DictView(Mapping):
 
     def __len__(self):
         return len(dir(self.obj))
+
+def format_obj(format_string, obj):
+    return format_string.format_map(DictView(obj))

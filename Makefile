@@ -53,3 +53,7 @@ all:
 	docker tag '$(TAG)' '$(PREVIOUS)' || true
 	docker tag $$image '$(TAG)'
 	docker rmi '$(PREVIOUS)' || true
+
+.PHONY: test
+test:
+	docker build --target test .
