@@ -210,8 +210,6 @@ class Context:
         pip.install.print('Cython', env = base_env)
         # Get environment variables for build (with CC/compiler set):
         standard_recipe = CythonRecipe(self)
-        # (note: following line enables explicit -lpython... linker options)
-        standard_recipe.call_hostpython_via_targetpython = False
         recipe_env = standard_recipe.get_recipe_env(self.arch)
         env = base_env.copy()
         env.update(recipe_env)
