@@ -40,7 +40,7 @@
 
 from .util import format_obj
 from distutils.version import LooseVersion
-from lagoon import basename, cp, find, git as sysgit, mv, patch as patchexe, rm, tar, touch, unzip
+from lagoon import basename, cp, find, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
 from os.path import join
 from pathlib import Path
