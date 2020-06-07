@@ -219,7 +219,7 @@ class Recipe:
                     patch, patch_check = patch
                     if not patch_check(arch=arch, recipe=self):
                         continue
-                self.apply_patch(patch, arch.name, build_dir)
+                self.apply_patch(patch, arch)
             touch.print(build_dir / '.patched')
 
     def should_build(self, arch):
