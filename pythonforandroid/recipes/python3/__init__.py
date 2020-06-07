@@ -47,7 +47,6 @@ class Python3Recipe(GuestPythonRecipe):
 
     version = '3.8.1'
     urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
-    name = 'python3'
     patchesdir = Path('patches')
     patches = [
         (patchesdir / 'py3.7.1_fix-ctypes-util-find-library.patch', version_starts_with("3.7")),

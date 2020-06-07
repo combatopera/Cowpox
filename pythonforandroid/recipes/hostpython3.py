@@ -43,5 +43,4 @@ from p4a.python import HostPythonRecipe
 class Hostpython3Recipe(HostPythonRecipe):
 
     version = '3.8.1'
-    name = 'hostpython3'
     conflicts = ['hostpython2']

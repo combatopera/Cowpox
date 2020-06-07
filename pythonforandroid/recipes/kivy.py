@@ -46,7 +46,6 @@ class KivyRecipe(CythonRecipe):
 
     version = '1.11.1'
     urlformat = "https://github.com/kivy/kivy/archive/{version}.zip"
-    name = 'kivy'
     depends = ['sdl2', 'pyjnius', 'setuptools']
     python_depends = ['certifi']
 
