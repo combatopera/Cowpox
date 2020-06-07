@@ -51,11 +51,6 @@ log = logging.getLogger(__name__)
 class Recipe:
 
     md5sum = None
-    '''The md5sum of the source from the :attr:`url`. Non-essential, but
-    you should try to include this, it is used to check that the download
-    finished correctly.
-    '''
-
     depends = []
     '''A list containing the names of any recipes that this recipe depends on.
     '''
@@ -166,6 +161,7 @@ class Recipe:
                 log.debug("Generated md5sum: %s", current_md5)
                 log.debug("Expected md5sum: %s", self.md5sum)
                 raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
+            log.debug("[%s] MD5 OK.", self.name)
 
     def _unpack(self, arch, mirror):
         log.info("Unpacking %s for %s", self.name, arch.name)
