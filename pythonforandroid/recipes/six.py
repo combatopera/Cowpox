@@ -43,5 +43,5 @@ from p4a import PythonRecipe
 class SixRecipe(PythonRecipe): # XXX: Why do we need this?
 
     version = '1.10.0'
-    url = 'https://pypi.python.org/packages/source/s/six/six-{version}.tar.gz'
+    urlformat = "https://pypi.python.org/packages/source/s/six/six-{version}.tar.gz"
     depends = ['setuptools']

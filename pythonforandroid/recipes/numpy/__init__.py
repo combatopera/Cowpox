@@ -45,7 +45,7 @@ from pathlib import Path
 class NumpyRecipe(CompiledComponentsPythonRecipe):
 
     version = '1.18.1'
-    url = 'https://pypi.python.org/packages/source/n/numpy/numpy-{version}.zip'
+    urlformat = "https://pypi.python.org/packages/source/n/numpy/numpy-{version}.zip"
     site_packages_name = 'numpy'
     depends = ['setuptools', 'cython']
     patches = [Path('patches', n) for n in [

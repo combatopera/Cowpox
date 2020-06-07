@@ -46,7 +46,7 @@ import lagoon
 class Python3Recipe(GuestPythonRecipe):
 
     version = '3.8.1'
-    url = 'https://www.python.org/ftp/python/{version}/Python-{version}.tgz'
+    urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
     name = 'python3'
     patchesdir = Path('patches')
     patches = [

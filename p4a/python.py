@@ -304,10 +304,7 @@ class HostPythonRecipe(Recipe):
     build_subdir = 'native-build'
     '''Specify the sub build directory for the hostpython recipe. Defaults
     to ``native-build``.'''
-
-    url = 'https://www.python.org/ftp/python/{version}/Python-{version}.tgz'
-    '''The default url to download our host python recipe. This url will
-    change depending on the python version set in attribute :attr:`version`.'''
+    urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
 
     @property
     def _exe_name(self):

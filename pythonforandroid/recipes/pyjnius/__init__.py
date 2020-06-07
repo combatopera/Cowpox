@@ -48,7 +48,7 @@ log = logging.getLogger(__name__)
 class PyjniusRecipe(CythonRecipe):
 
     version = '1.2.1'
-    url = 'https://github.com/kivy/pyjnius/archive/{version}.zip'
+    urlformat = "https://github.com/kivy/pyjnius/archive/{version}.zip"
     name = 'pyjnius'
     depends = [('genericndkbuild', 'sdl2'), 'six']
     site_packages_name = 'jnius'

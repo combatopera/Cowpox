@@ -45,12 +45,8 @@ class OpenSSLRecipe(Recipe):
 
     version = '1.1'
     url_version = '1.1.1f'
-    url = 'https://www.openssl.org/source/openssl-{url_version}.tar.gz'
+    url = f"https://www.openssl.org/source/openssl-{url_version}.tar.gz"
     builtlibpaths = [f"libcrypto{version}.so", f"libssl{version}.so"]
-
-    @property
-    def versioned_url(self):
-        return None if self.url is None else self.url.format(url_version = self.url_version)
 
     def get_build_dir(self, arch):
         return self.get_build_container_dir(arch) / f"{self.name}{self.version}"

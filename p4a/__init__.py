@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .util import format_obj
 from distutils.version import LooseVersion
 from lagoon import basename, cp, find, git as sysgit, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
@@ -86,13 +87,8 @@ class Recipe:
         self.ctx = ctx
 
     @property
-    def versioned_url(self):
-        '''A property returning the url of the recipe with ``{version}``
-        replaced by the :attr:`url`. If accessing the url, you should use this
-        property, *not* access the url directly.'''
-        if self.url is None:
-            return None
-        return self.url.format(version=self.version)
+    def url(self):
+        return format_obj(self.urlformat, self)
 
     def _download_file(self, url, target, mirror):
         if not url:
@@ -197,7 +193,7 @@ class Recipe:
         if self.url is None:
             log.info("Skipping %s download as no URL is set", self.name)
             return
-        url = self.versioned_url
+        url = self.url
         ma = re.match('^(.+)#md5=([0-9a-f]{32})$', url)
         if ma:                  # fragmented URL?
             if self.md5sum:
@@ -227,7 +223,7 @@ class Recipe:
         if do_download:
             log.debug("Downloading %s from %s", self.name, url)
             rm._f.print(marker_filename)
-            self._download_file(self.versioned_url, filename, mirror)
+            self._download_file(self.url, filename, mirror)
             touch.print(marker_filename)
             if filename.exists() and filename.is_file() and expected_md5:
                 current_md5 = _md5sum(filename)
@@ -255,7 +251,7 @@ class Recipe:
             log.info("Skipping %s unpack as no URL is set", self.name)
             return
         # TODO: Parse the URL instead.
-        filename = basename(self.versioned_url)[:-1]
+        filename = basename(self.url)[:-1]
         ma = re.match('^(.+)#md5=([0-9a-f]{32})$', filename)
         if ma:                  # fragmented URL?
             filename = ma.group(1)
