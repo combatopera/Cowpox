@@ -224,4 +224,4 @@ class Context:
             pip.install._v.__no_deps.print('--target', self.get_python_install_dir(), *modules, env = env)
         else:
             log.info('There are no Python modules to install, skipping')
-        standard_recipe.strip_object_files(self.arch, env, self.buildsdir)
+        standard_recipe.strip_object_files(env, self.buildsdir)

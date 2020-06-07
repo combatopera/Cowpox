@@ -495,9 +495,10 @@ class CythonRecipe(PythonRecipe):
             setup.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
-        self.strip_object_files(arch, env, builddir)
+        self.strip_object_files(env, builddir)
 
-    def strip_object_files(self, arch, env, build_dir):
+    @staticmethod
+    def strip_object_files(env, build_dir):
         log.info('Stripping object files')
         exec = find.partial('.', '-iname', '*.so', '-exec', env = env, cwd = build_dir)
         exec.print('echo', '{}', ';')
