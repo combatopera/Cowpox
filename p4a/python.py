@@ -277,24 +277,6 @@ class GuestPythonRecipe(TargetPythonRecipe):
                 mv.print(filen, filen.parent / f"{parts[0]}.so")
 
 class HostPythonRecipe(Recipe):
-    '''
-    This is the base class for hostpython3 and hostpython2 recipes. This class
-    will take care to do all the work to build a hostpython recipe but, be
-    careful, it is intended to be subclassed because some of the vars needs to
-    be set:
-
-        - :attr:`name`
-        - :attr:`version`
-
-    .. versionadded:: 0.6.0
-        Refactored from the hostpython3's recipe by inclement
-    '''
-
-    name = ''
-    '''The hostpython's recipe name. This should be ``hostpython2`` or
-    ``hostpython3``
-
-    .. warning:: This must be set in inherited class.'''
 
     version = ''
     '''The hostpython's recipe version.
