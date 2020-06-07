@@ -184,7 +184,7 @@ class Recipe:
             return
         if not directory_name.is_dir():
             extraction_filename = mirror.getpath(self.url)
-            if extraction_filename.name.endswith('.zip'):
+            if self.url.endswith('.zip'):
                 try:
                     unzip.print(extraction_filename, cwd = build_dir)
                 except subprocess.CalledProcessError as e:
@@ -198,7 +198,7 @@ class Recipe:
                 root_directory = zf.filelist[0].filename.split('/')[0]
                 if root_directory != directory_name.name:
                     mv.print(root_directory, directory_name, cwd = build_dir)
-            elif extraction_filename.name.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
+            elif self.url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
                 tar.xf.print(extraction_filename, cwd = build_dir)
                 root_directory = tar.tf(extraction_filename).split('\n')[0].split('/')[0]
                 if root_directory != directory_name.name:
