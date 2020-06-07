@@ -76,12 +76,17 @@ class Recipe:
     at build time, you must create a recipe.'''
     builtlibpaths = ()
 
-    def __init__(self, ctx):
-        self.ctx = ctx
+    @property
+    def name(self):
+        fqmodule = type(self).__module__
+        return fqmodule[fqmodule.rfind('.') + 1:]
 
     @property
     def url(self):
         return format_obj(self.urlformat, self)
+
+    def __init__(self, ctx):
+        self.ctx = ctx
 
     def apply_patch(self, filename, arch, build_dir = None):
         log.info("Applying patch %s", filename)
@@ -101,12 +106,6 @@ class Recipe:
             data = fd.read()
         with open(dest, "ab") as fd:
             fd.write(data)
-
-    @property
-    def name(self):
-        '''The name of the recipe, the same as the folder containing it.'''
-        modname = self.__class__.__module__
-        return modname.split(".", 2)[-1]
 
     def check_recipe_choices(self):
         '''Checks what recipes are being built to see which of the alternative
