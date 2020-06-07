@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from distutils.version import LooseVersion
-from lagoon import basename, cp, find, mv, patch as patchexe, rm, tar, touch, unzip
+from lagoon import cp, find, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
 from pathlib import Path
 from seizure.util import format_obj
@@ -87,12 +87,6 @@ class Recipe:
     @property
     def url(self):
         return format_obj(self.urlformat, self)
-
-    def _download_file(self, url, target, mirror):
-        log.info("Downloading %s from %s", self.name, url)
-        if target.exists():
-            target.unlink()
-        target.symlink_to(mirror.download(url))
 
     def apply_patch(self, filename, arch, build_dir = None):
         log.info("Applying patch %s", filename)
@@ -170,8 +164,7 @@ class Recipe:
             return
         url = self.url
         expected_md5 = self.md5sum
-        packagepath = (self.ctx.packages_path / self.name).mkdirp()
-        filename = packagepath / basename(url)[:-1]
+        filename = self.mirror.getpath(self.url)
         do_download = True
         if filename.exists() and filename.is_file():
             if expected_md5:
@@ -183,7 +176,7 @@ class Recipe:
             do_download = False
         if do_download:
             log.debug("Downloading %s from %s", self.name, url)
-            self._download_file(self.url, filename, mirror)
+            self.mirror.download(self.url)
             if filename.exists() and filename.is_file() and expected_md5:
                 current_md5 = _md5sum(filename)
                 if expected_md5 is not None:

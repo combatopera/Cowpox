@@ -133,7 +133,6 @@ class Context:
         self.storage_dir = Path(config.storage_dir)
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
-        self.packages_path = Path(config.packages_path)
         self.other_builds = Path(config.other_builds)
         self.recipes = {}
         self.env = os.environ.copy()
