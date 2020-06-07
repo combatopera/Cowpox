@@ -50,7 +50,6 @@ from lagoon.program import Program
 from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
-from pythonforandroid.pythonpackage import get_package_name
 import logging, os
 
 log = logging.getLogger(__name__)
@@ -159,32 +158,8 @@ class Context:
     def has_lib(self, arch, lib):
         return (self.get_libs_dir(arch) / lib).exists()
 
-    def has_package(self, name):
-        # If this is a file path, it'll need special handling:
-        if (name.find("/") >= 0 or name.find("\\") >= 0) and \
-                name.find("://") < 0:  # (:// would indicate an url)
-            if not os.path.exists(name):
-                # Non-existing dir, cannot look this up.
-                return False
-            try:
-                name = get_package_name(os.path.abspath(name))
-            except ValueError:
-                # Failed to look up any meaningful name.
-                return False
-        try:
-            recipe = self.get_recipe(name)
-        except ModuleNotFoundError:
-            pass
-        else:
-            name = getattr(recipe, 'site_packages_name', None) or name
-        name = name.replace('.', '/') # FIXME: Bad.
-        site_packages_dir = self.get_python_install_dir()
-        return ((site_packages_dir / name).exists()
-                or (site_packages_dir / f"{name}.py").exists()
-                or (site_packages_dir / f"{name}.pyc").exists()
-                or (site_packages_dir / f"{name}.pyo").exists()
-                or (site_packages_dir / f"{name}.so").exists()
-                or list(site_packages_dir.glob(f"{name}-*.egg")))
+    def insitepackages(self, name):
+        return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
 
     def build_recipes(self, build_order, python_modules):
         # Put recipes in correct build order
@@ -220,7 +195,7 @@ class Context:
             recipe.postbuild_arch(self.arch)
         log.info('Installing pure Python modules')
         log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
-        modules = [m for m in python_modules if not self.has_package(m)]
+        modules = [m for m in python_modules if not self.insitepackages(m)]
         if not modules:
             log.info('No Python modules and no setup.py to process, skipping')
             return

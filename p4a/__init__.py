@@ -548,7 +548,7 @@ class PythonRecipe(Recipe):
         name = self.site_packages_name
         if name is None:
             name = self.name
-        if self.ctx.has_package(name):
+        if self.ctx.insitepackages(name):
             log.info('Python package already exists in site-packages')
             return False
         log.info("%s apparently isn't already in site-packages", name)

@@ -4,6 +4,4 @@ Cython
 diapyr
 jinja2
 lagoon
-pep517<0.7.0
-pytoml
 virtualenv<20
