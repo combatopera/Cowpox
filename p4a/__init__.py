@@ -41,7 +41,6 @@
 from distutils.version import LooseVersion
 from lagoon import basename, cp, find, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
-from os.path import join
 from pathlib import Path
 from seizure.util import format_obj
 from zipfile import ZipFile
@@ -101,14 +100,14 @@ class Recipe:
 
     def copy_file(self, filename, dest):
         log.info("Copy %s to %s", filename, dest)
-        filename = join(self.get_recipe_dir(), filename)
-        dest = join(self.build_dir, dest)
+        filename = self.get_recipe_dir() / filename
+        dest = self.build_dir / dest
         shutil.copy(filename, dest)
 
     def append_file(self, filename, dest):
         log.info("Append %s to %s", filename, dest)
-        filename = join(self.get_recipe_dir(), filename)
-        dest = join(self.build_dir, dest)
+        filename = self.get_recipe_dir() / filename
+        dest = self.build_dir / dest
         with open(filename, "rb") as fd:
             data = fd.read()
         with open(dest, "ab") as fd:
