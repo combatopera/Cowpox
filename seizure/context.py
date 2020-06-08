@@ -54,8 +54,6 @@ import logging, os
 
 log = logging.getLogger(__name__)
 
-class NoSuchRecipeException(Exception): pass
-
 class Context:
 
     contribroot = Path(resource_filename('pythonforandroid', '.'))
@@ -67,11 +65,8 @@ class Context:
         try:
             return self.recipes[name]
         except KeyError:
-            try:
-                cls, = findimpls(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
-            except ModuleNotFoundError:
-                raise NoSuchRecipeException(name)
-            self.recipes[name] = recipe = cls(self)
+            impl, = findimpls(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
+            self.recipes[name] = recipe = impl(self)
             return recipe
 
     @property

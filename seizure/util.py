@@ -80,20 +80,25 @@ class DictView(Mapping):
 def format_obj(format_string, obj):
     return format_string.format_map(DictView(obj))
 
+class NoSuchPluginException(Exception): pass
+
 def findimpls(modulename, basetype):
-    module = import_module(modulename)
+    try:
+        module = import_module(modulename)
+    except ModuleNotFoundError:
+        raise NoSuchPluginException(modulename)
     g = nx.DiGraph()
-    def add(c):
-        if not g.has_node(c):
-            for b in c.__bases__:
-                g.add_edge(b, c)
+    def add(cls):
+        if not g.has_node(cls):
+            for b in cls.__bases__:
+                g.add_edge(b, cls)
                 add(b)
-    def accept(c):
+    def accept(impl):
         try:
-            return issubclass(c, basetype)
+            return issubclass(impl, basetype)
         except TypeError:
             pass
-    for c in (getattr(module, n) for n in dir(module)):
-        if accept(c):
-            add(c)
-    return (c for c, d in g.out_degree if not d)
+    for impl in (getattr(module, name) for name in dir(module)):
+        if accept(impl):
+            add(impl)
+    return (impl for impl, od in g.out_degree if not od)
