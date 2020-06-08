@@ -48,5 +48,3 @@ class EmptyBootstrap(Bootstrap):
     def run_distribute(self):
         print('empty bootstrap has no distribute')
         exit(1)
-
-bootstrap = EmptyBootstrap()

@@ -67,5 +67,3 @@ class WebViewBootstrap(Bootstrap):
         self.strip_libraries(arch)
         self.fry_eggs(site_packages_dir)
         super().run_distribute()
-
-bootstrap = WebViewBootstrap()
