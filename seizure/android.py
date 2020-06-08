@@ -93,7 +93,7 @@ class TargetAndroid:
         self.apkmaker = apkmaker
 
     def compile_platform(self, bs):
-        dist = Distribution.get_distribution(self.context, self.dist_name, self.requirements, self.arch, self.ndk_api)
+        dist = Distribution(self.context, self.dist_name, self.requirements, self.arch, self.ndk_api)
         log.info('No dist exists that meets your requirements, so one will be built.')
         bs.bootstrap_dir = self.context.contribroot / 'bootstraps' / self.bootstrapname
         bs.ctx = self.context

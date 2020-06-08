@@ -44,14 +44,6 @@ log = logging.getLogger(__name__)
 
 class Distribution:
 
-    name = None  # A name identifying the dist. May not be None.
-    dist_dir = None  # Where the dist dir ultimately is. Should not be None.
-    ndk_api = None
-    recipes = []
-
-    def __init__(self, ctx):
-        self.ctx = ctx # XXX: Is this really needed?
-
     def __str__(self):
         return '<Distribution: name {} with recipes ({})>'.format(
             # self.name, ', '.join([recipe.name for recipe in self.recipes]))
@@ -60,14 +52,11 @@ class Distribution:
     def __repr__(self):
         return str(self)
 
-    @classmethod
-    def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api):
-        log.info('No existing dists meet the given requirements!')
-        dist = cls(ctx)
+    def __init__(self, ctx, name, recipes, arch_name, ndk_api):
+        self.ctx = ctx # XXX: Is this really needed?
         assert name
-        dist.name = name
-        dist.dist_dir = ctx.distsdir / f"{name}__{arch_name}"
-        dist.recipes = recipes
-        dist.ndk_api = ctx.ndk_api
-        dist.archname = arch_name
-        return dist
+        self.name = name
+        self.dist_dir = ctx.distsdir / f"{name}__{arch_name}"
+        self.recipes = recipes
+        self.ndk_api = ctx.ndk_api
+        self.archname = arch_name
