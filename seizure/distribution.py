@@ -59,4 +59,3 @@ class Distribution:
         self.dist_dir = ctx.distsdir / f"{name}__{arch_name}"
         self.recipes = recipes
         self.ndk_api = ctx.ndk_api
-        self.archname = arch_name
