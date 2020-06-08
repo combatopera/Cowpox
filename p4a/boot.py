@@ -87,7 +87,7 @@ class Bootstrap(Plugin):
         self.dist_dir.mkdirp()
 
     def run_distribute(self):
-        self.distribution.save_info()
+        pass
 
     def distribute_libs(self, arch, src_dir):
         log.info('Copying libs')

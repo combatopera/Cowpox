@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import json, logging
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -106,13 +106,3 @@ class Distribution:
         dist.ndk_api = ctx.ndk_api
         dist.archname = arch_name
         return dist
-
-    def save_info(self):
-        log.info('Saving distribution info')
-        with (self.dist_dir / 'dist_info.json').open('w') as f:
-            json.dump(dict(
-                dist_name = self.name,
-                archname = self.ctx.arch.name,
-                ndk_api = self.ctx.ndk_api,
-                recipes = self.ctx.recipe_build_order + self.ctx.python_modules,
-            ), f)
