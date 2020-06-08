@@ -136,7 +136,7 @@ class Context:
 
     def prepare_bootstrap(self, bs):
         self.bootstrap = bs
-        self.bootstrap.prepare_build_dir()
+        bs.prepare_build_dir()
 
     def prepare_dist(self):
         self.bootstrap.prepare_dist_dir()
