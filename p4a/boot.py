@@ -38,8 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Context, Plugin
-from diapyr import types
+from . import Plugin
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
 from pathlib import Path
@@ -67,10 +66,6 @@ def _copy_files(src_root, dest_root, override):
 class Bootstrap(Plugin):
 
     recipe_depends = [("python2", "python3"), 'android']
-
-    @types(Context)
-    def __init__(self, ctx):
-        self.ctx = ctx
 
     @property
     def dist_dir(self):
