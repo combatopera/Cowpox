@@ -97,10 +97,6 @@ class TargetAndroid:
     def compile_platform(self):
         dist = Distribution.get_distribution(self.context, self.dist_name, self.requirements, self.arch, self.ndk_api)
         log.info('No dist exists that meets your requirements, so one will be built.')
-        self._build_dist_from_args(dist)
-        return dist
-
-    def _build_dist_from_args(self, dist):
         bs = Bootstrap.get_bootstrap(self.bootstrapname, self.context, dist)
         build_order, python_modules = get_recipe_order(self.context.get_recipe, {*dist.recipes, *bs.recipe_depends}, ['genericndkbuild', 'python2'])
         assert not set(build_order) & set(python_modules)
@@ -118,6 +114,7 @@ class TargetAndroid:
         self.context.bootstrap.run_distribute()
         log.info('Your distribution was created successfully, exiting.')
         log.info("Dist can be found at (for now) %s", self.context.distsdir / dist.dist_dir)
+        return dist
 
     @staticmethod
     def _check_p4a_sign_env(error):
