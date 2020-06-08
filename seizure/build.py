@@ -40,7 +40,6 @@
 
 from .arch import Arch
 from .config import Config
-from .context import Context
 from .platform import Platform
 from aridimpl.model import Function, Text
 from aridity import Repl
@@ -48,6 +47,7 @@ from diapyr import types
 from fnmatch import fnmatch
 from lagoon import patch
 from lagoon.program import Program
+from p4a import Context
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import aridity, jinja2, logging, os, shutil, subprocess, tarfile, time

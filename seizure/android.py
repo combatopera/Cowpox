@@ -40,9 +40,9 @@
 
 from .build import APKMaker
 from .config import Config
-from .context import Context
 from diapyr import types
 from lagoon import gradle
+from p4a import Context
 from pathlib import Path
 from types import SimpleNamespace
 import logging, os, shutil

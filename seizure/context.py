@@ -48,14 +48,14 @@ from .util import findimpl
 from diapyr import types
 from lagoon import virtualenv
 from lagoon.program import Program
-from p4a import CythonRecipe, Recipe
+from p4a import Context, CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
 import logging, os
 
 log = logging.getLogger(__name__)
 
-class Context:
+class ContextImpl(Context):
 
     contribroot = Path(resource_filename('pythonforandroid', '.'))
 

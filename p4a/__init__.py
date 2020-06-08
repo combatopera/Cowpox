@@ -49,6 +49,8 @@ import hashlib, logging, os, subprocess
 
 log = logging.getLogger(__name__)
 
+class Context: pass
+
 class Plugin:
 
     @property

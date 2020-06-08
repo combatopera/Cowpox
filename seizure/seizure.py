@@ -43,13 +43,14 @@ from .android import TargetAndroid
 from .arch import all_archs
 from .build import APKMaker
 from .config import Config
-from .context import Context
+from .context import ContextImpl
 from .dirs import Dirs
 from .mirror import Mirror
 from .platform import Platform
 from .src import Src
 from .util import findimpl, Logging
 from diapyr import DI, types
+from p4a import Context
 from p4a.boot import Bootstrap
 from pathlib import Path
 from pkg_resources import resource_filename
@@ -80,7 +81,7 @@ def _main():
         di.add(all_archs[config.android.arch])
         di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap))
         di.add(APKMaker)
-        di.add(Context)
+        di.add(ContextImpl)
         di.add(Dirs)
         di.add(Mirror)
         di.add(Platform)
