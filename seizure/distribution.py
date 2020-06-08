@@ -62,7 +62,7 @@ class Distribution:
 
     @classmethod
     def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api):
-        possible_dists = cls._get_distributions(ctx)
+        possible_dists = []
         if name is not None and name:
             possible_dists = [d for d in possible_dists if d.name == name and arch_name == d.archname]
         _possible_dists = []
@@ -106,27 +106,6 @@ class Distribution:
         dist.ndk_api = ctx.ndk_api
         dist.archname = arch_name
         return dist
-
-    @classmethod
-    def _get_distributions(cls, ctx):
-        dists = []
-        for folder in ctx.distsdir.iterdir():
-            if (folder / 'dist_info.json').exists():
-                with (folder / 'dist_info.json').open() as fileh:
-                    dist_info = json.load(fileh)
-                dist = cls(ctx)
-                dist.name = dist_info['dist_name']
-                dist.dist_dir = folder
-                dist.recipes = dist_info['recipes']
-                if 'archname' in dist_info:
-                    dist.archname = dist_info['archname']
-                if 'ndk_api' in dist_info:
-                    dist.ndk_api = dist_info['ndk_api']
-                else:
-                    dist.ndk_api = None
-                    log.warning("Distribution %s: (%s) has been built with an unknown api target, ignoring it, you might want to delete it", dist.name, dist.dist_dir)
-                dists.append(dist)
-        return dists
 
     def save_info(self):
         log.info('Saving distribution info')
