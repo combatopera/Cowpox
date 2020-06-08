@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import json, logging, shutil
+import json, logging
 
 log = logging.getLogger(__name__)
 
@@ -106,10 +106,6 @@ class Distribution:
         dist.ndk_api = ctx.ndk_api
         dist.archname = arch_name
         return dist
-
-    def deleteifexists(self):
-        if self.dist_dir.exists():
-            shutil.rmtree(self.dist_dir)
 
     @classmethod
     def _get_distributions(cls, ctx):

@@ -96,7 +96,6 @@ class TargetAndroid:
 
     def compile_platform(self):
         dist = Distribution.get_distribution(self.context, self.dist_name, self.requirements, self.arch, self.ndk_api)
-        dist.deleteifexists()
         log.info('No dist exists that meets your requirements, so one will be built.')
         self._build_dist_from_args(dist)
         return dist
