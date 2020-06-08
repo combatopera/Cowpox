@@ -43,14 +43,14 @@ from .config import Config
 from .mirror import Mirror
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
+from .util import findimpls
 from diapyr import types
-from importlib import import_module
 from lagoon import virtualenv
 from lagoon.program import Program
 from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
-import logging, networkx as nx, os
+import logging, os
 
 log = logging.getLogger(__name__)
 
@@ -68,22 +68,9 @@ class Context:
             return self.recipes[name]
         except KeyError:
             try:
-                module = import_module(f"pythonforandroid.recipes.{name.lower()}") # XXX: Correct mangling?
+                cls, = findimpls(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
             except ModuleNotFoundError:
                 raise NoSuchRecipeException(name)
-            g = nx.DiGraph()
-            def add(c):
-                if not g.has_node(c):
-                    for b in c.__bases__:
-                        g.add_edge(b, c)
-                        add(b)
-            for c in (getattr(module, n) for n in dir(module)):
-                try:
-                    if issubclass(c, Recipe):
-                        add(c)
-                except TypeError:
-                    pass
-            cls, = (c for c, d in g.out_degree if not d)
             self.recipes[name] = recipe = cls(self)
             return recipe
 

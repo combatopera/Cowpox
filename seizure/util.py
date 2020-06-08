@@ -40,7 +40,8 @@
 
 from chromalog.log import ColorizingFormatter, ColorizingStreamHandler
 from collections.abc import Mapping
-import logging
+from importlib import import_module
+import logging, networkx as nx
 
 class Logging:
 
@@ -78,3 +79,21 @@ class DictView(Mapping):
 
 def format_obj(format_string, obj):
     return format_string.format_map(DictView(obj))
+
+def findimpls(modulename, basetype):
+    module = import_module(modulename)
+    g = nx.DiGraph()
+    def add(c):
+        if not g.has_node(c):
+            for b in c.__bases__:
+                g.add_edge(b, c)
+                add(b)
+    def accept(c):
+        try:
+            return issubclass(c, basetype)
+        except TypeError:
+            pass
+    for c in (getattr(module, n) for n in dir(module)):
+        if accept(c):
+            add(c)
+    return (c for c, d in g.out_degree if not d)
