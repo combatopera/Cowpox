@@ -65,16 +65,11 @@ def _copy_files(src_root, dest_root, override):
 class Bootstrap:
 
     name = ''
-    jni_subdir = '/jni'
     recipe_depends = [("python2", "python3"), 'android']
 
     @property
     def dist_dir(self):
         return self.distribution.dist_dir
-
-    @property
-    def jni_dir(self):
-        return self.name + self.jni_subdir
 
     def get_build_dir(self):
         return self.ctx.buildsdir / 'bootstrap_builds' / self.ctx.check_recipe_choices(self.name, self.recipe_depends)
