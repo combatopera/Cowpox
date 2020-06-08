@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .util import findimpls
+from .util import findimpl
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
 from pathlib import Path
@@ -105,8 +105,7 @@ class Bootstrap:
 
     @classmethod
     def get_bootstrap(cls, name, ctx, distribution):
-        impl, = findimpls(f"pythonforandroid.bootstraps.{name}", cls)
-        bootstrap = impl()
+        bootstrap = findimpl(f"pythonforandroid.bootstraps.{name}", cls)()
         bootstrap.bootstrap_dir = ctx.contribroot / 'bootstraps' / name
         bootstrap.ctx = ctx
         bootstrap.distribution = distribution

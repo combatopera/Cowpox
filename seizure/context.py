@@ -43,7 +43,7 @@ from .config import Config
 from .mirror import Mirror
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
-from .util import findimpls
+from .util import findimpl
 from diapyr import types
 from lagoon import virtualenv
 from lagoon.program import Program
@@ -65,8 +65,7 @@ class Context:
         try:
             return self.recipes[name]
         except KeyError:
-            impl, = findimpls(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
-            self.recipes[name] = recipe = impl(self)
+            self.recipes[name] = recipe = findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe)(self) # XXX: Correct mangling?
             return recipe
 
     @property

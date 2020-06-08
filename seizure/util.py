@@ -82,23 +82,24 @@ def format_obj(format_string, obj):
 
 class NoSuchPluginException(Exception): pass
 
-def findimpls(modulename, basetype):
+def findimpl(modulename, basetype):
     try:
         module = import_module(modulename)
     except ModuleNotFoundError:
         raise NoSuchPluginException(modulename)
     g = nx.DiGraph()
-    def add(cls):
-        if not g.has_node(cls):
-            for b in cls.__bases__:
-                g.add_edge(b, cls)
+    def add(c):
+        if not g.has_node(c):
+            for b in c.__bases__:
+                g.add_edge(b, c)
                 add(b)
-    def accept(impl):
+    def isimpl(obj):
         try:
-            return issubclass(impl, basetype)
+            return issubclass(obj, basetype)
         except TypeError:
             pass
-    for impl in (getattr(module, name) for name in dir(module)):
-        if accept(impl):
-            add(impl)
-    return (impl for impl, od in g.out_degree if not od)
+    for obj in (getattr(module, name) for name in dir(module)):
+        if isimpl(obj):
+            add(obj)
+    impl, = (cls for cls, od in g.out_degree if not od)
+    return impl
