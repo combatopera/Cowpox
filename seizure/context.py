@@ -68,18 +68,18 @@ class Context:
 
     @property
     def libs_dir(self):
-        return (self.buildsdir / 'libs_collections' / self.bootstrap.distribution.name).mkdirp()
+        return (self.buildsdir / 'libs_collections' / self.package_name).mkdirp()
 
     @property
     def javaclass_dir(self):
-        return (self.buildsdir / 'javaclasses' / self.bootstrap.distribution.name).mkdirp()
+        return (self.buildsdir / 'javaclasses' / self.package_name).mkdirp()
 
     @property
     def aars_dir(self):
-        return (self.buildsdir / 'aars' / self.bootstrap.distribution.name).mkdirp()
+        return (self.buildsdir / 'aars' / self.package_name).mkdirp()
 
     def get_python_install_dir(self):
-        return (self.buildsdir / 'python-installs').mkdirp() / self.bootstrap.distribution.name
+        return (self.buildsdir / 'python-installs').mkdirp() / self.package_name
 
     @types(Config, Mirror, Platform, Arch)
     def __init__(self, config, mirror, platform, arch):
@@ -91,6 +91,7 @@ class Context:
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.other_builds = Path(config.other_builds)
+        self.package_name = config.package.name
         self.recipes = {}
         self.env = os.environ.copy()
         self.env.pop("LDFLAGS", None)
