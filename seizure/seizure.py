@@ -78,7 +78,7 @@ def _main():
     try:
         di.add(config)
         di.add(all_archs[config.android.arch])
-        di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap)
+        di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap))
         di.add(APKMaker)
         di.add(Context)
         di.add(Dirs)
