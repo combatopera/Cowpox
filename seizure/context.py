@@ -58,9 +58,6 @@ class Context:
 
     contribroot = Path(resource_filename('pythonforandroid', '.'))
 
-    def all_bootstraps(self):
-        return {path.name for path in (self.contribroot / 'bootstraps').iterdir() if path.name not in {'__pycache__', 'common'} and path.is_dir()}
-
     def get_recipe(self, name):
         try:
             return self.recipes[name]
