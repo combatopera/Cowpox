@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Plugin
+from . import Context, Plugin
 from diapyr import types
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
@@ -68,9 +68,9 @@ class Bootstrap(Plugin):
 
     recipe_depends = [("python2", "python3"), 'android']
 
-    @types()
-    def __init__(self):
-        pass
+    @types(Context)
+    def __init__(self, ctx):
+        self.ctx = ctx
 
     @property
     def dist_dir(self):
