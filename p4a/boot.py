@@ -38,7 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Plugin
+from . import Context, Plugin
+from diapyr import types
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
 from pathlib import Path
@@ -70,6 +71,10 @@ class Bootstrap(Plugin):
     @property
     def dist_dir(self):
         return self.ctx.dist_dir
+
+    @types(Context)
+    def __init__(self, ctx):
+        self.ctx = ctx
 
     def get_build_dir(self):
         return self.ctx.buildsdir / 'bootstrap_builds' / self.ctx.check_recipe_choices(self.name, self.recipe_depends)

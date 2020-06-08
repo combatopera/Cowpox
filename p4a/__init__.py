@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from diapyr import types
 from lagoon import cp, find, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
 from pathlib import Path
@@ -61,10 +60,6 @@ class Plugin:
 
     def _fqmodulename(self):
         return type(self).__module__
-
-    @types(Context)
-    def __init__(self, ctx):
-        self.ctx = ctx
 
 class Recipe(Plugin):
 
@@ -97,6 +92,9 @@ class Recipe(Plugin):
     @property
     def url(self):
         return format_obj(self.urlformat, self)
+
+    def __init__(self, ctx):
+        self.ctx = ctx
 
     def resourcepath(self, relpath):
         return Path(resource_filename(self._fqmodulename(), str(relpath)))
