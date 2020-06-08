@@ -41,7 +41,6 @@
 from .build import APKMaker
 from .config import Config
 from .context import Context
-from .distribution import Distribution
 from diapyr import types
 from lagoon import gradle
 from pathlib import Path
@@ -94,14 +93,13 @@ class TargetAndroid:
         self.apkmaker = apkmaker
 
     def compile_platform(self, bs):
-        dist = Distribution(self.context, self.dist_name, self.requirements, self.arch, self.ndk_api)
         log.info('No dist exists that meets your requirements, so one will be built.')
         bs.bootstrap_dir = self.context.contribroot / 'bootstraps' / self.bootstrapname
         bs.ctx = self.context
-        self.context.init_recipe_order({*dist.recipes, *bs.recipe_depends})
+        self.context.init_recipe_order({*self.requirements, *bs.recipe_depends})
         log.info("The selected bootstrap is %s", bs.name)
         log.info("Creating dist with %s bootstrap", bs.name)
-        log.info("Dist will have name %s and requirements (%s)", dist.name, ', '.join(dist.recipes))
+        log.info("Dist will have name %s and requirements (%s)", self.dist_name, ', '.join(self.requirements))
         log.info("Dist contains the following requirements as recipes: %s", self.context.recipe_build_order)
         log.info("Dist will also contain modules (%s) installed from pip", ', '.join(self.context.python_modules))
         self.context.bootstrap = bs
