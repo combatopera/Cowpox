@@ -78,11 +78,8 @@ class Bootstrap:
     def jni_dir(self):
         return self.name + self.jni_subdir
 
-    def check_recipe_choices(self):
-        return self.ctx.check_recipe_choices(self.recipe_depends)
-
     def get_build_dir(self):
-        return self.ctx.buildsdir / 'bootstrap_builds' / '-'.join([self.name, *self.check_recipe_choices()]) # TODO: Looks very familiar.
+        return self.ctx.buildsdir / 'bootstrap_builds' / self.ctx.check_recipe_choices(self.name, self.recipe_depends)
 
     def get_dist_dir(self, name):
         return self.ctx.distsdir / name

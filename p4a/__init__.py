@@ -99,9 +99,6 @@ class Recipe:
         log.info("Applying patch %s", relpath)
         patchexe._t._p1.print('-d', self.get_build_dir(arch), '-i', self.resourcepath(relpath))
 
-    def check_recipe_choices(self):
-        return self.ctx.check_recipe_choices([*self.depends, *([d] for d in self.opt_depends)])
-
     def get_opt_depends_in_list(self, recipes):
         '''Given a list of recipe names, returns those that are also in
         self.opt_depends.
@@ -109,7 +106,7 @@ class Recipe:
         return [recipe for recipe in recipes if recipe in self.opt_depends]
 
     def get_build_container_dir(self, arch):
-        return self.ctx.other_builds / '-'.join([self.name, *self.check_recipe_choices()]) / arch.builddirname()
+        return self.ctx.other_builds / self.ctx.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / arch.builddirname()
 
     def get_build_dir(self, arch):
         return self.get_build_container_dir(arch) / self.name

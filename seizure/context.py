@@ -224,7 +224,7 @@ class Context:
             log.info('There are no Python modules to install, skipping')
         standard_recipe.strip_object_files(env, self.buildsdir)
 
-    def check_recipe_choices(self, depends):
+    def check_recipe_choices(self, name, depends):
         recipes = []
         for recipe in depends:
             if isinstance(recipe, (tuple, list)):
@@ -232,4 +232,4 @@ class Context:
                     if alternative in self.recipe_build_order:
                         recipes.append(alternative)
                         break
-        return sorted(recipes)
+        return '-'.join([name, *sorted(recipes)])
