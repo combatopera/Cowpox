@@ -239,7 +239,7 @@ class GuestPythonRecipe(Recipe):
         python_lib_name = f"libpython{self.major_minor_version_string}"
         if self.major_minor_version_string[0] == '3':
             python_lib_name += 'm'
-        cp.print(self.get_build_dir(arch) / 'android-build' / f"{python_lib_name}.so", self.ctx.bootstrap.dist_dir / 'libs' / arch.name)
+        cp.print(self.get_build_dir(arch) / 'android-build' / f"{python_lib_name}.so", self.ctx.dist_dir / 'libs' / arch.name)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(dirn / 'site-packages')
         return dirn / 'site-packages'

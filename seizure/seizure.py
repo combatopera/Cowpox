@@ -64,11 +64,11 @@ def run(config, bootstrap, context, dirs, platform, target, src):
     platform.install()
     log.info('Compile platform')
     context.init()
-    dist = target.compile_platform(bootstrap)
+    target.compile_platform(bootstrap)
     src.copy_application_sources()
     dirs.add_sitecustomize()
     log.info('Package the application')
-    return target.build_package(dist)
+    return target.build_package()
 
 def _main():
     logging = Logging()

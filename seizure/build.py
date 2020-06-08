@@ -139,6 +139,7 @@ class APKMaker:
         self.title = config.title
         self.presplash_color = config.android.presplash_color
         self.bootstrapname = config.p4a.bootstrap
+        self.dist_dir = Path(config.dist_dir)
         self.context = context
         self.arch = arch
         self.platform = platform
@@ -150,8 +151,8 @@ class APKMaker:
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
-    def makeapkversion(self, args, dist):
-        distdir = dist.dist_dir
+    def makeapkversion(self, args):
+        distdir = self.dist_dir
         render = Render(distdir)
         blacklist = Blacklist(self.bootstrapname)
         if self.ndk_api != self.min_sdk_version:
@@ -216,7 +217,7 @@ class APKMaker:
             render_args["url_scheme"] = url_scheme
         render(
             'AndroidManifest.tmpl.xml',
-            dist.dist_dir / 'src' / 'main' / 'AndroidManifest.xml',
+            self.dist_dir / 'src' / 'main' / 'AndroidManifest.xml',
             **render_args,
         )
         render(
@@ -236,7 +237,7 @@ class APKMaker:
             repl.printf("presplash_color = %s", self.presplash_color)
             repl.printf("urlScheme = %s", url_scheme)
             repl.printf("redirect %s", (res_dir / 'values' / 'strings.xml').pmkdirp())
-            repl.printf("< %s", dist.dist_dir / 'templates' / 'strings.xml.aridt')
+            repl.printf("< %s", self.dist_dir / 'templates' / 'strings.xml.aridt')
         if self.bootstrapname == 'webview':
             render(
                 'WebViewLoader.tmpl.java',

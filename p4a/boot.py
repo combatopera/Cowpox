@@ -69,7 +69,7 @@ class Bootstrap(Plugin):
 
     @property
     def dist_dir(self):
-        return self.distribution.dist_dir
+        return self.ctx.dist_dir
 
     def get_build_dir(self):
         return self.ctx.buildsdir / 'bootstrap_builds' / self.ctx.check_recipe_choices(self.name, self.recipe_depends)

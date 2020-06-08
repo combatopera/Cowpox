@@ -92,6 +92,7 @@ class Context:
         self.buildsdir = Path(config.buildsdir)
         self.other_builds = Path(config.other_builds)
         self.package_name = config.package.name
+        self.dist_dir = Path(config.dist_dir)
         self.recipes = {}
         self.env = os.environ.copy()
         self.env.pop("LDFLAGS", None)

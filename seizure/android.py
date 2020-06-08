@@ -89,6 +89,7 @@ class TargetAndroid:
         self.presplash = config.presplash.filename
         self.apkdir = Path(config.apk.dir)
         self.distsdir = Path(config.distsdir)
+        self.dist_dir = Path(config.dist_dir)
         self.context = context
         self.apkmaker = apkmaker
 
@@ -97,7 +98,6 @@ class TargetAndroid:
         log.info('No dist exists that meets your requirements, so one will be built.')
         bs.bootstrap_dir = self.context.contribroot / 'bootstraps' / self.bootstrapname
         bs.ctx = self.context
-        bs.distribution = dist
         self.context.init_recipe_order({*dist.recipes, *bs.recipe_depends})
         log.info("The selected bootstrap is %s", bs.name)
         log.info("Creating dist with %s bootstrap", bs.name)
@@ -109,8 +109,7 @@ class TargetAndroid:
         self.context.build_recipes()
         bs.run_distribute()
         log.info('Your distribution was created successfully, exiting.')
-        log.info("Dist can be found at (for now) %s", dist.dist_dir)
-        return dist
+        log.info("Dist can be found at (for now) %s", self.dist_dir)
 
     @staticmethod
     def _check_p4a_sign_env(error):
@@ -124,8 +123,8 @@ class TargetAndroid:
                 check = False
         return check
 
-    def _generate_whitelist(self, dist_dir):
-        with (dist_dir / 'whitelist.txt').open('w') as f:
+    def _generate_whitelist(self):
+        with (self.dist_dir / 'whitelist.txt').open('w') as f:
             for entry in self.p4a_whitelist:
                 print(entry, file = f)
 
@@ -135,9 +134,9 @@ class TargetAndroid:
             words[-1] = words[-1].upper()
             yield '.'.join(words)
 
-    def build_package(self, dist):
-        self._update_libraries_references(dist.dist_dir)
-        self._generate_whitelist(dist.dist_dir)
+    def build_package(self):
+        self._update_libraries_references()
+        self._generate_whitelist()
         def downstreamargs():
             yield 'name', self.title
             yield 'version', self.version
@@ -166,21 +165,21 @@ class TargetAndroid:
             yield 'depends', self.depends if self.depends else None
             if self.bootstrapname == 'webview':
                 yield 'port', '5000'
-        self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())), dist)
+        self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())))
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug',
-                env = dict(ANDROID_NDK_HOME = self.context.ndk_dir, ANDROID_HOME = self.context.sdk_dir), cwd = dist.dist_dir)
+                env = dict(ANDROID_NDK_HOME = self.context.ndk_dir, ANDROID_HOME = self.context.sdk_dir), cwd = self.dist_dir)
         if not self.releasemode:
             mode_sign = mode = 'debug'
         else:
             mode_sign = 'release'
             mode = 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'
         apkpath = self.apkdir / f"{self.dist_name}-{self.version}-{self.commit}-{self.arch}-{mode}.apk"
-        shutil.copyfile(dist.dist_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{dist.dist_dir.name}-{mode}.apk", apkpath)
+        shutil.copyfile(self.dist_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{self.dist_dir.name}-{mode}.apk", apkpath)
         log.info('Android packaging done!')
         return apkpath
 
-    def _update_libraries_references(self, dist_dir):
-        project_fn = dist_dir / 'project.properties'
+    def _update_libraries_references(self):
+        project_fn = self.dist_dir / 'project.properties'
         if not project_fn.exists():
             content = ['target=android-{}\n'.format(self.android_api), f"APP_PLATFORM={self.android_minapi}\n"]
         else:
