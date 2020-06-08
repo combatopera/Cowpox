@@ -45,7 +45,6 @@ from .distribution import Distribution
 from .graph import get_recipe_order
 from diapyr import types
 from lagoon import gradle
-from p4a.boot import Bootstrap
 from pathlib import Path
 from types import SimpleNamespace
 import logging, os, shutil
