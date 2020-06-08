@@ -42,7 +42,6 @@ from .build import APKMaker
 from .config import Config
 from .context import Context
 from .distribution import Distribution
-from .graph import get_recipe_order
 from diapyr import types
 from lagoon import gradle
 from pathlib import Path
@@ -99,11 +98,7 @@ class TargetAndroid:
         bs.bootstrap_dir = self.context.contribroot / 'bootstraps' / self.bootstrapname
         bs.ctx = self.context
         bs.distribution = dist
-        build_order, python_modules = get_recipe_order(self.context.get_recipe, {*dist.recipes, *bs.recipe_depends}, ['genericndkbuild', 'python2'])
-        assert not set(build_order) & set(python_modules)
-        # TODO: Context should init itself.
-        self.context.recipe_build_order = build_order
-        self.context.python_modules = python_modules
+        self.context.init_recipe_order({*dist.recipes, *bs.recipe_depends})
         log.info("The selected bootstrap is %s", bs.name)
         log.info("Creating dist with %s bootstrap", bs.name)
         log.info("Dist will have name %s and requirements (%s)", dist.name, ', '.join(dist.recipes))
@@ -111,7 +106,7 @@ class TargetAndroid:
         log.info("Dist will also contain modules (%s) installed from pip", ', '.join(self.context.python_modules))
         self.context.bootstrap = bs
         bs.prepare_dirs()
-        self.context.build_recipes(build_order, python_modules)
+        self.context.build_recipes()
         bs.run_distribute()
         log.info('Your distribution was created successfully, exiting.')
         log.info("Dist can be found at (for now) %s", self.context.distsdir / dist.dist_dir)

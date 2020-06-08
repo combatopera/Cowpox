@@ -40,6 +40,7 @@
 
 from .arch import Arch
 from .config import Config
+from .graph import get_recipe_order
 from .mirror import Mirror
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
@@ -140,7 +141,15 @@ class Context:
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
 
-    def build_recipes(self, build_order, python_modules):
+    def init_recipe_order(self, names):
+        build_order, python_modules = get_recipe_order(self.get_recipe, names, ['genericndkbuild', 'python2'])
+        assert not set(build_order) & set(python_modules)
+        self.recipe_build_order = build_order
+        self.python_modules = python_modules
+
+    def build_recipes(self):
+        build_order = self.recipe_build_order
+        python_modules = self.python_modules
         # Put recipes in correct build order
         log.info("Recipe build order is %s", build_order)
         if python_modules:
