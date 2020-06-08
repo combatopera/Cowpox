@@ -54,6 +54,8 @@ import logging, os
 
 log = logging.getLogger(__name__)
 
+class NoSuchRecipeException(Exception): pass
+
 class Context:
 
     contribroot = Path(resource_filename('pythonforandroid', '.'))
@@ -65,7 +67,10 @@ class Context:
         try:
             return self.recipes[name]
         except KeyError:
-            module = import_module(f"pythonforandroid.recipes.{name.lower()}") # FIXME: Needs a specific Exception.
+            try:
+                module = import_module(f"pythonforandroid.recipes.{name.lower()}") # XXX: Correct mangling?
+            except ModuleNotFoundError:
+                raise NoSuchRecipeException(name)
             cls = Recipe
             for n in dir(module):
                 obj = getattr(module, n)

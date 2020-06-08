@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .context import NoSuchRecipeException
 from copy import deepcopy
 from itertools import product
 import logging
@@ -53,7 +54,7 @@ class RecipeOrder(dict):
         for name in self:
             try:
                 conflicts = [dep.lower() for dep in get_recipe(name).conflicts]
-            except ModuleNotFoundError:
+            except NoSuchRecipeException:
                 conflicts = []
             if any(c in self for c in conflicts):
                 return True
@@ -76,7 +77,7 @@ def _recursively_collect_orders(name, get_recipe, all_inputs, orders, blacklist)
         dependencies = _get_dependency_tuple_list_for_recipe(recipe, blacklist)
         dependencies.extend(_fix_deplist([[d] for d in recipe.get_opt_depends_in_list(all_inputs) if d.lower() not in blacklist]))
         conflicts = [] if recipe.conflicts is None else [dep.lower() for dep in recipe.conflicts]
-    except ModuleNotFoundError:
+    except NoSuchRecipeException:
         dependencies = []
         conflicts = []
     new_orders = []
@@ -129,7 +130,7 @@ def _obvious_conflict_checker(get_recipe, name_tuples, blacklist):
                 recipe = get_recipe(name)
                 recipe_conflicts = {c.lower() for c in recipe.conflicts}
                 recipe_dependencies = _get_dependency_tuple_list_for_recipe(recipe, blacklist)
-            except ModuleNotFoundError:
+            except NoSuchRecipeException:
                 pass
             adder_first_recipe_name = adding_recipe or name
             triggered_conflicts = []
@@ -141,7 +142,7 @@ def _obvious_conflict_checker(get_recipe, name_tuples, blacklist):
                     continue
                 try:
                     dep_recipe = get_recipe(dep_tuple_list[0])
-                except ModuleNotFoundError:
+                except NoSuchRecipeException:
                     continue
                 conflicts = [c.lower() for c in dep_recipe.conflicts]
                 if name in conflicts:
@@ -197,7 +198,7 @@ def get_recipe_order(get_recipe, names, blacklist):
     for name in chosen_order:
         try:
             python_modules += get_recipe(name).python_depends
-        except ModuleNotFoundError:
+        except NoSuchRecipeException:
             python_modules.append(name)
         else:
             recipes.append(name)
