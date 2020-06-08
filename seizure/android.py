@@ -104,7 +104,7 @@ class TargetAndroid:
 
     def _build_dist_from_args(self, dist):
         bs = Bootstrap.get_bootstrap(self.bootstrapname, self.context, dist)
-        build_order, python_modules = get_recipe_order(self.context, {*dist.recipes, *bs.recipe_depends}, ['genericndkbuild', 'python2'])
+        build_order, python_modules = get_recipe_order(self.context.get_recipe, {*dist.recipes, *bs.recipe_depends}, ['genericndkbuild', 'python2'])
         assert not set(build_order) & set(python_modules)
         # TODO: Context should init itself.
         self.context.recipe_build_order = build_order
