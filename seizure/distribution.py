@@ -62,44 +62,9 @@ class Distribution:
 
     @classmethod
     def get_distribution(cls, ctx, name, recipes, arch_name, ndk_api):
-        possible_dists = []
-        if name is not None and name:
-            possible_dists = [d for d in possible_dists if d.name == name and arch_name == d.archname]
-        _possible_dists = []
-        for dist in possible_dists:
-            if (
-                ndk_api is not None and dist.ndk_api != ndk_api
-            ) or dist.ndk_api is None:
-                continue
-            for recipe in recipes:
-                if recipe not in dist.recipes:
-                    break
-            else:
-                _possible_dists.append(dist)
-        possible_dists = _possible_dists
-        if possible_dists:
-            log.info('Of the existing distributions, the following meet the given requirements:')
-            for dist in possible_dists:
-                log.info("\t%s: min API %s, includes recipes (%s), built for arch (%s)", dist.name, 'unknown' if dist.ndk_api is None else dist.ndk_api, ', '.join(dist.recipes), dist.archname)
-        else:
-            log.info('No existing dists meet the given requirements!')
-        # If any dist has perfect recipes, arch and NDK API, return it
-        for dist in possible_dists:
-            if ndk_api is not None and dist.ndk_api != ndk_api:
-                continue
-            if arch_name != dist.archname:
-                continue
-            if set(recipes).issubset(set(dist.recipes)):
-                log.info("%s has compatible recipes, using this one", dist.name)
-                return dist
-        assert len(possible_dists) < 2
+        log.info('No existing dists meet the given requirements!')
         dist = cls(ctx)
-        if not name:
-            filen = 'unnamed_dist_{}'
-            i = 1
-            while (ctx.distsdir / filen.format(i)).exists():
-                i += 1
-            name = filen.format(i)
+        assert name
         dist.name = name
         dist.dist_dir = ctx.distsdir / f"{name}__{arch_name}"
         dist.recipes = recipes
