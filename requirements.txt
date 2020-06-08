@@ -4,4 +4,5 @@ Cython
 diapyr
 jinja2
 lagoon
+networkx
 virtualenv<20

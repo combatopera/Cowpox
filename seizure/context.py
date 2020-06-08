@@ -50,7 +50,7 @@ from lagoon.program import Program
 from p4a import CythonRecipe, Recipe
 from pathlib import Path
 from pkg_resources import resource_filename
-import logging, os
+import logging, networkx as nx, os
 
 log = logging.getLogger(__name__)
 
@@ -71,14 +71,19 @@ class Context:
                 module = import_module(f"pythonforandroid.recipes.{name.lower()}") # XXX: Correct mangling?
             except ModuleNotFoundError:
                 raise NoSuchRecipeException(name)
-            cls = Recipe
-            for n in dir(module):
-                obj = getattr(module, n)
+            g = nx.DiGraph()
+            def add(c):
+                if not g.has_node(c):
+                    for b in c.__bases__:
+                        g.add_edge(b, c)
+                        add(b)
+            for c in (getattr(module, n) for n in dir(module)):
                 try:
-                    if issubclass(obj, cls): # FIXME LATER: There could be more than one leaf.
-                        cls = obj
+                    if issubclass(c, Recipe):
+                        add(c)
                 except TypeError:
                     pass
+            cls, = (c for c, d in g.out_degree if not d)
             self.recipes[name] = recipe = cls(self)
             return recipe
 
