@@ -48,8 +48,9 @@ from .dirs import Dirs
 from .mirror import Mirror
 from .platform import Platform
 from .src import Src
-from .util import Logging
+from .util import findimpl, Logging
 from diapyr import DI, types
+from p4a.boot import Bootstrap
 from pathlib import Path
 from pkg_resources import resource_filename
 import logging
@@ -58,12 +59,12 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Config, Context, Dirs, Platform, TargetAndroid, Src, this = Result)
-def run(config, context, dirs, platform, target, src):
+@types(Config, Bootstrap, Context, Dirs, Platform, TargetAndroid, Src, this = Result)
+def run(config, bootstrap, context, dirs, platform, target, src):
     platform.install()
     log.info('Compile platform')
     context.init()
-    dist = target.compile_platform()
+    dist = target.compile_platform(bootstrap)
     src.copy_application_sources()
     dirs.add_sitecustomize()
     log.info('Package the application')
@@ -77,6 +78,7 @@ def _main():
     try:
         di.add(config)
         di.add(all_archs[config.android.arch])
+        di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap)
         di.add(APKMaker)
         di.add(Context)
         di.add(Dirs)

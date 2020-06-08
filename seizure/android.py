@@ -94,10 +94,12 @@ class TargetAndroid:
         self.context = context
         self.apkmaker = apkmaker
 
-    def compile_platform(self):
+    def compile_platform(self, bs):
         dist = Distribution.get_distribution(self.context, self.dist_name, self.requirements, self.arch, self.ndk_api)
         log.info('No dist exists that meets your requirements, so one will be built.')
-        bs = Bootstrap.get_bootstrap(self.bootstrapname, self.context, dist)
+        bs.bootstrap_dir = self.context.contribroot / 'bootstraps' / self.bootstrapname
+        bs.ctx = self.context
+        bs.distribution = dist
         build_order, python_modules = get_recipe_order(self.context.get_recipe, {*dist.recipes, *bs.recipe_depends}, ['genericndkbuild', 'python2'])
         assert not set(build_order) & set(python_modules)
         # TODO: Context should init itself.

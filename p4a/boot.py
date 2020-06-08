@@ -103,14 +103,6 @@ class Bootstrap:
     def run_distribute(self):
         self.distribution.save_info()
 
-    @classmethod
-    def get_bootstrap(cls, name, ctx, distribution):
-        bootstrap = findimpl(f"pythonforandroid.bootstraps.{name}", cls)()
-        bootstrap.bootstrap_dir = ctx.contribroot / 'bootstraps' / name
-        bootstrap.ctx = ctx
-        bootstrap.distribution = distribution
-        return bootstrap
-
     def distribute_libs(self, arch, src_dir):
         log.info('Copying libs')
         tgt_dir = (self.dist_dir / 'libs' / arch.name).mkdirp()
