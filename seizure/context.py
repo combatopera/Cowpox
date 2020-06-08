@@ -131,10 +131,6 @@ class Context:
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
 
-    def prepare_bootstrap(self, bs):
-        self.bootstrap = bs
-        bs.prepare_build_dir()
-
     def get_libs_dir(self, arch):
         return (self.libs_dir / arch.name).mkdirp()
 
