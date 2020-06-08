@@ -92,6 +92,25 @@ class Context:
     def get_python_install_dir(self):
         return (self.buildsdir / 'python-installs').mkdirp() / self.bootstrap.distribution.name
 
+    @types(Config, Mirror, Platform, Arch)
+    def __init__(self, config, mirror, platform, arch):
+        self.ndk_api = config.android.ndk_api
+        self.android_api = config.android.api
+        self.sdk_dir = Path(config.android_sdk_dir)
+        self.ndk_dir = Path(config.android_ndk_dir)
+        self.storage_dir = Path(config.storage_dir)
+        self.distsdir = Path(config.distsdir)
+        self.buildsdir = Path(config.buildsdir)
+        self.other_builds = Path(config.other_builds)
+        self.recipes = {}
+        self.env = os.environ.copy()
+        self.env.pop("LDFLAGS", None)
+        self.env.pop("ARCHFLAGS", None)
+        self.env.pop("CFLAGS", None)
+        self.mirror = mirror
+        self.platform = platform
+        self.arch = arch
+
     def init(self):
         log.info("Will compile for the following arch: %s", self.arch.name)
         self.distsdir.mkdirp()
@@ -123,25 +142,6 @@ class Context:
             raise Exception('python-for-android cannot continue due to the missing executables above')
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
-
-    @types(Config, Mirror, Platform, Arch)
-    def __init__(self, config, mirror, platform, arch):
-        self.ndk_api = config.android.ndk_api
-        self.android_api = config.android.api
-        self.sdk_dir = Path(config.android_sdk_dir)
-        self.ndk_dir = Path(config.android_ndk_dir)
-        self.storage_dir = Path(config.storage_dir)
-        self.distsdir = Path(config.distsdir)
-        self.buildsdir = Path(config.buildsdir)
-        self.other_builds = Path(config.other_builds)
-        self.recipes = {}
-        self.env = os.environ.copy()
-        self.env.pop("LDFLAGS", None)
-        self.env.pop("ARCHFLAGS", None)
-        self.env.pop("CFLAGS", None)
-        self.mirror = mirror
-        self.platform = platform
-        self.arch = arch
 
     def prepare_bootstrap(self, bs):
         bs.ctx = self
