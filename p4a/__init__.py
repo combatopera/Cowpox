@@ -49,7 +49,17 @@ import hashlib, logging, os, subprocess
 
 log = logging.getLogger(__name__)
 
-class Recipe:
+class Plugin:
+
+    @property
+    def name(self):
+        fqmodule = self._fqmodulename()
+        return fqmodule[fqmodule.rfind('.') + 1:]
+
+    def _fqmodulename(self):
+        return type(self).__module__
+
+class Recipe(Plugin):
 
     md5sum = None
     depends = []
@@ -78,19 +88,11 @@ class Recipe:
     builtlibpaths = ()
 
     @property
-    def name(self):
-        fqmodule = self._fqmodulename()
-        return fqmodule[fqmodule.rfind('.') + 1:]
-
-    @property
     def url(self):
         return format_obj(self.urlformat, self)
 
     def __init__(self, ctx):
         self.ctx = ctx
-
-    def _fqmodulename(self):
-        return type(self).__module__
 
     def resourcepath(self, relpath):
         return Path(resource_filename(self._fqmodulename(), str(relpath)))

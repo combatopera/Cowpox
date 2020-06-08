@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import Plugin
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
 from pathlib import Path
@@ -62,9 +63,8 @@ def _copy_files(src_root, dest_root, override):
             else:
                 dest_file.mkdirp()
 
-class Bootstrap:
+class Bootstrap(Plugin):
 
-    name = ''
     recipe_depends = [("python2", "python3"), 'android']
 
     @property
@@ -76,11 +76,6 @@ class Bootstrap:
 
     def get_dist_dir(self, name):
         return self.ctx.distsdir / name
-
-    @property
-    def name(self):
-        modname = self.__class__.__module__
-        return modname.split(".", 2)[-1]
 
     def prepare_build_dir(self):
         '''Ensure that a build dir exists for the recipe. This same single
