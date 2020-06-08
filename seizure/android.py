@@ -110,7 +110,7 @@ class TargetAndroid:
         log.info("Dist contains the following requirements as recipes: %s", self.context.recipe_build_order)
         log.info("Dist will also contain modules (%s) installed from pip", ', '.join(self.context.python_modules))
         self.context.prepare_bootstrap(bs)
-        self.context.prepare_dist()
+        bs.prepare_dist_dir()
         self.context.build_recipes(build_order, python_modules)
         self.context.bootstrap.run_distribute()
         log.info('Your distribution was created successfully, exiting.')

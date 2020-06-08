@@ -138,9 +138,6 @@ class Context:
         self.bootstrap = bs
         bs.prepare_build_dir()
 
-    def prepare_dist(self):
-        self.bootstrap.prepare_dist_dir()
-
     def get_libs_dir(self, arch):
         return (self.libs_dir / arch.name).mkdirp()
 
