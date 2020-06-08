@@ -105,15 +105,12 @@ class Recipe:
         and returns a list of these.'''
         recipes = []
         built_recipes = self.ctx.recipe_build_order
-        for recipe in self.depends:
+        for recipe in [*self.depends, *([d] for d in self.opt_depends)]:
             if isinstance(recipe, (tuple, list)):
                 for alternative in recipe:
                     if alternative in built_recipes:
                         recipes.append(alternative)
                         break
-        for recipe in self.opt_depends:
-            if recipe in built_recipes:
-                recipes.append(recipe)
         return sorted(recipes)
 
     def get_opt_depends_in_list(self, recipes):
