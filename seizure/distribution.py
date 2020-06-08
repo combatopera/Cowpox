@@ -45,7 +45,6 @@ log = logging.getLogger(__name__)
 class Distribution:
 
     name = None  # A name identifying the dist. May not be None.
-    needs_build = False  # Whether the dist needs compiling
     dist_dir = None  # Where the dist dir ultimately is. Should not be None.
     ndk_api = None
     recipes = []
@@ -95,7 +94,6 @@ class Distribution:
                 return dist
         assert len(possible_dists) < 2
         dist = cls(ctx)
-        dist.needs_build = True
         if not name:
             filen = 'unnamed_dist_{}'
             i = 1
@@ -123,7 +121,6 @@ class Distribution:
                 dist = cls(ctx)
                 dist.name = dist_info['dist_name']
                 dist.dist_dir = folder
-                dist.needs_build = False
                 dist.recipes = dist_info['recipes']
                 if 'archname' in dist_info:
                     dist.archname = dist_info['archname']
