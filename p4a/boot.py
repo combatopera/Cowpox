@@ -66,7 +66,6 @@ class Bootstrap:
 
     name = ''
     jni_subdir = '/jni'
-    ctx = None
     recipe_depends = [("python2", "python3"), 'android']
 
     @property
