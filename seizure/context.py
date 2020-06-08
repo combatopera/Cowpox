@@ -135,7 +135,6 @@ class Context:
         self.toolchain_version = toolchain_version
 
     def prepare_bootstrap(self, bs):
-        bs.ctx = self
         self.bootstrap = bs
         self.bootstrap.prepare_build_dir()
 
