@@ -77,15 +77,13 @@ class Bootstrap(Plugin):
     def get_dist_dir(self, name):
         return self.ctx.distsdir / name
 
-    def prepare_build_dir(self):
+    def prepare_dirs(self):
         '''Ensure that a build dir exists for the recipe. This same single
         dir will be used for building all different archs.'''
         self.build_dir = self.get_build_dir()
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files((self.bootstrap_dir / ".." / 'common').resolve() / 'build', self.build_dir, False)
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.ctx.android_api}")
-
-    def prepare_dist_dir(self):
         self.dist_dir.mkdirp()
 
     def run_distribute(self):
