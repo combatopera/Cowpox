@@ -100,17 +100,7 @@ class Recipe:
         patchexe._t._p1.print('-d', self.get_build_dir(arch), '-i', self.resourcepath(relpath))
 
     def check_recipe_choices(self):
-        '''Checks what recipes are being built to see which of the alternative
-        and optional dependencies are being used,
-        and returns a list of these.'''
-        recipes = []
-        for recipe in [*self.depends, *([d] for d in self.opt_depends)]:
-            if isinstance(recipe, (tuple, list)):
-                for alternative in recipe:
-                    if alternative in self.ctx.recipe_build_order:
-                        recipes.append(alternative)
-                        break
-        return sorted(recipes)
+        return self.ctx.check_recipe_choices([*self.depends, *([d] for d in self.opt_depends)])
 
     def get_opt_depends_in_list(self, recipes):
         '''Given a list of recipe names, returns those that are also in
