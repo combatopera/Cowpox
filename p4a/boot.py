@@ -43,6 +43,7 @@ from diapyr import types
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
 from pathlib import Path
+from seizure.config import Config
 from tempfile import TemporaryDirectory
 import logging, os, shlex, shutil, subprocess
 
@@ -72,8 +73,9 @@ class Bootstrap(Plugin):
     def dist_dir(self):
         return self.ctx.dist_dir
 
-    @types(Context)
-    def __init__(self, ctx):
+    @types(Config, Context)
+    def __init__(self, config, ctx):
+        self.bootstrap_dir = ctx.contribroot / 'bootstraps' / config.p4a.bootstrap
         self.ctx = ctx
 
     def get_build_dir(self):

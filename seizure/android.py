@@ -96,7 +96,6 @@ class TargetAndroid:
 
     def compile_platform(self, bs):
         log.info('No dist exists that meets your requirements, so one will be built.')
-        bs.bootstrap_dir = self.context.contribroot / 'bootstraps' / self.bootstrapname
         self.context.init_recipe_order({*self.requirements, *bs.recipe_depends})
         log.info("The selected bootstrap is %s", bs.name)
         log.info("Creating dist with %s bootstrap", bs.name)
