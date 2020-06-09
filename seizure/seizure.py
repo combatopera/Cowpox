@@ -43,7 +43,7 @@ from .android import TargetAndroid
 from .arch import all_archs
 from .build import APKMaker
 from .config import Config
-from .context import ContextImpl
+from .context import ContextImpl, RecipeContext
 from .dirs import Dirs
 from .mirror import Mirror
 from .platform import Platform
@@ -85,6 +85,7 @@ def _main():
         di.add(Dirs)
         di.add(Mirror)
         di.add(Platform)
+        di.add(RecipeContext)
         di.add(Src)
         di.add(TargetAndroid)
         di.add(run)

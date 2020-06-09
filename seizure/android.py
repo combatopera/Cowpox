@@ -40,9 +40,9 @@
 
 from .build import APKMaker
 from .config import Config
+from .context import RecipeContext
 from diapyr import types
 from lagoon import gradle
-from p4a import Context
 from pathlib import Path
 from types import SimpleNamespace
 import logging, os, shutil
@@ -51,7 +51,7 @@ log = logging.getLogger(__name__)
 
 class TargetAndroid:
 
-    @types(Config, Context, APKMaker)
+    @types(Config, RecipeContext, APKMaker)
     def __init__(self, config, context, apkmaker):
         self.android_api = config.android.api
         self.android_minapi = config.android.minapi
@@ -102,7 +102,6 @@ class TargetAndroid:
         log.info("Dist will have name %s and requirements (%s)", self.dist_name, ', '.join(self.requirements))
         log.info("Dist contains the following requirements as recipes: %s", self.context.recipe_build_order)
         log.info("Dist will also contain modules (%s) installed from pip", ', '.join(self.context.python_modules))
-        self.context.bootstrap = bs
         bs.prepare_dirs()
         self.context.build_recipes()
         bs.run_distribute()

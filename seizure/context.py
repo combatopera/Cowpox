@@ -49,6 +49,7 @@ from diapyr import types
 from lagoon import virtualenv
 from lagoon.program import Program
 from p4a import Context, CythonRecipe, Recipe
+from p4a.boot import Bootstrap
 from pathlib import Path
 from pkg_resources import resource_filename
 import logging, os
@@ -58,13 +59,6 @@ log = logging.getLogger(__name__)
 class ContextImpl(Context):
 
     contribroot = Path(resource_filename('pythonforandroid', '.'))
-
-    def get_recipe(self, name):
-        try:
-            return self.recipes[name]
-        except KeyError:
-            self.recipes[name] = recipe = findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe)(self) # XXX: Correct mangling?
-            return recipe
 
     @property
     def libs_dir(self):
@@ -93,7 +87,6 @@ class ContextImpl(Context):
         self.other_builds = Path(config.other_builds)
         self.package_name = config.package.name
         self.dist_dir = Path(config.dist_dir)
-        self.recipes = {}
         self.env = os.environ.copy()
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
@@ -142,6 +135,25 @@ class ContextImpl(Context):
 
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
+
+class RecipeContext:
+
+    @types(Context, Bootstrap)
+    def __init__(self, context, bootstrap):
+        self._recipes = {}
+        self._context = context
+        self.bootstrap = bootstrap
+
+    def __getattr__(self, name):
+        return getattr(self._context, name)
+
+    def get_recipe(self, name):
+        try:
+            return self._recipes[name]
+        except KeyError:
+            impl = findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
+            self._recipes[name] = recipe = impl(self) # XXX: Use DI?
+            return recipe
 
     def init_recipe_order(self, names):
         build_order, python_modules = get_recipe_order(self.get_recipe, names, ['genericndkbuild', 'python2'])
