@@ -95,19 +95,11 @@ class TargetAndroid:
         self.apkmaker = apkmaker
 
     def compile_platform(self, bs):
-        log.info('No dist exists that meets your requirements, so one will be built.')
         self.context.init_recipe_order({*self.requirements, *bs.recipe_depends})
-        log.info("The selected bootstrap is %s", bs.name)
-        log.info("Creating dist with %s bootstrap", bs.name)
-        log.info("Dist will have name %s and requirements (%s)", self.dist_name, ', '.join(self.requirements))
-        log.info("Dist contains the following requirements as recipes: %s", self.context.recipe_build_order)
-        log.info("Dist will also contain modules (%s) installed from pip", ', '.join(self.context.python_modules))
         bs.build_dir = self.context.buildsdir / 'bootstrap_builds' / self.context.check_recipe_choices(bs.name, bs.recipe_depends)
         bs.prepare_dirs()
         self.context.build_recipes()
         bs.run_distribute(self.context)
-        log.info('Your distribution was created successfully, exiting.')
-        log.info("Dist can be found at (for now) %s", self.dist_dir)
 
     @staticmethod
     def _check_p4a_sign_env(error):

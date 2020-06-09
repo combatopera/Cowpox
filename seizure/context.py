@@ -160,6 +160,8 @@ class RecipeContext:
         assert not set(build_order) & set(python_modules)
         self.recipe_build_order = build_order
         self.python_modules = python_modules
+        log.info("Dist contains the following requirements as recipes: %s", build_order)
+        log.info("Dist will also contain modules (%s) installed from pip", ', '.join(python_modules))
 
     def build_recipes(self):
         build_order = self.recipe_build_order
