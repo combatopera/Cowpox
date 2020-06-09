@@ -89,6 +89,8 @@ class TargetAndroid:
         self.apkdir = Path(config.apk.dir)
         self.distsdir = Path(config.distsdir)
         self.dist_dir = Path(config.dist_dir)
+        self.sdk_dir = Path(config.android_sdk_dir)
+        self.ndk_dir = Path(config.android_ndk_dir)
         self.context = context
         self.apkmaker = apkmaker
 
@@ -164,7 +166,7 @@ class TargetAndroid:
                 yield 'port', '5000'
         self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())))
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug',
-                env = dict(ANDROID_NDK_HOME = self.context.ndk_dir, ANDROID_HOME = self.context.sdk_dir), cwd = self.dist_dir)
+                env = dict(ANDROID_NDK_HOME = self.ndk_dir, ANDROID_HOME = self.sdk_dir), cwd = self.dist_dir)
         if not self.releasemode:
             mode_sign = mode = 'debug'
         else:
