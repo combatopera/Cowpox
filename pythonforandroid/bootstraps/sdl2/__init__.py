@@ -50,20 +50,20 @@ class SDL2GradleBootstrap(Bootstrap):
     name = 'sdl2'
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'sdl2'})
 
-    def run_distribute(self):
+    def run_distribute(self, rctx):
         log.info("Creating Android project (%s)", self.name)
-        arch = self.ctx.arch
+        arch = rctx.arch
         log.info("Copying SDL2/gradle build for %s", arch)
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
-        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.ctx.sdk_dir}")
+        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={rctx.sdk_dir}")
         log.info('Copying Python distribution')
-        self.distribute_libs(arch, self.ctx.get_libs_dir(arch))
-        self.distribute_javaclasses(self.ctx.javaclass_dir, dest_dir = Path("src", "main", "java"))
-        site_packages_dir = self.ctx.python_recipe.create_python_bundle(self.dist_dir, arch)
-        if 'sqlite3' not in self.ctx.recipe_build_order:
+        self.distribute_libs(arch, rctx.get_libs_dir(arch))
+        self.distribute_javaclasses(rctx.javaclass_dir, dest_dir = Path("src", "main", "java"))
+        site_packages_dir = rctx.python_recipe.create_python_bundle(self.dist_dir, arch)
+        if 'sqlite3' not in rctx.recipe_build_order:
             with (self.dist_dir / 'blacklist.txt').open('a') as fileh:
                 fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
         self.strip_libraries(arch)
         self.fry_eggs(site_packages_dir)
-        super().run_distribute()
+        super().run_distribute(rctx)

@@ -87,7 +87,7 @@ class Bootstrap(Plugin):
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.ctx.android_api}")
         self.dist_dir.mkdirp()
 
-    def run_distribute(self):
+    def run_distribute(self, rctx):
         pass
 
     def distribute_libs(self, arch, src_dir):

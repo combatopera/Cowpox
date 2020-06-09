@@ -49,21 +49,21 @@ class WebViewBootstrap(Bootstrap):
     name = 'webview'
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'genericndkbuild'})
 
-    def run_distribute(self):
+    def run_distribute(self, rctx):
         log.info("Creating Android project from build and %s bootstrap", self.name)
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
-        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.ctx.sdk_dir}")
-        arch = self.ctx.arch
+        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={rctx.sdk_dir}")
+        arch = rctx.arch
         log.info("Bootstrap running with arch %s", arch)
         log.info('Copying python distribution')
-        self.distribute_libs(arch, self.ctx.get_libs_dir(arch))
+        self.distribute_libs(arch, rctx.get_libs_dir(arch))
         self.distribute_aars(arch)
-        self.distribute_javaclasses(self.ctx.javaclass_dir)
-        site_packages_dir = self.ctx.python_recipe.create_python_bundle(self.dist_dir, arch)
-        if 'sqlite3' not in self.ctx.recipe_build_order:
+        self.distribute_javaclasses(rctx.javaclass_dir)
+        site_packages_dir = rctx.python_recipe.create_python_bundle(self.dist_dir, arch)
+        if 'sqlite3' not in rctx.recipe_build_order:
             with (self.dist_dir / 'blacklist.txt').open('a') as fileh:
                 fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
         self.strip_libraries(arch)
         self.fry_eggs(site_packages_dir)
-        super().run_distribute()
+        super().run_distribute(rctx)

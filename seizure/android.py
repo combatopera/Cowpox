@@ -105,7 +105,7 @@ class TargetAndroid:
         bs.build_dir = self.context.buildsdir / 'bootstrap_builds' / self.context.check_recipe_choices(bs.name, bs.recipe_depends)
         bs.prepare_dirs()
         self.context.build_recipes()
-        bs.run_distribute()
+        bs.run_distribute(self.context)
         log.info('Your distribution was created successfully, exiting.')
         log.info("Dist can be found at (for now) %s", self.dist_dir)
 
