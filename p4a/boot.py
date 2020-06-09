@@ -82,7 +82,6 @@ class Bootstrap(Plugin):
         return self.ctx.distsdir / name
 
     def prepare_dirs(self):
-        self.build_dir = self.ctx.buildsdir / 'bootstrap_builds' / self.ctx.check_recipe_choices(self.name, self.recipe_depends)
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files((self.bootstrap_dir / ".." / 'common').resolve() / 'build', self.build_dir, False)
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.ctx.android_api}")

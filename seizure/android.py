@@ -102,6 +102,7 @@ class TargetAndroid:
         log.info("Dist will have name %s and requirements (%s)", self.dist_name, ', '.join(self.requirements))
         log.info("Dist contains the following requirements as recipes: %s", self.context.recipe_build_order)
         log.info("Dist will also contain modules (%s) installed from pip", ', '.join(self.context.python_modules))
+        bs.build_dir = self.context.buildsdir / 'bootstrap_builds' / self.context.check_recipe_choices(bs.name, bs.recipe_depends)
         bs.prepare_dirs()
         self.context.build_recipes()
         bs.run_distribute()
