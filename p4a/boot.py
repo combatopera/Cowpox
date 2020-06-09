@@ -40,12 +40,11 @@
 
 from . import Context, Plugin
 from diapyr import types
-from lagoon import cp, find, mv, rm, unzip
-from lagoon.program import Program
+from lagoon import cp, mv, rm, unzip
 from pathlib import Path
 from seizure.config import Config
 from tempfile import TemporaryDirectory
-import logging, os, shlex, shutil, subprocess
+import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
@@ -128,22 +127,6 @@ class Bootstrap(Plugin):
             log.debug("  to %s", so_tgt_dir)
             for f in so_src_dir.glob('*.so'):
                 cp._a.print(f, so_tgt_dir)
-
-    def strip_libraries(self, arch):
-        log.info('Stripping libraries')
-        env = arch.get_env(self.ctx)
-        tokens = shlex.split(env['STRIP'])
-        strip = Program.text(self.ctx.ndk_dir / 'toolchains' / f"{self.ctx.toolchain_prefix}-{self.ctx.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]).partial(*tokens[1:])
-        libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
-        filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so').splitlines()
-        log.info('Stripping libraries in private dir')
-        for filen in filens:
-            try:
-                strip.print(filen, env = env)
-            except subprocess.CalledProcessError as e:
-                if 1 != e.returncode:
-                    raise
-                log.debug("Failed to strip %s", filen)
 
     def fry_eggs(self, sitepackages):
         log.info("Frying eggs in %s", sitepackages)

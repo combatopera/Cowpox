@@ -46,13 +46,13 @@ from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from .util import findimpl
 from diapyr import types
-from lagoon import virtualenv
+from lagoon import find, virtualenv
 from lagoon.program import Program
 from p4a import Context, CythonRecipe, Recipe
 from p4a.boot import Bootstrap
 from pathlib import Path
 from pkg_resources import resource_filename
-import logging, os
+import logging, os, shlex, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -238,3 +238,19 @@ class RecipeContext:
                         recipes.append(alternative)
                         break
         return '-'.join([name, *sorted(recipes)])
+
+    def strip_libraries(self, arch):
+        log.info('Stripping libraries')
+        env = arch.get_env(self)
+        tokens = shlex.split(env['STRIP'])
+        strip = Program.text(self.ndk_dir / 'toolchains' / f"{self.toolchain_prefix}-{self.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]).partial(*tokens[1:])
+        libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
+        filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so').splitlines()
+        log.info('Stripping libraries in private dir')
+        for filen in filens:
+            try:
+                strip.print(filen, env = env)
+            except subprocess.CalledProcessError as e:
+                if 1 != e.returncode:
+                    raise
+                log.debug("Failed to strip %s", filen)
