@@ -78,16 +78,11 @@ class Bootstrap(Plugin):
         self.bootstrap_dir = ctx.contribroot / 'bootstraps' / config.p4a.bootstrap
         self.ctx = ctx
 
-    def get_build_dir(self):
-        return self.ctx.buildsdir / 'bootstrap_builds' / self.ctx.check_recipe_choices(self.name, self.recipe_depends)
-
     def get_dist_dir(self, name):
         return self.ctx.distsdir / name
 
     def prepare_dirs(self):
-        '''Ensure that a build dir exists for the recipe. This same single
-        dir will be used for building all different archs.'''
-        self.build_dir = self.get_build_dir()
+        self.build_dir = self.ctx.buildsdir / 'bootstrap_builds' / self.ctx.check_recipe_choices(self.name, self.recipe_depends)
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files((self.bootstrap_dir / ".." / 'common').resolve() / 'build', self.build_dir, False)
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.ctx.android_api}")
