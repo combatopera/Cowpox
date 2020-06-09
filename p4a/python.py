@@ -68,7 +68,7 @@ class GuestPythonRecipe(Recipe):
 
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
-        self.ctx.python_recipe = self # XXX: Can this suck less?
+        self.ctx._context.python_recipe = self # XXX: Can this suck less?
 
     @property
     def major_minor_version_string(self):
