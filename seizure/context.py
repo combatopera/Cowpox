@@ -136,16 +136,6 @@ class ContextImpl(Context):
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
 
-    def check_recipe_choices(self, name, depends):
-        recipes = []
-        for recipe in depends:
-            if isinstance(recipe, (tuple, list)):
-                for alternative in recipe:
-                    if alternative in self.recipe_build_order:
-                        recipes.append(alternative)
-                        break
-        return '-'.join([name, *sorted(recipes)])
-
 class RecipeContext:
 
     @types(Context, Bootstrap)
@@ -236,3 +226,13 @@ class RecipeContext:
         else:
             log.info('There are no Python modules to install, skipping')
         standard_recipe.strip_object_files(env, self.buildsdir)
+
+    def check_recipe_choices(self, name, depends):
+        recipes = []
+        for recipe in depends:
+            if isinstance(recipe, (tuple, list)):
+                for alternative in recipe:
+                    if alternative in self.recipe_build_order:
+                        recipes.append(alternative)
+                        break
+        return '-'.join([name, *sorted(recipes)])
