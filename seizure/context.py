@@ -90,7 +90,24 @@ class ContextImpl(Context):
         self.bootstrap = bootstrap
         self.mirror = mirror
 
-    def init(self):
+    def get_libs_dir(self, arch):
+        return (self.libs_dir / arch.name).mkdirp()
+
+    def has_lib(self, arch, lib):
+        return (self.get_libs_dir(arch) / lib).exists()
+
+    def get_recipe(self, name):
+        try:
+            return self._recipes[name]
+        except KeyError:
+            impl = findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
+            self._recipes[name] = recipe = impl(self) # XXX: Use DI?
+            return recipe
+
+    def insitepackages(self, name):
+        return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
+
+    def build_recipes(self, names):
         log.info("Will compile for the following arch: %s", self.arch.name)
         self.distsdir.mkdirp()
         (self.buildsdir / 'bootstrap_builds').mkdirp()
@@ -113,25 +130,6 @@ class ContextImpl(Context):
         log.info("Found the following toolchain versions: %s", toolchain_versions)
         self.toolchain_version = [tv for tv in toolchain_versions if tv[0].isdigit()][-1]
         log.info("Picking the latest gcc toolchain, here %s", self.toolchain_version)
-
-    def get_libs_dir(self, arch):
-        return (self.libs_dir / arch.name).mkdirp()
-
-    def has_lib(self, arch, lib):
-        return (self.get_libs_dir(arch) / lib).exists()
-
-    def get_recipe(self, name):
-        try:
-            return self._recipes[name]
-        except KeyError:
-            impl = findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
-            self._recipes[name] = recipe = impl(self) # XXX: Use DI?
-            return recipe
-
-    def insitepackages(self, name):
-        return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
-
-    def build_recipes(self, names):
         build_order, python_modules = get_recipe_order(self.get_recipe, names, ['genericndkbuild', 'python2'])
         self.recipe_build_order = build_order
         self.python_modules = python_modules
