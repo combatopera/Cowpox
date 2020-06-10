@@ -226,6 +226,7 @@ class RecipeContext:
         else:
             log.info('There are no Python modules to install, skipping')
         standard_recipe.strip_object_files(env, self.buildsdir)
+        self.bootstrap.run_distribute(self)
 
     def check_recipe_choices(self, name, depends):
         recipes = []

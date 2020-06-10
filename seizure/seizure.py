@@ -66,7 +66,6 @@ def run(config, bootstrap, context, rctx, dirs, platform, target, src):
     log.info('Compile platform')
     context.init()
     rctx.build_recipes({*config.requirements.list(), *bootstrap.recipe_depends})
-    bootstrap.run_distribute(rctx)
     src.copy_application_sources()
     dirs.add_sitecustomize()
     log.info('Package the application')
