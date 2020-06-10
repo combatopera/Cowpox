@@ -133,7 +133,6 @@ class ContextImpl(Context):
         log.info("Picking the latest gcc toolchain, here %s", self.toolchain_version)
         build_order, python_modules = get_recipe_order(self.get_recipe, {*self.requirements, *self.bootstrap.recipe_depends}, ['genericndkbuild', 'python2'])
         self.recipe_build_order = build_order
-        self.python_modules = python_modules
         log.info("Dist contains the following requirements as recipes: %s", build_order)
         log.info("Dist will also contain modules (%s) installed from pip", ', '.join(python_modules))
         self.bootstrap.prepare_dirs(self.check_recipe_choices(self.bootstrap.name, self.bootstrap.recipe_depends))
