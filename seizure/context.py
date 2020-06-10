@@ -117,9 +117,6 @@ class ContextImpl(Context):
     def has_lib(self, arch, lib):
         return (self.get_libs_dir(arch) / lib).exists()
 
-    def insitepackages(self, name):
-        return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
-
 class RecipeContext:
 
     @types(Context, Bootstrap, Arch, Mirror)
@@ -140,6 +137,9 @@ class RecipeContext:
             impl = findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
             self._recipes[name] = recipe = impl(self) # XXX: Use DI?
             return recipe
+
+    def insitepackages(self, name):
+        return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
 
     def build_recipes(self, names):
         build_order, python_modules = get_recipe_order(self.get_recipe, names, ['genericndkbuild', 'python2'])
