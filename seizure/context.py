@@ -226,9 +226,9 @@ class RecipeContext:
                         break
         return '-'.join([name, *sorted(recipes)])
 
-    def strip_libraries(self, arch):
+    def strip_libraries(self):
         log.info('Stripping libraries')
-        env = arch.get_env(self)
+        env = self.arch.get_env(self)
         tokens = shlex.split(env['STRIP'])
         strip = Program.text(self.ndk_dir / 'toolchains' / f"{self.toolchain_prefix}-{self.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]).partial(*tokens[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'

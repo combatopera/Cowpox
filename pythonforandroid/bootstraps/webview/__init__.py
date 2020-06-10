@@ -64,6 +64,6 @@ class WebViewBootstrap(Bootstrap):
         if 'sqlite3' not in rctx.recipe_build_order:
             with (self.dist_dir / 'blacklist.txt').open('a') as fileh:
                 fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
-        rctx.strip_libraries(arch)
+        rctx.strip_libraries()
         self.fry_eggs(site_packages_dir)
         super().run_distribute(rctx)
