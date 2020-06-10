@@ -134,17 +134,11 @@ class Platform:
         return [int(s[0]) for s in apis if s]
 
     def get_toolchain_versions(self, arch):
-        toolchain_versions = []
-        toolchain_path_exists = True
         prefix = f"{arch.toolchain_prefix}-"
         toolchain_path = self.ndk_dir / 'toolchains'
-        if toolchain_path.is_dir():
-            toolchain_contents = toolchain_path.glob(f"{prefix}*")
-            toolchain_versions = [path.name[len(prefix):] for path in toolchain_contents]
-        else:
-            log.warning('Could not find toolchain subdirectory!')
-            toolchain_path_exists = False
-        return toolchain_versions, toolchain_path_exists
+        if not toolchain_path.is_dir():
+            raise Exception('Could not find toolchain subdirectory!')
+        return [path.name[len(prefix):] for path in toolchain_path.glob(f"{prefix}*")]
 
     def get_ndk_platform_dir(self, ndk_api, arch):
         ndk_platform = self.ndk_dir / 'platforms' / f"android-{ndk_api}" / arch.platform_dir

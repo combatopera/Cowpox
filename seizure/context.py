@@ -104,14 +104,14 @@ class ContextImpl(Context):
         check_ndk_api(self.ndk_api, self.android_api)
         toolchain_prefix = self.arch.toolchain_prefix
         self.ndk_platform = self.platform.get_ndk_platform_dir(self.ndk_api, self.arch)
-        toolchain_versions, toolchain_path_exists = self.platform.get_toolchain_versions(self.arch)
+        toolchain_versions = self.platform.get_toolchain_versions(self.arch)
         toolchain_versions.sort()
         toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
         if toolchain_versions:
             log.info("Found the following toolchain versions: %s", toolchain_versions)
             log.info("Picking the latest gcc toolchain, here %s", toolchain_versions_gcc[-1])
             toolchain_version = toolchain_versions_gcc[-1]
-            ok = toolchain_path_exists
+            ok = True
         else:
             log.warning("Could not find any toolchain for %s!", toolchain_prefix)
             ok = False
