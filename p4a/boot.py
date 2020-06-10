@@ -79,9 +79,6 @@ class Bootstrap(Plugin):
         self.android_api = config.android.api
         self.dist_dir = Path(config.dist_dir)
 
-    def get_dist_dir(self, name):
-        return self.distsdir / name
-
     def prepare_dirs(self, builddirname):
         self.build_dir = self.buildsdir / 'bootstrap_builds' / builddirname
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
