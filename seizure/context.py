@@ -101,8 +101,8 @@ class ContextImpl(Context):
         check_ndk_version(self.ndk_dir)
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
         check_ndk_api(self.ndk_api, self.android_api)
-        self.ndk_platform = self.platform.get_ndk_platform_dir(self.ndk_api, self.arch)
-        toolchain_versions = self.platform.get_toolchain_versions(self.arch)
+        self.ndk_platform = self.platform.get_ndk_platform_dir(self.ndk_api)
+        toolchain_versions = self.platform.get_toolchain_versions()
         if not toolchain_versions:
             log.warning("Could not find any toolchain for %s!", self.arch.toolchain_prefix)
             raise Exception('python-for-android cannot continue due to the missing executables above')

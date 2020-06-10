@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .arch import Arch
 from .config import Config
 from .mirror import Mirror
 from diapyr import types
@@ -52,8 +53,8 @@ log = logging.getLogger(__name__)
 
 class Platform:
 
-    @types(Config, Mirror)
-    def __init__(self, config, mirror):
+    @types(Config, Mirror, Arch)
+    def __init__(self, config, mirror, arch):
         self.android_ndk_version = config.android.ndk
         self.platformname = f"android-{config.android.api}"
         self.acceptlicense = config.android.accept_sdk_license
@@ -62,6 +63,7 @@ class Platform:
         self.ndk_dir = Path(config.android_ndk_dir)
         self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         self.mirror = mirror
+        self.arch = arch
 
     def _install_android_sdk(self):
         with self.sdk_dir.okorclean() as ok:
@@ -133,15 +135,15 @@ class Platform:
         apis = [re.findall(r'[0-9]+', s) for s in apis]
         return [int(s[0]) for s in apis if s]
 
-    def get_toolchain_versions(self, arch):
-        prefix = f"{arch.toolchain_prefix}-"
+    def get_toolchain_versions(self):
+        prefix = f"{self.arch.toolchain_prefix}-"
         toolchain_path = self.ndk_dir / 'toolchains'
         if not toolchain_path.is_dir():
             raise Exception('Could not find toolchain subdirectory!')
         return [path.name[len(prefix):] for path in toolchain_path.glob(f"{prefix}*")]
 
-    def get_ndk_platform_dir(self, ndk_api, arch):
-        ndk_platform = self.ndk_dir / 'platforms' / f"android-{ndk_api}" / arch.platform_dir
+    def get_ndk_platform_dir(self, ndk_api):
+        ndk_platform = self.ndk_dir / 'platforms' / f"android-{ndk_api}" / self.arch.platform_dir
         if not ndk_platform.exists():
             raise Exception(f"ndk_platform doesn't exist: {ndk_platform}")
         return ndk_platform
