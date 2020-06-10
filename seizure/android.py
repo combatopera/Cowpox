@@ -173,8 +173,8 @@ class TargetAndroid:
                 fd.writelines((line.decode('utf-8') for line in content))
             except:
                 fd.writelines(content)
-            if content and not content[-1].endswith(u'\n'):
-                fd.write(u'\n')
+            if content and not content[-1].endswith('\n'):
+                fd.write('\n')
             for index, ref in enumerate(references):
-                fd.write(u'android.library.reference.{}={}\n'.format(index + 1, ref))
+                fd.write('android.library.reference.{}={}\n'.format(index + 1, ref))
         log.debug('project.properties updated')
