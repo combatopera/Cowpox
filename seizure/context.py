@@ -155,7 +155,7 @@ class RecipeContext:
             self._recipes[name] = recipe = impl(self) # XXX: Use DI?
             return recipe
 
-    def init_recipe_order(self, names):
+    def build_recipes(self, names):
         build_order, python_modules = get_recipe_order(self.get_recipe, names, ['genericndkbuild', 'python2'])
         assert not set(build_order) & set(python_modules)
         self.recipe_build_order = build_order
@@ -164,10 +164,6 @@ class RecipeContext:
         log.info("Dist will also contain modules (%s) installed from pip", ', '.join(python_modules))
         self.bootstrap.build_dir = self.buildsdir / 'bootstrap_builds' / self.check_recipe_choices(self.bootstrap.name, self.bootstrap.recipe_depends)
         self.bootstrap.prepare_dirs()
-
-    def build_recipes(self):
-        build_order = self.recipe_build_order
-        python_modules = self.python_modules
         # Put recipes in correct build order
         log.info("Recipe build order is %s", build_order)
         if python_modules:
