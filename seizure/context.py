@@ -133,7 +133,6 @@ class ContextImpl(Context):
 
     def build_recipes(self, names):
         build_order, python_modules = get_recipe_order(self.get_recipe, names, ['genericndkbuild', 'python2'])
-        assert not set(build_order) & set(python_modules)
         self.recipe_build_order = build_order
         self.python_modules = python_modules
         log.info("Dist contains the following requirements as recipes: %s", build_order)

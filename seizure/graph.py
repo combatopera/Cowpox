@@ -202,4 +202,5 @@ def get_recipe_order(get_recipe, names, blacklist):
             python_modules.append(name)
         else:
             recipes.append(name)
+    assert not set(recipes) & set(python_modules)
     return recipes, list(set(python_modules))
