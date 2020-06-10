@@ -66,8 +66,6 @@ def run(config, bootstrap, context, rctx, dirs, platform, target, src):
     log.info('Compile platform')
     context.init()
     rctx.init_recipe_order({*config.requirements.list(), *bootstrap.recipe_depends})
-    bootstrap.build_dir = rctx.buildsdir / 'bootstrap_builds' / rctx.check_recipe_choices(bootstrap.name, bootstrap.recipe_depends)
-    bootstrap.prepare_dirs()
     rctx.build_recipes()
     bootstrap.run_distribute(rctx)
     src.copy_application_sources()

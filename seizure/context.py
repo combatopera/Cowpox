@@ -162,6 +162,8 @@ class RecipeContext:
         self.python_modules = python_modules
         log.info("Dist contains the following requirements as recipes: %s", build_order)
         log.info("Dist will also contain modules (%s) installed from pip", ', '.join(python_modules))
+        self.bootstrap.build_dir = self.buildsdir / 'bootstrap_builds' / self.check_recipe_choices(self.bootstrap.name, self.bootstrap.recipe_depends)
+        self.bootstrap.prepare_dirs()
 
     def build_recipes(self):
         build_order = self.recipe_build_order
