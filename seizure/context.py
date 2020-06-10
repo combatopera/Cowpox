@@ -107,11 +107,9 @@ class ContextImpl(Context):
             log.warning("Could not find any toolchain for %s!", self.arch.toolchain_prefix)
             raise Exception('python-for-android cannot continue due to the missing executables above')
         toolchain_versions.sort()
-        toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
         log.info("Found the following toolchain versions: %s", toolchain_versions)
-        log.info("Picking the latest gcc toolchain, here %s", toolchain_versions_gcc[-1])
-        toolchain_version = toolchain_versions_gcc[-1]
-        self.toolchain_version = toolchain_version
+        self.toolchain_version = [tv for tv in toolchain_versions if tv[0].isdigit()][-1]
+        log.info("Picking the latest gcc toolchain, here %s", self.toolchain_version)
 
     def get_libs_dir(self, arch):
         return (self.libs_dir / arch.name).mkdirp()
