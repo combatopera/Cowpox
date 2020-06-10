@@ -80,6 +80,7 @@ class ContextImpl(Context):
         self.other_builds = Path(config.other_builds)
         self.package_name = config.package.name
         self.dist_dir = Path(config.dist_dir)
+        self.requirements = config.requirements.list()
         self.env = os.environ.copy()
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
@@ -107,7 +108,7 @@ class ContextImpl(Context):
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
 
-    def build_recipes(self, names):
+    def build_recipes(self):
         log.info("Will compile for the following arch: %s", self.arch.name)
         self.distsdir.mkdirp()
         (self.buildsdir / 'bootstrap_builds').mkdirp()
@@ -130,7 +131,7 @@ class ContextImpl(Context):
         log.info("Found the following toolchain versions: %s", toolchain_versions)
         self.toolchain_version = [tv for tv in toolchain_versions if tv[0].isdigit()][-1]
         log.info("Picking the latest gcc toolchain, here %s", self.toolchain_version)
-        build_order, python_modules = get_recipe_order(self.get_recipe, names, ['genericndkbuild', 'python2'])
+        build_order, python_modules = get_recipe_order(self.get_recipe, {*self.requirements, *self.bootstrap.recipe_depends}, ['genericndkbuild', 'python2'])
         self.recipe_build_order = build_order
         self.python_modules = python_modules
         log.info("Dist contains the following requirements as recipes: %s", build_order)

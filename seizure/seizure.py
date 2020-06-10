@@ -64,7 +64,7 @@ class Result: pass
 def run(config, bootstrap, context, dirs, platform, target, src):
     platform.install()
     log.info('Compile platform')
-    context.build_recipes({*config.requirements.list(), *bootstrap.recipe_depends})
+    context.build_recipes()
     src.copy_application_sources()
     dirs.add_sitecustomize()
     log.info('Package the application')
