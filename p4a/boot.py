@@ -42,6 +42,7 @@ from . import Context, Plugin
 from diapyr import types
 from lagoon import cp, mv, rm, unzip
 from pathlib import Path
+from pkg_resources import resource_filename
 from seizure.config import Config
 from tempfile import TemporaryDirectory
 import logging, os, shutil
@@ -66,6 +67,7 @@ def _copy_files(src_root, dest_root, override):
 
 class Bootstrap(Plugin):
 
+    contribroot = Path(resource_filename('pythonforandroid', '.'))
     recipe_depends = [("python2", "python3"), 'android']
 
     @property

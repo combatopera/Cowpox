@@ -51,14 +51,11 @@ from lagoon.program import Program
 from p4a import Context, CythonRecipe, Recipe
 from p4a.boot import Bootstrap
 from pathlib import Path
-from pkg_resources import resource_filename
 import logging, os, shlex, subprocess
 
 log = logging.getLogger(__name__)
 
 class ContextImpl(Context):
-
-    contribroot = Path(resource_filename('pythonforandroid', '.'))
 
     @property
     def libs_dir(self):
