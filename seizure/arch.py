@@ -109,7 +109,7 @@ class Arch:
         env['LD'] = f"{self.command_prefix}-ld"
         env['ARCH'] = self.name
         env['NDK_API'] = f"android-{self.ndk_api}"
-        env['TOOLCHAIN_PREFIX'] = ctx.toolchain_prefix
+        env['TOOLCHAIN_PREFIX'] = self.toolchain_prefix
         env['TOOLCHAIN_VERSION'] = ctx.toolchain_version
         env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
         env['BUILDLIB_PATH'] = ctx.get_recipe(f"host{ctx.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}"
