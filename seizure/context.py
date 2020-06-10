@@ -105,18 +105,14 @@ class ContextImpl(Context):
         toolchain_prefix = self.arch.toolchain_prefix
         self.ndk_platform = self.platform.get_ndk_platform_dir(self.ndk_api, self.arch)
         toolchain_versions = self.platform.get_toolchain_versions(self.arch)
+        if not toolchain_versions:
+            log.warning("Could not find any toolchain for %s!", toolchain_prefix)
+            raise Exception('python-for-android cannot continue due to the missing executables above')
         toolchain_versions.sort()
         toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
-        if toolchain_versions:
-            log.info("Found the following toolchain versions: %s", toolchain_versions)
-            log.info("Picking the latest gcc toolchain, here %s", toolchain_versions_gcc[-1])
-            toolchain_version = toolchain_versions_gcc[-1]
-            ok = True
-        else:
-            log.warning("Could not find any toolchain for %s!", toolchain_prefix)
-            ok = False
-        if not ok:
-            raise Exception('python-for-android cannot continue due to the missing executables above')
+        log.info("Found the following toolchain versions: %s", toolchain_versions)
+        log.info("Picking the latest gcc toolchain, here %s", toolchain_versions_gcc[-1])
+        toolchain_version = toolchain_versions_gcc[-1]
         self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
 
