@@ -43,7 +43,7 @@ from .android import TargetAndroid
 from .arch import all_archs
 from .build import APKMaker
 from .config import Config
-from .context import ContextImpl, RecipeContext
+from .context import ContextImpl
 from .dirs import Dirs
 from .mirror import Mirror
 from .platform import Platform
@@ -60,12 +60,12 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Config, Bootstrap, Context, RecipeContext, Dirs, Platform, TargetAndroid, Src, this = Result)
-def run(config, bootstrap, context, rctx, dirs, platform, target, src):
+@types(Config, Bootstrap, Context, Dirs, Platform, TargetAndroid, Src, this = Result)
+def run(config, bootstrap, context, dirs, platform, target, src):
     platform.install()
     log.info('Compile platform')
     context.init()
-    rctx.build_recipes({*config.requirements.list(), *bootstrap.recipe_depends})
+    context.build_recipes({*config.requirements.list(), *bootstrap.recipe_depends})
     src.copy_application_sources()
     dirs.add_sitecustomize()
     log.info('Package the application')
@@ -85,7 +85,6 @@ def _main():
         di.add(Dirs)
         di.add(Mirror)
         di.add(Platform)
-        di.add(RecipeContext)
         di.add(Src)
         di.add(TargetAndroid)
         di.add(run)
