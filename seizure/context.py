@@ -127,11 +127,12 @@ class ContextImpl(Context):
 
 class RecipeContext:
 
-    @types(Context, Bootstrap)
-    def __init__(self, context, bootstrap):
+    @types(Context, Bootstrap, Arch)
+    def __init__(self, context, bootstrap, arch):
         self._recipes = {}
         self._context = context
         self.bootstrap = bootstrap
+        self.arch = arch
 
     def __getattr__(self, name):
         return getattr(self._context, name)
