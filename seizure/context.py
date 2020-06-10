@@ -101,18 +101,16 @@ class ContextImpl(Context):
         check_ndk_version(self.ndk_dir)
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
         check_ndk_api(self.ndk_api, self.android_api)
-        toolchain_prefix = self.arch.toolchain_prefix
         self.ndk_platform = self.platform.get_ndk_platform_dir(self.ndk_api, self.arch)
         toolchain_versions = self.platform.get_toolchain_versions(self.arch)
         if not toolchain_versions:
-            log.warning("Could not find any toolchain for %s!", toolchain_prefix)
+            log.warning("Could not find any toolchain for %s!", self.arch.toolchain_prefix)
             raise Exception('python-for-android cannot continue due to the missing executables above')
         toolchain_versions.sort()
         toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
         log.info("Found the following toolchain versions: %s", toolchain_versions)
         log.info("Picking the latest gcc toolchain, here %s", toolchain_versions_gcc[-1])
         toolchain_version = toolchain_versions_gcc[-1]
-        self.toolchain_prefix = toolchain_prefix
         self.toolchain_version = toolchain_version
 
     def get_libs_dir(self, arch):
@@ -231,7 +229,7 @@ class RecipeContext:
         log.info('Stripping libraries')
         env = self.arch.get_env(self)
         tokens = shlex.split(env['STRIP'])
-        strip = Program.text(self.ndk_dir / 'toolchains' / f"{self.toolchain_prefix}-{self.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]).partial(*tokens[1:])
+        strip = Program.text(self.ndk_dir / 'toolchains' / f"{self.arch.toolchain_prefix}-{self.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]).partial(*tokens[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
         filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so').splitlines()
         log.info('Stripping libraries in private dir')
