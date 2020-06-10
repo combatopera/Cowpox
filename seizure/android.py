@@ -40,7 +40,6 @@
 
 from .build import APKMaker
 from .config import Config
-from .context import RecipeContext
 from diapyr import types
 from lagoon import gradle
 from pathlib import Path
@@ -51,15 +50,13 @@ log = logging.getLogger(__name__)
 
 class TargetAndroid:
 
-    @types(Config, RecipeContext, APKMaker)
-    def __init__(self, config, context, apkmaker):
+    @types(Config, APKMaker)
+    def __init__(self, config, apkmaker):
         self.android_api = config.android.api
         self.android_minapi = config.android.minapi
         self.arch = config.android.arch
         self.dist_name = config.package.name
         self.bootstrapname = config.p4a.bootstrap
-        self.ndk_api = config.android.ndk_api
-        self.requirements = config.requirements.list()
         self.fqpackage = config.package.fq
         self.releasemode = 'debug' != config.build_mode
         self.p4a_whitelist = config.android.whitelist.list()
@@ -87,19 +84,10 @@ class TargetAndroid:
         self.intent_filters = config.android.manifest.intent_filters
         self.presplash = config.presplash.filename
         self.apkdir = Path(config.apk.dir)
-        self.distsdir = Path(config.distsdir)
         self.dist_dir = Path(config.dist_dir)
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
-        self.context = context
         self.apkmaker = apkmaker
-
-    def compile_platform(self, bs):
-        self.context.init_recipe_order({*self.requirements, *bs.recipe_depends})
-        bs.build_dir = self.context.buildsdir / 'bootstrap_builds' / self.context.check_recipe_choices(bs.name, bs.recipe_depends)
-        bs.prepare_dirs()
-        self.context.build_recipes()
-        bs.run_distribute(self.context)
 
     @staticmethod
     def _check_p4a_sign_env(error):
