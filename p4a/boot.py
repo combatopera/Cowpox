@@ -78,6 +78,7 @@ class Bootstrap(Plugin):
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
+        self.android_api = config.android.api
         self.ctx = ctx
 
     def get_dist_dir(self, name):
@@ -86,8 +87,8 @@ class Bootstrap(Plugin):
     def prepare_dirs(self, builddirname):
         self.build_dir = self.buildsdir / 'bootstrap_builds' / builddirname
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
-        _copy_files((self.bootstrap_dir / ".." / 'common').resolve() / 'build', self.build_dir, False)
-        (self.build_dir / 'project.properties').write_text(f"target=android-{self.ctx.android_api}")
+        _copy_files((self.bootstrap_dir / '..' / 'common').resolve() / 'build', self.build_dir, False)
+        (self.build_dir / 'project.properties').write_text(f"target=android-{self.android_api}")
         self.dist_dir.mkdirp()
 
     def run_distribute(self, rctx):
