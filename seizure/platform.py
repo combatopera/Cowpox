@@ -61,6 +61,7 @@ class Platform:
         self.skip_upd = config.android.skip_update
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
+        self.ndk_api = config.android.ndk_api
         self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         self.mirror = mirror
         self.arch = arch
@@ -142,8 +143,8 @@ class Platform:
             raise Exception('Could not find toolchain subdirectory!')
         return [path.name[len(prefix):] for path in toolchain_path.glob(f"{prefix}*")]
 
-    def get_ndk_platform_dir(self, ndk_api):
-        ndk_platform = self.ndk_dir / 'platforms' / f"android-{ndk_api}" / self.arch.platform_dir
+    def get_ndk_platform_dir(self):
+        ndk_platform = self.ndk_dir / 'platforms' / f"android-{self.ndk_api}" / self.arch.platform_dir
         if not ndk_platform.exists():
             raise Exception(f"ndk_platform doesn't exist: {ndk_platform}")
         return ndk_platform
