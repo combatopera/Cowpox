@@ -68,10 +68,6 @@ class ContextImpl(Context):
     def javaclass_dir(self):
         return (self.buildsdir / 'javaclasses' / self.package_name).mkdirp()
 
-    @property
-    def aars_dir(self):
-        return (self.buildsdir / 'aars' / self.package_name).mkdirp()
-
     def get_python_install_dir(self):
         return (self.buildsdir / 'python-installs').mkdirp() / self.package_name
 

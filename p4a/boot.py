@@ -77,6 +77,7 @@ class Bootstrap(Plugin):
         self.bootstrap_dir = ctx.contribroot / 'bootstraps' / config.p4a.bootstrap
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
+        self.package_name = config.package.name
         self.ctx = ctx
 
     def get_dist_dir(self, name):
@@ -105,7 +106,7 @@ class Bootstrap(Plugin):
 
     def distribute_aars(self, arch):
         log.info('Unpacking aars')
-        for aar in self.ctx.aars_dir.glob('*.aar'):
+        for aar in (self.buildsdir / 'aars' / self.package_name).mkdirp().glob('*.aar'):
             self._unpack_aar(aar, arch)
 
     def _unpack_aar(self, aar, arch):
