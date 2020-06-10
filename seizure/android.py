@@ -159,7 +159,7 @@ class TargetAndroid:
     def _update_libraries_references(self):
         project_fn = self.dist_dir / 'project.properties'
         if not project_fn.exists():
-            content = ['target=android-{}\n'.format(self.android_api), f"APP_PLATFORM={self.android_minapi}\n"]
+            content = [f"target=android-{self.android_api}\n", f"APP_PLATFORM={self.android_minapi}\n"]
         else:
             with project_fn.open(encoding = 'utf-8') as fd:
                 content = fd.readlines()
