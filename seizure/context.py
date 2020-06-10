@@ -68,8 +68,8 @@ class ContextImpl(Context):
     def get_python_install_dir(self):
         return (self.buildsdir / 'python-installs').mkdirp() / self.package_name
 
-    @types(Config, Mirror, Platform, Arch)
-    def __init__(self, config, mirror, platform, arch):
+    @types(Config, Platform, Arch)
+    def __init__(self, config, platform, arch):
         self.ndk_api = config.android.ndk_api
         self.android_api = config.android.api
         self.sdk_dir = Path(config.android_sdk_dir)
@@ -84,7 +84,6 @@ class ContextImpl(Context):
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
-        self.mirror = mirror
         self.platform = platform
         self.arch = arch
 
@@ -127,12 +126,13 @@ class ContextImpl(Context):
 
 class RecipeContext:
 
-    @types(Context, Bootstrap, Arch)
-    def __init__(self, context, bootstrap, arch):
+    @types(Context, Bootstrap, Arch, Mirror)
+    def __init__(self, context, bootstrap, arch, mirror):
         self._recipes = {}
         self._context = context
         self.bootstrap = bootstrap
         self.arch = arch
+        self.mirror = mirror
 
     def __getattr__(self, name):
         return getattr(self._context, name)
