@@ -75,12 +75,14 @@ class Bootstrap(Plugin):
     @types(Config, Context)
     def __init__(self, config, ctx):
         self.bootstrap_dir = ctx.contribroot / 'bootstraps' / config.p4a.bootstrap
+        self.distsdir = Path(config.distsdir)
         self.ctx = ctx
 
     def get_dist_dir(self, name):
         return self.ctx.distsdir / name
 
-    def prepare_dirs(self):
+    def prepare_dirs(self, builddirname):
+        self.build_dir = self.buildsdir / 'bootstrap_builds' / builddirname
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files((self.bootstrap_dir / ".." / 'common').resolve() / 'build', self.build_dir, False)
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.ctx.android_api}")
