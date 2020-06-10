@@ -70,17 +70,14 @@ class Bootstrap(Plugin):
     contribroot = Path(resource_filename('pythonforandroid', '.'))
     recipe_depends = [("python2", "python3"), 'android']
 
-    @property
-    def dist_dir(self):
-        return self.ctx.dist_dir
-
     @types(Config, Context)
     def __init__(self, config, ctx):
-        self.bootstrap_dir = ctx.contribroot / 'bootstraps' / config.p4a.bootstrap
+        self.bootstrap_dir = self.contribroot / 'bootstraps' / config.p4a.bootstrap
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
         self.android_api = config.android.api
+        self.dist_dir = Path(config.dist_dir)
         self.ctx = ctx
 
     def get_dist_dir(self, name):
