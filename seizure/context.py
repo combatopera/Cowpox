@@ -103,7 +103,7 @@ class ContextImpl(Context):
         log.info('Getting NDK API version (i.e. minimum supported API) from user argument')
         check_ndk_api(self.ndk_api, self.android_api)
         toolchain_prefix = self.arch.toolchain_prefix
-        self.ndk_platform, ndk_platform_dir_exists = self.platform.get_ndk_platform_dir(self.ndk_api, self.arch)
+        self.ndk_platform = self.platform.get_ndk_platform_dir(self.ndk_api, self.arch)
         toolchain_versions, toolchain_path_exists = self.platform.get_toolchain_versions(self.arch)
         toolchain_versions.sort()
         toolchain_versions_gcc = [tv for tv in toolchain_versions if tv[0].isdigit()]
@@ -111,7 +111,7 @@ class ContextImpl(Context):
             log.info("Found the following toolchain versions: %s", toolchain_versions)
             log.info("Picking the latest gcc toolchain, here %s", toolchain_versions_gcc[-1])
             toolchain_version = toolchain_versions_gcc[-1]
-            ok = ndk_platform_dir_exists and toolchain_path_exists
+            ok = toolchain_path_exists
         else:
             log.warning("Could not find any toolchain for %s!", toolchain_prefix)
             ok = False
