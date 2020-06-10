@@ -117,7 +117,7 @@ class Recipe(Plugin):
 
     def download_if_necessary(self, mirror):
         log.info("Downloading %s", self.name)
-        user_dir = os.environ.get('P4A_{}_DIR'.format(self.name.lower()))
+        user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
         if user_dir is not None:
             log.info("P4A_%s_DIR is set, skipping download for %s", self.name, self.name)
             return
@@ -245,8 +245,7 @@ class BootstrapNDKRecipe(Recipe):
 
     def get_build_dir(self, arch):
         if self.dir_name is None:
-            raise ValueError('{} recipe doesn\'t define a dir_name, but '
-                             'this is necessary'.format(self.name))
+            raise ValueError(f"{self.name} recipe doesn't define a dir_name, but this is necessary")
         return self.get_build_container_dir(arch) / self.dir_name
 
     def get_jni_dir(self):
@@ -256,7 +255,7 @@ class BootstrapNDKRecipe(Recipe):
         env = super().get_recipe_env(arch)
         env['PYTHON_INCLUDE_ROOT'] = self.ctx.python_recipe.include_root(arch)
         env['PYTHON_LINK_ROOT'] = self.ctx.python_recipe.link_root(arch)
-        env['EXTRA_LDLIBS'] = ' -lpython{}'.format(self.ctx.python_recipe.major_minor_version_string)
+        env['EXTRA_LDLIBS'] = f" -lpython{self.ctx.python_recipe.major_minor_version_string}"
         if 'python3' in self.ctx.python_recipe.name:
             env['EXTRA_LDLIBS'] += 'm'
         return env
@@ -351,13 +350,8 @@ class PythonRecipe(Recipe):
 
         if not self.call_hostpython_via_targetpython:
             python_name = self.ctx.python_recipe.name
-            env['CFLAGS'] += ' -I{}'.format(
-                self.ctx.python_recipe.include_root(arch)
-            )
-            env['LDFLAGS'] += ' -L{} -lpython{}'.format(
-                self.ctx.python_recipe.link_root(arch),
-                self.ctx.python_recipe.major_minor_version_string,
-            )
+            env['CFLAGS'] += f" -I{self.ctx.python_recipe.include_root(arch)}"
+            env['LDFLAGS'] += f" -L{self.ctx.python_recipe.link_root(arch)} -lpython{self.ctx.python_recipe.major_minor_version_string}"
             if python_name == 'python3':
                 env['LDFLAGS'] += 'm'
             hppath = []
