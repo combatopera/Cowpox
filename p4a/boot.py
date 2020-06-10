@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Context, Plugin
+from . import Plugin
 from diapyr import types
 from lagoon import cp, mv, rm, unzip
 from pathlib import Path
@@ -70,15 +70,14 @@ class Bootstrap(Plugin):
     contribroot = Path(resource_filename('pythonforandroid', '.'))
     recipe_depends = [("python2", "python3"), 'android']
 
-    @types(Config, Context)
-    def __init__(self, config, ctx):
+    @types(Config)
+    def __init__(self, config):
         self.bootstrap_dir = self.contribroot / 'bootstraps' / config.p4a.bootstrap
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
         self.android_api = config.android.api
         self.dist_dir = Path(config.dist_dir)
-        self.ctx = ctx
 
     def get_dist_dir(self, name):
         return self.distsdir / name
