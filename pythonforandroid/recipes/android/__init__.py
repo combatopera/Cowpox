@@ -59,7 +59,7 @@ class AndroidRecipe(CythonRecipe):
 
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
-        bootstrap_name = self.ctx.bootstrap.name
+        bootstrap_name = self.bootstrap.name
         is_sdl2 = bootstrap_name in {'sdl2', 'sdl2python3', 'sdl2_gradle'}
         is_webview = bootstrap_name == 'webview'
         is_service_only = bootstrap_name == 'service_only'
