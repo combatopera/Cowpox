@@ -61,6 +61,7 @@ class Checks:
     def __init__(self, config, platform, arch):
         self.ndk_api = config.android.ndk_api
         self.android_api = config.android.api
+        self.ndk_dir = Path(config.android_ndk_dir)
         self.platform = platform
         self.arch = arch
 
