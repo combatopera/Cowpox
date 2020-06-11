@@ -43,6 +43,7 @@ from lagoon import cp, find, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import resource_filename
+from seizure.config import Config
 from seizure.util import format_obj
 from urllib.parse import urlparse
 from zipfile import ZipFile
@@ -94,9 +95,10 @@ class Recipe(Plugin):
     def url(self):
         return format_obj(self.urlformat, self)
 
-    @types(Context)
-    def __init__(self, ctx):
-        self.ctx = ctx
+    @types(Config, Context)
+    def __init__(self, config, context):
+        self.other_builds = Path(config.other_builds)
+        self.ctx = context
 
     def resourcepath(self, relpath):
         return Path(resource_filename(self._fqmodulename(), str(relpath)))
@@ -112,7 +114,7 @@ class Recipe(Plugin):
         return [recipe for recipe in recipes if recipe in self.opt_depends]
 
     def get_build_container_dir(self, arch):
-        return self.ctx.other_builds / self.ctx.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / arch.builddirname()
+        return self.other_builds / self.ctx.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / arch.builddirname()
 
     def get_build_dir(self, arch):
         return self.get_build_container_dir(arch) / self.name
