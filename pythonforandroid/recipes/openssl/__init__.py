@@ -41,6 +41,7 @@
 from diapyr import types
 from lagoon import make, perl
 from p4a.recipe import Recipe
+from pathlib import Path
 from seizure.config import Config
 
 class OpenSSLRecipe(Recipe):

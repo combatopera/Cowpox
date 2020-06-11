@@ -38,8 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from diapyr import types
 from lagoon.program import Program
 from p4a.recipe import BootstrapNDKRecipe
+from pathlib import Path
+from seizure.config import Config
 
 class LibSDL2Recipe(BootstrapNDKRecipe):
 
@@ -49,10 +52,14 @@ class LibSDL2Recipe(BootstrapNDKRecipe):
     dir_name = 'SDL'
     depends = ['sdl2_image', 'sdl2_mixer', 'sdl2_ttf']
 
+    @types(Config)
+    def __init(self, config):
+        self.ndk_dir = Path(config.android_ndk_dir)
+
     def get_recipe_env(self, arch):
         env = self.recipe_env_with_python(arch)
         env['APP_ALLOW_MISSING_DEPS'] = 'true'
         return env
 
     def build_arch(self, arch):
-        Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', env = self.get_recipe_env(arch), cwd = self.get_jni_dir())
+        Program.text(self.ndk_dir / 'ndk-build').print('V=1', env = self.get_recipe_env(arch), cwd = self.get_jni_dir())
