@@ -43,7 +43,7 @@ from .android import TargetAndroid
 from .arch import all_archs
 from .build import APKMaker
 from .config import Config
-from .context import ContextImpl
+from .context import Checks, ContextImpl
 from .dirs import Dirs
 from .mirror import Mirror
 from .platform import Platform
@@ -60,10 +60,11 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Config, Bootstrap, Context, Dirs, Platform, TargetAndroid, Src, this = Result)
-def run(config, bootstrap, context, dirs, platform, target, src):
+@types(Config, Bootstrap, Context, Dirs, Platform, TargetAndroid, Src, Checks, this = Result)
+def run(config, bootstrap, context, dirs, platform, target, src, checks):
     platform.install()
     log.info('Compile platform')
+    checks.check()
     context.build_recipes()
     src.copy_application_sources()
     dirs.add_sitecustomize()
@@ -80,6 +81,7 @@ def _main():
         di.add(all_archs[config.android.arch])
         di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap))
         di.add(APKMaker)
+        di.add(Checks)
         di.add(ContextImpl)
         di.add(Dirs)
         di.add(Mirror)
