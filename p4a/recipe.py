@@ -431,6 +431,10 @@ class CythonRecipe(PythonRecipe):
 
     call_hostpython_via_targetpython = False
 
+    @types(Bootstrap)
+    def __init(self, bootstrap):
+        self.bootstrap = bootstrap
+
     def install_python_package(self, arch):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env(arch)
@@ -480,7 +484,7 @@ class CythonRecipe(PythonRecipe):
 
     def get_recipe_env(self, arch):
         env = super().get_recipe_env(arch)
-        env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch)} -L{self.ctx.libs_dir}  -L{self.ctx.bootstrap.build_dir / 'obj' / 'local' / arch.name} "
+        env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch)} -L{self.ctx.libs_dir}  -L{self.bootstrap.build_dir / 'obj' / 'local' / arch.name} "
         env['LDSHARED'] = env['CC'] + ' -shared'
         env['LIBLINK'] = 'NOTNONE'
         env['NDKPLATFORM'] = self.ctx.ndk_platform
