@@ -60,8 +60,8 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Config, Context, Dirs, Platform, TargetAndroid, Src, Checks, this = Result)
-def run(config, context, dirs, platform, target, src, checks):
+@types(Context, Dirs, Platform, TargetAndroid, Src, Checks, this = Result)
+def run(context, dirs, platform, target, src, checks):
     platform.install()
     log.info('Compile platform')
     checks.check()
