@@ -100,6 +100,7 @@ class ContextImpl(Context):
         self.dist_dir = Path(config.dist_dir)
         self.requirements = config.requirements.list()
         self.bootstrap_builds = Path(config.bootstrap_builds)
+        self.ndk_api = config.android.ndk_api
         self.env = os.environ.copy()
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
