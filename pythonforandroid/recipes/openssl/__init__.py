@@ -38,8 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from diapyr import types
 from lagoon import make, perl
 from p4a.recipe import Recipe
+from seizure.config import Config
 
 class OpenSSLRecipe(Recipe):
 
@@ -47,6 +49,11 @@ class OpenSSLRecipe(Recipe):
     url_version = '1.1.1f'
     url = f"https://www.openssl.org/source/openssl-{url_version}.tar.gz"
     builtlibpaths = [f"libcrypto{version}.so", f"libssl{version}.so"]
+
+    @types(Config)
+    def __init(self, config):
+        self.ndk_dir = Path(config.android_ndk_dir)
+        self.ndk_api = config.android.ndk_api
 
     def get_build_dir(self, arch):
         return self.get_build_container_dir(arch) / f"{self.name}{self.version}"
@@ -65,7 +72,7 @@ class OpenSSLRecipe(Recipe):
         env = super().get_recipe_env(arch)
         env['OPENSSL_VERSION'] = self.version
         env['MAKE'] = 'make'
-        env['ANDROID_NDK'] = str(self.ctx.ndk_dir)
+        env['ANDROID_NDK'] = str(self.ndk_dir)
         return env
 
     def _select_build_arch(self, arch):
@@ -85,6 +92,6 @@ class OpenSSLRecipe(Recipe):
     def build_arch(self, arch):
         env = self.get_recipe_env(arch)
         cwd = self.get_build_dir(arch)
-        perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(arch), f"-D__ANDROID_API__={self.ctx.ndk_api}", env = env, cwd = cwd)
+        perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(arch), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = cwd)
         self.apply_patch('disable-sover.patch', arch)
         make.print('build_libs', env = env, cwd = cwd)
