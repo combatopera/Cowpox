@@ -46,7 +46,7 @@ from .config import Config
 from .context import Checks, ContextImpl
 from .dirs import Dirs
 from .mirror import Mirror
-from .platform import Platform
+from .platform import Platform, PlatformInfo
 from .src import Src
 from .util import findimpl, Logging
 from diapyr import DI, types
@@ -60,9 +60,8 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Context, Dirs, Platform, TargetAndroid, Src, Checks, this = Result)
-def run(context, dirs, platform, target, src, checks):
-    platform.install()
+@types(Context, Dirs, TargetAndroid, Src, Checks, this = Result)
+def run(context, dirs, target, src, checks):
     log.info('Compile platform')
     checks.check()
     context.build_recipes()
@@ -87,6 +86,7 @@ def _main():
         di.add(Dirs)
         di.add(Mirror)
         di.add(Platform)
+        di.add(PlatformInfo)
         di.add(Src)
         di.add(TargetAndroid)
         di.add(run)

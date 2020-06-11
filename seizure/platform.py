@@ -51,20 +51,17 @@ import logging, re
 
 log = logging.getLogger(__name__)
 
-class Platform:
+class PlatformInfo:
 
-    @types(Config, Mirror, Arch)
-    def __init__(self, config, mirror, arch):
+    @types(Config, Mirror)
+    def __init__(self, config, mirror):
         self.android_ndk_version = config.android.ndk
         self.platformname = f"android-{config.android.api}"
         self.acceptlicense = config.android.accept_sdk_license
-        self.skip_upd = config.android.skip_update
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
-        self.ndk_api = config.android.ndk_api
         self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         self.mirror = mirror
-        self.arch = arch
 
     def _install_android_sdk(self):
         with self.sdk_dir.okorclean() as ok:
@@ -113,11 +110,18 @@ class Platform:
         else:
             log.debug("Already have platform: %s", self.platformname)
 
-    def install(self):
-        self._install_android_sdk()
-        self._install_android_ndk()
-        if not self.skip_upd:
-            self._install_android_packages()
+class Platform:
+
+    @types(Config, PlatformInfo, Arch)
+    def __init__(self, config, info, arch):
+        self.sdk_dir = Path(config.android_sdk_dir)
+        self.ndk_dir = Path(config.android_ndk_dir)
+        self.ndk_api = config.android.ndk_api
+        info._install_android_sdk()
+        info._install_android_ndk()
+        if not config.android.skip_update:
+            info._install_android_packages()
+        self.arch = arch
 
     def build_tools_version(self):
         ignored = {'.DS_Store', '.ds_store'}
