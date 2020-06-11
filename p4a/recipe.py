@@ -265,6 +265,11 @@ class NDKRecipe(Recipe):
 
     generated_libraries = ()
 
+    @types(Config)
+    def __init(self, config):
+        self.ndk_dir = Path(config.android_ndk_dir)
+        self.ndk_api = config.android.ndk_api
+
     def should_build(self, arch):
         lib_dir = self.get_lib_dir(arch)
         for lib in self.generated_libraries:
@@ -279,7 +284,7 @@ class NDKRecipe(Recipe):
 
     def build_arch(self, arch, *extra_args):
         super().build_arch(arch)
-        Program.text(self.ctx.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ctx.ndk_api}", f"APP_ABI={arch.name}", *extra_args,
+        Program.text(self.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={arch.name}", *extra_args,
                 env = self.get_recipe_env(arch), cwd = self.get_build_dir(arch))
 
 class PythonRecipe(Recipe):
