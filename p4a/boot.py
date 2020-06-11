@@ -73,7 +73,6 @@ class Bootstrap(Plugin):
     @types(Config)
     def __init__(self, config):
         self.bootstrap_dir = self.contribroot / 'bootstraps' / config.p4a.bootstrap
-        self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
         self.android_api = config.android.api
