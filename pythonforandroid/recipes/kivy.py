@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from lagoon import cp
-from p4a import CythonRecipe
+from p4a.recipe import CythonRecipe
 import os
 
 class KivyRecipe(CythonRecipe):

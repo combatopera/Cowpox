@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from lagoon import mkdir
-from p4a import NDKRecipe
+from p4a.recipe import NDKRecipe
 import shutil
 
 class Sqlite3Recipe(NDKRecipe):

@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from multiprocessing import cpu_count
-from p4a import CompiledComponentsPythonRecipe
+from p4a.recipe import CompiledComponentsPythonRecipe
 from pathlib import Path
 
 class NumpyRecipe(CompiledComponentsPythonRecipe):

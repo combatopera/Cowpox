@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Recipe
+from .recipe import Recipe
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from lagoon import cp, find, make, mv, zip

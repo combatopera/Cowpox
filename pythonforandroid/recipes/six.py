@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from p4a import PythonRecipe
+from p4a.recipe import PythonRecipe
 
 class SixRecipe(PythonRecipe): # XXX: Why do we need this?
 

@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from lagoon.program import Program
-from p4a import BootstrapNDKRecipe
+from p4a.recipe import BootstrapNDKRecipe
 
 class LibSDL2Recipe(BootstrapNDKRecipe):
 

@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from lagoon import cp
-from p4a import CythonRecipe
+from p4a.recipe import CythonRecipe
 from p4a.patch import will_build
 import logging
 

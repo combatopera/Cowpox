@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from lagoon import make, perl
-from p4a import Recipe
+from p4a.recipe import Recipe
 
 class OpenSSLRecipe(Recipe):
 

@@ -48,7 +48,7 @@ from .util import findimpl
 from diapyr import types, DI
 from lagoon import find, virtualenv
 from lagoon.program import Program
-from p4a import Context, CythonRecipe, Recipe
+from p4a.recipe import Context, CythonRecipe, Recipe
 from p4a.boot import Bootstrap
 from pathlib import Path
 import logging, os, shlex, subprocess
