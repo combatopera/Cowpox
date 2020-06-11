@@ -77,9 +77,10 @@ class Bootstrap(Plugin):
         self.package_name = config.package.name
         self.android_api = config.android.api
         self.dist_dir = Path(config.dist_dir)
+        self.bootstrap_builds = Path(config.bootstrap_builds)
 
     def prepare_dirs(self, builddirname):
-        self.build_dir = self.buildsdir / 'bootstrap_builds' / builddirname
+        self.build_dir = self.bootstrap_builds / builddirname
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files((self.bootstrap_dir / '..' / 'common').resolve() / 'build', self.build_dir, False)
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.android_api}")

@@ -81,6 +81,7 @@ class ContextImpl(Context):
         self.package_name = config.package.name
         self.dist_dir = Path(config.dist_dir)
         self.requirements = config.requirements.list()
+        self.bootstrap_builds = Path(config.bootstrap_builds)
         self.env = os.environ.copy()
         self.env.pop("LDFLAGS", None)
         self.env.pop("ARCHFLAGS", None)
@@ -111,7 +112,7 @@ class ContextImpl(Context):
     def build_recipes(self):
         log.info("Will compile for the following arch: %s", self.arch.name)
         self.distsdir.mkdirp()
-        (self.buildsdir / 'bootstrap_builds').mkdirp()
+        self.bootstrap_builds.mkdirp()
         self.other_builds.mkdirp()
         check_target_api(self.android_api, self.arch.name)
         apis = self.platform.apilevels()
