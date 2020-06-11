@@ -80,6 +80,7 @@ def _main():
         di.add(config)
         di.add(all_archs[config.android.arch])
         di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap))
+        di.add(di)
         di.add(APKMaker)
         di.add(Checks)
         di.add(ContextImpl)
