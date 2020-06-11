@@ -123,10 +123,13 @@ class ContextImpl(Context):
             return self._recipes[name]
         except KeyError:
             impl = findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
-            di = self.di.createchild()
-            di.add(impl)
-            self._recipes[name] = recipe = di(impl)
+            self._recipes[name] = recipe = self._newrecipe(impl)
             return recipe
+
+    def _newrecipe(self, impl):
+        di = self.di.createchild()
+        di.add(impl)
+        return di(impl)
 
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
@@ -198,7 +201,7 @@ class ContextImpl(Context):
         log.info('Install Cython in case one of the modules needs it to build')
         pip.install.print('Cython', env = base_env)
         # Get environment variables for build (with CC/compiler set):
-        standard_recipe = CythonRecipe(self)
+        standard_recipe = self._newrecipe(CythonRecipe)
         recipe_env = standard_recipe.get_recipe_env(self.arch)
         env = base_env.copy()
         env.update(recipe_env)
