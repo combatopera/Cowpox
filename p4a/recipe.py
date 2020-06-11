@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from . import Plugin
+from .boot import Bootstrap
 from diapyr import types
 from lagoon import cp, find, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
@@ -235,6 +236,10 @@ class BootstrapNDKRecipe(Recipe):
 
     dir_name = None  # The name of the recipe build folder in the jni dir
 
+    @types(Bootstrap)
+    def __init(self, bootstrap):
+        self.bootstrap = bootstrap
+
     def get_build_container_dir(self, arch):
         return self.get_jni_dir()
 
@@ -244,7 +249,7 @@ class BootstrapNDKRecipe(Recipe):
         return self.get_build_container_dir(arch) / self.dir_name
 
     def get_jni_dir(self):
-        return self.ctx.bootstrap.build_dir / 'jni'
+        return self.bootstrap.build_dir / 'jni'
 
     def recipe_env_with_python(self, arch):
         env = super().get_recipe_env(arch)
