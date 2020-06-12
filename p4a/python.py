@@ -251,7 +251,7 @@ class GuestPythonRecipe(Recipe):
         return self.get_build_dir(arch) / 'android-build'
 
     def _compile_python_files(self, dirpath):
-        args = ['-b'] if self.ctx.python_recipe.name == 'python3' else [] # XXX: Simplify?
+        args = ['-b'] if self.name == 'python3' else [] # XXX: Simplify?
         for path in dirpath.rglob('*.py'):
             os.utime(path, (0, 0)) # Determinism.
         Program.text(self.ctx.hostpython)._OO._m.compileall.print(*args, '-f', dirpath, check = False) # XXX: Why not check?
