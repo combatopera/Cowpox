@@ -43,6 +43,7 @@ from .config import Config
 from .mirror import Mirror
 from diapyr import types
 from distutils.version import LooseVersion
+from functools import cached_property
 from lagoon import unzip, yes
 from lagoon.program import Program
 from pathlib import Path
@@ -140,7 +141,8 @@ class Platform:
         apis = [re.findall(r'[0-9]+', s) for s in apis]
         return [int(s[0]) for s in apis if s]
 
-    def get_toolchain_version(self):
+    @cached_property
+    def toolchain_version(self):
         prefix = f"{self.arch.toolchain_prefix}-"
         toolchain_path = self.ndk_dir / 'toolchains'
         if not toolchain_path.is_dir():

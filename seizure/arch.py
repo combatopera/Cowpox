@@ -81,7 +81,7 @@ class Arch:
     def get_clang_exe(self, with_target = False, plus_plus = False):
         return self._clang_path() / f"""{f"{self.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
 
-    def get_env(self, ctx):
+    def get_env(self, ctx, platform):
         env = {}
         env['CFLAGS'] = ' '.join(self.common_cflags).format(target=self.target())
         if self.arch_cflags:
@@ -110,7 +110,7 @@ class Arch:
         env['ARCH'] = self.name
         env['NDK_API'] = f"android-{self.ndk_api}"
         env['TOOLCHAIN_PREFIX'] = self.toolchain_prefix
-        env['TOOLCHAIN_VERSION'] = ctx.toolchain_version
+        env['TOOLCHAIN_VERSION'] = platform.toolchain_version
         env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
         env['BUILDLIB_PATH'] = ctx.get_recipe(f"host{ctx.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}"
         env['PATH'] = f"{self._clang_path()}{os.pathsep}{os.environ['PATH']}"

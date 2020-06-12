@@ -43,6 +43,7 @@ from lagoon import cp, mv, patch as patchexe, rm, tar, touch, unzip
 from pathlib import Path
 from pkg_resources import resource_filename
 from seizure.config import Config
+from seizure.platform import Platform
 from seizure.util import format_obj
 from urllib.parse import urlparse
 from zipfile import ZipFile
@@ -98,10 +99,11 @@ class Recipe(Plugin):
     def url(self):
         return format_obj(self.urlformat, self)
 
-    @types(Config, Context)
-    def __init__(self, config, context):
+    @types(Config, Context, Platform)
+    def __init__(self, config, context, platform):
         self.other_builds = Path(config.other_builds)
         self.ctx = context
+        self.platform = platform
 
     def resourcepath(self, relpath):
         return Path(resource_filename(self._fqmodulename(), str(relpath)))
@@ -180,7 +182,7 @@ class Recipe(Plugin):
             log.info("%s is already unpacked, skipping", self.name)
 
     def get_recipe_env(self, arch):
-        return arch.get_env(self.ctx)
+        return arch.get_env(self.ctx, self.platform)
 
     def prebuild_arch(self, arch):
         pass

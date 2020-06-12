@@ -151,7 +151,6 @@ class ContextImpl(Context):
         self.bootstrap_builds.mkdirp()
         self.other_builds.mkdirp()
         self.ndk_platform = self.platform.get_ndk_platform_dir()
-        self.toolchain_version = self.platform.get_toolchain_version()
         build_order, python_modules = get_recipe_order(self._recipeimpl, {*self.requirements, *self.bootstrap.recipe_depends}, ['genericndkbuild', 'python2'])
         self.recipe_build_order = build_order
         log.info("Dist contains the following requirements as recipes: %s", build_order)
@@ -233,9 +232,9 @@ class ContextImpl(Context):
 
     def strip_libraries(self):
         log.info('Stripping libraries')
-        env = self.arch.get_env(self)
+        env = self.arch.get_env(self, self.platform)
         tokens = shlex.split(env['STRIP'])
-        strip = Program.text(self.ndk_dir / 'toolchains' / f"{self.arch.toolchain_prefix}-{self.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]).partial(*tokens[1:])
+        strip = Program.text(self.ndk_dir / 'toolchains' / f"{self.arch.toolchain_prefix}-{self.platform.toolchain_version}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]).partial(*tokens[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
         filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so').splitlines()
         log.info('Stripping libraries in private dir')
