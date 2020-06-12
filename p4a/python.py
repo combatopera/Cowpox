@@ -64,6 +64,51 @@ def _walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
             else:
                 yield Path(dirn, filen)
 
+class HostPythonRecipe(Recipe):
+
+    version = ''
+    '''The hostpython's recipe version.
+
+    .. warning:: This must be set in inherited class.'''
+
+    build_subdir = 'native-build'
+    '''Specify the sub build directory for the hostpython recipe. Defaults
+    to ``native-build``.'''
+    urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
+
+    @property
+    def python_exe(self):
+        return self.get_path_to_python() / f"python{self.version.split('.')[0]}"
+
+    def should_build(self, arch):
+        if self.python_exe.exists():
+            self.ctx.hostpython = self.python_exe # FIXME: Sucks.
+            return False
+        return True
+
+    def get_build_container_dir(self, arch):
+        return super().get_build_container_dir(DesktopArch)
+
+    def get_path_to_python(self):
+        return self.get_build_dir(DesktopArch) / self.build_subdir
+
+    def build_arch(self, arch):
+        recipe_build_dir = self.get_build_dir(arch)
+        build_dir = (recipe_build_dir / self.build_subdir).mkdirp()
+        if not (build_dir / 'config.status').exists():
+            Program.text(recipe_build_dir / 'configure').print(cwd = build_dir)
+        setup_dist_location = recipe_build_dir / 'Modules' / 'Setup.dist'
+        if setup_dist_location.exists():
+            cp.print(setup_dist_location, build_dir / 'Modules' / 'Setup')
+        else:
+            setup_location = recipe_build_dir / 'Modules' / 'Setup'
+            if not setup_location.exists():
+                raise Exception('Could not find Setup.dist or Setup in Python build')
+        make.print('-j', cpu_count(), '-C', build_dir, cwd = recipe_build_dir)
+        exe, = (exe for exe in (self.get_path_to_python() / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
+        cp.print(exe, self.python_exe)
+        self.ctx.hostpython = self.python_exe # FIXME: Sucks.
+
 class GuestPythonRecipe(Recipe):
 
     def prebuild_arch(self, arch):
@@ -253,48 +298,3 @@ class GuestPythonRecipe(Recipe):
             parts = filen.name.split('.')
             if len(parts) > 2:
                 mv.print(filen, filen.parent / f"{parts[0]}.so")
-
-class HostPythonRecipe(Recipe):
-
-    version = ''
-    '''The hostpython's recipe version.
-
-    .. warning:: This must be set in inherited class.'''
-
-    build_subdir = 'native-build'
-    '''Specify the sub build directory for the hostpython recipe. Defaults
-    to ``native-build``.'''
-    urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
-
-    @property
-    def python_exe(self):
-        return self.get_path_to_python() / f"python{self.version.split('.')[0]}"
-
-    def should_build(self, arch):
-        if self.python_exe.exists():
-            self.ctx.hostpython = self.python_exe # FIXME: Sucks.
-            return False
-        return True
-
-    def get_build_container_dir(self, arch):
-        return super().get_build_container_dir(DesktopArch)
-
-    def get_path_to_python(self):
-        return self.get_build_dir(DesktopArch) / self.build_subdir
-
-    def build_arch(self, arch):
-        recipe_build_dir = self.get_build_dir(arch)
-        build_dir = (recipe_build_dir / self.build_subdir).mkdirp()
-        if not (build_dir / 'config.status').exists():
-            Program.text(recipe_build_dir / 'configure').print(cwd = build_dir)
-        setup_dist_location = recipe_build_dir / 'Modules' / 'Setup.dist'
-        if setup_dist_location.exists():
-            cp.print(setup_dist_location, build_dir / 'Modules' / 'Setup')
-        else:
-            setup_location = recipe_build_dir / 'Modules' / 'Setup'
-            if not setup_location.exists():
-                raise Exception('Could not find Setup.dist or Setup in Python build')
-        make.print('-j', cpu_count(), '-C', build_dir, cwd = recipe_build_dir)
-        exe, = (exe for exe in (self.get_path_to_python() / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
-        cp.print(exe, self.python_exe)
-        self.ctx.hostpython = self.python_exe # FIXME: Sucks.
