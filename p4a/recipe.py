@@ -83,6 +83,10 @@ class Recipe(Plugin):
     at build time, you must create a recipe.'''
     builtlibpaths = ()
 
+    @classmethod
+    def get_opt_depends_in_list(cls, recipes):
+        return [recipe for recipe in recipes if recipe in cls.opt_depends]
+
     @property
     def url(self):
         return format_obj(self.urlformat, self)
@@ -98,12 +102,6 @@ class Recipe(Plugin):
     def apply_patch(self, relpath, arch):
         log.info("Applying patch %s", relpath)
         patchexe._t._p1.print('-d', self.get_build_dir(arch), '-i', self.resourcepath(relpath))
-
-    def get_opt_depends_in_list(self, recipes):
-        '''Given a list of recipe names, returns those that are also in
-        self.opt_depends.
-        '''
-        return [recipe for recipe in recipes if recipe in self.opt_depends]
 
     def get_build_container_dir(self, arch):
         return self.other_builds / self.ctx.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / arch.builddirname()

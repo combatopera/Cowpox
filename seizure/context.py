@@ -118,12 +118,15 @@ class ContextImpl(Context):
     def has_lib(self, arch, lib):
         return (self.get_libs_dir(arch) / lib).exists()
 
+    @staticmethod
+    def _recipeimpl(name):
+        return findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
+
     def get_recipe(self, name):
         try:
             return self._recipes[name]
         except KeyError:
-            impl = findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
-            self._recipes[name] = recipe = self._newrecipe(impl)
+            self._recipes[name] = recipe = self._newrecipe(self._recipeimpl(name))
             return recipe
 
     def _newrecipe(self, impl):
@@ -148,7 +151,7 @@ class ContextImpl(Context):
         log.info("Found the following toolchain versions: %s", toolchain_versions)
         self.toolchain_version = [tv for tv in toolchain_versions if tv[0].isdigit()][-1]
         log.info("Picking the latest gcc toolchain, here %s", self.toolchain_version)
-        build_order, python_modules = get_recipe_order(self.get_recipe, {*self.requirements, *self.bootstrap.recipe_depends}, ['genericndkbuild', 'python2'])
+        build_order, python_modules = get_recipe_order(self._recipeimpl, {*self.requirements, *self.bootstrap.recipe_depends}, ['genericndkbuild', 'python2'])
         self.recipe_build_order = build_order
         log.info("Dist contains the following requirements as recipes: %s", build_order)
         log.info("Dist will also contain modules (%s) installed from pip", ', '.join(python_modules))
