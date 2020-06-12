@@ -157,7 +157,8 @@ class Platform:
         log.info("Picking the latest gcc toolchain, here %s", version)
         return version
 
-    def get_ndk_platform_dir(self):
+    @cached_property
+    def ndk_platform(self):
         ndk_platform = self.ndk_dir / 'platforms' / f"android-{self.ndk_api}" / self.arch.platform_dir
         if not ndk_platform.exists():
             raise Exception(f"ndk_platform doesn't exist: {ndk_platform}")

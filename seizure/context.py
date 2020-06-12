@@ -150,7 +150,6 @@ class ContextImpl(Context):
         self.distsdir.mkdirp()
         self.bootstrap_builds.mkdirp()
         self.other_builds.mkdirp()
-        self.ndk_platform = self.platform.get_ndk_platform_dir()
         build_order, python_modules = get_recipe_order(self._recipeimpl, {*self.requirements, *self.bootstrap.recipe_depends}, ['genericndkbuild', 'python2'])
         self.recipe_build_order = build_order
         log.info("Dist contains the following requirements as recipes: %s", build_order)

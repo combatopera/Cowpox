@@ -208,7 +208,7 @@ class GuestPythonRecipe(Recipe):
                 recipe = self.get_recipe(library_name)
                 add_flags(recipe.get_library_includes(arch), recipe.get_library_ldflags(arch), recipe.get_library_libs_flag())
         log.info('''Activating flags for android's zlib''')
-        zlib_lib_path = self.ctx.ndk_platform / 'usr' / 'lib'
+        zlib_lib_path = self.platform.ndk_platform / 'usr' / 'lib'
         zlib_includes = self.ctx.ndk_dir / 'sysroot' / 'usr' / 'include'
         line, = (l for l in (zlib_includes / 'zlib.h').read_text().split('\n') if l.startswith('#define ZLIB_VERSION '))
         env['ZLIB_VERSION'] = line.replace('#define ZLIB_VERSION ', '')
