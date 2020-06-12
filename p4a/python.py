@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from .recipe import Recipe
+from diapyr import types
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from lagoon import cp, find, make, mv, zip
@@ -110,6 +111,10 @@ class HostPythonRecipe(Recipe):
         self.ctx.hostpython = self.python_exe # FIXME: Sucks.
 
 class GuestPythonRecipe(Recipe):
+
+    @types(HostPythonRecipe)
+    def __init(self, hostrecipe):
+        self.hostrecipe = hostrecipe
 
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
@@ -254,7 +259,7 @@ class GuestPythonRecipe(Recipe):
         args = ['-b'] if self.name == 'python3' else [] # XXX: Simplify?
         for path in dirpath.rglob('*.py'):
             os.utime(path, (0, 0)) # Determinism.
-        Program.text(self.ctx.hostpython)._OO._m.compileall.print(*args, '-f', dirpath, check = False) # XXX: Why not check?
+        Program.text(self.hostrecipe.python_exe)._OO._m.compileall.print(*args, '-f', dirpath, check = False) # XXX: Why not check?
 
     def create_python_bundle(self, dirn, arch):
         dirn = (dirn / '_python_bundle' / '_python_bundle').mkdirp()

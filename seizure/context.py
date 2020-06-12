@@ -106,6 +106,7 @@ class ContextImpl(Context):
         self.env.pop("ARCHFLAGS", None)
         self.env.pop("CFLAGS", None)
         self._recipes = {}
+        self.recipedi = di.createchild()
         self.platform = platform
         self.arch = arch
         self.bootstrap = bootstrap
@@ -126,7 +127,9 @@ class ContextImpl(Context):
         try:
             return self._recipes[name]
         except KeyError:
-            self._recipes[name] = recipe = self._newrecipe(self._recipeimpl(name))
+            impl = self._recipeimpl(name)
+            self.recipedi.add(impl) # TODO: Add upfront.
+            self._recipes[name] = recipe = self.recipedi(impl)
             return recipe
 
     def _newrecipe(self, impl):
