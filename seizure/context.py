@@ -158,7 +158,6 @@ class ContextImpl(Context):
         # Put recipes in correct build order
         log.info("Recipe build order is %s", build_order)
         if python_modules:
-            python_modules = sorted(set(python_modules))
             log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(python_modules))
         recipes = [self.get_recipe(name) for name in build_order]
         # download is arch independent
