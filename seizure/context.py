@@ -49,8 +49,9 @@ from diapyr import types, DI
 from lagoon import find, virtualenv
 from lagoon.program import Program
 from p4a import Context, Recipe
-from p4a.recipe import CythonRecipe
 from p4a.boot import Bootstrap
+from p4a.python import GuestPythonRecipe
+from p4a.recipe import CythonRecipe
 from pathlib import Path
 import logging, os, shlex, subprocess
 
@@ -137,6 +138,10 @@ class ContextImpl(Context):
         di = self.di.createchild()
         di.add(impl)
         return di(impl)
+
+    @property
+    def python_recipe(self):
+        return self.recipedi(GuestPythonRecipe)
 
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.

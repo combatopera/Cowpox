@@ -112,10 +112,6 @@ class GuestPythonRecipe(Recipe):
     def __init(self, hostrecipe):
         self.hostrecipe = hostrecipe
 
-    def prebuild_arch(self, arch):
-        super().prebuild_arch(arch)
-        self.ctx.python_recipe = self # XXX: Can this suck less?
-
     @property
     def major_minor_version_string(self):
         return '.'.join(str(v) for v in LooseVersion(self.version).version[:2])
