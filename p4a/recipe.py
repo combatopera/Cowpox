@@ -260,15 +260,16 @@ class CythonRecipe(PythonRecipe):
 
     call_hostpython_via_targetpython = False
 
-    @types(Bootstrap)
-    def __init(self, bootstrap):
+    @types(Bootstrap, HostPythonRecipe)
+    def __init(self, bootstrap, hostrecipe):
         self.bootstrap = bootstrap
+        self.hostrecipe = hostrecipe
 
     def install_python_package(self, arch):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env(arch)
         builddir = self.get_build_dir(arch)
-        hostpython = Program.text(self.ctx.hostpython).partial(env = env, cwd = builddir)
+        hostpython = Program.text(self.hostrecipe.python_exe).partial(env = env, cwd = builddir)
         hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False
