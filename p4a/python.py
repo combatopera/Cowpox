@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .recipe import Recipe
+from . import Recipe
 from diapyr import types
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
