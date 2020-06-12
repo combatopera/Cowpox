@@ -82,10 +82,7 @@ class HostPythonRecipe(Recipe):
         return self.get_path_to_python() / f"python{self.version.split('.')[0]}"
 
     def should_build(self, arch):
-        if self.python_exe.exists():
-            self.ctx.hostpython = self.python_exe # FIXME: Sucks.
-            return False
-        return True
+        return not self.python_exe.exists()
 
     def get_build_container_dir(self, arch):
         return super().get_build_container_dir(DesktopArch)
@@ -108,7 +105,6 @@ class HostPythonRecipe(Recipe):
         make.print('-j', cpu_count(), '-C', build_dir, cwd = recipe_build_dir)
         exe, = (exe for exe in (self.get_path_to_python() / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
         cp.print(exe, self.python_exe)
-        self.ctx.hostpython = self.python_exe # FIXME: Sucks.
 
 class GuestPythonRecipe(Recipe):
 

@@ -48,6 +48,7 @@ from fnmatch import fnmatch
 from lagoon import patch
 from lagoon.program import Program
 from p4a import Context
+from p4a.python import HostPythonRecipe
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import aridity, jinja2, logging, os, shutil, subprocess, tarfile, time
@@ -182,7 +183,7 @@ class APKMaker:
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
                 tar_dirs.append(distdir / 'webview_includes')
-            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.context.hostpython) # FIXME: No hostpython on rebuild.
+            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.context.recipedi(HostPythonRecipe).python_exe)
         res_dir = distdir / 'src' / 'main' / 'res'
         default_icon = distdir / 'templates' / 'kivy-icon.png'
         shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
