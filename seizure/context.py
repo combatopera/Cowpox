@@ -152,14 +152,7 @@ class ContextImpl(Context):
         self.bootstrap_builds.mkdirp()
         self.other_builds.mkdirp()
         self.ndk_platform = self.platform.get_ndk_platform_dir()
-        toolchain_versions = self.platform.get_toolchain_versions()
-        if not toolchain_versions:
-            log.warning("Could not find any toolchain for %s!", self.arch.toolchain_prefix)
-            raise Exception('python-for-android cannot continue due to the missing executables above')
-        toolchain_versions.sort()
-        log.info("Found the following toolchain versions: %s", toolchain_versions)
-        self.toolchain_version = [tv for tv in toolchain_versions if tv[0].isdigit()][-1]
-        log.info("Picking the latest gcc toolchain, here %s", self.toolchain_version)
+        self.toolchain_version = self.platform.get_toolchain_version()
         build_order, python_modules = get_recipe_order(self._recipeimpl, {*self.requirements, *self.bootstrap.recipe_depends}, ['genericndkbuild', 'python2'])
         self.recipe_build_order = build_order
         log.info("Dist contains the following requirements as recipes: %s", build_order)

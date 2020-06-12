@@ -140,12 +140,20 @@ class Platform:
         apis = [re.findall(r'[0-9]+', s) for s in apis]
         return [int(s[0]) for s in apis if s]
 
-    def get_toolchain_versions(self):
+    def get_toolchain_version(self):
         prefix = f"{self.arch.toolchain_prefix}-"
         toolchain_path = self.ndk_dir / 'toolchains'
         if not toolchain_path.is_dir():
             raise Exception('Could not find toolchain subdirectory!')
-        return [path.name[len(prefix):] for path in toolchain_path.glob(f"{prefix}*")]
+        versions = [path.name[len(prefix):] for path in toolchain_path.glob(f"{prefix}*")]
+        if not versions:
+            log.warning("Could not find any toolchain for %s!", self.arch.toolchain_prefix)
+            raise Exception('python-for-android cannot continue due to the missing executables above')
+        versions.sort()
+        log.info("Found the following toolchain versions: %s", versions)
+        version = [v for v in versions if v[0].isdigit()][-1]
+        log.info("Picking the latest gcc toolchain, here %s", version)
+        return version
 
     def get_ndk_platform_dir(self):
         ndk_platform = self.ndk_dir / 'platforms' / f"android-{self.ndk_api}" / self.arch.platform_dir
