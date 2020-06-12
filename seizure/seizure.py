@@ -50,7 +50,7 @@ from .platform import Platform, PlatformInfo
 from .src import Src
 from .util import findimpl, Logging
 from diapyr import DI, types
-from p4a.recipe import Context
+from p4a import Context
 from p4a.boot import Bootstrap
 from pathlib import Path
 from pkg_resources import resource_filename

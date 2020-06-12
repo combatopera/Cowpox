@@ -40,6 +40,7 @@
 
 from . import Recipe
 from .boot import Bootstrap
+from .python import HostPythonRecipe
 from diapyr import types
 from lagoon import find
 from lagoon.program import Program
@@ -149,8 +150,8 @@ class PythonRecipe(Recipe):
                  on python2 or python3 which can break the dependency graph
     '''
 
-    @types()
-    def __init(self):
+    @types(HostPythonRecipe)
+    def __init(self, hostrecipe):
         if not any(d for d in {'python2', 'python3', ('python2', 'python3')} if d in self.depends):
             # We ensure here that the recipe depends on python even it overrode
             # `depends`. We only do this if it doesn't already depend on any
@@ -159,6 +160,7 @@ class PythonRecipe(Recipe):
             depends = self.depends
             depends.append(('python2', 'python3'))
             self.depends = list(set(depends))
+        self.hostrecipe = hostrecipe
 
     @property
     def real_hostpython_location(self):
@@ -170,7 +172,7 @@ class PythonRecipe(Recipe):
 
     @property
     def hostpython_location(self):
-        return self.ctx.hostpython if self.call_hostpython_via_targetpython else self.real_hostpython_location
+        return self.hostrecipe.python_exe if self.call_hostpython_via_targetpython else self.real_hostpython_location
 
     def get_recipe_env(self, arch):
         env = super().get_recipe_env(arch)
