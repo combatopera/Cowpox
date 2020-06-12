@@ -113,7 +113,6 @@ class ContextImpl(Context):
         self.arch = arch
         self.bootstrap = bootstrap
         self.mirror = mirror
-        self.di = di
 
     def get_libs_dir(self, arch):
         return (self.libs_dir / arch.name).mkdirp()
@@ -135,7 +134,7 @@ class ContextImpl(Context):
             return recipe
 
     def _newrecipe(self, impl):
-        di = self.di.createchild()
+        di = self.recipedi.createchild()
         di.add(impl)
         return di(impl)
 
