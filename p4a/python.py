@@ -200,7 +200,7 @@ class GuestPythonRecipe(Recipe):
         if 'openssl' in self.graph.recipenames:
             log.info('Activating flags for openssl')
             recipe = self.graph.get_recipe('openssl')
-            add_flags(recipe.include_flags(self.arch), recipe.link_dirs_flags(self.arch), recipe.link_libs_flags())
+            add_flags(recipe.include_flags(), recipe.link_dirs_flags(self.arch), recipe.link_libs_flags())
         for library_name in 'libbz2', 'liblzma':
             if library_name in self.graph.recipenames:
                 log.info("Activating flags for %s", library_name)
