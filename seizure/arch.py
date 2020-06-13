@@ -74,41 +74,44 @@ class Arch:
         return self._clang_path() / f"""{f"{self.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
 
     def get_env(self, ctx, platform):
-        env = self.staticenv.copy()
-        env['CXXFLAGS'] = env['CFLAGS'] = cflags = ' '.join([
+        cflags = ' '.join([
             f"-target {self.target()}",
             '-fomit-frame-pointer',
             *self.arch_cflags,
         ])
-        env['CPPFLAGS'] = ' '.join([
-            '-DANDROID',
-            f"-D__ANDROID_API__={self.ndk_api}",
-            f"-I{self.ndk_dir / 'sysroot' / 'usr' / 'include' / self.command_prefix}",
-            f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
-        ])
-        env['LDFLAGS'] = f"-L{ctx.get_libs_dir(self)}"
-        env['CC'] = cc = f"{self.ccachepath} {self.get_clang_exe()} {cflags}"
-        env['CXX'] = f"{self.ccachepath} {self.get_clang_exe(plus_plus = True)} {cflags}"
-        env['AR'] = f"{self.command_prefix}-ar"
-        env['RANLIB'] = f"{self.command_prefix}-ranlib"
-        env['STRIP'] = f"{self.command_prefix}-strip --strip-unneeded"
-        env['READELF'] = f"{self.command_prefix}-readelf"
-        env['NM'] = f"{self.command_prefix}-nm"
-        env['LD'] = f"{self.command_prefix}-ld"
-        env['ARCH'] = self.name
-        env['NDK_API'] = f"android-{self.ndk_api}"
-        env['TOOLCHAIN_PREFIX'] = self.toolchain_prefix
-        env['TOOLCHAIN_VERSION'] = platform.toolchain_version(self)
-        env['LDSHARED'] = ' '.join([
-            cc,
-            '-pthread',
-            '-shared',
-            '-Wl,-O1',
-            '-Wl,-Bsymbolic-functions',
-        ])
-        env['BUILDLIB_PATH'] = ctx.get_recipe(f"host{ctx.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}"
-        env['PATH'] = f"{self._clang_path()}{os.pathsep}{os.environ['PATH']}"
-        return env
+        cc = f"{self.ccachepath} {self.get_clang_exe()} {cflags}"
+        return dict(self.staticenv,
+            CFLAGS = cflags,
+            CXXFLAGS = cflags,
+            CPPFLAGS = ' '.join([
+                '-DANDROID',
+                f"-D__ANDROID_API__={self.ndk_api}",
+                f"-I{self.ndk_dir / 'sysroot' / 'usr' / 'include' / self.command_prefix}",
+                f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
+            ]),
+            LDFLAGS = f"-L{ctx.get_libs_dir(self)}",
+            CC = cc,
+            CXX = f"{self.ccachepath} {self.get_clang_exe(plus_plus = True)} {cflags}",
+            AR = f"{self.command_prefix}-ar",
+            RANLIB = f"{self.command_prefix}-ranlib",
+            STRIP = f"{self.command_prefix}-strip --strip-unneeded",
+            READELF = f"{self.command_prefix}-readelf",
+            NM = f"{self.command_prefix}-nm",
+            LD = f"{self.command_prefix}-ld",
+            ARCH = self.name,
+            NDK_API = f"android-{self.ndk_api}",
+            TOOLCHAIN_PREFIX = self.toolchain_prefix,
+            TOOLCHAIN_VERSION = platform.toolchain_version(self),
+            LDSHARED = ' '.join([
+                cc,
+                '-pthread',
+                '-shared',
+                '-Wl,-O1',
+                '-Wl,-Bsymbolic-functions',
+            ]),
+            BUILDLIB_PATH = ctx.get_recipe(f"host{ctx.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}",
+            PATH = f"{self._clang_path()}{os.pathsep}{os.environ['PATH']}",
+        )
 
     def builddirname(self):
         return f"{self.name}__ndk_target_{self.ndk_api}"
