@@ -201,8 +201,7 @@ class ContextImpl(Context):
         log.info('Install Cython in case one of the modules needs it to build')
         pip.install.print('Cython', env = base_env)
         # Get environment variables for build (with CC/compiler set):
-        standard_recipe = self._newrecipe(CythonRecipe)
-        env = {**base_env, **standard_recipe.get_recipe_env(self.arch)}
+        env = {**base_env, **self._newrecipe(CythonRecipe).get_recipe_env(self.arch)}
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
         env['PYTHONPATH'] = f"""{(self.buildsdir / 'venv' / 'lib' / f"python{self.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{self.get_python_install_dir()}"""
@@ -212,7 +211,7 @@ class ContextImpl(Context):
             pip.install._v.__no_deps.print('--target', self.get_python_install_dir(), *modules, env = env)
         else:
             log.info('There are no Python modules to install, skipping')
-        standard_recipe.strip_object_files(env, self.buildsdir)
+        CythonRecipe.strip_object_files(env, self.buildsdir)
         self.bootstrap.run_distribute(self)
 
     def check_recipe_choices(self, name, depends):
