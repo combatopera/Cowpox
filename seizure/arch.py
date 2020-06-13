@@ -54,12 +54,6 @@ class Arch:
         '-fomit-frame-pointer',
     ]
     common_ldflags = ['-L{ctx_libs_dir}']
-    common_ldshared = [
-        '-pthread',
-        '-shared',
-        '-Wl,-O1',
-        '-Wl,-Bsymbolic-functions',
-    ]
     ccachepath, = which('ccache').splitlines()
     staticenv = dict(
         LDLIBS = '-lm',
@@ -100,7 +94,7 @@ class Arch:
             f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
         ])
         env['LDFLAGS'] = ' '.join(self.common_ldflags).format(ctx_libs_dir=ctx.get_libs_dir(self))
-        env['CC'] = f"{self.ccachepath} {self.get_clang_exe()} {env['CFLAGS']}"
+        env['CC'] = cc = f"{self.ccachepath} {self.get_clang_exe()} {env['CFLAGS']}"
         env['CXX'] = f"{self.ccachepath} {self.get_clang_exe(plus_plus = True)} {env['CXXFLAGS']}"
         env['AR'] = f"{self.command_prefix}-ar"
         env['RANLIB'] = f"{self.command_prefix}-ranlib"
@@ -112,7 +106,13 @@ class Arch:
         env['NDK_API'] = f"android-{self.ndk_api}"
         env['TOOLCHAIN_PREFIX'] = self.toolchain_prefix
         env['TOOLCHAIN_VERSION'] = platform.toolchain_version
-        env['LDSHARED'] = env['CC'] + ' ' + ' '.join(self.common_ldshared)
+        env['LDSHARED'] = ' '.join([
+            cc,
+            '-pthread',
+            '-shared',
+            '-Wl,-O1',
+            '-Wl,-Bsymbolic-functions',
+        ])
         env['BUILDLIB_PATH'] = ctx.get_recipe(f"host{ctx.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}"
         env['PATH'] = f"{self._clang_path()}{os.pathsep}{os.environ['PATH']}"
         return env
