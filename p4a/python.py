@@ -169,6 +169,7 @@ class GuestPythonRecipe(Recipe):
         self.python_install_dir = Path(config.python_install_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.dist_dir = Path(config.dist_dir)
+        self.ndk_api = config.android.ndk_api
         self.hostrecipe = hostrecipe
 
     def get_recipe_env(self, arch):
@@ -176,7 +177,7 @@ class GuestPythonRecipe(Recipe):
         env['HOSTARCH'] = arch.command_prefix
         env['CC'] = self.platform.clang_exe(arch, with_target = True)
         env['PATH'] = os.pathsep.join([f"""{self.graph.get_recipe(f"host{self.name}").get_path_to_python()}""", str(self.platform.prebuiltbin(arch)), env['PATH']])
-        env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ctx.ndk_api}"
+        env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ndk_api}"
         env['LDFLAGS'] = env.get('LDFLAGS', '')
         if hasattr(lagoon, 'lld'):
             # Note: The -L. is to fix a bug in python 3.7.
@@ -225,7 +226,7 @@ class GuestPythonRecipe(Recipe):
         return not (self.link_root(self.arch) / self._libpython).is_file()
 
     def build_arch(self):
-        assert self.ctx.ndk_api >= self.MIN_NDK_API
+        assert self.ndk_api >= self.MIN_NDK_API
         recipe_build_dir = self.get_build_dir(self.arch)
         build_dir = (recipe_build_dir / 'android-build').mkdirp()
         sys_prefix = '/usr/local'
