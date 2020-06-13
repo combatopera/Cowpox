@@ -104,11 +104,10 @@ class GraphImpl(Graph):
         return self._recipes[name]
 
     def allrecipes(self):
-        self._recipes = {}
-        for name in self.recipenames:
-            impl = self.recipeimpl(name)
+        impls = {name: self.recipeimpl(name) for name in self.recipenames}
+        for impl in impls.values():
             self.recipedi.add(impl) # TODO: Add upfront.
-            self._recipes[name] = self.recipedi(impl)
+        self._recipes = {name: self.recipedi(impl) for name, impl in impls.items()}
         return self._recipes.values()
 
     def _newrecipe(self, impl):
