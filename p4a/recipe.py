@@ -218,14 +218,14 @@ class PythonRecipe(Recipe):
                 'setup.py', 'install', '-O2', f"--root={self.ctx.get_python_install_dir()}", '--install-lib=.', *self.setup_extra_args,
                 env = self.get_recipe_env(self.arch), cwd = self.get_build_dir(self.arch))
         if self.install_in_hostpython:
-            self.install_hostpython_package(self.arch)
+            self.install_hostpython_package()
 
     def get_hostrecipe_env(self, arch):
         return dict(os.environ, PYTHONPATH = self.real_hostpython_location.parent / 'Lib' / 'site-packages')
 
-    def install_hostpython_package(self, arch):
-        env = self.get_hostrecipe_env(arch)
-        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', *self.setup_extra_args, env = env, cwd = self.get_build_dir(arch))
+    def install_hostpython_package(self):
+        env = self.get_hostrecipe_env(self.arch)
+        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', *self.setup_extra_args, env = env, cwd = self.get_build_dir(self.arch))
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
@@ -245,10 +245,10 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
         find.print(next(builddir.glob('build/lib.*')), '-name', '"*.o"', '-exec', env['STRIP'], '{}', ';', env = env, cwd = builddir)
 
-    def install_hostpython_package(self, arch):
-        env = self.get_hostrecipe_env(arch)
-        self.rebuild_compiled_components(arch, env)
-        super().install_hostpython_package(arch)
+    def install_hostpython_package(self):
+        env = self.get_hostrecipe_env(self.arch)
+        self.rebuild_compiled_components(self.arch, env)
+        super().install_hostpython_package()
 
     def rebuild_compiled_components(self, arch, env):
         log.info("Rebuilding compiled components in %s", self.name)
