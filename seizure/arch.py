@@ -42,11 +42,13 @@ from .config import Config
 from .platform import Platform
 from diapyr import types
 from diapyr.util import singleton
-from lagoon import which
+from lagoon import find, which
 from multiprocessing import cpu_count
 from p4a import Arch, Graph
 from pathlib import Path
-import os
+import logging, os
+
+log = logging.getLogger(__name__)
 
 def _spjoin(*v):
     return ' '.join(map(str, v))
@@ -76,6 +78,7 @@ class ArchImpl(Arch):
         )
         self.libs_dir = (self.libs_parent / self.name).mkdirp()
         self.cc = _spjoin(self.ccachepath, platform.clang_exe(self), self.cflags)
+        strip = f"{self.command_prefix}-strip", '--strip-unneeded'
         self.archenv = dict(self.staticenv,
             CFLAGS = self.cflags,
             CXXFLAGS = self.cflags,
@@ -84,7 +87,7 @@ class ArchImpl(Arch):
             CXX = _spjoin(self.ccachepath, platform.clang_exe(self, plus_plus = True), self.cflags),
             AR = f"{self.command_prefix}-ar",
             RANLIB = f"{self.command_prefix}-ranlib",
-            STRIP = f"{self.command_prefix}-strip --strip-unneeded",
+            STRIP = _spjoin(*strip),
             READELF = f"{self.command_prefix}-readelf",
             NM = f"{self.command_prefix}-nm",
             LD = f"{self.command_prefix}-ld",
@@ -106,6 +109,7 @@ class ArchImpl(Arch):
             f"-D__ANDROID_API__={self.ndk_api}",
             f"-I{platform.includepath(self)}",
         )
+        self.strip = [platform.prebuiltbin(self) / strip[0], *strip[1:]]
         self.graph = graph
 
     def target(self):
@@ -122,6 +126,12 @@ class ArchImpl(Arch):
 
     def has_lib(self, lib):
         return (self.libs_dir / lib).exists()
+
+    def strip_object_files(self, root):
+        log.info('Stripping object files')
+        exec = find.partial(root, '-name', '*.so', '-exec')
+        exec.print('echo', '{}', ';')
+        exec.print(*self.strip, '{}', ';')
 
 @singleton
 class DesktopArch:

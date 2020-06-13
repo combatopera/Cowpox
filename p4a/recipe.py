@@ -235,13 +235,13 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def build_compiled_components(self):
         log.info("Building compiled components in %s", self.name)
-        env = self.get_recipe_env(self.arch)
         builddir = self.get_build_dir(self.arch)
-        hostpython = Program.text(self.hostpython_location).partial(env = env, cwd = builddir)
+        hostpython = Program.text(self.hostpython_location).partial(env = self.get_recipe_env(self.arch), cwd = builddir)
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
-        find.print(next(builddir.glob('build/lib.*')), '-name', '"*.o"', '-exec', env['STRIP'], '{}', ';', env = env, cwd = builddir)
+        objsdir, = builddir.glob('build/lib.*')
+        find.print(objsdir, '-name', '*.o', '-exec', *self.arch.strip, '{}', ';')
 
     def install_hostpython_package(self):
         env = self.get_hostrecipe_env()
@@ -253,12 +253,6 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir(self.arch))
         hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
-
-def strip_object_files(env, build_dir):
-    log.info('Stripping object files')
-    exec = find.partial('.', '-iname', '*.so', '-exec', env = env, cwd = build_dir)
-    exec.print('echo', '{}', ';')
-    exec.print(env['STRIP'].split(' ')[0], '--strip-unneeded', '{}', ';') # TODO: Avoid inspecting env.
 
 class CythonRecipe(PythonRecipe):
 
@@ -291,7 +285,7 @@ class CythonRecipe(PythonRecipe):
             setup.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
-        strip_object_files(env, builddir)
+        self.arch.strip_object_files(builddir)
         super().install_python_package()
 
     def cythonize_file(self, env, filename):

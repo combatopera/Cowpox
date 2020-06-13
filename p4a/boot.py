@@ -47,7 +47,7 @@ from pkg_resources import resource_filename
 from seizure.config import Config
 from seizure.platform import Platform
 from tempfile import TemporaryDirectory
-import logging, os, shlex, shutil, subprocess
+import logging, os, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -102,15 +102,13 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     def strip_libraries(self):
         log.info('Stripping libraries')
-        env = self.arch.get_env()
-        tokens = shlex.split(env['STRIP']) # TODO: Not via env.
-        strip = Program.text(self.platform.prebuiltbin(self.arch) / tokens[0]).partial(*tokens[1:])
+        strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
-        filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so').splitlines()
+        filens = find(libs_dir, self.dist_dir / 'libs', '-name', '*.so').splitlines()
         log.info('Stripping libraries in private dir')
         for filen in filens:
             try:
-                strip.print(filen, env = env)
+                strip.print(filen)
             except subprocess.CalledProcessError as e:
                 if 1 != e.returncode:
                     raise
