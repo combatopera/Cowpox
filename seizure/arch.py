@@ -73,6 +73,8 @@ class ArchImpl(Arch):
             '-fomit-frame-pointer',
             *self.arch_cflags,
         )
+        self.libs_parent = self.buildsdir / 'libs_collections' / self.package_name
+        self.libs_dir = (self.libs_parent / self.name).mkdirp()
         self.cc = _spjoin(self.ccachepath, platform.clang_exe(self), self.cflags)
         self.archenv = dict(self.staticenv,
             CFLAGS = self.cflags,
@@ -117,14 +119,6 @@ class ArchImpl(Arch):
             CPPFLAGS = f"""{self.cppflags} -I{ctx.get_python_install_dir() / 'include' / f"python{self.graph.python_recipe.version[:3]}"}""",
             BUILDLIB_PATH = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{self.graph.python_recipe.major_minor_version_string}",
         )
-
-    @property
-    def libs_parent(self):
-        return (self.buildsdir / 'libs_collections' / self.package_name).mkdirp()
-
-    @property
-    def libs_dir(self):
-        return (self.libs_parent / self.name).mkdirp()
 
 @singleton
 class DesktopArch:
