@@ -114,7 +114,7 @@ class ArchImpl(Arch):
     def builddirname(self):
         return f"{self.name}__ndk_target_{self.ndk_api}"
 
-    def get_env(self, ctx):
+    def get_env(self):
         return dict(self.archenv,
             CPPFLAGS = f"""{self.cppflags} -I{self.python_install_dir / 'include' / f"python{self.graph.python_recipe.version[:3]}"}""",
             BUILDLIB_PATH = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{self.graph.python_recipe.major_minor_version_string}",

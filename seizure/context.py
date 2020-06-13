@@ -199,7 +199,7 @@ class ContextImpl(Context):
 
     def strip_libraries(self):
         log.info('Stripping libraries')
-        env = self.arch.get_env(self)
+        env = self.arch.get_env()
         tokens = shlex.split(env['STRIP']) # TODO: Not via env.
         strip = Program.text(self.platform.prebuiltbin(self.arch) / tokens[0]).partial(*tokens[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
