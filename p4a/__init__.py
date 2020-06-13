@@ -143,14 +143,14 @@ class Recipe(Plugin):
                 raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
             log.debug("[%s] MD5 OK.", self.name)
 
-    def _unpack(self, arch):
-        directory_name = self.get_build_dir(arch)
+    def _unpack(self):
+        directory_name = self.get_build_dir(self.arch)
         if self.url is not None and not urlparse(self.url).scheme:
             rm._rf.print(directory_name)
             cp._a.print(self.resourcepath(self.url.replace('/', os.sep)), directory_name)
             return
-        log.info("Unpacking %s for %s", self.name, arch.name)
-        build_dir = self.get_build_container_dir(arch)
+        log.info("Unpacking %s for %s", self.name, self.arch.name)
+        build_dir = self.get_build_container_dir(self.arch)
         user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
         if user_dir is not None:
             log.info("P4A_%s_DIR exists, symlinking instead", self.name.lower())
@@ -225,7 +225,7 @@ class Recipe(Plugin):
 
     def prepare_build_dir(self):
         self.get_build_container_dir(self.arch).mkdirp()
-        self._unpack(self.arch)
+        self._unpack()
 
     def has_libs(self, arch, *libs):
         return all(map(lambda l: self.ctx.has_lib(arch, l), libs))
