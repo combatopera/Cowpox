@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, Plugin
+from . import Arch, Graph, Plugin
 from diapyr import types
 from lagoon import cp, mv, rm, unzip
 from pathlib import Path
@@ -72,8 +72,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     contribroot = Path(resource_filename('pythonforandroid', '.'))
     recipe_depends = [("python2", "python3"), 'android']
 
-    @types(Config, Graph)
-    def __init__(self, config, graph):
+    @types(Config, Graph, Arch)
+    def __init__(self, config, graph, arch):
         self.bootstrap_dir = self.contribroot / 'bootstraps' / config.p4a.bootstrap
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
@@ -81,6 +81,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.dist_dir = Path(config.dist_dir)
         self.build_dir = Path(config.bootstrap_builds, graph.check_recipe_choices(self.name, self.recipe_depends))
         self.graph = graph
+        self.arch = arch
 
     def prepare_dirs(self):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)

@@ -52,15 +52,14 @@ class SDL2GradleBootstrap(Bootstrap):
 
     def run_distribute(self, rctx):
         log.info("Creating Android project (%s)", self.name)
-        arch = rctx.arch
-        log.info("Copying SDL2/gradle build for %s", arch)
+        log.info("Copying SDL2/gradle build for %s", self.arch)
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
         (self.dist_dir / 'local.properties').write_text(f"sdk.dir={rctx.sdk_dir}")
         log.info('Copying Python distribution')
-        self.distribute_libs(arch, rctx.get_libs_dir(arch))
+        self.distribute_libs(self.arch, rctx.get_libs_dir(self.arch))
         self.distribute_javaclasses(rctx.javaclass_dir, dest_dir = Path("src", "main", "java"))
-        site_packages_dir = self.graph.python_recipe.create_python_bundle(self.dist_dir, arch)
+        site_packages_dir = self.graph.python_recipe.create_python_bundle(self.dist_dir, self.arch)
         if 'sqlite3' not in self.graph.recipenames:
             with (self.dist_dir / 'blacklist.txt').open('a') as fileh:
                 fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
