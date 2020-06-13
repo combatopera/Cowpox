@@ -110,6 +110,9 @@ class GraphImpl(Graph):
             self._recipes[name] = recipe = self.recipedi(impl)
             return recipe
 
+    def allrecipes(self):
+        return [self.get_recipe(name) for name in self.recipenames]
+
     def _newrecipe(self, impl):
         di = self.recipedi.createchild()
         di.add(impl)
@@ -169,8 +172,7 @@ class ContextImpl(Context):
         self.bootstrap_builds.mkdirp()
         self.other_builds.mkdirp()
         self.bootstrap.prepare_dirs()
-        recipes = [self.graph.get_recipe(name) for name in self.graph.recipenames]
-        # download is arch independent
+        recipes = self.graph.allrecipes()
         log.info('Downloading recipes')
         for recipe in recipes:
             recipe.download_if_necessary(self.mirror)
