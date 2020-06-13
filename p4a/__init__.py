@@ -102,13 +102,14 @@ class Recipe(Plugin):
     def url(self):
         return format_obj(self.urlformat, self)
 
-    @types(Config, Context, Platform, Graph, Mirror)
+    @types(Config, Context, Platform, Graph, Mirror, Arch)
     def __init__(self, config, context, platform, graph, mirror):
         self.other_builds = Path(config.other_builds)
         self.ctx = context
         self.platform = platform
         self.graph = graph
         self.mirror = mirror
+        self.arch = arch
 
     def resourcepath(self, relpath):
         return Path(resource_filename(self._fqmodulename(), str(relpath)))
@@ -221,9 +222,9 @@ class Recipe(Plugin):
     def postbuild_arch(self, arch):
         pass
 
-    def prepare_build_dir(self, arch):
-        self.get_build_container_dir(arch).mkdirp()
-        self._unpack(arch)
+    def prepare_build_dir(self):
+        self.get_build_container_dir(self.arch).mkdirp()
+        self._unpack(self.arch)
 
     def has_libs(self, arch, *libs):
         return all(map(lambda l: self.ctx.has_lib(arch, l), libs))
