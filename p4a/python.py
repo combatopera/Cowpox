@@ -196,7 +196,7 @@ class GuestPythonRecipe(Recipe):
             log.info('Activating flags for libffi')
             recipe = self.graph.get_recipe('libffi')
             env['PKG_CONFIG_PATH'] = recipe.get_build_dir(self.arch)
-            add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs(self.arch))), f" -L{recipe.get_build_dir(self.arch) / '.libs'}", ' -lffi')
+            add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs())), f" -L{recipe.get_build_dir(self.arch) / '.libs'}", ' -lffi')
         if 'openssl' in self.graph.recipenames:
             log.info('Activating flags for openssl')
             recipe = self.graph.get_recipe('openssl')

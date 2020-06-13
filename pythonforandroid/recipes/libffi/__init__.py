@@ -62,5 +62,5 @@ class LibffiRecipe(Recipe):
                 f"--host={self.arch.command_prefix}", f"--prefix={build_dir}", '--disable-builddir', '--enable-shared', env = env, cwd = build_dir)
         make.print('-j', cpu_count(), 'libffi.la', env = env, cwd = build_dir)
 
-    def get_include_dirs(self, arch):
-        return [self.get_build_dir(arch) / 'include']
+    def get_include_dirs(self):
+        return [self.get_build_dir(self.arch) / 'include']
