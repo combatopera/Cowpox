@@ -119,11 +119,11 @@ class ArchImpl(Arch):
         )
 
     @property
-    def libs_dir(self):
+    def libs_parent(self):
         return (self.buildsdir / 'libs_collections' / self.package_name).mkdirp()
 
     def get_libs_dir(self):
-        return (self.libs_dir / self.name).mkdirp()
+        return (self.libs_parent / self.name).mkdirp()
 
 @singleton
 class DesktopArch:
