@@ -210,13 +210,13 @@ class Recipe(Plugin):
             touch.print(build_dir / '.patched')
 
     def should_build(self):
-        return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries(self.arch)) # XXX: Weird logic?
+        return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries()) # XXX: Weird logic?
 
     def build_arch(self):
         pass
 
     def install_libraries(self):
-        libs = [p for p in self._get_libraries(self.arch) if p.name.endswith('.so')]
+        libs = [p for p in self._get_libraries() if p.name.endswith('.so')]
         if libs:
             cp.print(*libs, self.ctx.get_libs_dir(self.arch))
 
@@ -230,5 +230,5 @@ class Recipe(Plugin):
     def has_libs(self, arch, *libs):
         return all(map(lambda l: self.ctx.has_lib(arch, l), libs))
 
-    def _get_libraries(self, arch):
-        return {self.get_build_dir(arch) / libpath for libpath in self.builtlibpaths}
+    def _get_libraries(self):
+        return {self.get_build_dir(self.arch) / libpath for libpath in self.builtlibpaths}
