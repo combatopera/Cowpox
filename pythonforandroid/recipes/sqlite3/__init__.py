@@ -51,10 +51,10 @@ class Sqlite3Recipe(NDKRecipe):
     def should_build(self, arch):
         return not self.has_libs(arch, 'libsqlite3.so')
 
-    def prebuild_arch(self, arch):
-        super().prebuild_arch(arch)
-        mkdir._p.print(self.get_build_dir(arch) / 'jni')
-        shutil.copyfile(self.resourcepath('Android.mk'), self.get_build_dir(arch) / 'jni' / 'Android.mk')
+    def prebuild_arch(self):
+        super().prebuild_arch()
+        mkdir._p.print(self.get_build_dir(self.arch) / 'jni')
+        shutil.copyfile(self.resourcepath('Android.mk'), self.get_build_dir(self.arch) / 'jni' / 'Android.mk')
 
     def build_arch(self, arch, *extra_args):
         super().build_arch(arch)

@@ -57,8 +57,8 @@ class AndroidRecipe(CythonRecipe):
         env.update(self.config_env)
         return env
 
-    def prebuild_arch(self, arch):
-        super().prebuild_arch(arch)
+    def prebuild_arch(self):
+        super().prebuild_arch()
         bootstrap_name = self.bootstrap.name
         is_sdl2 = bootstrap_name in {'sdl2', 'sdl2python3', 'sdl2_gradle'}
         is_webview = bootstrap_name == 'webview'
@@ -72,7 +72,7 @@ class AndroidRecipe(CythonRecipe):
             'JAVA_NAMESPACE': 'org.kivy.android',
             'JNI_NAMESPACE': 'org/kivy/android',
         }
-        android = self.get_build_dir(arch) / 'android'
+        android = self.get_build_dir(self.arch) / 'android'
         with (android / 'config.pxi').open('w') as fpxi, (android / 'config.h').open('w') as fh, (android / 'config.py').open('w') as fpy:
             for key, value in config.items():
                 print(f'DEF {key} = {repr(value)}', file = fpxi)

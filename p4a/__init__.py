@@ -190,7 +190,7 @@ class Recipe(Plugin):
     def get_recipe_env(self, arch):
         return arch.get_env(self.ctx)
 
-    def prebuild_arch(self, arch):
+    def prebuild_arch(self):
         pass
 
     def apply_patches(self, arch):
