@@ -80,6 +80,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.android_api = config.android.api
         self.dist_dir = Path(config.dist_dir)
         self.build_dir = Path(config.bootstrap_builds, graph.check_recipe_choices(self.name, self.recipe_depends))
+        self.javaclass_dir = config.javaclass_dir
         self.graph = graph
         self.arch = arch
 
@@ -98,10 +99,9 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         for lib in src_dir.iterdir():
             cp._a.print(lib, tgt_dir)
 
-    def distribute_javaclasses(self, javaclass_dir, dest_dir = 'src'):
+    def distribute_javaclasses(self, dest_dir = 'src'):
         log.info('Copying java files')
-        if javaclass_dir.exists():
-            cp._a.print(javaclass_dir, (self.dist_dir / dest_dir).mkdirp())
+        cp._a.print(self.javaclass_dir, (self.dist_dir / dest_dir).mkdirp())
 
     def distribute_aars(self, arch):
         log.info('Unpacking aars')

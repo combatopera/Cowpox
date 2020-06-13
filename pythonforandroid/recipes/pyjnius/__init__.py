@@ -41,6 +41,7 @@
 from lagoon import cp
 from p4a.recipe import CythonRecipe
 from p4a.patch import will_build
+from seizure.config import Config
 import logging
 
 log = logging.getLogger(__name__)
@@ -55,7 +56,11 @@ class PyjniusRecipe(CythonRecipe):
         ('genericndkbuild_jnienv_getter.patch', will_build('genericndkbuild')),
     ]
 
+    @types(Config)
+    def __init(self, config):
+        self.javaclass_dir = Path(config.javaclass_dir)
+
     def postbuild_arch(self):
         super().postbuild_arch()
         log.info('Copying pyjnius java class to classes build dir')
-        cp._a.print(self.get_build_dir(self.arch) / 'jnius' / 'src' / 'org', self.ctx.javaclass_dir)
+        cp._a.print(self.get_build_dir(self.arch) / 'jnius' / 'src' / 'org', self.javaclass_dir.mkdirp())
