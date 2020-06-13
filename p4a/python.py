@@ -167,6 +167,7 @@ class GuestPythonRecipe(Recipe):
     @types(Config, HostPythonRecipe)
     def __init(self, config, hostrecipe):
         self.python_install_dir = Path(config.python_install_dir)
+        self.ndk_dir = Path(config.android_ndk_dir)
         self.hostrecipe = hostrecipe
 
     def get_recipe_env(self, arch):
@@ -205,7 +206,7 @@ class GuestPythonRecipe(Recipe):
             add_flags(recipe.include_flags(), recipe.link_dirs_flags(), recipe.link_libs_flags())
         log.info('''Activating flags for android's zlib''')
         zlib_lib_path = self.platform.ndk_platform(self.arch) / 'usr' / 'lib'
-        zlib_includes = self.ctx.ndk_dir / 'sysroot' / 'usr' / 'include'
+        zlib_includes = self.ndk_dir / 'sysroot' / 'usr' / 'include'
         line, = (l for l in (zlib_includes / 'zlib.h').read_text().split('\n') if l.startswith('#define ZLIB_VERSION '))
         env['ZLIB_VERSION'] = line.replace('#define ZLIB_VERSION ', '')
         add_flags(f" -I{zlib_includes}", f" -L{zlib_lib_path}", ' -lz')
