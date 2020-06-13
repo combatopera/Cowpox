@@ -168,7 +168,7 @@ class ContextImpl(Context):
         self.distsdir.mkdirp()
         self.bootstrap_builds.mkdirp()
         self.other_builds.mkdirp()
-        self.bootstrap.prepare_dirs(self.graph.check_recipe_choices(self.bootstrap.name, self.bootstrap.recipe_depends))
+        self.bootstrap.prepare_dirs()
         recipes = [self.get_recipe(name) for name in self.graph.recipes]
         # download is arch independent
         log.info('Downloading recipes')

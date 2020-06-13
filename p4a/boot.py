@@ -79,11 +79,10 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.package_name = config.package.name
         self.android_api = config.android.api
         self.dist_dir = Path(config.dist_dir)
-        self.bootstrap_builds = Path(config.bootstrap_builds)
+        self.build_dir = Path(config.bootstrap_builds, graph.check_recipe_choices(self.name, self.recipe_depends))
         self.graph = graph
 
-    def prepare_dirs(self, builddirname):
-        self.build_dir = self.bootstrap_builds / builddirname
+    def prepare_dirs(self):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files((self.bootstrap_dir / '..' / 'common').resolve() / 'build', self.build_dir, False)
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.android_api}")
