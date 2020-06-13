@@ -59,7 +59,7 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
         super().build_compiled_components()
         self.setup_extra_args = []
 
-    def rebuild_compiled_components(self, arch, env):
+    def rebuild_compiled_components(self, env):
         self.setup_extra_args = ['-j', str(cpu_count())]
-        super().rebuild_compiled_components(arch, env)
+        super().rebuild_compiled_components(env)
         self.setup_extra_args = []

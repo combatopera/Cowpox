@@ -247,12 +247,12 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def install_hostpython_package(self):
         env = self.get_hostrecipe_env(self.arch)
-        self.rebuild_compiled_components(self.arch, env)
+        self.rebuild_compiled_components(env)
         super().install_hostpython_package()
 
-    def rebuild_compiled_components(self, arch, env):
+    def rebuild_compiled_components(self, env):
         log.info("Rebuilding compiled components in %s", self.name)
-        hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir(arch))
+        hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir(self.arch))
         hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
 
