@@ -78,12 +78,11 @@ class Arch:
 
     def get_env(self, ctx, platform):
         env = self.staticenv.copy()
-        env['CFLAGS'] = ' '.join([
+        env['CXXFLAGS'] = env['CFLAGS'] = ' '.join([
             f"-target {self.target()}",
             '-fomit-frame-pointer',
             *self.arch_cflags,
         ])
-        env['CXXFLAGS'] = env['CFLAGS']
         env['CPPFLAGS'] = ' '.join([
             '-DANDROID',
             f"-D__ANDROID_API__={self.ndk_api}",
