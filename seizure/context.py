@@ -119,10 +119,6 @@ class GraphImpl(Graph):
 class ContextImpl(Context):
 
     @property
-    def libs_dir(self):
-        return (self.buildsdir / 'libs_collections' / self.package_name).mkdirp()
-
-    @property
     def javaclass_dir(self):
         return (self.buildsdir / 'javaclasses' / self.package_name).mkdirp()
 
@@ -146,11 +142,8 @@ class ContextImpl(Context):
         self.bootstrap = bootstrap
         self.graph = graph
 
-    def get_libs_dir(self, arch):
-        return (self.libs_dir / arch.name).mkdirp()
-
     def has_lib(self, lib):
-        return (self.get_libs_dir(self.arch) / lib).exists()
+        return (self.arch.get_libs_dir() / lib).exists()
 
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.

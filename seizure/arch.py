@@ -65,6 +65,8 @@ class ArchImpl(Arch):
     @types(Config, Platform, Graph)
     def __init__(self, config, platform, graph):
         self.ndk_api = config.android.ndk_api
+        self.buildsdir = Path(config.buildsdir)
+        self.package_name = config.package.name
         self.cflags = _spjoin(
             '-target',
             self.target(),
@@ -112,9 +114,16 @@ class ArchImpl(Arch):
     def get_env(self, ctx):
         return dict(self.archenv,
             CPPFLAGS = f"""{self.cppflags} -I{ctx.get_python_install_dir() / 'include' / f"python{self.graph.python_recipe.version[:3]}"}""",
-            LDFLAGS = f"-L{ctx.get_libs_dir(self)}",
+            LDFLAGS = f"-L{self.get_libs_dir()}",
             BUILDLIB_PATH = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{self.graph.python_recipe.major_minor_version_string}",
         )
+
+    @property
+    def libs_dir(self):
+        return (self.buildsdir / 'libs_collections' / self.package_name).mkdirp()
+
+    def get_libs_dir(self):
+        return (self.libs_dir / self.name).mkdirp()
 
 @singleton
 class DesktopArch:
