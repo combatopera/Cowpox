@@ -220,11 +220,11 @@ class PythonRecipe(Recipe):
         if self.install_in_hostpython:
             self.install_hostpython_package()
 
-    def get_hostrecipe_env(self, arch):
+    def get_hostrecipe_env(self):
         return dict(os.environ, PYTHONPATH = self.real_hostpython_location.parent / 'Lib' / 'site-packages')
 
     def install_hostpython_package(self):
-        env = self.get_hostrecipe_env(self.arch)
+        env = self.get_hostrecipe_env()
         Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', *self.setup_extra_args, env = env, cwd = self.get_build_dir(self.arch))
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
@@ -246,7 +246,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         find.print(next(builddir.glob('build/lib.*')), '-name', '"*.o"', '-exec', env['STRIP'], '{}', ';', env = env, cwd = builddir)
 
     def install_hostpython_package(self):
-        env = self.get_hostrecipe_env(self.arch)
+        env = self.get_hostrecipe_env()
         self.rebuild_compiled_components(env)
         super().install_hostpython_package()
 
