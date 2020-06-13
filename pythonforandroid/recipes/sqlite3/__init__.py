@@ -48,8 +48,8 @@ class Sqlite3Recipe(NDKRecipe):
     url = 'https://www.sqlite.org/2016/sqlite-amalgamation-3150100.zip'
     generated_libraries = ['sqlite3']
 
-    def should_build(self, arch):
-        return not self.has_libs(arch, 'libsqlite3.so')
+    def should_build(self):
+        return not self.has_libs(self.arch, 'libsqlite3.so')
 
     def prebuild_arch(self):
         super().prebuild_arch()

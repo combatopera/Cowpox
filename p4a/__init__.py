@@ -208,8 +208,8 @@ class Recipe(Plugin):
                 self.apply_patch(patch, self.arch)
             touch.print(build_dir / '.patched')
 
-    def should_build(self, arch):
-        return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries(arch)) # XXX: Weird logic?
+    def should_build(self):
+        return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries(self.arch)) # XXX: Weird logic?
 
     def build_arch(self, arch):
         pass

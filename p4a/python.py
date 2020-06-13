@@ -81,7 +81,7 @@ class HostPythonRecipe(Recipe):
     def python_exe(self):
         return self.get_path_to_python() / f"python{self.version.split('.')[0]}"
 
-    def should_build(self, arch):
+    def should_build(self):
         return not self.python_exe.exists()
 
     def get_build_container_dir(self, arch):
@@ -222,8 +222,8 @@ class GuestPythonRecipe(Recipe):
             py_version += 'm'
         return f"libpython{py_version}.so"
 
-    def should_build(self, arch):
-        return not (self.link_root(arch) / self._libpython).is_file()
+    def should_build(self):
+        return not (self.link_root(self.arch) / self._libpython).is_file()
 
     def build_arch(self, arch):
         assert self.ctx.ndk_api >= self.MIN_NDK_API

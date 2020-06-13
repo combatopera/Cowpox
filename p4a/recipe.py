@@ -98,8 +98,8 @@ class NDKRecipe(Recipe):
         self.ndk_dir = Path(config.android_ndk_dir)
         self.ndk_api = config.android.ndk_api
 
-    def should_build(self, arch):
-        lib_dir = self.get_lib_dir(arch)
+    def should_build(self):
+        lib_dir = self.get_lib_dir(self.arch)
         for lib in self.generated_libraries:
             if not (lib_dir / lib).exists():
                 return True
@@ -201,7 +201,7 @@ class PythonRecipe(Recipe):
                     env['PYTHONPATH'] = os.pathsep.join(map(str, hppath))
         return env
 
-    def should_build(self, arch):
+    def should_build(self):
         if self.ctx.insitepackages(self.name):
             log.info('Python package already exists in site-packages')
             return False
