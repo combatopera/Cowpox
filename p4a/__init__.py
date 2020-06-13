@@ -102,7 +102,7 @@ class Recipe(Plugin):
         return format_obj(self.urlformat, self)
 
     @types(Config, Context, Platform, Graph)
-    def __init__(self, config, context, platform):
+    def __init__(self, config, context, platform, graph):
         self.other_builds = Path(config.other_builds)
         self.ctx = context
         self.platform = platform
