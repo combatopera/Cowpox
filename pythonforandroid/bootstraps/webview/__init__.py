@@ -49,7 +49,7 @@ class WebViewBootstrap(Bootstrap):
     name = 'webview'
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'genericndkbuild'})
 
-    def run_distribute(self, rctx):
+    def run_distribute(self):
         log.info("Creating Android project from build and %s bootstrap", self.name)
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
@@ -65,4 +65,4 @@ class WebViewBootstrap(Bootstrap):
                 fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
         self.strip_libraries()
         self.fry_eggs(site_packages_dir)
-        super().run_distribute(rctx)
+        super().run_distribute()

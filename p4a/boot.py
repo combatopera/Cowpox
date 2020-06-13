@@ -97,7 +97,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     def writelocalproperties(self):
         (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.sdk_dir}")
 
-    def run_distribute(self, rctx):
+    def run_distribute(self):
         pass
 
     def strip_libraries(self):

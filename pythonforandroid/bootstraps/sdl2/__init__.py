@@ -50,7 +50,7 @@ class SDL2GradleBootstrap(Bootstrap):
     name = 'sdl2'
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'sdl2'})
 
-    def run_distribute(self, rctx):
+    def run_distribute(self):
         log.info("Creating Android project (%s)", self.name)
         log.info("Copying SDL2/gradle build for %s", self.arch)
         rm._rf.print(self.dist_dir)
@@ -65,4 +65,4 @@ class SDL2GradleBootstrap(Bootstrap):
                 fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
         self.strip_libraries()
         self.fry_eggs(site_packages_dir)
-        super().run_distribute(rctx)
+        super().run_distribute()

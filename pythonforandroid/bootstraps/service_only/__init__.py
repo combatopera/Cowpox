@@ -49,7 +49,7 @@ class ServiceOnlyBootstrap(Bootstrap):
     name = 'service_only'
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'genericndkbuild'})
 
-    def run_distribute(self, rctx):
+    def run_distribute(self):
         log.info("Creating Android project from build and %s bootstrap", self.name)
         log.info('This currently just copies the build stuff straight from the build dir.')
         rm._rf.print(self.dist_dir)
@@ -66,4 +66,4 @@ class ServiceOnlyBootstrap(Bootstrap):
                 fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
         self.strip_libraries()
         self.fry_eggs(site_packages_dir)
-        super().run_distribute(rctx)
+        super().run_distribute()

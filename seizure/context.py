@@ -195,4 +195,4 @@ class ContextImpl(Context):
         else:
             log.info('There are no Python modules to install, skipping')
         CythonRecipe.strip_object_files(env, self.buildsdir)
-        self.bootstrap.run_distribute(self)
+        self.bootstrap.run_distribute()

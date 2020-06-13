@@ -45,6 +45,6 @@ class EmptyBootstrap(Bootstrap):
     name = 'empty'
     recipe_depends = []
 
-    def run_distribute(self, rctx):
+    def run_distribute(self):
         print('empty bootstrap has no distribute')
         exit(1)
