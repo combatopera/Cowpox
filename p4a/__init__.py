@@ -228,6 +228,3 @@ class Recipe(Plugin):
 
     def _get_libraries(self, arch):
         return {self.get_build_dir(arch) / libpath for libpath in self.builtlibpaths}
-
-    def get_recipe(self, name):
-        return self.ctx.get_recipe(name)

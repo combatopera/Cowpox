@@ -47,8 +47,7 @@ from diapyr import types
 from fnmatch import fnmatch
 from lagoon import patch
 from lagoon.program import Program
-from p4a import Context
-from p4a.python import HostPythonRecipe
+from p4a import Graph
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import aridity, jinja2, logging, os, shutil, subprocess, tarfile, time
@@ -130,8 +129,8 @@ def _xmlquote(context, resolvable):
 
 class APKMaker:
 
-    @types(Config, Context, Arch, Platform)
-    def __init__(self, config, context, arch, platform):
+    @types(Config, Graph, Arch, Platform)
+    def __init__(self, config, graph, arch, platform):
         self.app_dir = Path(config.app_dir)
         self.ndk_api = config.android.ndk_api
         self.sdk_dir = Path(config.android_sdk_dir)
@@ -141,7 +140,7 @@ class APKMaker:
         self.presplash_color = config.android.presplash_color
         self.bootstrapname = config.p4a.bootstrap
         self.dist_dir = Path(config.dist_dir)
-        self.context = context
+        self.graph = graph
         self.arch = arch
         self.platform = platform
 
@@ -183,7 +182,7 @@ class APKMaker:
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
                 tar_dirs.append(distdir / 'webview_includes')
-            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.context.recipedi(HostPythonRecipe).python_exe)
+            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.graph.host_recipe.python_exe)
         res_dir = distdir / 'src' / 'main' / 'res'
         default_icon = distdir / 'templates' / 'kivy-icon.png'
         shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')

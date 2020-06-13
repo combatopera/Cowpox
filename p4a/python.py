@@ -171,7 +171,7 @@ class GuestPythonRecipe(Recipe):
         env = os.environ.copy()
         env['HOSTARCH'] = arch.command_prefix
         env['CC'] = self.platform.clang_exe(arch, with_target = True)
-        env['PATH'] = os.pathsep.join([f"""{self.get_recipe(f"host{self.name}").get_path_to_python()}""", str(self.platform.prebuiltbin(arch)), env['PATH']])
+        env['PATH'] = os.pathsep.join([f"""{self.graph.get_recipe(f"host{self.name}").get_path_to_python()}""", str(self.platform.prebuiltbin(arch)), env['PATH']])
         env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ctx.ndk_api}"
         env['LDFLAGS'] = env.get('LDFLAGS', '')
         if hasattr(lagoon, 'lld'):
@@ -190,21 +190,21 @@ class GuestPythonRecipe(Recipe):
         # TODO LATER: Use polymorphism!
         if 'sqlite3' in self.graph.recipenames:
             log.info('Activating flags for sqlite3')
-            recipe = self.get_recipe('sqlite3')
+            recipe = self.graph.get_recipe('sqlite3')
             add_flags(f" -I{recipe.get_build_dir(arch)}", f" -L{recipe.get_lib_dir(arch)}", ' -lsqlite3')
         if 'libffi' in self.graph.recipenames:
             log.info('Activating flags for libffi')
-            recipe = self.get_recipe('libffi')
+            recipe = self.graph.get_recipe('libffi')
             env['PKG_CONFIG_PATH'] = recipe.get_build_dir(arch)
             add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs(arch))), f" -L{recipe.get_build_dir(arch) / '.libs'}", ' -lffi')
         if 'openssl' in self.graph.recipenames:
             log.info('Activating flags for openssl')
-            recipe = self.get_recipe('openssl')
+            recipe = self.graph.get_recipe('openssl')
             add_flags(recipe.include_flags(arch), recipe.link_dirs_flags(arch), recipe.link_libs_flags())
         for library_name in 'libbz2', 'liblzma':
             if library_name in self.graph.recipenames:
                 log.info("Activating flags for %s", library_name)
-                recipe = self.get_recipe(library_name)
+                recipe = self.graph.get_recipe(library_name)
                 add_flags(recipe.get_library_includes(arch), recipe.get_library_ldflags(arch), recipe.get_library_libs_flag())
         log.info('''Activating flags for android's zlib''')
         zlib_lib_path = self.platform.ndk_platform(arch) / 'usr' / 'lib'

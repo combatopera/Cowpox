@@ -50,7 +50,7 @@ from lagoon import find, virtualenv
 from lagoon.program import Program
 from p4a import Context, Graph, Recipe
 from p4a.boot import Bootstrap, BootstrapType
-from p4a.python import GuestPythonRecipe
+from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe
 from pathlib import Path
 import logging, os, shlex, subprocess
@@ -83,11 +83,13 @@ class GraphImpl(Graph):
     def recipeimpl(name):
         return findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
 
-    @types(Config, BootstrapType)
-    def __init__(self, config, bootstraptype):
+    @types(Config, BootstrapType, DI)
+    def __init__(self, config, bootstraptype, di):
         self.recipenames, self.pypinames = get_recipe_order(self.recipeimpl, {*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
         log.info("Recipe build order is %s", self.recipenames)
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
+        self._recipes = {}
+        self.recipedi = di.createchild()
 
     def check_recipe_choices(self, name, depends):
         recipenames = []
@@ -98,6 +100,28 @@ class GraphImpl(Graph):
                         recipenames.append(alternative)
                         break
         return '-'.join([name, *sorted(recipenames)])
+
+    def get_recipe(self, name):
+        try:
+            return self._recipes[name]
+        except KeyError:
+            impl = self.recipeimpl(name)
+            self.recipedi.add(impl) # TODO: Add upfront.
+            self._recipes[name] = recipe = self.recipedi(impl)
+            return recipe
+
+    def _newrecipe(self, impl):
+        di = self.recipedi.createchild()
+        di.add(impl)
+        return di(impl)
+
+    @property
+    def python_recipe(self):
+        return self.recipedi(GuestPythonRecipe)
+
+    @property
+    def host_recipe(self):
+        return self.recipedi(HostPythonRecipe)
 
 class ContextImpl(Context):
 
@@ -112,8 +136,8 @@ class ContextImpl(Context):
     def get_python_install_dir(self):
         return (self.buildsdir / 'python-installs').mkdirp() / self.package_name
 
-    @types(Config, Platform, Arch, Bootstrap, Mirror, DI, Graph)
-    def __init__(self, config, platform, arch, bootstrap, mirror, di, graph):
+    @types(Config, Platform, Arch, Bootstrap, Mirror, Graph)
+    def __init__(self, config, platform, arch, bootstrap, mirror, graph):
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.storage_dir = Path(config.storage_dir)
@@ -124,8 +148,6 @@ class ContextImpl(Context):
         self.dist_dir = Path(config.dist_dir)
         self.bootstrap_builds = Path(config.bootstrap_builds)
         self.ndk_api = config.android.ndk_api
-        self._recipes = {}
-        self.recipedi = di.createchild()
         self.platform = platform
         self.arch = arch
         self.bootstrap = bootstrap
@@ -138,24 +160,6 @@ class ContextImpl(Context):
     def has_lib(self, arch, lib):
         return (self.get_libs_dir(arch) / lib).exists()
 
-    def get_recipe(self, name):
-        try:
-            return self._recipes[name]
-        except KeyError:
-            impl = self.graph.recipeimpl(name)
-            self.recipedi.add(impl) # TODO: Add upfront.
-            self._recipes[name] = recipe = self.recipedi(impl)
-            return recipe
-
-    def _newrecipe(self, impl):
-        di = self.recipedi.createchild()
-        di.add(impl)
-        return di(impl)
-
-    @property
-    def python_recipe(self):
-        return self.recipedi(GuestPythonRecipe)
-
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
 
@@ -165,7 +169,7 @@ class ContextImpl(Context):
         self.bootstrap_builds.mkdirp()
         self.other_builds.mkdirp()
         self.bootstrap.prepare_dirs()
-        recipes = [self.get_recipe(name) for name in self.graph.recipenames]
+        recipes = [self.graph.get_recipe(name) for name in self.graph.recipenames]
         # download is arch independent
         log.info('Downloading recipes')
         for recipe in recipes:
@@ -199,7 +203,7 @@ class ContextImpl(Context):
             return
         log.info("The requirements (%s) don't have recipes, attempting to install them with pip", ', '.join(pypinames))
         log.info('If this fails, it may mean that the module has compiled components and needs a recipe.')
-        virtualenv.print(f"--python=python{self.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv', cwd = self.buildsdir)
+        virtualenv.print(f"--python=python{self.graph.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv', cwd = self.buildsdir)
         base_env = dict(os.environ, PYTHONPATH = self.get_python_install_dir()) # XXX: Really?
         log.info('Upgrade pip to latest version')
         pip = Program.text(self.buildsdir / 'venv' / 'bin' / 'pip')
@@ -207,10 +211,10 @@ class ContextImpl(Context):
         log.info('Install Cython in case one of the modules needs it to build')
         pip.install.print('Cython', env = base_env)
         # Get environment variables for build (with CC/compiler set):
-        env = {**base_env, **self._newrecipe(CythonRecipe).get_recipe_env(self.arch)}
+        env = {**base_env, **self.graph._newrecipe(CythonRecipe).get_recipe_env(self.arch)}
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
-        env['PYTHONPATH'] = f"""{(self.buildsdir / 'venv' / 'lib' / f"python{self.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{self.get_python_install_dir()}"""
+        env['PYTHONPATH'] = f"""{(self.buildsdir / 'venv' / 'lib' / f"python{self.graph.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{self.get_python_install_dir()}"""
         if pypinames:
             log.info('Installing Python modules with pip')
             log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')

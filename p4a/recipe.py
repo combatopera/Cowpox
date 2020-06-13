@@ -81,10 +81,10 @@ class BootstrapNDKRecipe(Recipe):
 
     def recipe_env_with_python(self, arch):
         env = super().get_recipe_env(arch)
-        env['PYTHON_INCLUDE_ROOT'] = self.ctx.python_recipe.include_root(arch)
-        env['PYTHON_LINK_ROOT'] = self.ctx.python_recipe.link_root(arch)
-        env['EXTRA_LDLIBS'] = f" -lpython{self.ctx.python_recipe.major_minor_version_string}"
-        if 'python3' in self.ctx.python_recipe.name:
+        env['PYTHON_INCLUDE_ROOT'] = self.graph.python_recipe.include_root(arch)
+        env['PYTHON_LINK_ROOT'] = self.graph.python_recipe.link_root(arch)
+        env['EXTRA_LDLIBS'] = f" -lpython{self.graph.python_recipe.major_minor_version_string}"
+        if 'python3' in self.graph.python_recipe.name:
             env['EXTRA_LDLIBS'] += 'm'
         return env
 
@@ -164,11 +164,11 @@ class PythonRecipe(Recipe):
 
     @property
     def real_hostpython_location(self):
-        host_name = f"host{self.ctx.python_recipe.name}"
+        host_name = f"host{self.graph.python_recipe.name}"
         if host_name in {'hostpython2', 'hostpython3'}:
-            return self.get_recipe(host_name).python_exe
+            return self.graph.get_recipe(host_name).python_exe
         else:
-            return Path(f"python{self.ctx.python_recipe.version}")
+            return Path(f"python{self.graph.python_recipe.version}")
 
     @property
     def hostpython_location(self):
@@ -183,9 +183,9 @@ class PythonRecipe(Recipe):
         env['LANG'] = "en_GB.UTF-8"
 
         if not self.call_hostpython_via_targetpython:
-            python_name = self.ctx.python_recipe.name
-            env['CFLAGS'] += f" -I{self.ctx.python_recipe.include_root(arch)}"
-            env['LDFLAGS'] += f" -L{self.ctx.python_recipe.link_root(arch)} -lpython{self.ctx.python_recipe.major_minor_version_string}"
+            python_name = self.graph.python_recipe.name
+            env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root(arch)}"
+            env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root(arch)} -lpython{self.graph.python_recipe.major_minor_version_string}"
             if python_name == 'python3':
                 env['LDFLAGS'] += 'm'
             hppath = []
@@ -304,7 +304,7 @@ class CythonRecipe(PythonRecipe):
         elif 'PYTHONPATH' in cyenv:
             del cyenv['PYTHONPATH']
         cyenv.pop('PYTHONNOUSERSITE', None)
-        python_command = Program.text(f"python{self.ctx.python_recipe.major_minor_version_string.split('.')[0]}")
+        python_command = Program.text(f"python{self.graph.python_recipe.major_minor_version_string.split('.')[0]}")
         python_command.print("-m", "Cython.Build.Cythonize", filename, env = cyenv)
 
     def cythonize_build(self, env, build_dir):

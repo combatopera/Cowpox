@@ -44,6 +44,7 @@ from diapyr import types
 from diapyr.util import singleton
 from lagoon import which
 from multiprocessing import cpu_count
+from p4a import Graph
 import os
 
 def _spjoin(*v):
@@ -61,8 +62,8 @@ class Arch:
         **{k: v for k, v in os.environ.items() if k.startswith('CCACHE_')},
     )
 
-    @types(Config, Platform)
-    def __init__(self, config, platform):
+    @types(Config, Platform, Graph)
+    def __init__(self, config, platform, graph):
         self.ndk_api = config.android.ndk_api
         self.cflags = _spjoin(
             '-target',
@@ -100,6 +101,7 @@ class Arch:
             f"-D__ANDROID_API__={self.ndk_api}",
             f"-I{platform.includepath(self)}",
         )
+        self.graph = graph
 
     def target(self):
         return f"{self.command_prefix}{self.ndk_api}"
@@ -109,9 +111,9 @@ class Arch:
 
     def get_env(self, ctx):
         return dict(self.archenv,
-            CPPFLAGS = f"""{self.cppflags} -I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
+            CPPFLAGS = f"""{self.cppflags} -I{ctx.get_python_install_dir() / 'include' / f"python{self.graph.python_recipe.version[:3]}"}""",
             LDFLAGS = f"-L{ctx.get_libs_dir(self)}",
-            BUILDLIB_PATH = ctx.get_recipe(f"host{ctx.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}",
+            BUILDLIB_PATH = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{self.graph.python_recipe.major_minor_version_string}",
         )
 
 @singleton

@@ -61,7 +61,7 @@ class ServiceOnlyBootstrap(Bootstrap):
         self.distribute_libs(arch, rctx.get_libs_dir(arch))
         self.distribute_aars(arch)
         self.distribute_javaclasses(rctx.javaclass_dir)
-        site_packages_dir = rctx.python_recipe.create_python_bundle(self.dist_dir, arch)
+        site_packages_dir = self.graph.python_recipe.create_python_bundle(self.dist_dir, arch)
         if 'sqlite3' not in self.graph.recipenames:
             with (self.dist_dir / 'blacklist.txt').open('a') as fileh:
                 fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
