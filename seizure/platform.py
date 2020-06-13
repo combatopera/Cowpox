@@ -38,12 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .arch import Arch
 from .config import Config
 from .mirror import Mirror
 from diapyr import types
 from distutils.version import LooseVersion
-from functools import cached_property
 from lagoon import unzip, yes
 from lagoon.program import Program
 from pathlib import Path
@@ -113,8 +111,8 @@ class PlatformInfo:
 
 class Platform:
 
-    @types(Config, PlatformInfo, Arch)
-    def __init__(self, config, info, arch):
+    @types(Config, PlatformInfo)
+    def __init__(self, config, info):
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.ndk_api = config.android.ndk_api
@@ -122,7 +120,6 @@ class Platform:
         info._install_android_ndk()
         if not config.android.skip_update:
             info._install_android_packages()
-        self.arch = arch
 
     def build_tools_version(self):
         ignored = {'.DS_Store', '.ds_store'}
@@ -141,15 +138,14 @@ class Platform:
         apis = [re.findall(r'[0-9]+', s) for s in apis]
         return [int(s[0]) for s in apis if s]
 
-    @cached_property
-    def toolchain_version(self):
-        prefix = f"{self.arch.toolchain_prefix}-"
+    def toolchain_version(self, arch):
+        prefix = f"{arch.toolchain_prefix}-"
         toolchain_path = self.ndk_dir / 'toolchains'
         if not toolchain_path.is_dir():
             raise Exception('Could not find toolchain subdirectory!')
         versions = [path.name[len(prefix):] for path in toolchain_path.glob(f"{prefix}*")]
         if not versions:
-            log.warning("Could not find any toolchain for %s!", self.arch.toolchain_prefix)
+            log.warning("Could not find any toolchain for %s!", arch.toolchain_prefix)
             raise Exception('python-for-android cannot continue due to the missing executables above')
         versions.sort()
         log.info("Found the following toolchain versions: %s", versions)
@@ -157,9 +153,8 @@ class Platform:
         log.info("Picking the latest gcc toolchain, here %s", version)
         return version
 
-    @cached_property
-    def ndk_platform(self):
-        ndk_platform = self.ndk_dir / 'platforms' / f"android-{self.ndk_api}" / self.arch.platform_dir
+    def ndk_platform(self, arch):
+        ndk_platform = self.ndk_dir / 'platforms' / f"android-{self.ndk_api}" / arch.platform_dir
         if not ndk_platform.exists():
             raise Exception(f"ndk_platform doesn't exist: {ndk_platform}")
         return ndk_platform

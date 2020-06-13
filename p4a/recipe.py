@@ -318,7 +318,7 @@ class CythonRecipe(PythonRecipe):
         env['LDFLAGS'] += f" -L{self.ctx.get_libs_dir(arch)} -L{self.ctx.libs_dir}  -L{self.bootstrap.build_dir / 'obj' / 'local' / arch.name} "
         env['LDSHARED'] = env['CC'] + ' -shared'
         env['LIBLINK'] = 'NOTNONE'
-        env['NDKPLATFORM'] = self.platform.ndk_platform
+        env['NDKPLATFORM'] = self.platform.ndk_platform(arch)
         env['COPYLIBS'] = '1'
         env['LIBLINK_PATH'] = str((self.get_build_container_dir(arch) / f"objects_{self.name}").mkdirp())
         return env

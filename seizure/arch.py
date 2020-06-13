@@ -98,7 +98,7 @@ class Arch:
         env['ARCH'] = self.name
         env['NDK_API'] = f"android-{self.ndk_api}"
         env['TOOLCHAIN_PREFIX'] = self.toolchain_prefix
-        env['TOOLCHAIN_VERSION'] = platform.toolchain_version
+        env['TOOLCHAIN_VERSION'] = platform.toolchain_version(self)
         env['LDSHARED'] = ' '.join([
             cc,
             '-pthread',
