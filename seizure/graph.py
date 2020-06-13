@@ -193,7 +193,7 @@ def get_recipe_order(get_recipe, names, blacklist):
         raise Exception('Investigate.')
     else:
         log.info("Found a single valid recipe set: %s", chosen_order)
-    recipes = []
+    recipenames = []
     python_modules = []
     for name in chosen_order:
         try:
@@ -201,6 +201,6 @@ def get_recipe_order(get_recipe, names, blacklist):
         except NoSuchPluginException:
             python_modules.append(name)
         else:
-            recipes.append(name)
-    assert not set(recipes) & set(python_modules)
-    return recipes, sorted(set(python_modules))
+            recipenames.append(name)
+    assert not set(recipenames) & set(python_modules)
+    return recipenames, sorted(set(python_modules))

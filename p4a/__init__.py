@@ -94,8 +94,8 @@ class Recipe(Plugin):
     builtlibpaths = ()
 
     @classmethod
-    def get_opt_depends_in_list(cls, recipes):
-        return [recipe for recipe in recipes if recipe in cls.opt_depends]
+    def get_opt_depends_in_list(cls, recipenames):
+        return [name for name in recipenames if name in cls.opt_depends]
 
     @property
     def url(self):

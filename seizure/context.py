@@ -85,19 +85,19 @@ class GraphImpl(Graph):
 
     @types(Config, BootstrapType)
     def __init__(self, config, bootstraptype):
-        self.recipes, self.modules = get_recipe_order(self.recipeimpl, {*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
-        log.info("Recipe build order is %s", self.recipes)
+        self.recipenames, self.modules = get_recipe_order(self.recipeimpl, {*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
+        log.info("Recipe build order is %s", self.recipenames)
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.modules))
 
     def check_recipe_choices(self, name, depends):
-        recipes = []
+        recipenames = []
         for recipe in depends:
             if isinstance(recipe, (tuple, list)):
                 for alternative in recipe:
-                    if alternative in self.recipes:
-                        recipes.append(alternative)
+                    if alternative in self.recipenames:
+                        recipenames.append(alternative)
                         break
-        return '-'.join([name, *sorted(recipes)])
+        return '-'.join([name, *sorted(recipenames)])
 
 class ContextImpl(Context):
 
@@ -169,7 +169,7 @@ class ContextImpl(Context):
         self.bootstrap_builds.mkdirp()
         self.other_builds.mkdirp()
         self.bootstrap.prepare_dirs()
-        recipes = [self.get_recipe(name) for name in self.graph.recipes]
+        recipes = [self.get_recipe(name) for name in self.graph.recipenames]
         # download is arch independent
         log.info('Downloading recipes')
         for recipe in recipes:
