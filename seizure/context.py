@@ -203,9 +203,7 @@ class ContextImpl(Context):
         pip.install.print('Cython', env = base_env)
         # Get environment variables for build (with CC/compiler set):
         standard_recipe = self._newrecipe(CythonRecipe)
-        recipe_env = standard_recipe.get_recipe_env(self.arch)
-        env = base_env.copy()
-        env.update(recipe_env)
+        env = {**base_env, **standard_recipe.get_recipe_env(self.arch)}
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
         env['PYTHONPATH'] = f"""{(self.buildsdir / 'venv' / 'lib' / f"python{self.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{self.get_python_install_dir()}"""
