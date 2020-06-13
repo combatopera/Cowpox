@@ -180,7 +180,7 @@ class ContextImpl(Context):
             log.info("Building %s for %s", recipe.name, self.arch.name)
             if recipe.should_build():
                 recipe.build_arch()
-                recipe.install_libraries(self.arch)
+                recipe.install_libraries()
             else:
                 log.info("%s said it is already built, skipping", recipe.name)
         log.info('Postbuilding recipes')

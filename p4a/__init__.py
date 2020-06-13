@@ -215,10 +215,10 @@ class Recipe(Plugin):
     def build_arch(self):
         pass
 
-    def install_libraries(self, arch):
-        libs = [p for p in self._get_libraries(arch) if p.name.endswith('.so')]
+    def install_libraries(self):
+        libs = [p for p in self._get_libraries(self.arch) if p.name.endswith('.so')]
         if libs:
-            cp.print(*libs, self.ctx.get_libs_dir(arch))
+            cp.print(*libs, self.ctx.get_libs_dir(self.arch))
 
     def postbuild_arch(self, arch):
         pass
