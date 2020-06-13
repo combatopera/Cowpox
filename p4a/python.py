@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, Recipe
+from . import Recipe
 from diapyr import types
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
@@ -163,10 +163,9 @@ class GuestPythonRecipe(Recipe):
         longer used and has been removed in favour of extension .pyc
     '''
 
-    @types(HostPythonRecipe, Graph)
-    def __init(self, hostrecipe, graph):
+    @types(HostPythonRecipe)
+    def __init(self, hostrecipe):
         self.hostrecipe = hostrecipe
-        self.graph = graph
 
     def get_recipe_env(self, arch):
         env = os.environ.copy()

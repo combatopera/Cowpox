@@ -101,11 +101,12 @@ class Recipe(Plugin):
     def url(self):
         return format_obj(self.urlformat, self)
 
-    @types(Config, Context, Platform)
+    @types(Config, Context, Platform, Graph)
     def __init__(self, config, context, platform):
         self.other_builds = Path(config.other_builds)
         self.ctx = context
         self.platform = platform
+        self.graph = graph
 
     def resourcepath(self, relpath):
         return Path(resource_filename(self._fqmodulename(), str(relpath)))
@@ -115,7 +116,7 @@ class Recipe(Plugin):
         patchexe._t._p1.print('-d', self.get_build_dir(arch), '-i', self.resourcepath(relpath))
 
     def get_build_container_dir(self, arch):
-        return self.other_builds / self.ctx.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / arch.builddirname()
+        return self.other_builds / self.graph.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / arch.builddirname()
 
     def get_build_dir(self, arch):
         return self.get_build_container_dir(arch) / self.name

@@ -89,6 +89,16 @@ class GraphImpl(Graph):
         log.info("Recipe build order is %s", self.recipes)
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.modules))
 
+    def check_recipe_choices(self, name, depends):
+        recipes = []
+        for recipe in depends:
+            if isinstance(recipe, (tuple, list)):
+                for alternative in recipe:
+                    if alternative in self.recipes:
+                        recipes.append(alternative)
+                        break
+        return '-'.join([name, *sorted(recipes)])
+
 class ContextImpl(Context):
 
     @property
@@ -158,7 +168,7 @@ class ContextImpl(Context):
         self.distsdir.mkdirp()
         self.bootstrap_builds.mkdirp()
         self.other_builds.mkdirp()
-        self.bootstrap.prepare_dirs(self.check_recipe_choices(self.bootstrap.name, self.bootstrap.recipe_depends))
+        self.bootstrap.prepare_dirs(self.graph.check_recipe_choices(self.bootstrap.name, self.bootstrap.recipe_depends))
         recipes = [self.get_recipe(name) for name in self.graph.recipes]
         # download is arch independent
         log.info('Downloading recipes')
@@ -213,16 +223,6 @@ class ContextImpl(Context):
             log.info('There are no Python modules to install, skipping')
         CythonRecipe.strip_object_files(env, self.buildsdir)
         self.bootstrap.run_distribute(self)
-
-    def check_recipe_choices(self, name, depends):
-        recipes = []
-        for recipe in depends:
-            if isinstance(recipe, (tuple, list)):
-                for alternative in recipe:
-                    if alternative in self.graph.recipes:
-                        recipes.append(alternative)
-                        break
-        return '-'.join([name, *sorted(recipes)])
 
     def strip_libraries(self):
         log.info('Stripping libraries')
