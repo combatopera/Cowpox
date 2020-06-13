@@ -88,7 +88,6 @@ class GraphImpl(Graph):
         self.recipenames, self.pypinames = get_recipe_order(self.recipeimpl, {*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
         log.info("Recipe build order is %s", self.recipenames)
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
-        self._recipes = {}
         self.recipedi = di.createchild()
 
     def check_recipe_choices(self, name, depends):
@@ -102,16 +101,15 @@ class GraphImpl(Graph):
         return '-'.join([name, *sorted(recipenames)])
 
     def get_recipe(self, name):
-        try:
-            return self._recipes[name]
-        except KeyError:
-            impl = self.recipeimpl(name)
-            self.recipedi.add(impl) # TODO: Add upfront.
-            self._recipes[name] = recipe = self.recipedi(impl)
-            return recipe
+        return self._recipes[name]
 
     def allrecipes(self):
-        return [self.get_recipe(name) for name in self.recipenames]
+        self._recipes = {}
+        for name in self.recipenames:
+            impl = self.recipeimpl(name)
+            self.recipedi.add(impl) # TODO: Add upfront.
+            self._recipes[name] = self.recipedi(impl)
+        return self._recipes.values()
 
     def _newrecipe(self, impl):
         di = self.recipedi.createchild()
