@@ -165,3 +165,6 @@ class Platform:
 
     def clang_exe(self, arch, with_target = False, plus_plus = False):
         return self.clang_path(arch) / f"""{f"{arch.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
+
+    def includepath(self, arch):
+        return self.ndk_dir / 'sysroot' / 'usr' / 'include' / arch.command_prefix

@@ -44,7 +44,6 @@ from diapyr import types
 from diapyr.util import singleton
 from lagoon import which
 from multiprocessing import cpu_count
-from pathlib import Path
 import os
 
 class Arch:
@@ -62,7 +61,6 @@ class Arch:
     @types(Config, Platform)
     def __init__(self, config, platform):
         self.ndk_api = config.android.ndk_api
-        self.ndk_dir = Path(config.android_ndk_dir)
         self.cflags = ' '.join([
             '-target',
             self.target(),
@@ -94,6 +92,11 @@ class Arch:
             ]),
             PATH = f"{platform.clang_path(self)}{os.pathsep}{os.environ['PATH']}", # XXX: Is clang_path really needed?
         )
+        self.cppflags = ' '.join([
+            '-DANDROID',
+            f"-D__ANDROID_API__={self.ndk_api}",
+            f"-I{platform.includepath(self)}",
+        ])
 
     def target(self):
         return f"{self.command_prefix}{self.ndk_api}"
@@ -103,12 +106,7 @@ class Arch:
 
     def get_env(self, ctx):
         return dict(self.archenv,
-            CPPFLAGS = ' '.join([
-                '-DANDROID',
-                f"-D__ANDROID_API__={self.ndk_api}",
-                f"-I{self.ndk_dir / 'sysroot' / 'usr' / 'include' / self.command_prefix}", # TODO: Migrate to Platform.
-                f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
-            ]),
+            CPPFLAGS = f"""{self.cppflags} -I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
             LDFLAGS = f"-L{ctx.get_libs_dir(self)}",
             BUILDLIB_PATH = ctx.get_recipe(f"host{ctx.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}",
         )
