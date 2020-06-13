@@ -191,7 +191,7 @@ class GuestPythonRecipe(Recipe):
         if 'sqlite3' in self.graph.recipenames:
             log.info('Activating flags for sqlite3')
             recipe = self.graph.get_recipe('sqlite3')
-            add_flags(f" -I{recipe.get_build_dir(self.arch)}", f" -L{recipe.get_lib_dir(self.arch)}", ' -lsqlite3')
+            add_flags(f" -I{recipe.get_build_dir(self.arch)}", f" -L{recipe.get_lib_dir()}", ' -lsqlite3')
         if 'libffi' in self.graph.recipenames:
             log.info('Activating flags for libffi')
             recipe = self.graph.get_recipe('libffi')

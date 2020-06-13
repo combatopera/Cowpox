@@ -99,13 +99,13 @@ class NDKRecipe(Recipe):
         self.ndk_api = config.android.ndk_api
 
     def should_build(self):
-        lib_dir = self.get_lib_dir(self.arch)
+        lib_dir = self.get_lib_dir()
         for lib in self.generated_libraries:
             if not (lib_dir / lib).exists():
                 return True
 
-    def get_lib_dir(self, arch):
-        return self.get_build_dir(arch) / 'obj' / 'local' / arch.name
+    def get_lib_dir(self):
+        return self.get_build_dir(self.arch) / 'obj' / 'local' / self.arch.name
 
     def get_jni_dir(self, arch):
         return self.get_build_dir(arch) / 'jni'
