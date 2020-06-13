@@ -107,9 +107,6 @@ class NDKRecipe(Recipe):
     def get_lib_dir(self):
         return self.get_build_dir(self.arch) / 'obj' / 'local' / self.arch.name
 
-    def get_jni_dir(self, arch):
-        return self.get_build_dir(arch) / 'jni'
-
     def build_arch(self):
         super().build_arch()
         Program.text(self.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={self.arch.name}",
