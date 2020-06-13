@@ -42,6 +42,7 @@ from diapyr import types
 from lagoon import cp, mv, patch as patchexe, rm, tar, touch, unzip
 from pathlib import Path
 from pkg_resources import resource_filename
+from seizure.arch import Arch
 from seizure.config import Config
 from seizure.mirror import Mirror
 from seizure.platform import Platform
@@ -103,7 +104,7 @@ class Recipe(Plugin):
         return format_obj(self.urlformat, self)
 
     @types(Config, Context, Platform, Graph, Mirror, Arch)
-    def __init__(self, config, context, platform, graph, mirror):
+    def __init__(self, config, context, platform, graph, mirror, arch):
         self.other_builds = Path(config.other_builds)
         self.ctx = context
         self.platform = platform
