@@ -74,7 +74,7 @@ class Python3Recipe(GuestPythonRecipe):
         '--exec-prefix={exec_prefix}',
     )
 
-    def set_libs_flags(self, env, arch):
+    def set_libs_flags(self, env):
         if 'openssl' in self.graph.recipenames:
-            self.configure_args += (f"--with-openssl={self.graph.get_recipe('openssl').get_build_dir(arch)}",)
-        return super().set_libs_flags(env, arch)
+            self.configure_args += (f"--with-openssl={self.graph.get_recipe('openssl').get_build_dir(self.arch)}",)
+        return super().set_libs_flags(env)

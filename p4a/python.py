@@ -182,7 +182,7 @@ class GuestPythonRecipe(Recipe):
             log.warning('lld not found, linking without it. Consider installing lld if linker errors occur.')
         return env
 
-    def set_libs_flags(self, env, arch):
+    def set_libs_flags(self, env):
         def add_flags(include_flags, link_dirs, link_libs):
             env['CPPFLAGS'] = env.get('CPPFLAGS', '') + include_flags
             env['LDFLAGS'] = env.get('LDFLAGS', '') + link_dirs
@@ -191,23 +191,23 @@ class GuestPythonRecipe(Recipe):
         if 'sqlite3' in self.graph.recipenames:
             log.info('Activating flags for sqlite3')
             recipe = self.graph.get_recipe('sqlite3')
-            add_flags(f" -I{recipe.get_build_dir(arch)}", f" -L{recipe.get_lib_dir(arch)}", ' -lsqlite3')
+            add_flags(f" -I{recipe.get_build_dir(self.arch)}", f" -L{recipe.get_lib_dir(self.arch)}", ' -lsqlite3')
         if 'libffi' in self.graph.recipenames:
             log.info('Activating flags for libffi')
             recipe = self.graph.get_recipe('libffi')
-            env['PKG_CONFIG_PATH'] = recipe.get_build_dir(arch)
-            add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs(arch))), f" -L{recipe.get_build_dir(arch) / '.libs'}", ' -lffi')
+            env['PKG_CONFIG_PATH'] = recipe.get_build_dir(self.arch)
+            add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs(self.arch))), f" -L{recipe.get_build_dir(self.arch) / '.libs'}", ' -lffi')
         if 'openssl' in self.graph.recipenames:
             log.info('Activating flags for openssl')
             recipe = self.graph.get_recipe('openssl')
-            add_flags(recipe.include_flags(arch), recipe.link_dirs_flags(arch), recipe.link_libs_flags())
+            add_flags(recipe.include_flags(self.arch), recipe.link_dirs_flags(self.arch), recipe.link_libs_flags())
         for library_name in 'libbz2', 'liblzma':
             if library_name in self.graph.recipenames:
                 log.info("Activating flags for %s", library_name)
                 recipe = self.graph.get_recipe(library_name)
-                add_flags(recipe.get_library_includes(arch), recipe.get_library_ldflags(arch), recipe.get_library_libs_flag())
+                add_flags(recipe.get_library_includes(self.arch), recipe.get_library_ldflags(self.arch), recipe.get_library_libs_flag())
         log.info('''Activating flags for android's zlib''')
-        zlib_lib_path = self.platform.ndk_platform(arch) / 'usr' / 'lib'
+        zlib_lib_path = self.platform.ndk_platform(self.arch) / 'usr' / 'lib'
         zlib_includes = self.ctx.ndk_dir / 'sysroot' / 'usr' / 'include'
         line, = (l for l in (zlib_includes / 'zlib.h').read_text().split('\n') if l.startswith('#define ZLIB_VERSION '))
         env['ZLIB_VERSION'] = line.replace('#define ZLIB_VERSION ', '')
@@ -231,7 +231,7 @@ class GuestPythonRecipe(Recipe):
         build_dir = (recipe_build_dir / 'android-build').mkdirp()
         sys_prefix = '/usr/local'
         sys_exec_prefix = '/usr/local'
-        env = self.set_libs_flags(self.get_recipe_env(self.arch), self.arch)
+        env = self.set_libs_flags(self.get_recipe_env(self.arch))
         android_build = Program.text(recipe_build_dir / 'config.guess')(cwd = build_dir).strip()
         if not (build_dir / 'config.status').exists():
             kwargs = dict(android_host = env['HOSTARCH'], android_build = android_build, prefix = sys_prefix, exec_prefix = sys_exec_prefix)
