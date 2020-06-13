@@ -131,9 +131,6 @@ class ContextImpl(Context):
         self.bootstrap = bootstrap
         self.graph = graph
 
-    def has_lib(self, lib):
-        return (self.arch.libs_dir / lib).exists()
-
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
 

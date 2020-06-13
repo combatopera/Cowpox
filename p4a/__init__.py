@@ -229,7 +229,7 @@ class Recipe(Plugin):
         self._unpack()
 
     def has_libs(self, *libs):
-        return all(map(lambda l: self.ctx.has_lib(l), libs))
+        return all(map(self.arch.has_lib, libs))
 
     def _get_libraries(self):
         return {self.get_build_dir(self.arch) / libpath for libpath in self.builtlibpaths}

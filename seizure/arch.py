@@ -120,6 +120,9 @@ class ArchImpl(Arch):
             BUILDLIB_PATH = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{self.graph.python_recipe.major_minor_version_string}",
         )
 
+    def has_lib(self, lib):
+        return (self.libs_dir / lib).exists()
+
 @singleton
 class DesktopArch:
 
