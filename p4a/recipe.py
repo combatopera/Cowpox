@@ -254,6 +254,12 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
 
+def strip_object_files(env, build_dir):
+    log.info('Stripping object files')
+    exec = find.partial('.', '-iname', '*.so', '-exec', env = env, cwd = build_dir)
+    exec.print('echo', '{}', ';')
+    exec.print(env['STRIP'].split(' ')[0], '--strip-unneeded', '{}', ';') # TODO: Avoid inspecting env.
+
 class CythonRecipe(PythonRecipe):
 
     call_hostpython_via_targetpython = False
@@ -285,15 +291,8 @@ class CythonRecipe(PythonRecipe):
             setup.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
-        self.strip_object_files(env, builddir)
+        strip_object_files(env, builddir)
         super().install_python_package()
-
-    @staticmethod
-    def strip_object_files(env, build_dir):
-        log.info('Stripping object files')
-        exec = find.partial('.', '-iname', '*.so', '-exec', env = env, cwd = build_dir)
-        exec.print('echo', '{}', ';')
-        exec.print(env['STRIP'].split(' ')[0], '--strip-unneeded', '{}', ';') # TODO: Avoid inspecting env.
 
     def cythonize_file(self, env, filename):
         log.info("Cythonize %s", filename)

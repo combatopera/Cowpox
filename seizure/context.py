@@ -48,7 +48,7 @@ from lagoon.program import Program
 from p4a import Arch, Context, Graph
 from p4a.boot import Bootstrap, BootstrapType
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
-from p4a.recipe import CythonRecipe
+from p4a.recipe import CythonRecipe, strip_object_files
 from pathlib import Path
 import logging, os
 
@@ -191,5 +191,5 @@ class ContextImpl(Context):
             pip.install._v.__no_deps.print('--target', self.python_install_dir.pmkdirp(), *pypinames, env = env)
         else:
             log.info('There are no Python modules to install, skipping')
-        CythonRecipe.strip_object_files(env, self.buildsdir)
+        strip_object_files(env, self.buildsdir)
         self.bootstrap.run_distribute()
