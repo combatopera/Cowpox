@@ -257,8 +257,9 @@ class CythonRecipe(PythonRecipe):
 
     call_hostpython_via_targetpython = False
 
-    @types(Bootstrap, HostPythonRecipe)
-    def __init(self, bootstrap, hostrecipe):
+    @types(Config, Bootstrap, HostPythonRecipe)
+    def __init(self, config, bootstrap, hostrecipe):
+        self.libs_parent = config.libs_parent
         self.bootstrap = bootstrap
         self.hostrecipe = hostrecipe
 
@@ -311,7 +312,7 @@ class CythonRecipe(PythonRecipe):
 
     def get_recipe_env(self, arch):
         env = super().get_recipe_env(arch)
-        env['LDFLAGS'] += f" -L{arch.libs_dir} -L{self.arch.libs_parent} -L{self.bootstrap.build_dir / 'obj' / 'local' / arch.name}"
+        env['LDFLAGS'] += f" -L{arch.libs_dir} -L{self.libs_parent} -L{self.bootstrap.build_dir / 'obj' / 'local' / arch.name}"
         env['LDSHARED'] = env['CC'] + ' -shared'
         env['LIBLINK'] = 'NOTNONE'
         env['NDKPLATFORM'] = self.platform.ndk_platform(arch)

@@ -65,15 +65,13 @@ class ArchImpl(Arch):
     @types(Config, Platform, Graph)
     def __init__(self, config, platform, graph):
         self.ndk_api = config.android.ndk_api
-        self.buildsdir = Path(config.buildsdir)
-        self.package_name = config.package.name
+        self.libs_parent = Path(config.libs_parent)
         self.cflags = _spjoin(
             '-target',
             self.target(),
             '-fomit-frame-pointer',
             *self.arch_cflags,
         )
-        self.libs_parent = self.buildsdir / 'libs_collections' / self.package_name
         self.libs_dir = (self.libs_parent / self.name).mkdirp()
         self.cc = _spjoin(self.ccachepath, platform.clang_exe(self), self.cflags)
         self.archenv = dict(self.staticenv,
