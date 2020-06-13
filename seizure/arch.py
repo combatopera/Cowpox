@@ -81,9 +81,8 @@ class Arch:
         env['CFLAGS'] = ' '.join([
             f"-target {self.target()}",
             '-fomit-frame-pointer',
+            *self.arch_cflags,
         ])
-        if self.arch_cflags:
-            env['CFLAGS'] += ' ' + ' '.join(self.arch_cflags)
         env['CXXFLAGS'] = env['CFLAGS']
         env['CPPFLAGS'] = ' '.join([
             '-DANDROID',
