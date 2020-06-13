@@ -41,7 +41,6 @@
 from diapyr import types
 from lagoon import make, perl
 from p4a import Recipe
-from pathlib import Path
 from seizure.config import Config
 
 class OpenSSLRecipe(Recipe):
@@ -53,7 +52,7 @@ class OpenSSLRecipe(Recipe):
 
     @types(Config)
     def __init(self, config):
-        self.ndk_dir = Path(config.android_ndk_dir)
+        self.ndk_dir = config.android_ndk_dir
         self.ndk_api = config.android.ndk_api
 
     def get_build_dir(self, arch):
@@ -73,7 +72,7 @@ class OpenSSLRecipe(Recipe):
         env = super().get_recipe_env(arch)
         env['OPENSSL_VERSION'] = self.version
         env['MAKE'] = 'make'
-        env['ANDROID_NDK'] = str(self.ndk_dir)
+        env['ANDROID_NDK'] = self.ndk_dir
         return env
 
     def _select_build_arch(self):
