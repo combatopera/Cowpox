@@ -201,11 +201,6 @@ class GuestPythonRecipe(Recipe):
             log.info('Activating flags for openssl')
             recipe = self.graph.get_recipe('openssl')
             add_flags(recipe.include_flags(), recipe.link_dirs_flags(self.arch), recipe.link_libs_flags())
-        for library_name in 'libbz2', 'liblzma':
-            if library_name in self.graph.recipenames:
-                log.info("Activating flags for %s", library_name)
-                recipe = self.graph.get_recipe(library_name)
-                add_flags(recipe.get_library_includes(self.arch), recipe.get_library_ldflags(self.arch), recipe.get_library_libs_flag())
         log.info('''Activating flags for android's zlib''')
         zlib_lib_path = self.platform.ndk_platform(self.arch) / 'usr' / 'lib'
         zlib_includes = self.ctx.ndk_dir / 'sysroot' / 'usr' / 'include'
