@@ -45,6 +45,7 @@ from diapyr.util import singleton
 from lagoon import which
 from multiprocessing import cpu_count
 from p4a import Arch, Graph
+from pathlib import Path
 import os
 
 def _spjoin(*v):
