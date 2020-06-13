@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Recipe
+from . import Graph, Recipe
 from .boot import Bootstrap
 from .python import HostPythonRecipe
 from diapyr import types
@@ -260,10 +260,11 @@ class CythonRecipe(PythonRecipe):
 
     call_hostpython_via_targetpython = False
 
-    @types(Bootstrap, HostPythonRecipe)
-    def __init(self, bootstrap, hostrecipe):
+    @types(Bootstrap, HostPythonRecipe, Graph)
+    def __init(self, bootstrap, hostrecipe, graph):
         self.bootstrap = bootstrap
         self.hostrecipe = hostrecipe
+        self.graph = graph
 
     def install_python_package(self, arch):
         log.info("Cythonizing anything necessary in %s", self.name)

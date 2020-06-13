@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Recipe
+from . import Graph, Recipe
 from diapyr import types
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
@@ -108,10 +108,6 @@ class HostPythonRecipe(Recipe):
 
 class GuestPythonRecipe(Recipe):
 
-    @types(HostPythonRecipe)
-    def __init(self, hostrecipe):
-        self.hostrecipe = hostrecipe
-
     @property
     def major_minor_version_string(self):
         return '.'.join(str(v) for v in LooseVersion(self.version).version[:2])
@@ -167,6 +163,11 @@ class GuestPythonRecipe(Recipe):
         longer used and has been removed in favour of extension .pyc
     '''
 
+    @types(HostPythonRecipe, Graph)
+    def __init(self, hostrecipe, graph):
+        self.hostrecipe = hostrecipe
+        self.graph = graph
+
     def get_recipe_env(self, arch):
         env = os.environ.copy()
         env['HOSTARCH'] = arch.command_prefix
@@ -189,21 +190,21 @@ class GuestPythonRecipe(Recipe):
             env['LDFLAGS'] = env.get('LDFLAGS', '') + link_dirs
             env['LIBS'] = env.get('LIBS', '') + link_libs
         # TODO LATER: Use polymorphism!
-        if 'sqlite3' in self.ctx.recipe_build_order:
+        if 'sqlite3' in self.graph.recipes:
             log.info('Activating flags for sqlite3')
             recipe = self.get_recipe('sqlite3')
             add_flags(f" -I{recipe.get_build_dir(arch)}", f" -L{recipe.get_lib_dir(arch)}", ' -lsqlite3')
-        if 'libffi' in self.ctx.recipe_build_order:
+        if 'libffi' in self.graph.recipes:
             log.info('Activating flags for libffi')
             recipe = self.get_recipe('libffi')
             env['PKG_CONFIG_PATH'] = recipe.get_build_dir(arch)
             add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs(arch))), f" -L{recipe.get_build_dir(arch) / '.libs'}", ' -lffi')
-        if 'openssl' in self.ctx.recipe_build_order:
+        if 'openssl' in self.graph.recipes:
             log.info('Activating flags for openssl')
             recipe = self.get_recipe('openssl')
             add_flags(recipe.include_flags(arch), recipe.link_dirs_flags(arch), recipe.link_libs_flags())
         for library_name in 'libbz2', 'liblzma':
-            if library_name in self.ctx.recipe_build_order:
+            if library_name in self.graph.recipes:
                 log.info("Activating flags for %s", library_name)
                 recipe = self.get_recipe(library_name)
                 add_flags(recipe.get_library_includes(arch), recipe.get_library_ldflags(arch), recipe.get_library_libs_flag())

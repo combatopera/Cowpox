@@ -62,7 +62,7 @@ class KivyRecipe(CythonRecipe):
 
     def get_recipe_env(self, arch):
         env = super().get_recipe_env(arch)
-        if 'sdl2' in self.ctx.recipe_build_order:
+        if 'sdl2' in self.graph.recipes:
             env['USE_SDL2'] = '1'
             env['KIVY_SPLIT_EXAMPLES'] = '1'
             env['KIVY_SDL2_PATH'] = os.pathsep.join(map(str, [

@@ -43,7 +43,7 @@ from .android import TargetAndroid
 from .arch import all_archs
 from .build import APKMaker
 from .config import Config
-from .context import Checks, ContextImpl
+from .context import Checks, ContextImpl, GraphImpl
 from .dirs import Dirs
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
@@ -84,6 +84,7 @@ def _main():
         di.add(Checks)
         di.add(ContextImpl)
         di.add(Dirs)
+        di.add(GraphImpl)
         di.add(Mirror)
         di.add(Platform)
         di.add(PlatformInfo)

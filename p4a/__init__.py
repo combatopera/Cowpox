@@ -63,6 +63,8 @@ class Plugin:
 
 class Context: pass
 
+class Graph: pass
+
 class Recipe(Plugin):
 
     md5sum = None

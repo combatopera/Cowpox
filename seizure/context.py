@@ -48,8 +48,8 @@ from .util import findimpl
 from diapyr import types, DI
 from lagoon import find, virtualenv
 from lagoon.program import Program
-from p4a import Context, Recipe
-from p4a.boot import Bootstrap
+from p4a import Context, Graph, Recipe
+from p4a.boot import Bootstrap, BootstrapType
 from p4a.python import GuestPythonRecipe
 from p4a.recipe import CythonRecipe
 from pathlib import Path
@@ -77,6 +77,18 @@ class Checks:
         check_ndk_version(self.ndk_dir)
         check_ndk_api(self.ndk_api, self.android_api)
 
+class GraphImpl(Graph):
+
+    @staticmethod
+    def recipeimpl(name):
+        return findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
+
+    @types(Config, BootstrapType)
+    def __init__(self, config, bootstraptype):
+        self.recipes, self.modules = get_recipe_order(self.recipeimpl, {*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
+        log.info("Recipe build order is %s", self.recipes)
+        log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.modules))
+
 class ContextImpl(Context):
 
     @property
@@ -90,8 +102,8 @@ class ContextImpl(Context):
     def get_python_install_dir(self):
         return (self.buildsdir / 'python-installs').mkdirp() / self.package_name
 
-    @types(Config, Platform, Arch, Bootstrap, Mirror, DI)
-    def __init__(self, config, platform, arch, bootstrap, mirror, di):
+    @types(Config, Platform, Arch, Bootstrap, Mirror, DI, Graph)
+    def __init__(self, config, platform, arch, bootstrap, mirror, di, graph):
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.storage_dir = Path(config.storage_dir)
@@ -100,7 +112,6 @@ class ContextImpl(Context):
         self.other_builds = Path(config.other_builds)
         self.package_name = config.package.name
         self.dist_dir = Path(config.dist_dir)
-        self.requirements = config.requirements.list()
         self.bootstrap_builds = Path(config.bootstrap_builds)
         self.ndk_api = config.android.ndk_api
         self.env = os.environ.copy()
@@ -113,6 +124,7 @@ class ContextImpl(Context):
         self.arch = arch
         self.bootstrap = bootstrap
         self.mirror = mirror
+        self.graph = graph
 
     def get_libs_dir(self, arch):
         return (self.libs_dir / arch.name).mkdirp()
@@ -120,15 +132,11 @@ class ContextImpl(Context):
     def has_lib(self, arch, lib):
         return (self.get_libs_dir(arch) / lib).exists()
 
-    @staticmethod
-    def _recipeimpl(name):
-        return findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
-
     def get_recipe(self, name):
         try:
             return self._recipes[name]
         except KeyError:
-            impl = self._recipeimpl(name)
+            impl = self.graph.recipeimpl(name)
             self.recipedi.add(impl) # TODO: Add upfront.
             self._recipes[name] = recipe = self.recipedi(impl)
             return recipe
@@ -150,16 +158,8 @@ class ContextImpl(Context):
         self.distsdir.mkdirp()
         self.bootstrap_builds.mkdirp()
         self.other_builds.mkdirp()
-        build_order, python_modules = get_recipe_order(self._recipeimpl, {*self.requirements, *self.bootstrap.recipe_depends}, ['genericndkbuild', 'python2'])
-        self.recipe_build_order = build_order
-        log.info("Dist contains the following requirements as recipes: %s", build_order)
-        log.info("Dist will also contain modules (%s) installed from pip", ', '.join(python_modules))
         self.bootstrap.prepare_dirs(self.check_recipe_choices(self.bootstrap.name, self.bootstrap.recipe_depends))
-        # Put recipes in correct build order
-        log.info("Recipe build order is %s", build_order)
-        if python_modules:
-            log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(python_modules))
-        recipes = [self.get_recipe(name) for name in build_order]
+        recipes = [self.get_recipe(name) for name in self.graph.recipes]
         # download is arch independent
         log.info('Downloading recipes')
         for recipe in recipes:
@@ -187,7 +187,7 @@ class ContextImpl(Context):
             recipe.postbuild_arch(self.arch)
         log.info('Installing pure Python modules')
         log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
-        modules = [m for m in python_modules if not self.insitepackages(m)]
+        modules = [m for m in self.graph.modules if not self.insitepackages(m)]
         if not modules:
             log.info('No Python modules and no setup.py to process, skipping')
             return
@@ -223,7 +223,7 @@ class ContextImpl(Context):
         for recipe in depends:
             if isinstance(recipe, (tuple, list)):
                 for alternative in recipe:
-                    if alternative in self.recipe_build_order:
+                    if alternative in self.graph.recipes:
                         recipes.append(alternative)
                         break
         return '-'.join([name, *sorted(recipes)])

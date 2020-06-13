@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 def will_build(recipe_name):
-    return lambda recipe, **kwargs: recipe_name in recipe.ctx.recipe_build_order
+    return lambda recipe, **kwargs: recipe_name in recipe.graph.recipes
 
 def version_starts_with(version):
     return lambda recipe, **kwargs: recipe.version.startswith(version)
