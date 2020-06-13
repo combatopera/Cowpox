@@ -120,7 +120,6 @@ class ContextImpl(Context):
 
     @types(Config, Platform, Arch, Bootstrap, Graph)
     def __init__(self, config, platform, arch, bootstrap, graph):
-        self.storage_dir = Path(config.storage_dir)
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.other_builds = Path(config.other_builds)
