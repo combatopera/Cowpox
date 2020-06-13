@@ -227,8 +227,8 @@ class ContextImpl(Context):
     def strip_libraries(self):
         log.info('Stripping libraries')
         env = self.arch.get_env(self)
-        tokens = shlex.split(env['STRIP'])
-        strip = Program.text(self.ndk_dir / 'toolchains' / f"{self.arch.toolchain_prefix}-{self.platform.toolchain_version(self.arch)}" / 'prebuilt' / 'linux-x86_64' / 'bin' / tokens[0]).partial(*tokens[1:])
+        tokens = shlex.split(env['STRIP']) # TODO: Not via env.
+        strip = Program.text(self.platform.prebuiltbin(self.arch) / tokens[0]).partial(*tokens[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
         filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so').splitlines()
         log.info('Stripping libraries in private dir')

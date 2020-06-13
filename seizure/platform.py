@@ -168,3 +168,6 @@ class Platform:
 
     def includepath(self, arch):
         return self.ndk_dir / 'sysroot' / 'usr' / 'include' / arch.command_prefix
+
+    def prebuiltbin(self, arch):
+        return self.ndk_dir / 'toolchains' / f"{arch.toolchain_prefix}-{self.toolchain_version(arch)}" / 'prebuilt' / 'linux-x86_64' / 'bin'

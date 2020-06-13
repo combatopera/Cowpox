@@ -172,8 +172,7 @@ class GuestPythonRecipe(Recipe):
         env = os.environ.copy()
         env['HOSTARCH'] = arch.command_prefix
         env['CC'] = self.platform.clang_exe(arch, with_target = True)
-        prebuilt = self.ctx.ndk_dir / 'toolchains' / f"{self.ctx.arch.toolchain_prefix}-{self.platform.toolchain_version(arch)}" / 'prebuilt' / 'linux-x86_64' / 'bin'
-        env['PATH'] = os.pathsep.join([f"""{self.get_recipe(f"host{self.name}").get_path_to_python()}""", str(prebuilt), env['PATH']])
+        env['PATH'] = os.pathsep.join([f"""{self.get_recipe(f"host{self.name}").get_path_to_python()}""", str(self.platform.prebuiltbin(arch)), env['PATH']])
         env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ctx.ndk_api}"
         env['LDFLAGS'] = env.get('LDFLAGS', '')
         if hasattr(lagoon, 'lld'):
