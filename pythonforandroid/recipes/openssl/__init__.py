@@ -76,8 +76,8 @@ class OpenSSLRecipe(Recipe):
         env['ANDROID_NDK'] = str(self.ndk_dir)
         return env
 
-    def _select_build_arch(self, arch):
-        aname = arch.name
+    def _select_build_arch(self):
+        aname = self.arch.name
         if 'arm64' in aname:
             return 'android-arm64'
         if 'v7a' in aname:
@@ -93,6 +93,6 @@ class OpenSSLRecipe(Recipe):
     def build_arch(self):
         env = self.get_recipe_env(self.arch)
         cwd = self.get_build_dir(self.arch)
-        perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(self.arch), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = cwd)
+        perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = cwd)
         self.apply_patch('disable-sover.patch')
         make.print('build_libs', env = env, cwd = cwd)
