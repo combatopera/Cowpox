@@ -63,9 +63,6 @@ class Arch:
         self.ndk_api = config.android.ndk_api
         self.ndk_dir = Path(config.android_ndk_dir)
 
-    def __str__(self): # TODO: Retire.
-        return self.name
-
     def target(self):
         return f"{self.command_prefix}{self.ndk_api}"
 
