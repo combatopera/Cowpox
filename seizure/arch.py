@@ -49,10 +49,6 @@ import os
 class Arch:
 
     build_platform = f"{os.uname()[0]}-{os.uname()[-1]}".lower()
-    common_cflags = [
-        '-target {target}',
-        '-fomit-frame-pointer',
-    ]
     ccachepath, = which('ccache').splitlines()
     staticenv = dict(
         LDLIBS = '-lm',
@@ -82,7 +78,10 @@ class Arch:
 
     def get_env(self, ctx, platform):
         env = self.staticenv.copy()
-        env['CFLAGS'] = ' '.join(self.common_cflags).format(target=self.target())
+        env['CFLAGS'] = ' '.join([
+            f"-target {self.target()}",
+            '-fomit-frame-pointer',
+        ])
         if self.arch_cflags:
             env['CFLAGS'] += ' ' + ' '.join(self.arch_cflags)
         env['CXXFLAGS'] = env['CFLAGS']
