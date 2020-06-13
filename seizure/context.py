@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .arch import Arch
 from .config import Config
 from .graph import get_recipe_order, recipeimpl
 from .platform import Platform
@@ -46,7 +45,7 @@ from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from diapyr import types, DI
 from lagoon import find, virtualenv
 from lagoon.program import Program
-from p4a import Context, Graph
+from p4a import Arch, Context, Graph
 from p4a.boot import Bootstrap, BootstrapType
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe

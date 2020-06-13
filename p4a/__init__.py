@@ -42,7 +42,6 @@ from diapyr import types
 from lagoon import cp, mv, patch as patchexe, rm, tar, touch, unzip
 from pathlib import Path
 from pkg_resources import resource_filename
-from seizure.arch import Arch
 from seizure.config import Config
 from seizure.mirror import Mirror
 from seizure.platform import Platform
@@ -66,6 +65,8 @@ class Plugin:
 class Context: pass
 
 class Graph: pass
+
+class Arch: pass
 
 class Recipe(Plugin):
 

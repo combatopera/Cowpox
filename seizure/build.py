@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .arch import Arch
 from .config import Config
 from .platform import Platform
 from aridimpl.model import Function, Text
@@ -47,7 +46,7 @@ from diapyr import types
 from fnmatch import fnmatch
 from lagoon import patch
 from lagoon.program import Program
-from p4a import Graph
+from p4a import Arch, Graph
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import aridity, jinja2, logging, os, shutil, subprocess, tarfile, time

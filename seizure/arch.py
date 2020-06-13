@@ -44,13 +44,13 @@ from diapyr import types
 from diapyr.util import singleton
 from lagoon import which
 from multiprocessing import cpu_count
-from p4a import Graph
+from p4a import Arch, Graph
 import os
 
 def _spjoin(*v):
     return ' '.join(map(str, v))
 
-class Arch:
+class ArchImpl(Arch):
 
     build_platform = f"{os.uname()[0]}-{os.uname()[-1]}".lower()
     ccachepath, = which('ccache').splitlines()
@@ -122,7 +122,7 @@ class DesktopArch:
     def builddirname(self):
         return 'desktop'
 
-class BaseArchARM(Arch):
+class BaseArchARM(ArchImpl):
 
     toolchain_prefix = 'arm-linux-androideabi'
     command_prefix = 'arm-linux-androideabi'
@@ -149,7 +149,7 @@ class ArchARMv7_a(BaseArchARM):
     ]
     numver = 7
 
-class Archx86(Arch):
+class Archx86(ArchImpl):
 
     name = 'x86'
     toolchain_prefix = 'x86'
@@ -164,7 +164,7 @@ class Archx86(Arch):
     ]
     numver = 6
 
-class Archx86_64(Arch):
+class Archx86_64(ArchImpl):
 
     name = 'x86_64'
     toolchain_prefix = 'x86_64'
@@ -180,7 +180,7 @@ class Archx86_64(Arch):
     ]
     numver = 9
 
-class ArchAarch_64(Arch):
+class ArchAarch_64(ArchImpl):
 
     name = 'arm64-v8a'
     toolchain_prefix = 'aarch64-linux-android'
