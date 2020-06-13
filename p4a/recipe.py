@@ -320,5 +320,5 @@ class CythonRecipe(PythonRecipe):
         env['LIBLINK'] = 'NOTNONE'
         env['NDKPLATFORM'] = self.platform.ndk_platform(arch)
         env['COPYLIBS'] = '1'
-        env['LIBLINK_PATH'] = str((self.get_build_container_dir(arch) / f"objects_{self.name}").mkdirp())
+        env['LIBLINK_PATH'] = (self.get_build_container_dir(arch) / f"objects_{self.name}").mkdirp()
         return env
