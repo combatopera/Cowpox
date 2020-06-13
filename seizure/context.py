@@ -120,7 +120,6 @@ class ContextImpl(Context):
 
     @types(Config, Platform, Arch, Bootstrap, Graph)
     def __init__(self, config, platform, arch, bootstrap, graph):
-        self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.storage_dir = Path(config.storage_dir)
         self.distsdir = Path(config.distsdir)

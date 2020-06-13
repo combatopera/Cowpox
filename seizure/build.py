@@ -132,7 +132,6 @@ class APKMaker:
     def __init__(self, config, graph, arch, platform):
         self.app_dir = Path(config.app_dir)
         self.ndk_api = config.android.ndk_api
-        self.sdk_dir = Path(config.android_sdk_dir)
         self.android_api = config.android.api
         self.min_sdk_version = config.android.minapi
         self.title = config.title
