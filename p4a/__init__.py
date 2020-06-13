@@ -227,8 +227,8 @@ class Recipe(Plugin):
         self.get_build_container_dir(self.arch).mkdirp()
         self._unpack()
 
-    def has_libs(self, arch, *libs):
-        return all(map(lambda l: self.ctx.has_lib(arch, l), libs))
+    def has_libs(self, *libs):
+        return all(map(lambda l: self.ctx.has_lib(self.arch, l), libs))
 
     def _get_libraries(self):
         return {self.get_build_dir(self.arch) / libpath for libpath in self.builtlibpaths}

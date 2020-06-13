@@ -49,7 +49,7 @@ class Sqlite3Recipe(NDKRecipe):
     generated_libraries = ['sqlite3']
 
     def should_build(self):
-        return not self.has_libs(self.arch, 'libsqlite3.so')
+        return not self.has_libs('libsqlite3.so')
 
     def prebuild_arch(self):
         super().prebuild_arch()
