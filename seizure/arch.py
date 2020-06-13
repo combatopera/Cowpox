@@ -46,6 +46,9 @@ from lagoon import which
 from multiprocessing import cpu_count
 import os
 
+def _spjoin(*v):
+    return ' '.join(map(str, v))
+
 class Arch:
 
     build_platform = f"{os.uname()[0]}-{os.uname()[-1]}".lower()
@@ -61,18 +64,18 @@ class Arch:
     @types(Config, Platform)
     def __init__(self, config, platform):
         self.ndk_api = config.android.ndk_api
-        self.cflags = ' '.join([
+        self.cflags = _spjoin(
             '-target',
             self.target(),
             '-fomit-frame-pointer',
             *self.arch_cflags,
-        ])
-        self.cc = ' '.join([self.ccachepath, platform.clang_exe(self), self.cflags])
+        )
+        self.cc = _spjoin(self.ccachepath, platform.clang_exe(self), self.cflags)
         self.archenv = dict(self.staticenv,
             CFLAGS = self.cflags,
             CXXFLAGS = self.cflags,
             CC = self.cc,
-            CXX = ' '.join([self.ccachepath, platform.clang_exe(self, plus_plus = True), self.cflags]),
+            CXX = _spjoin(self.ccachepath, platform.clang_exe(self, plus_plus = True), self.cflags),
             AR = f"{self.command_prefix}-ar",
             RANLIB = f"{self.command_prefix}-ranlib",
             STRIP = f"{self.command_prefix}-strip --strip-unneeded",
@@ -83,20 +86,20 @@ class Arch:
             NDK_API = f"android-{self.ndk_api}",
             TOOLCHAIN_PREFIX = self.toolchain_prefix,
             TOOLCHAIN_VERSION = platform.toolchain_version(self),
-            LDSHARED = ' '.join([
+            LDSHARED = _spjoin(
                 self.cc,
                 '-pthread',
                 '-shared',
                 '-Wl,-O1',
                 '-Wl,-Bsymbolic-functions',
-            ]),
+            ),
             PATH = f"{platform.clang_path(self)}{os.pathsep}{os.environ['PATH']}", # XXX: Is clang_path really needed?
         )
-        self.cppflags = ' '.join([
+        self.cppflags = _spjoin(
             '-DANDROID',
             f"-D__ANDROID_API__={self.ndk_api}",
             f"-I{platform.includepath(self)}",
-        ])
+        )
 
     def target(self):
         return f"{self.command_prefix}{self.ndk_api}"
