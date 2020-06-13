@@ -90,8 +90,8 @@ class HostPythonRecipe(Recipe):
     def get_path_to_python(self):
         return self.get_build_dir(DesktopArch) / self.build_subdir
 
-    def build_arch(self, arch):
-        recipe_build_dir = self.get_build_dir(arch)
+    def build_arch(self):
+        recipe_build_dir = self.get_build_dir(self.arch)
         build_dir = (recipe_build_dir / self.build_subdir).mkdirp()
         if not (build_dir / 'config.status').exists():
             Program.text(recipe_build_dir / 'configure').print(cwd = build_dir)
@@ -225,13 +225,13 @@ class GuestPythonRecipe(Recipe):
     def should_build(self):
         return not (self.link_root(self.arch) / self._libpython).is_file()
 
-    def build_arch(self, arch):
+    def build_arch(self):
         assert self.ctx.ndk_api >= self.MIN_NDK_API
-        recipe_build_dir = self.get_build_dir(arch)
+        recipe_build_dir = self.get_build_dir(self.arch)
         build_dir = (recipe_build_dir / 'android-build').mkdirp()
         sys_prefix = '/usr/local'
         sys_exec_prefix = '/usr/local'
-        env = self.set_libs_flags(self.get_recipe_env(arch), arch)
+        env = self.set_libs_flags(self.get_recipe_env(self.arch), self.arch)
         android_build = Program.text(recipe_build_dir / 'config.guess')(cwd = build_dir).strip()
         if not (build_dir / 'config.status').exists():
             kwargs = dict(android_host = env['HOSTARCH'], android_build = android_build, prefix = sys_prefix, exec_prefix = sys_exec_prefix)

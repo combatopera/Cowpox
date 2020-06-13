@@ -56,9 +56,9 @@ class Sqlite3Recipe(NDKRecipe):
         mkdir._p.print(self.get_build_dir(self.arch) / 'jni')
         shutil.copyfile(self.resourcepath('Android.mk'), self.get_build_dir(self.arch) / 'jni' / 'Android.mk')
 
-    def build_arch(self, arch, *extra_args):
-        super().build_arch(arch)
-        shutil.copyfile(self.get_build_dir(arch) / 'libs' / arch.name / 'libsqlite3.so', self.ctx.get_libs_dir(arch) / 'libsqlite3.so')
+    def build_arch(self):
+        super().build_arch()
+        shutil.copyfile(self.get_build_dir(self.arch) / 'libs' / self.arch.name / 'libsqlite3.so', self.ctx.get_libs_dir(self.arch) / 'libsqlite3.so')
 
     def get_recipe_env(self, arch):
         env = super().get_recipe_env(arch)

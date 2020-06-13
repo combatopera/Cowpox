@@ -212,7 +212,7 @@ class Recipe(Plugin):
     def should_build(self):
         return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries(self.arch)) # XXX: Weird logic?
 
-    def build_arch(self, arch):
+    def build_arch(self):
         pass
 
     def install_libraries(self, arch):

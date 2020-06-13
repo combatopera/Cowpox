@@ -110,10 +110,10 @@ class NDKRecipe(Recipe):
     def get_jni_dir(self, arch):
         return self.get_build_dir(arch) / 'jni'
 
-    def build_arch(self, arch, *extra_args):
-        super().build_arch(arch)
-        Program.text(self.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={arch.name}", *extra_args,
-                env = self.get_recipe_env(arch), cwd = self.get_build_dir(arch))
+    def build_arch(self):
+        super().build_arch()
+        Program.text(self.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={self.arch.name}",
+                env = self.get_recipe_env(self.arch), cwd = self.get_build_dir(self.arch))
 
 class PythonRecipe(Recipe):
 
@@ -208,9 +208,9 @@ class PythonRecipe(Recipe):
         log.info("%s apparently isn't already in site-packages", self.name)
         return True
 
-    def build_arch(self, arch):
-        super().build_arch(arch)
-        self.install_python_package(arch)
+    def build_arch(self):
+        super().build_arch()
+        self.install_python_package(self.arch)
 
     def install_python_package(self, arch):
         log.info("Installing %s into site-packages", self.name)
