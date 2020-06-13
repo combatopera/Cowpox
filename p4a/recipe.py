@@ -210,15 +210,15 @@ class PythonRecipe(Recipe):
 
     def build_arch(self):
         super().build_arch()
-        self.install_python_package(self.arch)
+        self.install_python_package()
 
-    def install_python_package(self, arch):
+    def install_python_package(self):
         log.info("Installing %s into site-packages", self.name)
         Program.text(self.hostpython_location).print(
                 'setup.py', 'install', '-O2', f"--root={self.ctx.get_python_install_dir()}", '--install-lib=.', *self.setup_extra_args,
-                env = self.get_recipe_env(arch), cwd = self.get_build_dir(arch))
+                env = self.get_recipe_env(self.arch), cwd = self.get_build_dir(self.arch))
         if self.install_in_hostpython:
-            self.install_hostpython_package(arch)
+            self.install_hostpython_package(self.arch)
 
     def get_hostrecipe_env(self, arch):
         return dict(os.environ, PYTHONPATH = self.real_hostpython_location.parent / 'Lib' / 'site-packages')
@@ -231,9 +231,9 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     build_cmd = 'build_ext'
 
-    def install_python_package(self, arch):
-        self.build_compiled_components(arch)
-        super().install_python_package(arch)
+    def install_python_package(self):
+        self.build_compiled_components(self.arch)
+        super().install_python_package()
 
     def build_compiled_components(self, arch):
         log.info("Building compiled components in %s", self.name)
@@ -265,10 +265,10 @@ class CythonRecipe(PythonRecipe):
         self.bootstrap = bootstrap
         self.hostrecipe = hostrecipe
 
-    def install_python_package(self, arch):
+    def install_python_package(self):
         log.info("Cythonizing anything necessary in %s", self.name)
-        env = self.get_recipe_env(arch)
-        builddir = self.get_build_dir(arch)
+        env = self.get_recipe_env(self.arch)
+        builddir = self.get_build_dir(self.arch)
         hostpython = Program.text(self.hostrecipe.python_exe).partial(env = env, cwd = builddir)
         hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
@@ -287,7 +287,7 @@ class CythonRecipe(PythonRecipe):
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
         self.strip_object_files(env, builddir)
-        super().install_python_package(arch)
+        super().install_python_package()
 
     @staticmethod
     def strip_object_files(env, build_dir):
