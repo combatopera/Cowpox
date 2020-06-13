@@ -54,7 +54,6 @@ class Arch:
         '-fomit-frame-pointer',
     ]
     common_ldflags = ['-L{ctx_libs_dir}']
-    common_ldlibs = ['-lm']
     common_ldshared = [
         '-pthread',
         '-shared',
@@ -62,6 +61,13 @@ class Arch:
         '-Wl,-Bsymbolic-functions',
     ]
     ccachepath, = which('ccache').splitlines()
+    staticenv = dict(
+        LDLIBS = '-lm',
+        USE_CCACHE = '1',
+        NDK_CCACHE = ccachepath,
+        MAKE = f"make -j{cpu_count()}",
+        **{k: v for k, v in os.environ.items() if k.startswith('CCACHE_')},
+    )
 
     @types(Config)
     def __init__(self, config):
@@ -82,7 +88,7 @@ class Arch:
         return self._clang_path() / f"""{f"{self.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
 
     def get_env(self, ctx, platform):
-        env = {}
+        env = self.staticenv.copy()
         env['CFLAGS'] = ' '.join(self.common_cflags).format(target=self.target())
         if self.arch_cflags:
             env['CFLAGS'] += ' ' + ' '.join(self.arch_cflags)
@@ -94,16 +100,11 @@ class Arch:
             f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
         ])
         env['LDFLAGS'] = ' '.join(self.common_ldflags).format(ctx_libs_dir=ctx.get_libs_dir(self))
-        env['LDLIBS'] = ' '.join(self.common_ldlibs)
-        env['USE_CCACHE'] = '1'
-        env['NDK_CCACHE'] = self.ccachepath
-        env.update({k: v for k, v in os.environ.items() if k.startswith('CCACHE_')})
         env['CC'] = f"{self.ccachepath} {self.get_clang_exe()} {env['CFLAGS']}"
         env['CXX'] = f"{self.ccachepath} {self.get_clang_exe(plus_plus = True)} {env['CXXFLAGS']}"
         env['AR'] = f"{self.command_prefix}-ar"
         env['RANLIB'] = f"{self.command_prefix}-ranlib"
         env['STRIP'] = f"{self.command_prefix}-strip --strip-unneeded"
-        env['MAKE'] = f"make -j{cpu_count()}"
         env['READELF'] = f"{self.command_prefix}-readelf"
         env['NM'] = f"{self.command_prefix}-nm"
         env['LD'] = f"{self.command_prefix}-ld"
