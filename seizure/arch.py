@@ -53,7 +53,6 @@ class Arch:
         '-target {target}',
         '-fomit-frame-pointer',
     ]
-    common_ldflags = ['-L{ctx_libs_dir}']
     ccachepath, = which('ccache').splitlines()
     staticenv = dict(
         LDLIBS = '-lm',
@@ -93,7 +92,7 @@ class Arch:
             f"-I{self.ndk_dir / 'sysroot' / 'usr' / 'include' / self.command_prefix}",
             f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
         ])
-        env['LDFLAGS'] = ' '.join(self.common_ldflags).format(ctx_libs_dir=ctx.get_libs_dir(self))
+        env['LDFLAGS'] = f"-L{ctx.get_libs_dir(self)}"
         env['CC'] = cc = f"{self.ccachepath} {self.get_clang_exe()} {env['CFLAGS']}"
         env['CXX'] = f"{self.ccachepath} {self.get_clang_exe(plus_plus = True)} {env['CXXFLAGS']}"
         env['AR'] = f"{self.command_prefix}-ar"
