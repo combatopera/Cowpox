@@ -62,6 +62,13 @@ class Arch:
     def __init__(self, config):
         self.ndk_api = config.android.ndk_api
         self.ndk_dir = Path(config.android_ndk_dir)
+        self.cflags = ' '.join([
+            '-target',
+            self.target(),
+            '-fomit-frame-pointer',
+            *self.arch_cflags,
+        ])
+        self.cc = ' '.join([self.ccachepath, self.get_clang_exe(), self.cflags])
 
     def target(self):
         return f"{self.command_prefix}{self.ndk_api}"
@@ -74,15 +81,9 @@ class Arch:
         return self._clang_path() / f"""{f"{self.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
 
     def get_env(self, ctx, platform):
-        cflags = ' '.join([
-            f"-target {self.target()}",
-            '-fomit-frame-pointer',
-            *self.arch_cflags,
-        ])
-        cc = f"{self.ccachepath} {self.get_clang_exe()} {cflags}"
         return dict(self.staticenv,
-            CFLAGS = cflags,
-            CXXFLAGS = cflags,
+            CFLAGS = self.cflags,
+            CXXFLAGS = self.cflags,
             CPPFLAGS = ' '.join([
                 '-DANDROID',
                 f"-D__ANDROID_API__={self.ndk_api}",
@@ -90,8 +91,8 @@ class Arch:
                 f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
             ]),
             LDFLAGS = f"-L{ctx.get_libs_dir(self)}",
-            CC = cc,
-            CXX = f"{self.ccachepath} {self.get_clang_exe(plus_plus = True)} {cflags}",
+            CC = self.cc,
+            CXX = f"{self.ccachepath} {self.get_clang_exe(plus_plus = True)} {self.cflags}",
             AR = f"{self.command_prefix}-ar",
             RANLIB = f"{self.command_prefix}-ranlib",
             STRIP = f"{self.command_prefix}-strip --strip-unneeded",
@@ -103,7 +104,7 @@ class Arch:
             TOOLCHAIN_PREFIX = self.toolchain_prefix,
             TOOLCHAIN_VERSION = platform.toolchain_version(self),
             LDSHARED = ' '.join([
-                cc,
+                self.cc,
                 '-pthread',
                 '-shared',
                 '-Wl,-O1',
