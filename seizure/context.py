@@ -150,8 +150,8 @@ class ContextImpl(Context):
     def get_libs_dir(self, arch):
         return (self.libs_dir / arch.name).mkdirp()
 
-    def has_lib(self, arch, lib):
-        return (self.get_libs_dir(arch) / lib).exists()
+    def has_lib(self, lib):
+        return (self.get_libs_dir(self.arch) / lib).exists()
 
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
