@@ -124,10 +124,6 @@ class ContextImpl(Context):
         self.dist_dir = Path(config.dist_dir)
         self.bootstrap_builds = Path(config.bootstrap_builds)
         self.ndk_api = config.android.ndk_api
-        self.env = os.environ.copy()
-        self.env.pop("LDFLAGS", None)
-        self.env.pop("ARCHFLAGS", None)
-        self.env.pop("CFLAGS", None)
         self._recipes = {}
         self.recipedi = di.createchild()
         self.platform = platform
