@@ -123,7 +123,6 @@ class ContextImpl(Context):
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.other_builds = Path(config.other_builds)
-        self.package_name = config.package.name
         self.dist_dir = Path(config.dist_dir)
         self.bootstrap_builds = Path(config.bootstrap_builds)
         self.ndk_api = config.android.ndk_api
