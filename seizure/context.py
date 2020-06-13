@@ -125,7 +125,6 @@ class ContextImpl(Context):
         self.other_builds = Path(config.other_builds)
         self.dist_dir = Path(config.dist_dir)
         self.bootstrap_builds = Path(config.bootstrap_builds)
-        self.ndk_api = config.android.ndk_api
         self.python_install_dir = Path(config.python_install_dir)
         self.platform = platform
         self.arch = arch
