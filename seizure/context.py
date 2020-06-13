@@ -40,15 +40,14 @@
 
 from .arch import Arch
 from .config import Config
-from .graph import get_recipe_order
+from .graph import get_recipe_order, recipeimpl
 from .mirror import Mirror
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
-from .util import findimpl
 from diapyr import types, DI
 from lagoon import find, virtualenv
 from lagoon.program import Program
-from p4a import Context, Graph, Recipe
+from p4a import Context, Graph
 from p4a.boot import Bootstrap, BootstrapType
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe
@@ -79,13 +78,9 @@ class Checks:
 
 class GraphImpl(Graph):
 
-    @staticmethod
-    def recipeimpl(name):
-        return findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
-
     @types(Config, BootstrapType, DI)
     def __init__(self, config, bootstraptype, di):
-        self.recipenames, self.pypinames = get_recipe_order(self.recipeimpl, {*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
+        self.recipenames, self.pypinames = get_recipe_order({*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
         log.info("Recipe build order is %s", self.recipenames)
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
         self.recipedi = di.createchild()
@@ -104,7 +99,7 @@ class GraphImpl(Graph):
         return self._recipes[name]
 
     def allrecipes(self):
-        impls = {name: self.recipeimpl(name) for name in self.recipenames}
+        impls = {name: recipeimpl(name) for name in self.recipenames}
         for impl in impls.values():
             self.recipedi.add(impl) # TODO: Add upfront.
         self._recipes = {name: self.recipedi(impl) for name, impl in impls.items()}

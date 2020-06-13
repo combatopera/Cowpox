@@ -38,22 +38,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .util import NoSuchPluginException
+from .util import findimpl, NoSuchPluginException
 from copy import deepcopy
 from itertools import product
+from p4a import Recipe
 import logging
 
 log = logging.getLogger(__name__)
+
+def recipeimpl(name):
+    return findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
 
 def _fix_deplist(deps):
     return [((dep.lower(),) if not isinstance(dep, (list, tuple)) else tuple(x.lower() for x in dep)) for dep in deps]
 
 class RecipeOrder(dict):
 
-    def conflicts(self, get_recipe):
+    def conflicts(self):
         for name in self:
             try:
-                conflicts = [dep.lower() for dep in get_recipe(name).conflicts]
+                conflicts = [dep.lower() for dep in recipeimpl(name).conflicts]
             except NoSuchPluginException:
                 conflicts = []
             if any(c in self for c in conflicts):
@@ -66,14 +70,14 @@ def _get_dependency_tuple_list_for_recipe(recipe, blacklist):
         return []
     return [t for t in (tuple(set(deptuple) - blacklist) for deptuple in _fix_deplist(recipe.depends)) if t]
 
-def _recursively_collect_orders(name, get_recipe, all_inputs, orders, blacklist):
+def _recursively_collect_orders(name, all_inputs, orders, blacklist):
     name = name.lower()
     if orders is None:
         orders = []
     if blacklist is None:
         blacklist = set()
     try:
-        recipe = get_recipe(name)
+        recipe = recipeimpl(name)
         dependencies = _get_dependency_tuple_list_for_recipe(recipe, blacklist)
         dependencies.extend(_fix_deplist([[d] for d in recipe.get_opt_depends_in_list(all_inputs) if d.lower() not in blacklist]))
         conflicts = [] if recipe.conflicts is None else [dep.lower() for dep in recipe.conflicts]
@@ -85,7 +89,7 @@ def _recursively_collect_orders(name, get_recipe, all_inputs, orders, blacklist)
         if name in order:
             new_orders.append(deepcopy(order))
             continue
-        if order.conflicts(get_recipe):
+        if order.conflicts():
             continue
         if any(conflict in order for conflict in conflicts):
             continue
@@ -94,7 +98,7 @@ def _recursively_collect_orders(name, get_recipe, all_inputs, orders, blacklist)
             new_order[name] = set(dependency_set)
             dependency_new_orders = [new_order]
             for dependency in dependency_set:
-                dependency_new_orders = _recursively_collect_orders(dependency, get_recipe, all_inputs, dependency_new_orders, blacklist)
+                dependency_new_orders = _recursively_collect_orders(dependency, all_inputs, dependency_new_orders, blacklist)
             new_orders.extend(dependency_new_orders)
     return new_orders
 
@@ -110,7 +114,7 @@ def _find_order(graph):
             for bset in graph.values():
                 bset.discard(result)
 
-def _obvious_conflict_checker(get_recipe, name_tuples, blacklist):
+def _obvious_conflict_checker(name_tuples, blacklist):
     deps_were_added_by = {}
     deps = set()
     if blacklist is None:
@@ -127,7 +131,7 @@ def _obvious_conflict_checker(get_recipe, name_tuples, blacklist):
             recipe_conflicts = set()
             recipe_dependencies = []
             try:
-                recipe = get_recipe(name)
+                recipe = recipeimpl(name)
                 recipe_conflicts = {c.lower() for c in recipe.conflicts}
                 recipe_dependencies = _get_dependency_tuple_list_for_recipe(recipe, blacklist)
             except NoSuchPluginException:
@@ -141,7 +145,7 @@ def _obvious_conflict_checker(get_recipe, name_tuples, blacklist):
                 if len(dep_tuple_list) > 1:
                     continue
                 try:
-                    dep_recipe = get_recipe(dep_tuple_list[0])
+                    dep_recipe = recipeimpl(dep_tuple_list[0])
                 except NoSuchPluginException:
                     continue
                 conflicts = [c.lower() for c in dep_recipe.conflicts]
@@ -157,7 +161,7 @@ def _obvious_conflict_checker(get_recipe, name_tuples, blacklist):
             deps_were_added_by[added_tuple] = adding_recipe
             to_be_added += [(dep, adder_first_recipe_name or name) for dep in recipe_dependencies if dep not in deps]
 
-def get_recipe_order(get_recipe, names, blacklist):
+def get_recipe_order(names, blacklist):
     names = _fix_deplist([([name] if not isinstance(name, (list, tuple)) else name) for name in names])
     blacklist = set() if blacklist is None else {bitem.lower() for bitem in blacklist}
     names_before_blacklist = list(names)
@@ -166,12 +170,12 @@ def get_recipe_order(get_recipe, names, blacklist):
         cleaned_up_tuple = tuple(item for item in name if item not in blacklist)
         if cleaned_up_tuple:
             names.append(cleaned_up_tuple)
-    _obvious_conflict_checker(get_recipe, names, blacklist)
+    _obvious_conflict_checker(names, blacklist)
     possible_orders = []
     for name_set in product(*names):
         new_possible_orders = [RecipeOrder()]
         for name in name_set:
-            new_possible_orders = _recursively_collect_orders(name, get_recipe, name_set, new_possible_orders, blacklist)
+            new_possible_orders = _recursively_collect_orders(name, name_set, new_possible_orders, blacklist)
         possible_orders.extend(new_possible_orders)
     orders = []
     for possible_order in possible_orders:
@@ -197,7 +201,7 @@ def get_recipe_order(get_recipe, names, blacklist):
     pypinames = []
     for name in chosen_order:
         try:
-            pypinames += get_recipe(name).python_depends
+            pypinames += recipeimpl(name).python_depends
         except NoSuchPluginException:
             pypinames.append(name)
         else:
