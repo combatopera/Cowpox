@@ -232,13 +232,13 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     build_cmd = 'build_ext'
 
     def install_python_package(self):
-        self.build_compiled_components(self.arch)
+        self.build_compiled_components()
         super().install_python_package()
 
-    def build_compiled_components(self, arch):
+    def build_compiled_components(self):
         log.info("Building compiled components in %s", self.name)
-        env = self.get_recipe_env(arch)
-        builddir = self.get_build_dir(arch)
+        env = self.get_recipe_env(self.arch)
+        builddir = self.get_build_dir(self.arch)
         hostpython = Program.text(self.hostpython_location).partial(env = env, cwd = builddir)
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
