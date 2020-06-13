@@ -77,6 +77,7 @@ class ArchImpl(Arch):
         self.archenv = dict(self.staticenv,
             CFLAGS = self.cflags,
             CXXFLAGS = self.cflags,
+            LDFLAGS = f"-L{self.get_libs_dir()}",
             CC = self.cc,
             CXX = _spjoin(self.ccachepath, platform.clang_exe(self, plus_plus = True), self.cflags),
             AR = f"{self.command_prefix}-ar",
@@ -114,7 +115,6 @@ class ArchImpl(Arch):
     def get_env(self, ctx):
         return dict(self.archenv,
             CPPFLAGS = f"""{self.cppflags} -I{ctx.get_python_install_dir() / 'include' / f"python{self.graph.python_recipe.version[:3]}"}""",
-            LDFLAGS = f"-L{self.get_libs_dir()}",
             BUILDLIB_PATH = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{self.graph.python_recipe.major_minor_version_string}",
         )
 
