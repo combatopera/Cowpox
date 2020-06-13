@@ -196,9 +196,9 @@ class PythonRecipe(Recipe):
                 hppath.extend(d for d in builddir.iterdir() if d.is_dir())
             if hppath:
                 if 'PYTHONPATH' in env:
-                    env['PYTHONPATH'] = ':'.join(map(str, hppath + [env['PYTHONPATH']]))
+                    env['PYTHONPATH'] = os.pathsep.join(map(str, [*hppath, env['PYTHONPATH']]))
                 else:
-                    env['PYTHONPATH'] = ':'.join(map(str, hppath))
+                    env['PYTHONPATH'] = os.pathsep.join(map(str, hppath))
         return env
 
     def should_build(self, arch):
