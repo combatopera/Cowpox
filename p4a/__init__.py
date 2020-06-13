@@ -193,19 +193,19 @@ class Recipe(Plugin):
     def prebuild_arch(self):
         pass
 
-    def apply_patches(self, arch):
+    def apply_patches(self):
         if self.patches:
-            log.info("Applying patches for %s[%s]", self.name, arch.name)
-            build_dir = self.get_build_dir(arch)
+            log.info("Applying patches for %s[%s]", self.name, self.arch.name)
+            build_dir = self.get_build_dir(self.arch)
             if (build_dir / '.patched').exists():
                 log.info("%s already patched, skipping", self.name)
                 return
             for patch in self.patches:
                 if isinstance(patch, (tuple, list)): # TODO: Yuk.
                     patch, patch_check = patch
-                    if not patch_check(arch=arch, recipe=self):
+                    if not patch_check(arch=self.arch, recipe=self):
                         continue
-                self.apply_patch(patch, arch)
+                self.apply_patch(patch, self.arch)
             touch.print(build_dir / '.patched')
 
     def should_build(self, arch):
