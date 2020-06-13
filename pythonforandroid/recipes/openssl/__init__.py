@@ -63,8 +63,8 @@ class OpenSSLRecipe(Recipe):
         openssl_includes = self.get_build_dir(self.arch) / 'include'
         return f" -I{openssl_includes} -I{openssl_includes / 'internal'} -I{openssl_includes / 'openssl'}"
 
-    def link_dirs_flags(self, arch):
-        return f" -L{self.get_build_dir(arch)}"
+    def link_dirs_flags(self):
+        return f" -L{self.get_build_dir(self.arch)}"
 
     def link_libs_flags(self):
         return f" -lcrypto{self.version} -lssl{self.version}"
