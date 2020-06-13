@@ -77,7 +77,7 @@ class ArchImpl(Arch):
         self.archenv = dict(self.staticenv,
             CFLAGS = self.cflags,
             CXXFLAGS = self.cflags,
-            LDFLAGS = f"-L{self.get_libs_dir()}",
+            LDFLAGS = f"-L{self.libs_dir}",
             CC = self.cc,
             CXX = _spjoin(self.ccachepath, platform.clang_exe(self, plus_plus = True), self.cflags),
             AR = f"{self.command_prefix}-ar",
@@ -122,7 +122,8 @@ class ArchImpl(Arch):
     def libs_parent(self):
         return (self.buildsdir / 'libs_collections' / self.package_name).mkdirp()
 
-    def get_libs_dir(self):
+    @property
+    def libs_dir(self):
         return (self.libs_parent / self.name).mkdirp()
 
 @singleton

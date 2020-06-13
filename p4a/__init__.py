@@ -219,7 +219,7 @@ class Recipe(Plugin):
     def install_libraries(self):
         libs = [p for p in self._get_libraries() if p.name.endswith('.so')]
         if libs:
-            cp.print(*libs, self.arch.get_libs_dir())
+            cp.print(*libs, self.arch.libs_dir)
 
     def postbuild_arch(self):
         pass

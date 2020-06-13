@@ -143,7 +143,7 @@ class ContextImpl(Context):
         self.graph = graph
 
     def has_lib(self, lib):
-        return (self.arch.get_libs_dir() / lib).exists()
+        return (self.arch.libs_dir / lib).exists()
 
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.

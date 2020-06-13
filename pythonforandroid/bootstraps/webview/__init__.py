@@ -56,7 +56,7 @@ class WebViewBootstrap(Bootstrap):
         (self.dist_dir / 'local.properties').write_text(f"sdk.dir={rctx.sdk_dir}")
         log.info("Bootstrap running with arch %s", self.arch)
         log.info('Copying python distribution')
-        self.distribute_libs(self.arch, self.arch.get_libs_dir())
+        self.distribute_libs(self.arch, self.arch.libs_dir)
         self.distribute_aars(self.arch)
         self.distribute_javaclasses(rctx.javaclass_dir)
         site_packages_dir = self.graph.python_recipe.create_python_bundle(self.dist_dir, self.arch)
