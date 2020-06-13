@@ -194,8 +194,7 @@ class ContextImpl(Context):
         log.info("The requirements (%s) don't have recipes, attempting to install them with pip", ', '.join(modules))
         log.info('If this fails, it may mean that the module has compiled components and needs a recipe.')
         virtualenv.print(f"--python=python{self.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv', cwd = self.buildsdir)
-        base_env = os.environ.copy()
-        base_env["PYTHONPATH"] = self.get_python_install_dir() # XXX: Really?
+        base_env = dict(os.environ, PYTHONPATH = self.get_python_install_dir()) # XXX: Really?
         log.info('Upgrade pip to latest version')
         pip = Program.text(self.buildsdir / 'venv' / 'bin' / 'pip')
         pip.install._U.print('pip', env = base_env)
