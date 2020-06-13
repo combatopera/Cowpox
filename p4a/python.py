@@ -47,6 +47,7 @@ from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
 from seizure.arch import DesktopArch
+from seizure.config import Config
 from shutil import copy2
 import lagoon, logging, os
 
@@ -163,8 +164,9 @@ class GuestPythonRecipe(Recipe):
         longer used and has been removed in favour of extension .pyc
     '''
 
-    @types(HostPythonRecipe)
-    def __init(self, hostrecipe):
+    @types(Config, HostPythonRecipe)
+    def __init(self, config, hostrecipe):
+        self.python_install_dir = Path(config.python_install_dir)
         self.hostrecipe = hostrecipe
 
     def get_recipe_env(self, arch):
@@ -252,7 +254,7 @@ class GuestPythonRecipe(Recipe):
         modules_build_dir = self.get_build_dir(arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.major_minor_version_string}"
         self._compile_python_files(dirn / modules_build_dir)
         self._compile_python_files(dirn / self.get_build_dir(arch) / 'Lib')
-        self._compile_python_files(dirn / self.ctx.get_python_install_dir())
+        self._compile_python_files(dirn / self.python_install_dir)
         modules_dir = (dirn / 'modules').mkdirp()
         c_ext = self.compiled_extension
         module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob(f"*{c_ext}")]
@@ -266,7 +268,7 @@ class GuestPythonRecipe(Recipe):
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(stdlib_zip, *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
         (dirn / 'site-packages').mkdirp()
-        installdir = self.ctx.get_python_install_dir().mkdirp()
+        installdir = self.python_install_dir.mkdirp()
         filens = list(_walk_valid_filens(installdir, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
         log.info("Copy %s files into the site-packages", len(filens))
         for filen in filens:

@@ -38,9 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from diapyr import types
 from lagoon import cp
 from p4a.recipe import CythonRecipe
 from p4a.patch import will_build
+from pathlib import Path
 from seizure.config import Config
 import logging
 

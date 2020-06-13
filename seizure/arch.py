@@ -67,6 +67,7 @@ class ArchImpl(Arch):
     def __init__(self, config, platform, graph):
         self.ndk_api = config.android.ndk_api
         self.libs_parent = Path(config.libs_parent)
+        self.python_install_dir = Path(config.python_install_dir)
         self.cflags = _spjoin(
             '-target',
             self.target(),
@@ -115,7 +116,7 @@ class ArchImpl(Arch):
 
     def get_env(self, ctx):
         return dict(self.archenv,
-            CPPFLAGS = f"""{self.cppflags} -I{ctx.get_python_install_dir() / 'include' / f"python{self.graph.python_recipe.version[:3]}"}""",
+            CPPFLAGS = f"""{self.cppflags} -I{self.python_install_dir / 'include' / f"python{self.graph.python_recipe.version[:3]}"}""",
             BUILDLIB_PATH = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{self.graph.python_recipe.major_minor_version_string}",
         )
 

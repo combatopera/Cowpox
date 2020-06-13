@@ -118,9 +118,6 @@ class GraphImpl(Graph):
 
 class ContextImpl(Context):
 
-    def get_python_install_dir(self):
-        return (self.buildsdir / 'python-installs').mkdirp() / self.package_name
-
     @types(Config, Platform, Arch, Bootstrap, Graph)
     def __init__(self, config, platform, arch, bootstrap, graph):
         self.sdk_dir = Path(config.android_sdk_dir)
@@ -133,6 +130,7 @@ class ContextImpl(Context):
         self.dist_dir = Path(config.dist_dir)
         self.bootstrap_builds = Path(config.bootstrap_builds)
         self.ndk_api = config.android.ndk_api
+        self.python_install_dir = Path(config.python_install_dir)
         self.platform = platform
         self.arch = arch
         self.bootstrap = bootstrap
@@ -184,7 +182,7 @@ class ContextImpl(Context):
         log.info("The requirements (%s) don't have recipes, attempting to install them with pip", ', '.join(pypinames))
         log.info('If this fails, it may mean that the module has compiled components and needs a recipe.')
         virtualenv.print(f"--python=python{self.graph.python_recipe.major_minor_version_string.partition('.')[0]}", 'venv', cwd = self.buildsdir)
-        base_env = dict(os.environ, PYTHONPATH = self.get_python_install_dir()) # XXX: Really?
+        base_env = dict(os.environ, PYTHONPATH = self.python_install_dir) # XXX: Really?
         log.info('Upgrade pip to latest version')
         pip = Program.text(self.buildsdir / 'venv' / 'bin' / 'pip')
         pip.install._U.print('pip', env = base_env)
@@ -194,11 +192,11 @@ class ContextImpl(Context):
         env = {**base_env, **self.graph._newrecipe(CythonRecipe).get_recipe_env(self.arch)}
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
-        env['PYTHONPATH'] = f"""{(self.buildsdir / 'venv' / 'lib' / f"python{self.graph.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{self.get_python_install_dir()}"""
+        env['PYTHONPATH'] = f"""{(self.buildsdir / 'venv' / 'lib' / f"python{self.graph.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{self.python_install_dir}"""
         if pypinames:
             log.info('Installing Python modules with pip')
             log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
-            pip.install._v.__no_deps.print('--target', self.get_python_install_dir(), *pypinames, env = env)
+            pip.install._v.__no_deps.print('--target', self.python_install_dir.pmkdirp(), *pypinames, env = env)
         else:
             log.info('There are no Python modules to install, skipping')
         CythonRecipe.strip_object_files(env, self.buildsdir)

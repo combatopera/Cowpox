@@ -147,8 +147,9 @@ class PythonRecipe(Recipe):
                  on python2 or python3 which can break the dependency graph
     '''
 
-    @types(HostPythonRecipe)
-    def __init(self, hostrecipe):
+    @types(Config, HostPythonRecipe)
+    def __init(self, config, hostrecipe):
+        self.python_install_dir = Path(config.python_install_dir)
         if not any(d for d in {'python2', 'python3', ('python2', 'python3')} if d in self.depends):
             # We ensure here that the recipe depends on python even it overrode
             # `depends`. We only do this if it doesn't already depend on any
@@ -212,7 +213,7 @@ class PythonRecipe(Recipe):
     def install_python_package(self):
         log.info("Installing %s into site-packages", self.name)
         Program.text(self.hostpython_location).print(
-                'setup.py', 'install', '-O2', f"--root={self.ctx.get_python_install_dir()}", '--install-lib=.', *self.setup_extra_args,
+                'setup.py', 'install', '-O2', f"--root={self.python_install_dir.pmkdirp()}", '--install-lib=.', *self.setup_extra_args,
                 env = self.get_recipe_env(self.arch), cwd = self.get_build_dir(self.arch))
         if self.install_in_hostpython:
             self.install_hostpython_package()
