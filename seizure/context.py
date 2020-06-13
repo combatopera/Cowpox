@@ -186,7 +186,7 @@ class ContextImpl(Context):
         log.info('Postbuilding recipes')
         for recipe in recipes:
             log.info("Postbuilding %s for %s", recipe.name, self.arch.name)
-            recipe.postbuild_arch(self.arch)
+            recipe.postbuild_arch()
         log.info('Installing pure Python modules')
         log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
         pypinames = [m for m in self.graph.pypinames if not self.insitepackages(m)]

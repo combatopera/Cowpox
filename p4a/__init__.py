@@ -220,7 +220,7 @@ class Recipe(Plugin):
         if libs:
             cp.print(*libs, self.ctx.get_libs_dir(self.arch))
 
-    def postbuild_arch(self, arch):
+    def postbuild_arch(self):
         pass
 
     def prepare_build_dir(self):

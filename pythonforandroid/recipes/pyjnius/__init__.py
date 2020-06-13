@@ -55,7 +55,7 @@ class PyjniusRecipe(CythonRecipe):
         ('genericndkbuild_jnienv_getter.patch', will_build('genericndkbuild')),
     ]
 
-    def postbuild_arch(self, arch):
-        super().postbuild_arch(arch)
+    def postbuild_arch(self):
+        super().postbuild_arch()
         log.info('Copying pyjnius java class to classes build dir')
-        cp._a.print(self.get_build_dir(arch) / 'jnius' / 'src' / 'org', self.ctx.javaclass_dir)
+        cp._a.print(self.get_build_dir(self.arch) / 'jnius' / 'src' / 'org', self.ctx.javaclass_dir)
