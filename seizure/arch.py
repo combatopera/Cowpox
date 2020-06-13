@@ -78,7 +78,7 @@ class Arch:
 
     def get_env(self, ctx, platform):
         env = self.staticenv.copy()
-        env['CXXFLAGS'] = env['CFLAGS'] = ' '.join([
+        env['CXXFLAGS'] = env['CFLAGS'] = cflags = ' '.join([
             f"-target {self.target()}",
             '-fomit-frame-pointer',
             *self.arch_cflags,
@@ -90,8 +90,8 @@ class Arch:
             f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
         ])
         env['LDFLAGS'] = f"-L{ctx.get_libs_dir(self)}"
-        env['CC'] = cc = f"{self.ccachepath} {self.get_clang_exe()} {env['CFLAGS']}"
-        env['CXX'] = f"{self.ccachepath} {self.get_clang_exe(plus_plus = True)} {env['CXXFLAGS']}"
+        env['CC'] = cc = f"{self.ccachepath} {self.get_clang_exe()} {cflags}"
+        env['CXX'] = f"{self.ccachepath} {self.get_clang_exe(plus_plus = True)} {cflags}"
         env['AR'] = f"{self.command_prefix}-ar"
         env['RANLIB'] = f"{self.command_prefix}-ranlib"
         env['STRIP'] = f"{self.command_prefix}-strip --strip-unneeded"
