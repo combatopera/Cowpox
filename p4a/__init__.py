@@ -115,9 +115,9 @@ class Recipe(Plugin):
     def resourcepath(self, relpath):
         return Path(resource_filename(self._fqmodulename(), str(relpath)))
 
-    def apply_patch(self, relpath, arch):
+    def apply_patch(self, relpath):
         log.info("Applying patch %s", relpath)
-        patchexe._t._p1.print('-d', self.get_build_dir(arch), '-i', self.resourcepath(relpath))
+        patchexe._t._p1.print('-d', self.get_build_dir(self.arch), '-i', self.resourcepath(relpath))
 
     def get_build_container_dir(self, arch):
         return self.other_builds / self.graph.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / arch.builddirname()
@@ -206,7 +206,7 @@ class Recipe(Plugin):
                     patch, patch_check = patch
                     if not patch_check(arch=self.arch, recipe=self):
                         continue
-                self.apply_patch(patch, self.arch)
+                self.apply_patch(patch)
             touch.print(build_dir / '.patched')
 
     def should_build(self):
