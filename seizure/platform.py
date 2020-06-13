@@ -158,3 +158,10 @@ class Platform:
         if not ndk_platform.exists():
             raise Exception(f"ndk_platform doesn't exist: {ndk_platform}")
         return ndk_platform
+
+    def clang_path(self, arch):
+        llvm_dir, = (self.ndk_dir / 'toolchains').glob('llvm*')
+        return llvm_dir / 'prebuilt' / arch.build_platform / 'bin'
+
+    def clang_exe(self, arch, with_target = False, plus_plus = False):
+        return self.clang_path(arch) / f"""{f"{arch.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""

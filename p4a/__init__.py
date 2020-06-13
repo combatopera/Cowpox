@@ -184,7 +184,7 @@ class Recipe(Plugin):
             log.info("%s is already unpacked, skipping", self.name)
 
     def get_recipe_env(self, arch):
-        return arch.get_env(self.ctx, self.platform)
+        return arch.get_env(self.ctx)
 
     def prebuild_arch(self, arch):
         pass

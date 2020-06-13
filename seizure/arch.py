@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from .config import Config
+from .platform import Platform
 from diapyr import types
 from diapyr.util import singleton
 from lagoon import which
@@ -58,8 +59,8 @@ class Arch:
         **{k: v for k, v in os.environ.items() if k.startswith('CCACHE_')},
     )
 
-    @types(Config)
-    def __init__(self, config):
+    @types(Config, Platform)
+    def __init__(self, config, platform):
         self.ndk_api = config.android.ndk_api
         self.ndk_dir = Path(config.android_ndk_dir)
         self.cflags = ' '.join([
@@ -68,12 +69,12 @@ class Arch:
             '-fomit-frame-pointer',
             *self.arch_cflags,
         ])
-        self.cc = ' '.join([self.ccachepath, self.get_clang_exe(), self.cflags])
+        self.cc = ' '.join([self.ccachepath, platform.clang_exe(self), self.cflags])
         self.archenv = dict(self.staticenv,
             CFLAGS = self.cflags,
             CXXFLAGS = self.cflags,
             CC = self.cc,
-            CXX = ' '.join([self.ccachepath, self.get_clang_exe(plus_plus = True), self.cflags]),
+            CXX = ' '.join([self.ccachepath, platform.clang_exe(self, plus_plus = True), self.cflags]),
             AR = f"{self.command_prefix}-ar",
             RANLIB = f"{self.command_prefix}-ranlib",
             STRIP = f"{self.command_prefix}-strip --strip-unneeded",
@@ -83,6 +84,7 @@ class Arch:
             ARCH = self.name,
             NDK_API = f"android-{self.ndk_api}",
             TOOLCHAIN_PREFIX = self.toolchain_prefix,
+            TOOLCHAIN_VERSION = platform.toolchain_version(self),
             LDSHARED = ' '.join([
                 self.cc,
                 '-pthread',
@@ -90,34 +92,26 @@ class Arch:
                 '-Wl,-O1',
                 '-Wl,-Bsymbolic-functions',
             ]),
-            PATH = f"{self._clang_path()}{os.pathsep}{os.environ['PATH']}",
+            PATH = f"{platform.clang_path(self)}{os.pathsep}{os.environ['PATH']}", # XXX: Is clang_path really needed?
         )
 
     def target(self):
         return f"{self.command_prefix}{self.ndk_api}"
 
-    def _clang_path(self):
-        llvm_dir, = (self.ndk_dir / 'toolchains').glob('llvm*')
-        return llvm_dir / 'prebuilt' / self.build_platform / 'bin'
+    def builddirname(self):
+        return f"{self.name}__ndk_target_{self.ndk_api}"
 
-    def get_clang_exe(self, with_target = False, plus_plus = False):
-        return self._clang_path() / f"""{f"{self.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
-
-    def get_env(self, ctx, platform):
+    def get_env(self, ctx):
         return dict(self.archenv,
             CPPFLAGS = ' '.join([
                 '-DANDROID',
                 f"-D__ANDROID_API__={self.ndk_api}",
-                f"-I{self.ndk_dir / 'sysroot' / 'usr' / 'include' / self.command_prefix}",
+                f"-I{self.ndk_dir / 'sysroot' / 'usr' / 'include' / self.command_prefix}", # TODO: Migrate to Platform.
                 f"""-I{ctx.get_python_install_dir() / 'include' / f"python{ctx.python_recipe.version[:3]}"}""",
             ]),
             LDFLAGS = f"-L{ctx.get_libs_dir(self)}",
-            TOOLCHAIN_VERSION = platform.toolchain_version(self),
             BUILDLIB_PATH = ctx.get_recipe(f"host{ctx.python_recipe.name}").get_build_dir(self) / 'native-build' / 'build' / f"lib.{self.build_platform}-{ctx.python_recipe.major_minor_version_string}",
         )
-
-    def builddirname(self):
-        return f"{self.name}__ndk_target_{self.ndk_api}"
 
 @singleton
 class DesktopArch:
