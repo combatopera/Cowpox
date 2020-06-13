@@ -41,7 +41,6 @@
 from .arch import Arch
 from .config import Config
 from .graph import get_recipe_order, recipeimpl
-from .mirror import Mirror
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from diapyr import types, DI
@@ -131,8 +130,8 @@ class ContextImpl(Context):
     def get_python_install_dir(self):
         return (self.buildsdir / 'python-installs').mkdirp() / self.package_name
 
-    @types(Config, Platform, Arch, Bootstrap, Mirror, Graph)
-    def __init__(self, config, platform, arch, bootstrap, mirror, graph):
+    @types(Config, Platform, Arch, Bootstrap, Graph)
+    def __init__(self, config, platform, arch, bootstrap, graph):
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.storage_dir = Path(config.storage_dir)
@@ -146,7 +145,6 @@ class ContextImpl(Context):
         self.platform = platform
         self.arch = arch
         self.bootstrap = bootstrap
-        self.mirror = mirror
         self.graph = graph
 
     def get_libs_dir(self, arch):
@@ -167,11 +165,11 @@ class ContextImpl(Context):
         recipes = self.graph.allrecipes()
         log.info('Downloading recipes')
         for recipe in recipes:
-            recipe.download_if_necessary(self.mirror)
+            recipe.download_if_necessary()
         log.info("Building all recipes for arch %s", self.arch.name)
         log.info('Unpacking recipes')
         for recipe in recipes:
-            recipe.prepare_build_dir(self.arch, self.mirror)
+            recipe.prepare_build_dir(self.arch)
         log.info('Prebuilding recipes')
         for recipe in recipes:
             log.info("Prebuilding %s for %s", recipe.name, self.arch.name)

@@ -43,6 +43,7 @@ from lagoon import cp, mv, patch as patchexe, rm, tar, touch, unzip
 from pathlib import Path
 from pkg_resources import resource_filename
 from seizure.config import Config
+from seizure.mirror import Mirror
 from seizure.platform import Platform
 from seizure.util import format_obj
 from urllib.parse import urlparse
@@ -101,12 +102,13 @@ class Recipe(Plugin):
     def url(self):
         return format_obj(self.urlformat, self)
 
-    @types(Config, Context, Platform, Graph)
-    def __init__(self, config, context, platform, graph):
+    @types(Config, Context, Platform, Graph, Mirror)
+    def __init__(self, config, context, platform, graph, mirror):
         self.other_builds = Path(config.other_builds)
         self.ctx = context
         self.platform = platform
         self.graph = graph
+        self.mirror = mirror
 
     def resourcepath(self, relpath):
         return Path(resource_filename(self._fqmodulename(), str(relpath)))
@@ -121,7 +123,7 @@ class Recipe(Plugin):
     def get_build_dir(self, arch):
         return self.get_build_container_dir(arch) / self.name
 
-    def download_if_necessary(self, mirror):
+    def download_if_necessary(self):
         log.info("Downloading %s", self.name)
         user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
         if user_dir is not None:
@@ -130,7 +132,7 @@ class Recipe(Plugin):
         if self.url is None or not urlparse(self.url).scheme:
             log.info("Skipping %s download as no URL is set", self.name)
             return
-        path = mirror.download(self.url)
+        path = self.mirror.download(self.url)
         if self.md5sum is not None:
             current_md5 = hashlib.md5(path.read_bytes()).hexdigest()
             if current_md5 != self.md5sum:
@@ -139,7 +141,7 @@ class Recipe(Plugin):
                 raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
             log.debug("[%s] MD5 OK.", self.name)
 
-    def _unpack(self, arch, mirror):
+    def _unpack(self, arch):
         directory_name = self.get_build_dir(arch)
         if self.url is not None and not urlparse(self.url).scheme:
             rm._rf.print(directory_name)
@@ -159,7 +161,7 @@ class Recipe(Plugin):
             log.info("Skipping %s unpack as no URL is set", self.name)
             return
         if not directory_name.is_dir():
-            extraction_filename = mirror.getpath(self.url)
+            extraction_filename = self.mirror.getpath(self.url)
             if self.url.endswith('.zip'):
                 try:
                     unzip.print(extraction_filename, cwd = build_dir)
@@ -219,9 +221,9 @@ class Recipe(Plugin):
     def postbuild_arch(self, arch):
         pass
 
-    def prepare_build_dir(self, arch, mirror):
+    def prepare_build_dir(self, arch):
         self.get_build_container_dir(arch).mkdirp()
-        self._unpack(arch, mirror)
+        self._unpack(arch)
 
     def has_libs(self, arch, *libs):
         return all(map(lambda l: self.ctx.has_lib(arch, l), libs))
