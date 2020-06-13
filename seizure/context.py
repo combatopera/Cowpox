@@ -43,14 +43,14 @@ from .graph import get_recipe_order, recipeimpl
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from diapyr import types, DI
-from lagoon import find, virtualenv
+from lagoon import virtualenv
 from lagoon.program import Program
 from p4a import Arch, Context, Graph
 from p4a.boot import Bootstrap, BootstrapType
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe
 from pathlib import Path
-import logging, os, shlex, subprocess
+import logging, os
 
 log = logging.getLogger(__name__)
 
@@ -196,19 +196,3 @@ class ContextImpl(Context):
             log.info('There are no Python modules to install, skipping')
         CythonRecipe.strip_object_files(env, self.buildsdir)
         self.bootstrap.run_distribute(self)
-
-    def strip_libraries(self):
-        log.info('Stripping libraries')
-        env = self.arch.get_env()
-        tokens = shlex.split(env['STRIP']) # TODO: Not via env.
-        strip = Program.text(self.platform.prebuiltbin(self.arch) / tokens[0]).partial(*tokens[1:])
-        libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
-        filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so').splitlines()
-        log.info('Stripping libraries in private dir')
-        for filen in filens:
-            try:
-                strip.print(filen, env = env)
-            except subprocess.CalledProcessError as e:
-                if 1 != e.returncode:
-                    raise
-                log.debug("Failed to strip %s", filen)

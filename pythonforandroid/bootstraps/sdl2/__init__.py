@@ -63,6 +63,6 @@ class SDL2GradleBootstrap(Bootstrap):
         if 'sqlite3' not in self.graph.recipenames:
             with (self.dist_dir / 'blacklist.txt').open('a') as fileh:
                 fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
-        rctx.strip_libraries()
+        self.strip_libraries()
         self.fry_eggs(site_packages_dir)
         super().run_distribute(rctx)

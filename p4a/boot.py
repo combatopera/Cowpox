@@ -40,12 +40,14 @@
 
 from . import Arch, Graph, Plugin
 from diapyr import types
-from lagoon import cp, mv, rm, unzip
+from lagoon import cp, find, mv, rm, unzip
+from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import resource_filename
 from seizure.config import Config
+from seizure.platform import Platform
 from tempfile import TemporaryDirectory
-import logging, os, shutil
+import logging, os, shlex, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -72,8 +74,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     contribroot = Path(resource_filename('pythonforandroid', '.'))
     recipe_depends = [("python2", "python3"), 'android']
 
-    @types(Config, Graph, Arch)
-    def __init__(self, config, graph, arch):
+    @types(Config, Graph, Arch, Platform)
+    def __init__(self, config, graph, arch, platform):
         self.bootstrap_dir = self.contribroot / 'bootstraps' / config.p4a.bootstrap
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
@@ -84,6 +86,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.sdk_dir = config.android_sdk_dir
         self.graph = graph
         self.arch = arch
+        self.platform = platform
 
     def prepare_dirs(self):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
@@ -96,6 +99,22 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     def run_distribute(self, rctx):
         pass
+
+    def strip_libraries(self):
+        log.info('Stripping libraries')
+        env = self.arch.get_env()
+        tokens = shlex.split(env['STRIP']) # TODO: Not via env.
+        strip = Program.text(self.platform.prebuiltbin(self.arch) / tokens[0]).partial(*tokens[1:])
+        libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
+        filens = find(libs_dir, self.dist_dir / 'libs', '-iname', '*.so').splitlines()
+        log.info('Stripping libraries in private dir')
+        for filen in filens:
+            try:
+                strip.print(filen, env = env)
+            except subprocess.CalledProcessError as e:
+                if 1 != e.returncode:
+                    raise
+                log.debug("Failed to strip %s", filen)
 
     def distribute_libs(self, arch, src_dir):
         log.info('Copying libs')
