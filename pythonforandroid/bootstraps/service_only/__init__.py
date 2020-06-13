@@ -54,7 +54,7 @@ class ServiceOnlyBootstrap(Bootstrap):
         log.info('This currently just copies the build stuff straight from the build dir.')
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
-        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={rctx.sdk_dir}")
+        self.writelocalproperties()
         log.info("Bootstrap running with arch %s", self.arch)
         log.info('Copying python distribution')
         self.distribute_libs(self.arch, self.arch.libs_dir)

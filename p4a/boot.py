@@ -81,6 +81,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.dist_dir = Path(config.dist_dir)
         self.build_dir = Path(config.bootstrap_builds, graph.check_recipe_choices(self.name, self.recipe_depends))
         self.javaclass_dir = config.javaclass_dir
+        self.sdk_dir = config.android_sdk_dir
         self.graph = graph
         self.arch = arch
 
@@ -89,6 +90,9 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         _copy_files((self.bootstrap_dir / '..' / 'common').resolve() / 'build', self.build_dir, False)
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.android_api}")
         self.dist_dir.mkdirp()
+
+    def writelocalproperties(self):
+        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.sdk_dir}")
 
     def run_distribute(self, rctx):
         pass

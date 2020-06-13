@@ -55,7 +55,7 @@ class SDL2GradleBootstrap(Bootstrap):
         log.info("Copying SDL2/gradle build for %s", self.arch)
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
-        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={rctx.sdk_dir}")
+        self.writelocalproperties()
         log.info('Copying Python distribution')
         self.distribute_libs(self.arch, self.arch.libs_dir)
         self.distribute_javaclasses(dest_dir = Path('src', 'main', 'java'))
