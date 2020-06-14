@@ -48,7 +48,7 @@ from seizure.platform import Platform
 from seizure.util import format_obj
 from urllib.parse import urlparse
 from zipfile import ZipFile
-import hashlib, logging, os, subprocess
+import hashlib, logging, os, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -107,6 +107,7 @@ class Recipe(Plugin):
     @types(Config, Context, Platform, Graph, Mirror, Arch)
     def __init__(self, config, context, platform, graph, mirror, arch):
         self.other_builds = Path(config.other_builds)
+        self.projectbuilddir = Path(config.build.dir)
         self.ctx = context
         self.platform = platform
         self.graph = graph
@@ -140,12 +141,30 @@ class Recipe(Plugin):
                 raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
             log.debug("[%s] MD5 OK.", self.name)
 
+    def _copywithoutbuild(self, frompath, topath):
+        try:
+            frompath.relative_to(self.projectbuilddir)
+        except ValueError:
+            try:
+                self.projectbuilddir.relative_to(frompath)
+            except ValueError:
+                ignore = None
+            else:
+                def ignore(dirpath, _):
+                    if Path(dirpath) == self.projectbuilddir.parent:
+                        log.debug("Not copying: %s", self.projectbuilddir)
+                        return [self.projectbuilddir.name]
+                    return []
+            shutil.copytree(frompath, topath, ignore = ignore)
+        else:
+            log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
+
     def _unpack(self):
         directory_name = self.get_build_dir(self.arch)
         if self.url is not None and not urlparse(self.url).scheme:
             srcpath = Path(self.url.replace('/', os.sep))
             rm._rf.print(directory_name)
-            cp._a.print(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), directory_name)
+            self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), directory_name)
             return
         log.info("Unpacking %s for %s", self.name, self.arch.name)
         build_dir = self.get_build_container_dir(self.arch)
