@@ -105,16 +105,11 @@ class PipInstallRecipe(CythonRecipe):
 
 class ContextImpl:
 
-    @types(Config, Platform, Arch, Graph, GraphInfo, PipInstallRecipe, Context)
-    def __init__(self, config, platform, arch, graph, graphinfo, pipinstallrecipe, context):
-        self.distsdir = Path(config.distsdir)
+    @types(Config, Arch, Graph, GraphInfo, PipInstallRecipe, Context)
+    def __init__(self, config, arch, graph, graphinfo, pipinstallrecipe, context):
         self.buildsdir = Path(config.buildsdir)
-        self.other_builds = Path(config.other_builds)
-        self.dist_dir = Path(config.dist_dir)
-        self.bootstrap_builds = Path(config.bootstrap_builds)
         self.python_install_dir = Path(config.python_install_dir)
         self.venv_path = Path(config.venv.path)
-        self.platform = platform
         self.arch = arch
         self.graph = graph
         self.graphinfo = graphinfo
@@ -123,9 +118,6 @@ class ContextImpl:
 
     def build_recipes(self):
         log.info("Will compile for the following arch: %s", self.arch.name)
-        self.distsdir.mkdirp()
-        self.bootstrap_builds.mkdirp()
-        self.other_builds.mkdirp()
         recipes = self.graph.allrecipes()
         log.info('Downloading recipes')
         for recipe in recipes:
