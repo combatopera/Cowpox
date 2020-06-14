@@ -67,6 +67,7 @@ def run(checks, bootstrap, context, src, dirs, target):
     checks.check()
     bootstrap.prepare_dirs()
     context.build_recipes()
+    context.build_nonrecipes()
     bootstrap.run_distribute()
     src.copy_application_sources()
     dirs.add_sitecustomize()
