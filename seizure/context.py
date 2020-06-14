@@ -103,10 +103,10 @@ class PipInstallRecipe(CythonRecipe):
         ]))
         return env
 
-class ContextImpl(Context):
+class ContextImpl:
 
-    @types(Config, Platform, Arch, Graph, GraphInfo, PipInstallRecipe)
-    def __init__(self, config, platform, arch, graph, graphinfo, pipinstallrecipe):
+    @types(Config, Platform, Arch, Graph, GraphInfo, PipInstallRecipe, Context)
+    def __init__(self, config, platform, arch, graph, graphinfo, pipinstallrecipe, context):
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.other_builds = Path(config.other_builds)
@@ -119,9 +119,7 @@ class ContextImpl(Context):
         self.graph = graph
         self.graphinfo = graphinfo
         self.pipinstallrecipe = pipinstallrecipe
-
-    def insitepackages(self, name):
-        return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
+        self.context = context
 
     def build_recipes(self):
         log.info("Will compile for the following arch: %s", self.arch.name)
@@ -155,7 +153,7 @@ class ContextImpl(Context):
             recipe.postbuild_arch()
         log.info('Installing pure Python modules')
         log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
-        pypinames = [m for m in self.graphinfo.pypinames if not self.insitepackages(m)]
+        pypinames = [m for m in self.graphinfo.pypinames if not self.context.insitepackages(m)]
         if not pypinames:
             log.info('No Python modules and no setup.py to process, skipping')
             return

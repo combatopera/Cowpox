@@ -62,7 +62,14 @@ class Plugin:
     def _fqmodulename(self):
         return type(self).__module__
 
-class Context: pass
+class Context:
+
+    @types()
+    def __init__(self):
+        pass
+
+    def insitepackages(self, name):
+        return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
 
 class Graph: pass
 
@@ -104,7 +111,7 @@ class Recipe(Plugin):
     def __init__(self, config, context, platform, graph, mirror, arch, graphinfo):
         self.other_builds = Path(config.other_builds)
         self.projectbuilddir = Path(config.build.dir)
-        self.ctx = context
+        self.context = context
         self.platform = platform
         self.graph = graph
         self.mirror = mirror

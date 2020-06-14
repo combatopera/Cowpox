@@ -196,7 +196,7 @@ class PythonRecipe(Recipe):
         return env
 
     def should_build(self):
-        if self.ctx.insitepackages(self.name):
+        if self.context.insitepackages(self.name):
             log.info('Python package already exists in site-packages')
             return False
         log.info("%s apparently isn't already in site-packages", self.name)

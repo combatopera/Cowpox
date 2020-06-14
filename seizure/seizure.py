@@ -61,7 +61,7 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Checks, Bootstrap, Context, Src, Dirs, TargetAndroid, this = Result)
+@types(Checks, Bootstrap, ContextImpl, Src, Dirs, TargetAndroid, this = Result)
 def run(checks, bootstrap, context, src, dirs, target):
     log.info('Compile platform')
     checks.check()
@@ -85,6 +85,7 @@ def _main():
         di.add(di)
         di.add(APKMaker)
         di.add(Checks)
+        di.add(Context)
         di.add(ContextImpl)
         di.add(Dirs)
         di.add(GraphImpl)
