@@ -39,13 +39,13 @@
 # THE SOFTWARE.
 
 from .config import Config
-from .graph import GraphInfo, recipeimpl
+from .graph import GraphInfo
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from diapyr import types, DI
 from lagoon import virtualenv
 from lagoon.program import Program
-from p4a import Arch, Context, Graph
+from p4a import Arch, Context, Graph, Recipe
 from p4a.boot import Bootstrap
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe
@@ -76,19 +76,32 @@ class Checks:
 
 class PipInstallRecipe(CythonRecipe): pass
 
-class GraphImpl(Graph):
+class GraphImpl:
 
-    @types(GraphInfo, DI)
-    def __init__(self, info, di):
-        self.impls = [recipeimpl(name) for name in info.recipenames]
-        self.di = di
+    @types(GraphInfo, [Recipe])
+    def __init__(self, info, recipes):
+        self.recipes = {}
+        names = set(info.recipenames)
+        for r in recipes:
+            if r.name in names:
+                self.recipes[r.name] = r
+            else:
+                log.debug("Recipe not in lookup: %s", r)
 
     def get_recipe(self, name):
-        return self._recipes[name]
+        return self.recipes[name]
 
     def allrecipes(self):
-        self._recipes = {r.name: r for r in map(self.di, self.impls)}
-        return self._recipes.values()
+        return self.recipes.values()
+
+class GraphProxy(Graph):
+
+    @types(DI)
+    def __init__(self, di):
+        self.di = di
+
+    def __getattr__(self, name):
+        return getattr(self.di(GraphImpl), name)
 
     @property
     def python_recipe(self):

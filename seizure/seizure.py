@@ -43,7 +43,7 @@ from .android import TargetAndroid
 from .arch import all_archs
 from .build import APKMaker
 from .config import Config
-from .context import Checks, ContextImpl, GraphImpl, PipInstallRecipe
+from .context import Checks, ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
 from .dirs import Dirs
 from .graph import GraphInfoImpl
 from .mirror import Mirror
@@ -87,6 +87,7 @@ def _main():
         di.add(Dirs)
         di.add(GraphImpl)
         di.add(GraphInfoImpl)
+        di.add(GraphProxy)
         di.add(Mirror)
         di.add(PipInstallRecipe)
         di.add(Platform)
