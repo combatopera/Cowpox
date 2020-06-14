@@ -185,15 +185,13 @@ class Recipe(Plugin):
                         raise
                 with ZipFile(archivepath) as zf:
                     rootname = zf.filelist[0].filename.split('/')[0]
-                if rootname != targetpath.name:
-                    mv.print(build_dir / rootname, targetpath)
             elif self.url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
                 tar.xf.print(archivepath, cwd = build_dir)
                 rootname = tar.tf(archivepath).splitlines()[0].split('/')[0]
-                if rootname != targetpath.name:
-                    mv.print(build_dir / rootname, targetpath)
             else:
                 raise Exception(f"Could not extract {archivepath} download, it must be .zip, .tar.gz or .tar.bz2 or .tar.xz")
+            if rootname != targetpath.name:
+                mv.print(build_dir / rootname, targetpath)
         else:
             log.info("%s is already unpacked, skipping", self.name)
 
