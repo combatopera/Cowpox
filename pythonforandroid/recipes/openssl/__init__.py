@@ -60,11 +60,11 @@ class OpenSSLRecipe(Recipe):
         return f"{self.name}{self.version}" # XXX: Why?
 
     def include_flags(self):
-        openssl_includes = self.get_build_dir(self.arch) / 'include'
+        openssl_includes = self.get_build_dir() / 'include'
         return f" -I{openssl_includes} -I{openssl_includes / 'internal'} -I{openssl_includes / 'openssl'}"
 
     def link_dirs_flags(self):
-        return f" -L{self.get_build_dir(self.arch)}"
+        return f" -L{self.get_build_dir()}"
 
     def link_libs_flags(self):
         return f" -lcrypto{self.version} -lssl{self.version}"
@@ -92,7 +92,7 @@ class OpenSSLRecipe(Recipe):
 
     def build_arch(self):
         env = self.get_recipe_env()
-        cwd = self.get_build_dir(self.arch)
+        cwd = self.get_build_dir()
         perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = cwd)
         self.apply_patch('disable-sover.patch')
         make.print('build_libs', env = env, cwd = cwd)

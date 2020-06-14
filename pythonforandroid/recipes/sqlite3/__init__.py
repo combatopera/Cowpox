@@ -52,13 +52,13 @@ class Sqlite3Recipe(NDKRecipe):
 
     def prebuild_arch(self):
         super().prebuild_arch()
-        shutil.copyfile(self.resourcepath('Android.mk'), (self.get_build_dir(self.arch) / 'jni').mkdirp() / 'Android.mk')
+        shutil.copyfile(self.resourcepath('Android.mk'), (self.get_build_dir() / 'jni').mkdirp() / 'Android.mk')
 
     def build_arch(self):
         super().build_arch()
-        shutil.copyfile(self.get_build_dir(self.arch) / 'libs' / self.arch.name / 'libsqlite3.so', self.arch.libs_dir / 'libsqlite3.so')
+        shutil.copyfile(self.get_build_dir() / 'libs' / self.arch.name / 'libsqlite3.so', self.arch.libs_dir / 'libsqlite3.so')
 
     def get_recipe_env(self):
         env = super().get_recipe_env()
-        env['NDK_PROJECT_PATH'] = str(self.get_build_dir(self.arch))
+        env['NDK_PROJECT_PATH'] = str(self.get_build_dir())
         return env

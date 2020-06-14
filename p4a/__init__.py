@@ -127,7 +127,7 @@ class Recipe(Plugin):
 
     def apply_patch(self, relpath):
         log.info("Applying patch %s", relpath)
-        patchexe._t._p1.print('-d', self.get_build_dir(self.arch), '-i', self.resourcepath(relpath))
+        patchexe._t._p1.print('-d', self.get_build_dir(), '-i', self.resourcepath(relpath))
 
     @property
     def buildcontainerparent(self):
@@ -136,8 +136,8 @@ class Recipe(Plugin):
     def get_build_container_dir(self, arch):
         return self.buildcontainerparent / arch.builddirname()
 
-    def get_build_dir(self, arch):
-        return self.get_build_container_dir(arch) / self.dir_name
+    def get_build_dir(self):
+        return self.get_build_container_dir(self.arch) / self.dir_name
 
     def download_if_necessary(self):
         if self.url is None:
@@ -175,7 +175,7 @@ class Recipe(Plugin):
             log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
 
     def prepare_build_dir(self):
-        targetpath = self.get_build_dir(self.arch)
+        targetpath = self.get_build_dir()
         with targetpath.okorclean() as ok:
             if ok:
                 log.debug("[%s] Already unpacked.", self.name)
@@ -212,7 +212,7 @@ class Recipe(Plugin):
 
     def get_recipe_env(self):
         env = self.arch.get_env()
-        env['BUILDLIB_PATH'] = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir(self.arch) / 'native-build' / 'build' / f"lib.{self.arch.build_platform}-{self.graph.python_recipe.majminversion}"
+        env['BUILDLIB_PATH'] = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir() / 'native-build' / 'build' / f"lib.{self.arch.build_platform}-{self.graph.python_recipe.majminversion}"
         return env
 
     def prebuild(self):
@@ -225,7 +225,7 @@ class Recipe(Plugin):
     def apply_patches(self):
         if self.patches:
             log.info("Applying patches for %s[%s]", self.name, self.arch.name)
-            build_dir = self.get_build_dir(self.arch)
+            build_dir = self.get_build_dir()
             if (build_dir / '.patched').exists():
                 log.info("%s already patched, skipping", self.name)
                 return
@@ -268,4 +268,4 @@ class Recipe(Plugin):
         return all(map(self.arch.has_lib, libs))
 
     def _get_libraries(self):
-        return {self.get_build_dir(self.arch) / libpath for libpath in self.builtlibpaths}
+        return {self.get_build_dir() / libpath for libpath in self.builtlibpaths}

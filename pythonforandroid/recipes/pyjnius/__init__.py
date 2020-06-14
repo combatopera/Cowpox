@@ -65,4 +65,4 @@ class PyjniusRecipe(CythonRecipe):
     def postbuild_arch(self):
         super().postbuild_arch()
         log.info('Copying pyjnius java class to classes build dir')
-        cp._a.print(self.get_build_dir(self.arch) / 'jnius' / 'src' / 'org', self.javaclass_dir.mkdirp())
+        cp._a.print(self.get_build_dir() / 'jnius' / 'src' / 'org', self.javaclass_dir.mkdirp())

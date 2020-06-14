@@ -86,12 +86,12 @@ class NDKRecipe(Recipe):
                 return True
 
     def get_lib_dir(self):
-        return self.get_build_dir(self.arch) / 'obj' / 'local' / self.arch.name
+        return self.get_build_dir() / 'obj' / 'local' / self.arch.name
 
     def build_arch(self):
         super().build_arch()
         Program.text(self.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={self.arch.name}",
-                env = self.get_recipe_env(), cwd = self.get_build_dir(self.arch))
+                env = self.get_recipe_env(), cwd = self.get_build_dir())
 
 class PythonRecipe(Recipe):
 
@@ -191,7 +191,7 @@ class PythonRecipe(Recipe):
         log.info("Installing %s into site-packages", self.name)
         Program.text(self.hostpython_location).print(
                 'setup.py', 'install', '-O2', f"--root={self.python_install_dir.pmkdirp()}", '--install-lib=.',
-                env = self.get_recipe_env(), cwd = self.get_build_dir(self.arch))
+                env = self.get_recipe_env(), cwd = self.get_build_dir())
         if self.install_in_hostpython:
             self.install_hostpython_package()
 
@@ -200,7 +200,7 @@ class PythonRecipe(Recipe):
 
     def install_hostpython_package(self):
         env = self.get_hostrecipe_env()
-        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', env = env, cwd = self.get_build_dir(self.arch))
+        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', env = env, cwd = self.get_build_dir())
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
@@ -212,7 +212,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def build_compiled_components(self, *setup_extra_args):
         log.info("Building compiled components in %s", self.name)
-        builddir = self.get_build_dir(self.arch)
+        builddir = self.get_build_dir()
         hostpython = Program.text(self.hostpython_location).partial(env = self.get_recipe_env(), cwd = builddir)
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
@@ -227,7 +227,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     def rebuild_compiled_components(self, *setup_extra_args):
         env = self.get_hostrecipe_env()
         log.info("Rebuilding compiled components in %s", self.name)
-        hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir(self.arch))
+        hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir())
         hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
 
@@ -244,7 +244,7 @@ class CythonRecipe(PythonRecipe):
     def install_python_package(self):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env()
-        builddir = self.get_build_dir(self.arch)
+        builddir = self.get_build_dir()
         hostpython = Program.text(self.hostrecipe.python_exe).partial(env = env, cwd = builddir)
         hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
