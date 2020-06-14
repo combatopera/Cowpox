@@ -162,7 +162,7 @@ class GuestPythonRecipe(Recipe):
         self.ndk_api = config.android.ndk_api
         parts = LooseVersion(self.version).version
         self.majversion = parts[0]
-        self.majminversion = '.'.join(str(part) for part in parts[:2])
+        self.majminversion = '.'.join(map(str, parts[:2]))
         self.exename = f"python{self.majversion}"
         self.hostrecipe = hostrecipe
 
