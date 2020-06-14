@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from . import Recipe
-from cowpox.arch import DesktopArch
 from cowpox.config import Config
 from diapyr import types
 from distutils.version import LooseVersion
@@ -81,10 +80,10 @@ class HostPythonRecipe(Recipe):
         return not self.python_exe.exists()
 
     def get_build_container_dir(self, arch):
-        return super().get_build_container_dir(DesktopArch)
+        return self.buildcontainerparent / 'desktop'
 
     def get_path_to_python(self):
-        return self.get_build_dir(DesktopArch) / self.build_subdir
+        return self.get_build_dir(self.arch) / self.build_subdir
 
     def build_arch(self):
         recipe_build_dir = self.get_build_dir(self.arch)

@@ -41,7 +41,6 @@
 from .config import Config
 from .platform import Platform
 from diapyr import types
-from diapyr.util import singleton
 from lagoon import find, which
 from multiprocessing import cpu_count
 from p4a import Arch, Graph
@@ -132,12 +131,6 @@ class ArchImpl(Arch):
         exec = find.partial(root, '-name', '*.so', '-exec')
         exec.print('echo', '{}', ';')
         exec.print(*self.strip, '{}', ';')
-
-@singleton
-class DesktopArch:
-
-    def builddirname(self):
-        return 'desktop'
 
 class BaseArchARM(ArchImpl):
 
