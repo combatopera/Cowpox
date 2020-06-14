@@ -189,9 +189,9 @@ class Recipe(Plugin):
                     mv.print(build_dir / rootname, targetpath)
             elif self.url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
                 tar.xf.print(archivepath, cwd = build_dir)
-                root_directory = tar.tf(archivepath).split('\n')[0].split('/')[0]
-                if root_directory != targetpath.name:
-                    mv.print(root_directory, targetpath, cwd = build_dir)
+                rootname = tar.tf(archivepath).splitlines()[0].split('/')[0]
+                if rootname != targetpath.name:
+                    mv.print(build_dir / rootname, targetpath)
             else:
                 raise Exception(f"Could not extract {archivepath} download, it must be .zip, .tar.gz or .tar.bz2 or .tar.xz")
         else:
