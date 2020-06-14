@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from lagoon import mkdir
 from p4a.recipe import NDKRecipe
 import shutil
 
@@ -53,8 +52,7 @@ class Sqlite3Recipe(NDKRecipe):
 
     def prebuild_arch(self):
         super().prebuild_arch()
-        mkdir._p.print(self.get_build_dir(self.arch) / 'jni')
-        shutil.copyfile(self.resourcepath('Android.mk'), self.get_build_dir(self.arch) / 'jni' / 'Android.mk')
+        shutil.copyfile(self.resourcepath('Android.mk'), (self.get_build_dir(self.arch) / 'jni').mkdirp() / 'Android.mk')
 
     def build_arch(self):
         super().build_arch()
