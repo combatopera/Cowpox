@@ -38,14 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, Graph, Plugin
+from . import Arch, Graph, GraphInfo, Plugin
 from diapyr import types
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import resource_filename
 from seizure.config import Config
-from seizure.graph import GraphInfo
 from seizure.platform import Platform
 from tempfile import TemporaryDirectory
 import logging, os, shutil, subprocess
@@ -88,6 +87,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.graph = graph
         self.arch = arch
         self.platform = platform
+        self.graphinfo = graphinfo
 
     def prepare_dirs(self):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)

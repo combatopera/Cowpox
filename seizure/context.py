@@ -78,7 +78,6 @@ class GraphImpl(Graph):
 
     @types(GraphInfo, DI)
     def __init__(self, info, di):
-        self.recipenames = info.recipenames
         self.di = di
 
     def get_recipe(self, name):

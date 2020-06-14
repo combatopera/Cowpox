@@ -188,16 +188,16 @@ class GuestPythonRecipe(Recipe):
             env['LDFLAGS'] = env.get('LDFLAGS', '') + link_dirs
             env['LIBS'] = env.get('LIBS', '') + link_libs
         # TODO LATER: Use polymorphism!
-        if 'sqlite3' in self.graph.recipenames:
+        if 'sqlite3' in self.graphinfo.recipenames:
             log.info('Activating flags for sqlite3')
             recipe = self.graph.get_recipe('sqlite3')
             add_flags(f" -I{recipe.get_build_dir(self.arch)}", f" -L{recipe.get_lib_dir()}", ' -lsqlite3')
-        if 'libffi' in self.graph.recipenames:
+        if 'libffi' in self.graphinfo.recipenames:
             log.info('Activating flags for libffi')
             recipe = self.graph.get_recipe('libffi')
             env['PKG_CONFIG_PATH'] = recipe.get_build_dir(self.arch)
             add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs())), f" -L{recipe.get_build_dir(self.arch) / '.libs'}", ' -lffi')
-        if 'openssl' in self.graph.recipenames:
+        if 'openssl' in self.graphinfo.recipenames:
             log.info('Activating flags for openssl')
             recipe = self.graph.get_recipe('openssl')
             add_flags(recipe.include_flags(), recipe.link_dirs_flags(), recipe.link_libs_flags())
