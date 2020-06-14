@@ -39,13 +39,13 @@
 # THE SOFTWARE.
 
 from .config import Config
-from .graph import GraphInfo
+from .graph import GraphInfo, recipeimpl
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from diapyr import types, DI
 from lagoon import virtualenv
 from lagoon.program import Program
-from p4a import Arch, Context, Graph, Recipe
+from p4a import Arch, Context, Graph
 from p4a.boot import Bootstrap
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe
@@ -74,23 +74,21 @@ class Checks:
         check_ndk_version(self.ndk_dir)
         check_ndk_api(self.ndk_api, self.android_api)
 
+class PipInstallRecipe(CythonRecipe): pass
+
 class GraphImpl(Graph):
 
-    @types(DI)
-    def __init__(self, di):
+    @types(GraphInfo, DI)
+    def __init__(self, info, di):
+        self.impls = [recipeimpl(name) for name in info.recipenames]
         self.di = di
 
     def get_recipe(self, name):
         return self._recipes[name]
 
     def allrecipes(self):
-        self._recipes = {r.name: r for r in self.di.all(Recipe)}
+        self._recipes = {r.name: r for r in map(self.di, self.impls)}
         return self._recipes.values()
-
-    def _newrecipe(self, impl):
-        di = self.di.createchild()
-        di.add(impl)
-        return di(impl)
 
     @property
     def python_recipe(self):
@@ -167,7 +165,7 @@ class ContextImpl(Context):
         pip.install.print('Cython', env = dict(PYTHONPATH = self.python_install_dir))
         if pypinames:
             # Get environment variables for build (with CC/compiler set):
-            installenv = self.graph._newrecipe(CythonRecipe).get_recipe_env(self.arch)
+            installenv = self.graph.di(PipInstallRecipe).get_recipe_env(self.arch)
             # Make sure our build package dir is available, and the virtualenv
             # site packages come FIRST (so the proper pip version is used):
             installenv['PYTHONPATH'] = os.pathsep.join(map(str, [
