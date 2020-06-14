@@ -78,9 +78,9 @@ class GraphImpl(Graph):
 
     @types(Config, BootstrapType, DI)
     def __init__(self, config, bootstraptype, di):
-        self.recipenames, self.pypinames = get_recipe_order({*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
-        log.info("Recipe build order is %s", self.recipenames)
-        log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
+        info = get_recipe_order({*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
+        self.recipenames = info.recipenames
+        self.pypinames = info.pypinames
         self.recipedi = di.createchild()
 
     def check_recipe_choices(self, name, depends):

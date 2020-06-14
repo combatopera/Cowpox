@@ -161,6 +161,12 @@ def _obvious_conflict_checker(name_tuples, blacklist):
             deps_were_added_by[added_tuple] = adding_recipe
             to_be_added += [(dep, adder_first_recipe_name or name) for dep in recipe_dependencies if dep not in deps]
 
+class GraphInfo:
+
+    def __init__(self, recipenames, pypinames):
+        self.recipenames = recipenames
+        self.pypinames = pypinames
+
 def get_recipe_order(names, blacklist):
     names = _fix_deplist([([name] if not isinstance(name, (list, tuple)) else name) for name in names])
     blacklist = set() if blacklist is None else {bitem.lower() for bitem in blacklist}
@@ -206,5 +212,9 @@ def get_recipe_order(names, blacklist):
             pypinames.append(name)
         else:
             recipenames.append(name)
-    assert not set(recipenames) & set(pypinames)
-    return recipenames, sorted(set(pypinames))
+    pypinames = set(pypinames)
+    assert not set(recipenames) & pypinames
+    pypinames = sorted(pypinames)
+    log.info("Recipe build order is %s", recipenames)
+    log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(pypinames))
+    return GraphInfo(recipenames, pypinames)
