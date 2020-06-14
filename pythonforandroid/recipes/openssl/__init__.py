@@ -56,7 +56,7 @@ class OpenSSLRecipe(Recipe):
         self.ndk_api = config.android.ndk_api
 
     def get_build_dir(self, arch):
-        return self.get_build_container_dir(arch) / f"{self.name}{self.version}"
+        return self.get_build_container_dir(arch) / f"{self.name}{self.version}" # XXX: Why?
 
     def include_flags(self):
         openssl_includes = self.get_build_dir(self.arch) / 'include'
