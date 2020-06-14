@@ -244,11 +244,11 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         find.print(objsdir, '-name', '*.o', '-exec', *self.arch.strip, '{}', ';')
 
     def install_hostpython_package(self):
-        env = self.get_hostrecipe_env()
-        self.rebuild_compiled_components(env)
+        self.rebuild_compiled_components()
         super().install_hostpython_package()
 
-    def rebuild_compiled_components(self, env):
+    def rebuild_compiled_components(self):
+        env = self.get_hostrecipe_env()
         log.info("Rebuilding compiled components in %s", self.name)
         hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir(self.arch))
         hostpython.print('setup.py', 'clean', '--all')
