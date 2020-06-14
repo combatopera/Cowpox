@@ -232,6 +232,13 @@ class Recipe(Plugin):
                     patch = nextpatch
             touch.print(build_dir / '.patched')
 
+    def mainbuild(self):
+        if self.should_build():
+            self.build_arch()
+            self.install_libraries()
+        else:
+            log.debug("[%s] Already built.", recipe.name)
+
     def should_build(self):
         return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries()) # XXX: Weird logic?
 
