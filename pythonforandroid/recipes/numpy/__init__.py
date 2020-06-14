@@ -55,11 +55,7 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
     call_hostpython_via_targetpython = False
 
     def build_compiled_components(self):
-        self.setup_extra_args = ['-j', str(cpu_count())] # FIXME: Horrible!
-        super().build_compiled_components()
-        self.setup_extra_args = []
+        super().build_compiled_components('-j', cpu_count())
 
     def rebuild_compiled_components(self):
-        self.setup_extra_args = ['-j', str(cpu_count())]
-        super().rebuild_compiled_components()
-        self.setup_extra_args = []
+        super().rebuild_compiled_components('-j', cpu_count())

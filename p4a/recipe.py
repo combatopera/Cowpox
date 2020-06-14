@@ -233,13 +233,13 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         self.build_compiled_components()
         super().install_python_package()
 
-    def build_compiled_components(self):
+    def build_compiled_components(self, *setup_extra_args):
         log.info("Building compiled components in %s", self.name)
         builddir = self.get_build_dir(self.arch)
         hostpython = Program.text(self.hostpython_location).partial(env = self.get_recipe_env(self.arch), cwd = builddir)
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
-        hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
+        hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
         objsdir, = builddir.glob('build/lib.*')
         find.print(objsdir, '-name', '*.o', '-exec', *self.arch.strip, '{}', ';')
 
@@ -247,12 +247,12 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         self.rebuild_compiled_components()
         super().install_hostpython_package()
 
-    def rebuild_compiled_components(self):
+    def rebuild_compiled_components(self, *setup_extra_args):
         env = self.get_hostrecipe_env()
         log.info("Rebuilding compiled components in %s", self.name)
         hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.get_build_dir(self.arch))
         hostpython.print('setup.py', 'clean', '--all')
-        hostpython.print('setup.py', self.build_cmd, '-v', *self.setup_extra_args)
+        hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
 
 class CythonRecipe(PythonRecipe):
 
