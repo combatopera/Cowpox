@@ -217,7 +217,7 @@ class GuestPythonRecipe(Recipe):
         return f"libpython{py_version}.so"
 
     def should_build(self):
-        return not (self.link_root(self.arch) / self._libpython).is_file()
+        return not (self.link_root() / self._libpython).is_file()
 
     def build_arch(self):
         assert self.ndk_api >= self.MIN_NDK_API
@@ -234,11 +234,11 @@ class GuestPythonRecipe(Recipe):
         make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env, cwd = build_dir)
         cp.print(build_dir / 'pyconfig.h', recipe_build_dir / 'Include')
 
-    def include_root(self, arch):
-        return self.get_build_dir(arch) / 'Include'
+    def include_root(self):
+        return self.get_build_dir(self.arch) / 'Include'
 
-    def link_root(self, arch):
-        return self.get_build_dir(arch) / 'android-build'
+    def link_root(self):
+        return self.get_build_dir(self.arch) / 'android-build'
 
     def _compile_python_files(self, dirpath):
         args = ['-b'] if self.name == 'python3' else [] # XXX: Simplify?

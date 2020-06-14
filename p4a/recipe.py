@@ -62,8 +62,8 @@ class BootstrapNDKRecipe(Recipe):
 
     def recipe_env_with_python(self):
         env = super().get_recipe_env()
-        env['PYTHON_INCLUDE_ROOT'] = self.graph.python_recipe.include_root(self.arch)
-        env['PYTHON_LINK_ROOT'] = self.graph.python_recipe.link_root(self.arch)
+        env['PYTHON_INCLUDE_ROOT'] = self.graph.python_recipe.include_root()
+        env['PYTHON_LINK_ROOT'] = self.graph.python_recipe.link_root()
         env['EXTRA_LDLIBS'] = f" -lpython{self.graph.python_recipe.majminversion}"
         if 'python3' in self.graph.python_recipe.name:
             env['EXTRA_LDLIBS'] += 'm'
@@ -159,8 +159,8 @@ class PythonRecipe(Recipe):
 
         if not self.call_hostpython_via_targetpython:
             python_name = self.graph.python_recipe.name
-            env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root(self.arch)}"
-            env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root(self.arch)} -lpython{self.graph.python_recipe.majminversion}"
+            env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root()}"
+            env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root()} -lpython{self.graph.python_recipe.majminversion}"
             if python_name == 'python3':
                 env['LDFLAGS'] += 'm'
             hppath = []
