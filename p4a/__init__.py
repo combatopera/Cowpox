@@ -107,6 +107,10 @@ class Recipe(Plugin):
     def url(self):
         return format_obj(self.urlformat, self)
 
+    @property
+    def dir_name(self):
+        return self.name
+
     @types(Config, Context, Platform, Graph, Mirror, Arch, GraphInfo)
     def __init__(self, config, context, platform, graph, mirror, arch, graphinfo):
         self.other_builds = Path(config.other_builds)
@@ -129,7 +133,7 @@ class Recipe(Plugin):
         return self.other_builds / self.graphinfo.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / arch.builddirname()
 
     def get_build_dir(self, arch):
-        return self.get_build_container_dir(arch) / self.name
+        return self.get_build_container_dir(arch) / self.dir_name
 
     def download_if_necessary(self):
         if self.url is None:

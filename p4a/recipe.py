@@ -60,9 +60,6 @@ class BootstrapNDKRecipe(Recipe):
     def get_build_container_dir(self, arch):
         return self.jni_dir
 
-    def get_build_dir(self, arch):
-        return self.get_build_container_dir(arch) / self.dir_name
-
     def recipe_env_with_python(self, arch):
         env = super().get_recipe_env(arch)
         env['PYTHON_INCLUDE_ROOT'] = self.graph.python_recipe.include_root(arch)
