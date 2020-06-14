@@ -54,16 +54,14 @@ class BootstrapNDKRecipe(Recipe):
 
     @types(Bootstrap)
     def __init(self, bootstrap):
+        self.jni_dir = bootstrap.build_dir / 'jni'
         self.bootstrap = bootstrap
 
     def get_build_container_dir(self, arch):
-        return self.get_jni_dir()
+        return self.jni_dir
 
     def get_build_dir(self, arch):
         return self.get_build_container_dir(arch) / self.dir_name
-
-    def get_jni_dir(self):
-        return self.bootstrap.build_dir / 'jni'
 
     def recipe_env_with_python(self, arch):
         env = super().get_recipe_env(arch)
