@@ -51,18 +51,6 @@ import logging, os, subprocess
 log = logging.getLogger(__name__)
 
 class BootstrapNDKRecipe(Recipe):
-    '''A recipe class for recipes built in an Android project jni dir with
-    an Android.mk. These are not cached separatly, but built in the
-    bootstrap's own building directory.
-
-    To build an NDK project which is not part of the bootstrap, see
-    :class:`~pythonforandroid.recipe.NDKRecipe`.
-
-    To link with python, call the method :meth:`get_recipe_env`
-    with the kwarg *with_python=True*.
-    '''
-
-    dir_name = None  # The name of the recipe build folder in the jni dir
 
     @types(Bootstrap)
     def __init(self, bootstrap):
@@ -72,8 +60,6 @@ class BootstrapNDKRecipe(Recipe):
         return self.get_jni_dir()
 
     def get_build_dir(self, arch):
-        if self.dir_name is None:
-            raise ValueError(f"{self.name} recipe doesn't define a dir_name, but this is necessary")
         return self.get_build_container_dir(arch) / self.dir_name
 
     def get_jni_dir(self):
