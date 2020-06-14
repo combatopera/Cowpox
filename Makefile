@@ -42,7 +42,7 @@
 SHELL = /bin/bash
 export BASH_ENV = bash_env
 
-TAG = seizure
+TAG = cowpox
 PREVIOUS = $(TAG):previous
 
 .PHONY: all
