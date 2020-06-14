@@ -61,11 +61,12 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Context, Dirs, TargetAndroid, Src, Checks, this = Result)
-def run(context, dirs, target, src, checks):
+@types(Checks, Bootstrap, Context, Src, Dirs, TargetAndroid, this = Result)
+def run(checks, bootstrap, context, src, dirs, target):
     log.info('Compile platform')
     checks.check()
     context.build_recipes()
+    bootstrap.run_distribute()
     src.copy_application_sources()
     dirs.add_sitecustomize()
     log.info('Package the application')

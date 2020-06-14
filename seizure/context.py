@@ -178,4 +178,3 @@ class ContextImpl(Context):
         else:
             log.info('There are no Python modules to install, skipping')
         self.arch.strip_object_files(self.buildsdir)
-        self.bootstrap.run_distribute()
