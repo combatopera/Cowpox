@@ -252,7 +252,7 @@ class CythonRecipe(PythonRecipe):
         hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False
-        setup = hostpython.partial('setup.py', 'build_ext', '-v')
+        setup = hostpython.partial('setup.py', 'build_ext')._v
         try:
             setup.print()
         except subprocess.CalledProcessError as e:
