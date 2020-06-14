@@ -176,28 +176,24 @@ class Recipe(Plugin):
             log.info("Skipping %s unpack as no URL is set", self.name)
             return
         if not directory_name.is_dir():
-            extraction_filename = self.mirror.getpath(self.url)
+            archivepath = self.mirror.getpath(self.url)
             if self.url.endswith('.zip'):
                 try:
-                    unzip.print(extraction_filename, cwd = build_dir)
+                    unzip.print(archivepath, cwd = build_dir)
                 except subprocess.CalledProcessError as e:
-                    # return code 1 means unzipping had
-                    # warnings but did complete,
-                    # apparently happens sometimes with
-                    # github zips
                     if e.returncode not in {1, 2}:
                         raise
-                zf = ZipFile(extraction_filename, 'r')
+                zf = ZipFile(archivepath, 'r')
                 root_directory = zf.filelist[0].filename.split('/')[0]
                 if root_directory != directory_name.name:
                     mv.print(root_directory, directory_name, cwd = build_dir)
             elif self.url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
-                tar.xf.print(extraction_filename, cwd = build_dir)
-                root_directory = tar.tf(extraction_filename).split('\n')[0].split('/')[0]
+                tar.xf.print(archivepath, cwd = build_dir)
+                root_directory = tar.tf(archivepath).split('\n')[0].split('/')[0]
                 if root_directory != directory_name.name:
                     mv.print(root_directory, directory_name, cwd = build_dir)
             else:
-                raise Exception(f"Could not extract {extraction_filename} download, it must be .zip, .tar.gz or .tar.bz2 or .tar.xz")
+                raise Exception(f"Could not extract {archivepath} download, it must be .zip, .tar.gz or .tar.bz2 or .tar.xz")
         else:
             log.info("%s is already unpacked, skipping", self.name)
 
