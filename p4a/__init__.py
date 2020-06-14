@@ -165,17 +165,17 @@ class Recipe(Plugin):
 
     def prepare_build_dir(self):
         build_dir = self.get_build_container_dir(self.arch).mkdirp()
-        directory_name = self.get_build_dir(self.arch)
+        targetpath = self.get_build_dir(self.arch)
         if self.url is not None and not urlparse(self.url).scheme:
             srcpath = Path(self.url.replace('/', os.sep))
-            rm._rf.print(directory_name)
-            self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), directory_name)
+            rm._rf.print(targetpath)
+            self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), targetpath)
             return
         log.info("Unpacking %s for %s", self.name, self.arch.name)
         if self.url is None:
             log.info("Skipping %s unpack as no URL is set", self.name)
             return
-        if not directory_name.is_dir():
+        if not targetpath.is_dir():
             archivepath = self.mirror.getpath(self.url)
             if self.url.endswith('.zip'):
                 try:
@@ -185,13 +185,13 @@ class Recipe(Plugin):
                         raise
                 zf = ZipFile(archivepath, 'r')
                 root_directory = zf.filelist[0].filename.split('/')[0]
-                if root_directory != directory_name.name:
-                    mv.print(root_directory, directory_name, cwd = build_dir)
+                if root_directory != targetpath.name:
+                    mv.print(root_directory, targetpath, cwd = build_dir)
             elif self.url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
                 tar.xf.print(archivepath, cwd = build_dir)
                 root_directory = tar.tf(archivepath).split('\n')[0].split('/')[0]
-                if root_directory != directory_name.name:
-                    mv.print(root_directory, directory_name, cwd = build_dir)
+                if root_directory != targetpath.name:
+                    mv.print(root_directory, targetpath, cwd = build_dir)
             else:
                 raise Exception(f"Could not extract {archivepath} download, it must be .zip, .tar.gz or .tar.bz2 or .tar.xz")
         else:
