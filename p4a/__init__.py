@@ -132,10 +132,13 @@ class Recipe(Plugin):
         return self.get_build_container_dir(arch) / self.name
 
     def download_if_necessary(self):
-        log.info("Downloading %s", self.name)
-        if self.url is None or not urlparse(self.url).scheme:
-            log.info("Skipping %s download as no URL is set", self.name)
+        if self.url is None:
+            log.debug("[%s] Skip download as no URL is set.", self.name)
             return
+        if not urlparse(self.url).scheme:
+            log.debug("[%s] Skip download as URL is a path.", self.name)
+            return
+        log.info("[%s] Downloading.", self.name)
         path = self.mirror.download(self.url)
         if self.md5sum is not None:
             current_md5 = hashlib.md5(path.read_bytes()).hexdigest()
