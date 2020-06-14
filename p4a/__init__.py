@@ -169,7 +169,7 @@ class Recipe(Plugin):
             return
         build_dir = self.get_build_container_dir(self.arch).mkdirp()
         targetpath = self.get_build_dir(self.arch)
-        if self.url is not None and not urlparse(self.url).scheme:
+        if not urlparse(self.url).scheme:
             srcpath = Path(self.url.replace('/', os.sep))
             rm._rf.print(targetpath)
             self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), targetpath)
