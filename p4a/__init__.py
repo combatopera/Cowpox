@@ -143,8 +143,9 @@ class Recipe(Plugin):
     def _unpack(self):
         directory_name = self.get_build_dir(self.arch)
         if self.url is not None and not urlparse(self.url).scheme:
+            srcpath = Path(self.url.replace('/', os.sep))
             rm._rf.print(directory_name)
-            cp._a.print(self.resourcepath(self.url.replace('/', os.sep)), directory_name)
+            cp._a.print(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), directory_name)
             return
         log.info("Unpacking %s for %s", self.name, self.arch.name)
         build_dir = self.get_build_container_dir(self.arch)
