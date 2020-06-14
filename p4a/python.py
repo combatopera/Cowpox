@@ -105,7 +105,7 @@ class HostPythonRecipe(Recipe):
 class GuestPythonRecipe(Recipe):
 
     @property
-    def major_minor_version_string(self):
+    def majminversion(self):
         return '.'.join(str(v) for v in LooseVersion(self.version).version[:2])
 
     MIN_NDK_API = 21
@@ -212,8 +212,8 @@ class GuestPythonRecipe(Recipe):
     @property
     def _libpython(self):
         '''return the python's library name (with extension)'''
-        py_version = self.major_minor_version_string
-        if self.major_minor_version_string[0] == '3':
+        py_version = self.majminversion
+        if self.majminversion[0] == '3':
             py_version += 'm'
         return f"libpython{py_version}.so"
 
@@ -249,7 +249,7 @@ class GuestPythonRecipe(Recipe):
 
     def create_python_bundle(self, dirn, arch):
         dirn = (dirn / '_python_bundle' / '_python_bundle').mkdirp()
-        modules_build_dir = self.get_build_dir(arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.major_minor_version_string}"
+        modules_build_dir = self.get_build_dir(arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.majminversion}"
         self._compile_python_files(dirn / modules_build_dir)
         self._compile_python_files(dirn / self.get_build_dir(arch) / 'Lib')
         self._compile_python_files(dirn / self.python_install_dir)
@@ -272,8 +272,8 @@ class GuestPythonRecipe(Recipe):
         for filen in filens:
             log.info(" - copy %s", filen)
             copy2(filen, (dirn / 'site-packages' / filen.relative_to(installdir)).pmkdirp())
-        python_lib_name = f"libpython{self.major_minor_version_string}"
-        if self.major_minor_version_string[0] == '3':
+        python_lib_name = f"libpython{self.majminversion}"
+        if self.majminversion[0] == '3':
             python_lib_name += 'm'
         cp.print(self.get_build_dir(arch) / 'android-build' / f"{python_lib_name}.so", self.dist_dir / 'libs' / arch.name)
         log.info('Renaming .so files to reflect cross-compile')

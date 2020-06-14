@@ -98,7 +98,7 @@ class PipInstallRecipe(CythonRecipe):
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
         env['PYTHONPATH'] = os.pathsep.join(map(str, [
-            self.venv_path / 'lib' / f"python{self.graph.python_recipe.major_minor_version_string}" / 'site-packages',
+            self.venv_path / 'lib' / f"python{self.graph.python_recipe.majminversion}" / 'site-packages',
             self.python_install_dir,
         ]))
         return env
@@ -151,7 +151,7 @@ class ContextImpl:
             return
         log.info("The requirements (%s) don't have recipes, attempting to install them with pip", ', '.join(pypinames))
         log.info('If this fails, it may mean that the module has compiled components and needs a recipe.')
-        virtualenv.print(f"--python=python{self.graph.python_recipe.major_minor_version_string.partition('.')[0]}", self.venv_path)
+        virtualenv.print(f"--python=python{self.graph.python_recipe.majminversion.partition('.')[0]}", self.venv_path)
         log.info('Upgrade pip to latest version')
         pip = Program.text(self.venv_path / 'bin' / 'pip')
         pip.install._U.print('pip', env = dict(PYTHONPATH = self.python_install_dir))

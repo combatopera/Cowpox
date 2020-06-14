@@ -83,7 +83,7 @@ class BootstrapNDKRecipe(Recipe):
         env = super().get_recipe_env(arch)
         env['PYTHON_INCLUDE_ROOT'] = self.graph.python_recipe.include_root(arch)
         env['PYTHON_LINK_ROOT'] = self.graph.python_recipe.link_root(arch)
-        env['EXTRA_LDLIBS'] = f" -lpython{self.graph.python_recipe.major_minor_version_string}"
+        env['EXTRA_LDLIBS'] = f" -lpython{self.graph.python_recipe.majminversion}"
         if 'python3' in self.graph.python_recipe.name:
             env['EXTRA_LDLIBS'] += 'm'
         return env
@@ -179,7 +179,7 @@ class PythonRecipe(Recipe):
         if not self.call_hostpython_via_targetpython:
             python_name = self.graph.python_recipe.name
             env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root(arch)}"
-            env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root(arch)} -lpython{self.graph.python_recipe.major_minor_version_string}"
+            env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root(arch)} -lpython{self.graph.python_recipe.majminversion}"
             if python_name == 'python3':
                 env['LDFLAGS'] += 'm'
             hppath = []
@@ -292,7 +292,7 @@ class CythonRecipe(PythonRecipe):
         elif 'PYTHONPATH' in cyenv:
             del cyenv['PYTHONPATH']
         cyenv.pop('PYTHONNOUSERSITE', None)
-        python_command = Program.text(f"python{self.graph.python_recipe.major_minor_version_string.split('.')[0]}")
+        python_command = Program.text(f"python{self.graph.python_recipe.majminversion.split('.')[0]}")
         python_command.print("-m", "Cython.Build.Cythonize", filename, env = cyenv)
 
     def cythonize_build(self, env, build_dir):
