@@ -65,6 +65,7 @@ class Result: pass
 def run(checks, bootstrap, context, src, dirs, target):
     log.info('Compile platform')
     checks.check()
+    bootstrap.prepare_dirs()
     context.build_recipes()
     bootstrap.run_distribute()
     src.copy_application_sources()

@@ -47,7 +47,6 @@ from diapyr import types
 from lagoon import virtualenv
 from lagoon.program import Program
 from p4a import Arch, Context, Graph
-from p4a.boot import Bootstrap
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe
 from pathlib import Path
@@ -106,8 +105,8 @@ class PipInstallRecipe(CythonRecipe):
 
 class ContextImpl(Context):
 
-    @types(Config, Platform, Arch, Bootstrap, Graph, GraphInfo, PipInstallRecipe)
-    def __init__(self, config, platform, arch, bootstrap, graph, graphinfo, pipinstallrecipe):
+    @types(Config, Platform, Arch, Graph, GraphInfo, PipInstallRecipe)
+    def __init__(self, config, platform, arch, graph, graphinfo, pipinstallrecipe):
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.other_builds = Path(config.other_builds)
@@ -117,7 +116,6 @@ class ContextImpl(Context):
         self.venv_path = Path(config.venv.path)
         self.platform = platform
         self.arch = arch
-        self.bootstrap = bootstrap
         self.graph = graph
         self.graphinfo = graphinfo
         self.pipinstallrecipe = pipinstallrecipe
@@ -130,7 +128,6 @@ class ContextImpl(Context):
         self.distsdir.mkdirp()
         self.bootstrap_builds.mkdirp()
         self.other_builds.mkdirp()
-        self.bootstrap.prepare_dirs()
         recipes = self.graph.allrecipes()
         log.info('Downloading recipes')
         for recipe in recipes:
