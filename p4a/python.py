@@ -243,15 +243,16 @@ class GuestPythonRecipe(Recipe):
 
     def _compile_python_files(self, dirpath):
         args = ['-b'] if self.name == 'python3' else [] # XXX: Simplify?
+        # TODO: Duplicated code.
         for path in dirpath.rglob('*.py'):
             os.utime(path, (0, 0)) # Determinism.
         Program.text(self.hostrecipe.python_exe)._OO._m.compileall.print(*args, '-f', dirpath, check = False) # XXX: Why not check?
 
-    def create_python_bundle(self, dirn, arch):
-        dirn = (dirn / '_python_bundle' / '_python_bundle').mkdirp()
-        modules_build_dir = self.get_build_dir(arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{arch.command_prefix.split('-')[0]}-{self.majminversion}"
+    def create_python_bundle(self):
+        dirn = (self.dist_dir / '_python_bundle' / '_python_bundle').mkdirp()
+        modules_build_dir = self.get_build_dir(self.arch) / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
         self._compile_python_files(dirn / modules_build_dir)
-        self._compile_python_files(dirn / self.get_build_dir(arch) / 'Lib')
+        self._compile_python_files(dirn / self.get_build_dir(self.arch) / 'Lib')
         self._compile_python_files(dirn / self.python_install_dir)
         modules_dir = (dirn / 'modules').mkdirp()
         c_ext = self.compiled_extension
@@ -261,7 +262,7 @@ class GuestPythonRecipe(Recipe):
             log.info(" - copy %s", filen)
             copy2(filen, modules_dir)
         stdlib_zip = dirn / 'stdlib.zip'
-        libdir = self.get_build_dir(arch) / 'Lib'
+        libdir = self.get_build_dir(self.arch) / 'Lib'
         stdlib_filens = list(_walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(stdlib_zip, *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
@@ -275,7 +276,7 @@ class GuestPythonRecipe(Recipe):
         python_lib_name = f"libpython{self.majminversion}"
         if self.majversion == 3:
             python_lib_name += 'm'
-        cp.print(self.get_build_dir(arch) / 'android-build' / f"{python_lib_name}.so", self.dist_dir / 'libs' / arch.name)
+        cp.print(self.get_build_dir(self.arch) / 'android-build' / f"{python_lib_name}.so", self.dist_dir / 'libs' / self.arch.name)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(dirn / 'site-packages')
         return dirn / 'site-packages'
