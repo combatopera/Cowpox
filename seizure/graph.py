@@ -38,10 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .config import Config
 from .util import findimpl, NoSuchPluginException
 from copy import deepcopy
+from diapyr import types
 from itertools import product
 from p4a import Recipe
+from p4a.boot import BootstrapType
 import logging
 
 log = logging.getLogger(__name__)
@@ -163,6 +166,7 @@ def _obvious_conflict_checker(name_tuples, blacklist):
 
 class GraphInfo:
 
+    @types(Config, BootstrapType)
     def __init__(self, config, bootstraptype):
         self.recipenames, self.pypinames = _get_recipe_order({*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
         log.info("Recipe build order is %s", self.recipenames)

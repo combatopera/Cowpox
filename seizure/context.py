@@ -46,7 +46,7 @@ from diapyr import types, DI
 from lagoon import virtualenv
 from lagoon.program import Program
 from p4a import Arch, Context, Graph
-from p4a.boot import Bootstrap, BootstrapType
+from p4a.boot import Bootstrap
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe
 from pathlib import Path
@@ -76,9 +76,8 @@ class Checks:
 
 class GraphImpl(Graph):
 
-    @types(Config, BootstrapType, DI)
-    def __init__(self, config, bootstraptype, di):
-        info = GraphInfo(config, bootstraptype)
+    @types(GraphInfo, DI)
+    def __init__(self, info, di):
         self.recipenames = info.recipenames
         self.pypinames = info.pypinames
         self.recipedi = di.createchild()
