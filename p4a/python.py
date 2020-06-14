@@ -79,7 +79,7 @@ class HostPythonRecipe(Recipe):
     def should_build(self):
         return not self.python_exe.exists()
 
-    def get_build_container_dir(self, arch):
+    def get_build_container_dir(self):
         return self.buildcontainerparent / 'desktop'
 
     def get_path_to_python(self):

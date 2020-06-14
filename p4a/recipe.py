@@ -57,7 +57,7 @@ class BootstrapNDKRecipe(Recipe):
         self.jni_dir = bootstrap.build_dir / 'jni'
         self.bootstrap = bootstrap
 
-    def get_build_container_dir(self, arch):
+    def get_build_container_dir(self):
         return self.jni_dir
 
     def recipe_env_with_python(self):
@@ -287,5 +287,5 @@ class CythonRecipe(PythonRecipe):
         env['LIBLINK'] = 'NOTNONE'
         env['NDKPLATFORM'] = self.platform.ndk_platform(self.arch)
         env['COPYLIBS'] = '1'
-        env['LIBLINK_PATH'] = (self.get_build_container_dir(self.arch) / f"objects_{self.name}").mkdirp()
+        env['LIBLINK_PATH'] = (self.get_build_container_dir() / f"objects_{self.name}").mkdirp()
         return env

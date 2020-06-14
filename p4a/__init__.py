@@ -133,11 +133,11 @@ class Recipe(Plugin):
     def buildcontainerparent(self):
         return self.other_builds / self.graphinfo.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)])
 
-    def get_build_container_dir(self, arch):
-        return self.buildcontainerparent / arch.builddirname()
+    def get_build_container_dir(self):
+        return self.buildcontainerparent / self.arch.builddirname()
 
     def get_build_dir(self):
-        return self.get_build_container_dir(self.arch) / self.dir_name
+        return self.get_build_container_dir() / self.dir_name
 
     def download_if_necessary(self):
         if self.url is None:
