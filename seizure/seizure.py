@@ -45,7 +45,7 @@ from .build import APKMaker
 from .config import Config
 from .context import Checks, ContextImpl, GraphImpl
 from .dirs import Dirs
-from .graph import GraphInfo
+from .graph import GraphInfoImpl
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
 from .src import Src
@@ -86,7 +86,7 @@ def _main():
         di.add(ContextImpl)
         di.add(Dirs)
         di.add(GraphImpl)
-        di.add(GraphInfo)
+        di.add(GraphInfoImpl)
         di.add(Mirror)
         di.add(Platform)
         di.add(PlatformInfo)

@@ -43,7 +43,6 @@ from lagoon import cp, mv, patch as patchexe, rm, tar, touch, unzip
 from pathlib import Path
 from pkg_resources import resource_filename
 from seizure.config import Config
-from seizure.graph import GraphInfo
 from seizure.mirror import Mirror
 from seizure.platform import Platform
 from seizure.util import format_obj
@@ -66,6 +65,8 @@ class Plugin:
 class Context: pass
 
 class Graph: pass
+
+class GraphInfo: pass
 
 class Arch: pass
 

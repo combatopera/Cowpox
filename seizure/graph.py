@@ -43,7 +43,7 @@ from .util import findimpl, NoSuchPluginException
 from copy import deepcopy
 from diapyr import types
 from itertools import product
-from p4a import Recipe
+from p4a import GraphInfo, Recipe
 from p4a.boot import BootstrapType
 import logging
 
@@ -164,7 +164,7 @@ def _obvious_conflict_checker(name_tuples, blacklist):
             deps_were_added_by[added_tuple] = adding_recipe
             to_be_added += [(dep, adder_first_recipe_name or name) for dep in recipe_dependencies if dep not in deps]
 
-class GraphInfo:
+class GraphInfoImpl(GraphInfo):
 
     @types(Config, BootstrapType)
     def __init__(self, config, bootstraptype):
