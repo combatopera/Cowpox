@@ -179,6 +179,7 @@ class Recipe(Plugin):
             if not urlparse(self.url).scheme:
                 srcpath = Path(self.url.replace('/', os.sep))
                 log.info("[%s] Copy from: %s", self.name, srcpath)
+                # TODO: Copy without .git either.
                 self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), targetpath)
                 return
             archivepath = self.mirror.getpath(self.url)
