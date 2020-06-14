@@ -60,10 +60,10 @@ class BootstrapNDKRecipe(Recipe):
     def get_build_container_dir(self, arch):
         return self.jni_dir
 
-    def recipe_env_with_python(self, arch):
-        env = super().get_recipe_env(arch)
-        env['PYTHON_INCLUDE_ROOT'] = self.graph.python_recipe.include_root(arch)
-        env['PYTHON_LINK_ROOT'] = self.graph.python_recipe.link_root(arch)
+    def recipe_env_with_python(self):
+        env = super().get_recipe_env()
+        env['PYTHON_INCLUDE_ROOT'] = self.graph.python_recipe.include_root(self.arch)
+        env['PYTHON_LINK_ROOT'] = self.graph.python_recipe.link_root(self.arch)
         env['EXTRA_LDLIBS'] = f" -lpython{self.graph.python_recipe.majminversion}"
         if 'python3' in self.graph.python_recipe.name:
             env['EXTRA_LDLIBS'] += 'm'
@@ -91,7 +91,7 @@ class NDKRecipe(Recipe):
     def build_arch(self):
         super().build_arch()
         Program.text(self.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={self.arch.name}",
-                env = self.get_recipe_env(self.arch), cwd = self.get_build_dir(self.arch))
+                env = self.get_recipe_env(), cwd = self.get_build_dir(self.arch))
 
 class PythonRecipe(Recipe):
 
@@ -149,8 +149,8 @@ class PythonRecipe(Recipe):
     def hostpython_location(self):
         return self.hostrecipe.python_exe if self.call_hostpython_via_targetpython else self.real_hostpython_location
 
-    def get_recipe_env(self, arch):
-        env = super().get_recipe_env(arch)
+    def get_recipe_env(self):
+        env = super().get_recipe_env()
         env['PYTHONNOUSERSITE'] = '1'
 
         # Set the LANG, this isn't usually important but is a better default
@@ -159,8 +159,8 @@ class PythonRecipe(Recipe):
 
         if not self.call_hostpython_via_targetpython:
             python_name = self.graph.python_recipe.name
-            env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root(arch)}"
-            env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root(arch)} -lpython{self.graph.python_recipe.majminversion}"
+            env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root(self.arch)}"
+            env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root(self.arch)} -lpython{self.graph.python_recipe.majminversion}"
             if python_name == 'python3':
                 env['LDFLAGS'] += 'm'
             hppath = []
@@ -191,7 +191,7 @@ class PythonRecipe(Recipe):
         log.info("Installing %s into site-packages", self.name)
         Program.text(self.hostpython_location).print(
                 'setup.py', 'install', '-O2', f"--root={self.python_install_dir.pmkdirp()}", '--install-lib=.',
-                env = self.get_recipe_env(self.arch), cwd = self.get_build_dir(self.arch))
+                env = self.get_recipe_env(), cwd = self.get_build_dir(self.arch))
         if self.install_in_hostpython:
             self.install_hostpython_package()
 
@@ -213,7 +213,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     def build_compiled_components(self, *setup_extra_args):
         log.info("Building compiled components in %s", self.name)
         builddir = self.get_build_dir(self.arch)
-        hostpython = Program.text(self.hostpython_location).partial(env = self.get_recipe_env(self.arch), cwd = builddir)
+        hostpython = Program.text(self.hostpython_location).partial(env = self.get_recipe_env(), cwd = builddir)
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
@@ -243,7 +243,7 @@ class CythonRecipe(PythonRecipe):
 
     def install_python_package(self):
         log.info("Cythonizing anything necessary in %s", self.name)
-        env = self.get_recipe_env(self.arch)
+        env = self.get_recipe_env()
         builddir = self.get_build_dir(self.arch)
         hostpython = Program.text(self.hostrecipe.python_exe).partial(env = env, cwd = builddir)
         hostpython._c.print('import sys; print(sys.path)')
@@ -280,12 +280,12 @@ class CythonRecipe(PythonRecipe):
         for filename in build_dir.rglob('*.pyx'):
             self.cythonize_file(env, filename)
 
-    def get_recipe_env(self, arch):
-        env = super().get_recipe_env(arch)
-        env['LDFLAGS'] += f" -L{arch.libs_dir} -L{self.libs_parent} -L{self.bootstrap.build_dir / 'obj' / 'local' / arch.name}"
+    def get_recipe_env(self):
+        env = super().get_recipe_env()
+        env['LDFLAGS'] += f" -L{self.arch.libs_dir} -L{self.libs_parent} -L{self.bootstrap.build_dir / 'obj' / 'local' / self.arch.name}"
         env['LDSHARED'] = env['CC'] + ' -shared'
         env['LIBLINK'] = 'NOTNONE'
-        env['NDKPLATFORM'] = self.platform.ndk_platform(arch)
+        env['NDKPLATFORM'] = self.platform.ndk_platform(self.arch)
         env['COPYLIBS'] = '1'
-        env['LIBLINK_PATH'] = (self.get_build_container_dir(arch) / f"objects_{self.name}").mkdirp()
+        env['LIBLINK_PATH'] = (self.get_build_container_dir(self.arch) / f"objects_{self.name}").mkdirp()
         return env

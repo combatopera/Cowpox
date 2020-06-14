@@ -53,7 +53,7 @@ class LibffiRecipe(Recipe):
     builtlibpaths = [Path('.libs', 'libffi.so')]
 
     def build_arch(self):
-        env = self.get_recipe_env(self.arch)
+        env = self.get_recipe_env()
         build_dir = self.get_build_dir(self.arch)
         if not (build_dir / 'configure').exists():
             Program.text(f".{os.sep}autogen.sh").print(env = env, cwd = build_dir)

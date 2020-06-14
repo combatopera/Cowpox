@@ -60,8 +60,8 @@ class KivyRecipe(CythonRecipe):
         if filename.name not in {'window_x11.pyx'}:
             super().cythonize_file(env, filename)
 
-    def get_recipe_env(self, arch):
-        env = super().get_recipe_env(arch)
+    def get_recipe_env(self):
+        env = super().get_recipe_env()
         if 'sdl2' in self.graphinfo.recipenames:
             env['USE_SDL2'] = '1'
             env['KIVY_SPLIT_EXAMPLES'] = '1'

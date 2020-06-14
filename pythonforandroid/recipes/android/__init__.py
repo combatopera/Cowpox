@@ -51,8 +51,8 @@ class AndroidRecipe(CythonRecipe):
     depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
     config_env = MappingProxyType({}) # XXX: Needed?
 
-    def get_recipe_env(self, arch):
-        env = super().get_recipe_env(arch)
+    def get_recipe_env(self):
+        env = super().get_recipe_env()
         env.update(self.config_env)
         return env
 

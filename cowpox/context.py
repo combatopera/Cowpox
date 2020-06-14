@@ -93,8 +93,8 @@ class PipInstallRecipe(CythonRecipe):
         self.venv_path = Path(config.venv.path)
         self.python_install_dir = config.python_install_dir
 
-    def get_recipe_env(self, arch):
-        env = super().get_recipe_env(arch)
+    def get_recipe_env(self):
+        env = super().get_recipe_env()
         # Make sure our build package dir is available, and the virtualenv
         # site packages come FIRST (so the proper pip version is used):
         env['PYTHONPATH'] = os.pathsep.join(map(str, [
@@ -157,5 +157,5 @@ class ContextImpl:
         log.info('Installing Python modules with pip')
         log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
         # Get environment variables for build (with CC/compiler set):
-        pip.install._v.__no_deps.print('--target', self.python_install_dir.pmkdirp(), *pypinames, env = self.pipinstallrecipe.get_recipe_env(self.arch))
+        pip.install._v.__no_deps.print('--target', self.python_install_dir.pmkdirp(), *pypinames, env = self.pipinstallrecipe.get_recipe_env())
         self.arch.strip_object_files(self.buildsdir)

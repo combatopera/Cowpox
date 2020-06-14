@@ -56,10 +56,10 @@ class LibSDL2Recipe(BootstrapNDKRecipe):
     def __init(self, config):
         self.ndk_dir = Path(config.android_ndk_dir)
 
-    def get_recipe_env(self, arch):
-        env = self.recipe_env_with_python(arch)
+    def get_recipe_env(self):
+        env = self.recipe_env_with_python()
         env['APP_ALLOW_MISSING_DEPS'] = 'true'
         return env
 
     def build_arch(self):
-        Program.text(self.ndk_dir / 'ndk-build').print('V=1', env = self.get_recipe_env(self.arch), cwd = self.jni_dir)
+        Program.text(self.ndk_dir / 'ndk-build').print('V=1', env = self.get_recipe_env(), cwd = self.jni_dir)

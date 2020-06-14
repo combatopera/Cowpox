@@ -166,11 +166,11 @@ class GuestPythonRecipe(Recipe):
         self.exename = f"python{self.majversion}"
         self.hostrecipe = hostrecipe
 
-    def get_recipe_env(self, arch):
+    def get_recipe_env(self):
         env = os.environ.copy()
-        env['HOSTARCH'] = arch.command_prefix
-        env['CC'] = self.platform.clang_exe(arch, with_target = True)
-        env['PATH'] = os.pathsep.join([f"""{self.graph.get_recipe(f"host{self.name}").get_path_to_python()}""", str(self.platform.prebuiltbin(arch)), env['PATH']])
+        env['HOSTARCH'] = self.arch.command_prefix
+        env['CC'] = self.platform.clang_exe(self.arch, with_target = True)
+        env['PATH'] = os.pathsep.join([f"""{self.graph.get_recipe(f"host{self.name}").get_path_to_python()}""", str(self.platform.prebuiltbin(self.arch)), env['PATH']])
         env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ndk_api}"
         env['LDFLAGS'] = env.get('LDFLAGS', '')
         if hasattr(lagoon, 'lld'):
@@ -225,7 +225,7 @@ class GuestPythonRecipe(Recipe):
         build_dir = (recipe_build_dir / 'android-build').mkdirp()
         sys_prefix = '/usr/local'
         sys_exec_prefix = '/usr/local'
-        env = self.set_libs_flags(self.get_recipe_env(self.arch))
+        env = self.set_libs_flags(self.get_recipe_env())
         android_build = Program.text(recipe_build_dir / 'config.guess')(cwd = build_dir).strip()
         if not (build_dir / 'config.status').exists():
             kwargs = dict(android_host = env['HOSTARCH'], android_build = android_build, prefix = sys_prefix, exec_prefix = sys_exec_prefix)

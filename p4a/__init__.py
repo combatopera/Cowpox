@@ -210,9 +210,9 @@ class Recipe(Plugin):
             if rootname != targetpath.name:
                 targetpath.with_name(rootname).rename(targetpath)
 
-    def get_recipe_env(self, arch):
-        env = arch.get_env()
-        env['BUILDLIB_PATH'] = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir(arch) / 'native-build' / 'build' / f"lib.{arch.build_platform}-{self.graph.python_recipe.majminversion}"
+    def get_recipe_env(self):
+        env = self.arch.get_env()
+        env['BUILDLIB_PATH'] = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir(self.arch) / 'native-build' / 'build' / f"lib.{self.arch.build_platform}-{self.graph.python_recipe.majminversion}"
         return env
 
     def prebuild(self):

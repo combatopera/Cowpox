@@ -69,8 +69,8 @@ class OpenSSLRecipe(Recipe):
     def link_libs_flags(self):
         return f" -lcrypto{self.version} -lssl{self.version}"
 
-    def get_recipe_env(self, arch):
-        env = super().get_recipe_env(arch)
+    def get_recipe_env(self):
+        env = super().get_recipe_env()
         env['OPENSSL_VERSION'] = self.version
         env['MAKE'] = 'make'
         env['ANDROID_NDK'] = self.ndk_dir
@@ -91,7 +91,7 @@ class OpenSSLRecipe(Recipe):
         return 'linux-armv4'
 
     def build_arch(self):
-        env = self.get_recipe_env(self.arch)
+        env = self.get_recipe_env()
         cwd = self.get_build_dir(self.arch)
         perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = cwd)
         self.apply_patch('disable-sover.patch')
