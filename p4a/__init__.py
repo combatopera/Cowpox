@@ -163,7 +163,8 @@ class Recipe(Plugin):
         else:
             log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
 
-    def _unpack(self):
+    def prepare_build_dir(self):
+        build_dir = self.get_build_container_dir(self.arch).mkdirp()
         directory_name = self.get_build_dir(self.arch)
         if self.url is not None and not urlparse(self.url).scheme:
             srcpath = Path(self.url.replace('/', os.sep))
@@ -171,7 +172,6 @@ class Recipe(Plugin):
             self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), directory_name)
             return
         log.info("Unpacking %s for %s", self.name, self.arch.name)
-        build_dir = self.get_build_container_dir(self.arch)
         if self.url is None:
             log.info("Skipping %s unpack as no URL is set", self.name)
             return
@@ -241,10 +241,6 @@ class Recipe(Plugin):
 
     def postbuild_arch(self):
         pass
-
-    def prepare_build_dir(self):
-        self.get_build_container_dir(self.arch).mkdirp()
-        self._unpack()
 
     def has_libs(self, *libs):
         return all(map(self.arch.has_lib, libs))
