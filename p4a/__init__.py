@@ -183,6 +183,7 @@ class Recipe(Plugin):
                 return
             archivepath = self.mirror.getpath(self.url)
             log.info("[%s] Unpack for: %s", self.name, self.arch.name)
+            # TODO LATER: Not such a good idea to use parent.
             # TODO LATER: Do not assume single top-level directory in archive.
             if self.url.endswith('.zip'):
                 try:
