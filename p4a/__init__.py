@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from diapyr import types
-from lagoon import cp, patch as patchexe, rm, tar, touch, unzip
+from lagoon import cp, patch as patchexe, tar, touch, unzip
 from pathlib import Path
 from pkg_resources import resource_filename
 from seizure.config import Config
@@ -167,36 +167,38 @@ class Recipe(Plugin):
             log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
 
     def prepare_build_dir(self):
-        if self.url is None:
-            log.debug("[%s] Skip unpack as no URL is set.", self.name)
-            return
-        build_dir = self.get_build_container_dir(self.arch).mkdirp()
         targetpath = self.get_build_dir(self.arch)
-        if not urlparse(self.url).scheme:
-            srcpath = Path(self.url.replace('/', os.sep))
-            rm._rf.print(targetpath)
-            self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), targetpath)
-            return
-        log.info("Unpacking %s for %s", self.name, self.arch.name)
-        if not targetpath.is_dir():
+        with targetpath.okorclean() as ok:
+            if ok:
+                log.debug("[%s] Already unpacked.", self.name)
+                return
+            if self.url is None:
+                log.debug("[%s] Skip unpack as no URL is set.", self.name)
+                return
+            targetpath.rmdir()
+            if not urlparse(self.url).scheme:
+                srcpath = Path(self.url.replace('/', os.sep))
+                log.info("[%s] Copy from: %s", self.name, srcpath)
+                self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), targetpath)
+                return
             archivepath = self.mirror.getpath(self.url)
+            log.info("[%s] Unpack for: %s", self.name, self.arch.name)
+            # TODO LATER: Do not assume single top-level directory in archive.
             if self.url.endswith('.zip'):
                 try:
-                    unzip.print(archivepath, cwd = build_dir)
+                    unzip.print(archivepath, cwd = targetpath.parent)
                 except subprocess.CalledProcessError as e:
                     if e.returncode not in {1, 2}:
                         raise
                 with ZipFile(archivepath) as zf:
                     rootname = zf.filelist[0].filename.split('/')[0]
             elif self.url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
-                tar.xf.print(archivepath, cwd = build_dir)
+                tar.xf.print(archivepath, cwd = targetpath.parent)
                 rootname = tar.tf(archivepath).splitlines()[0].split('/')[0]
             else:
-                raise Exception(f"Could not extract {archivepath} download, it must be .zip, .tar.gz or .tar.bz2 or .tar.xz")
+                raise Exception(f"Unsupported archive type: {self.url}")
             if rootname != targetpath.name:
-                (build_dir / rootname).rename(targetpath)
-        else:
-            log.info("%s is already unpacked, skipping", self.name)
+                targetpath.with_name(rootname).rename(targetpath)
 
     def get_recipe_env(self, arch):
         return arch.get_env()
