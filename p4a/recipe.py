@@ -131,10 +131,6 @@ class PythonRecipe(Recipe):
     install_in_targetpython = True
     '''If True, installs the module in the targetpython installation dir.
     This is almost always what you want to do.'''
-
-    setup_extra_args = []
-    '''List of extra arguments to pass to setup.py'''
-
     depends = [('python2', 'python3')]
     '''
     .. note:: it's important to keep this depends as a class attribute outside
@@ -213,7 +209,7 @@ class PythonRecipe(Recipe):
     def install_python_package(self):
         log.info("Installing %s into site-packages", self.name)
         Program.text(self.hostpython_location).print(
-                'setup.py', 'install', '-O2', f"--root={self.python_install_dir.pmkdirp()}", '--install-lib=.', *self.setup_extra_args,
+                'setup.py', 'install', '-O2', f"--root={self.python_install_dir.pmkdirp()}", '--install-lib=.',
                 env = self.get_recipe_env(self.arch), cwd = self.get_build_dir(self.arch))
         if self.install_in_hostpython:
             self.install_hostpython_package()
@@ -223,7 +219,7 @@ class PythonRecipe(Recipe):
 
     def install_hostpython_package(self):
         env = self.get_hostrecipe_env()
-        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', *self.setup_extra_args, env = env, cwd = self.get_build_dir(self.arch))
+        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', env = env, cwd = self.get_build_dir(self.arch))
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
@@ -272,7 +268,7 @@ class CythonRecipe(PythonRecipe):
         hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False
-        setup = hostpython.partial('setup.py', 'build_ext', '-v', *self.setup_extra_args)
+        setup = hostpython.partial('setup.py', 'build_ext', '-v')
         try:
             setup.print()
         except subprocess.CalledProcessError as e:
