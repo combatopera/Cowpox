@@ -163,11 +163,12 @@ def _obvious_conflict_checker(name_tuples, blacklist):
 
 class GraphInfo:
 
-    def __init__(self, recipenames, pypinames):
-        self.recipenames = recipenames
-        self.pypinames = pypinames
+    def __init__(self, config, bootstraptype):
+        self.recipenames, self.pypinames = _get_recipe_order({*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
+        log.info("Recipe build order is %s", self.recipenames)
+        log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
 
-def get_recipe_order(names, blacklist):
+def _get_recipe_order(names, blacklist):
     names = _fix_deplist([([name] if not isinstance(name, (list, tuple)) else name) for name in names])
     blacklist = set() if blacklist is None else {bitem.lower() for bitem in blacklist}
     names_before_blacklist = list(names)
@@ -214,7 +215,4 @@ def get_recipe_order(names, blacklist):
             recipenames.append(name)
     pypinames = set(pypinames)
     assert not set(recipenames) & pypinames
-    pypinames = sorted(pypinames)
-    log.info("Recipe build order is %s", recipenames)
-    log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(pypinames))
-    return GraphInfo(recipenames, pypinames)
+    return recipenames, sorted(pypinames)

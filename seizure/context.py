@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from .config import Config
-from .graph import get_recipe_order, recipeimpl
+from .graph import GraphInfo, recipeimpl
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from diapyr import types, DI
@@ -78,7 +78,7 @@ class GraphImpl(Graph):
 
     @types(Config, BootstrapType, DI)
     def __init__(self, config, bootstraptype, di):
-        info = get_recipe_order({*config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild', 'python2'])
+        info = GraphInfo(config, bootstraptype)
         self.recipenames = info.recipenames
         self.pypinames = info.pypinames
         self.recipedi = di.createchild()
