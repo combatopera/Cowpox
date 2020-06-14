@@ -276,7 +276,7 @@ class CythonRecipe(PythonRecipe):
         elif 'PYTHONPATH' in cyenv:
             del cyenv['PYTHONPATH']
         cyenv.pop('PYTHONNOUSERSITE', None)
-        python_command = Program.text(f"python{self.graph.python_recipe.majminversion.split('.')[0]}")
+        python_command = Program.text(f"python{self.graph.python_recipe.majversion}")
         python_command.print("-m", "Cython.Build.Cythonize", filename, env = cyenv)
 
     def cythonize_build(self, env, build_dir):
