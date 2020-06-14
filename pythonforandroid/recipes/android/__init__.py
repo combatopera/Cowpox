@@ -47,7 +47,6 @@ log = logging.getLogger(__name__)
 
 class AndroidRecipe(CythonRecipe):
 
-    version = None # XXX: Needed?
     url = 'src'
     depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
     config_env = MappingProxyType({}) # XXX: Needed?

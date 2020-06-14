@@ -68,11 +68,6 @@ def _walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
 
 class HostPythonRecipe(Recipe):
 
-    version = ''
-    '''The hostpython's recipe version.
-
-    .. warning:: This must be set in inherited class.'''
-
     build_subdir = 'native-build'
     '''Specify the sub build directory for the hostpython recipe. Defaults
     to ``native-build``.'''
