@@ -164,6 +164,9 @@ class Recipe(Plugin):
             log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
 
     def prepare_build_dir(self):
+        if self.url is None:
+            log.debug("[%s] Skip unpack as no URL is set.", self.name)
+            return
         build_dir = self.get_build_container_dir(self.arch).mkdirp()
         targetpath = self.get_build_dir(self.arch)
         if self.url is not None and not urlparse(self.url).scheme:
@@ -172,9 +175,6 @@ class Recipe(Plugin):
             self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), targetpath)
             return
         log.info("Unpacking %s for %s", self.name, self.arch.name)
-        if self.url is None:
-            log.info("Skipping %s unpack as no URL is set", self.name)
-            return
         if not targetpath.is_dir():
             archivepath = self.mirror.getpath(self.url)
             if self.url.endswith('.zip'):
