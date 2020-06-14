@@ -128,10 +128,6 @@ class Recipe(Plugin):
 
     def download_if_necessary(self):
         log.info("Downloading %s", self.name)
-        user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
-        if user_dir is not None:
-            log.info("P4A_%s_DIR is set, skipping download for %s", self.name, self.name)
-            return
         if self.url is None or not urlparse(self.url).scheme:
             log.info("Skipping %s download as no URL is set", self.name)
             return
@@ -152,14 +148,6 @@ class Recipe(Plugin):
             return
         log.info("Unpacking %s for %s", self.name, self.arch.name)
         build_dir = self.get_build_container_dir(self.arch)
-        user_dir = os.environ.get(f"P4A_{self.name.lower()}_DIR")
-        if user_dir is not None:
-            log.info("P4A_%s_DIR exists, symlinking instead", self.name.lower())
-            if not directory_name.exists():
-                rm._rf.print(build_dir)
-                build_dir.mkdirp()
-                directory_name.symlink_to(user_dir)
-            return
         if self.url is None:
             log.info("Skipping %s unpack as no URL is set", self.name)
             return

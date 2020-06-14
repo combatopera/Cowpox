@@ -42,4 +42,4 @@ from p4a.recipe import CythonRecipe
 
 class RecipeImpl(CythonRecipe):
 
-    url = None
+    url = '/src'
