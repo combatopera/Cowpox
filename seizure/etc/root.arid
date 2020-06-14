@@ -39,6 +39,6 @@
 : THE SOFTWARE.
 
 container . /image.arid
-Seizure .
-    $./(Seizure.arid)
-    $/($(container src) Seizure.arid)
+Cowpox .
+    $./(Cowpox.arid)
+    $/($(container src) Cowpox.arid)

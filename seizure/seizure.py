@@ -76,7 +76,7 @@ def run(checks, bootstrap, context, src, dirs, target):
 
 def _main():
     logging = Logging()
-    config = Config.load(resource_filename(etc.__name__, 'root.arid')).Seizure
+    config = Config.load(resource_filename(etc.__name__, 'root.arid')).Cowpox
     logging.setpath(Path(config.log.path))
     di = DI()
     try:
