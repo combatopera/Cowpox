@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 def will_build(recipe_name):
-    return lambda recipe, **kwargs: recipe_name in recipe.graph.recipenames # TODO LATER: Get graph some other way.
+    return lambda recipe: recipe_name in recipe.graph.recipenames
 
 def version_starts_with(version):
-    return lambda recipe, **kwargs: recipe.version.startswith(version)
+    return lambda recipe: recipe.version.startswith(version)

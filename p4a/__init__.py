@@ -213,7 +213,7 @@ class Recipe(Plugin):
             for patch in self.patches:
                 if isinstance(patch, (tuple, list)): # TODO: Yuk.
                     patch, patch_check = patch
-                    if not patch_check(arch=self.arch, recipe=self):
+                    if not patch_check(self):
                         continue
                 self.apply_patch(patch)
             touch.print(build_dir / '.patched')
