@@ -38,8 +38,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-def will_build(recipe_name):
-    return lambda recipe: recipe_name in recipe.graph.recipenames
+class Predicate:
 
-def version_starts_with(version):
-    return lambda recipe: recipe.version.startswith(version)
+    def __init__(self, predicate, patch):
+        self.predicate = predicate
+        self.patch = patch
+
+    def acceptrecipe(self, recipe):
+        if self.predicate(recipe):
+            return self.patch
+
+def will_build(recipe_name, patch):
+    return Predicate(lambda r: recipe_name in r.graph.recipenames, patch)
+
+def version_starts_with(version, patch):
+    return Predicate(lambda r: r.version.startswith(version), patch)

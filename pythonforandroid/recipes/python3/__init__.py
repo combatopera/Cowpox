@@ -49,14 +49,14 @@ class Python3Recipe(GuestPythonRecipe):
     urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
     patchesdir = Path('patches')
     patches = [
-        (patchesdir / 'py3.7.1_fix-ctypes-util-find-library.patch', version_starts_with("3.7")),
-        (patchesdir / 'py3.7.1_fix-zlib-version.patch', version_starts_with("3.7")),
-        (patchesdir / 'py3.8.1.patch', version_starts_with("3.8")),
+        version_starts_with("3.7", patchesdir / 'py3.7.1_fix-ctypes-util-find-library.patch'),
+        version_starts_with("3.7", patchesdir / 'py3.7.1_fix-zlib-version.patch'),
+        version_starts_with("3.8", patchesdir / 'py3.8.1.patch'),
     ]
     if hasattr(lagoon, 'lld'):
         patches += [
-            (patchesdir / 'py3.7.1_fix_cortex_a8.patch', version_starts_with("3.7")),
-            (patchesdir / 'py3.8.1_fix_cortex_a8.patch', version_starts_with("3.8")),
+            version_starts_with("3.7", patchesdir / 'py3.7.1_fix_cortex_a8.patch'),
+            version_starts_with("3.8", patchesdir / 'py3.8.1_fix_cortex_a8.patch'),
         ]
     depends = ['hostpython3', 'sqlite3', 'openssl', 'libffi']
     opt_depends = ['libbz2', 'liblzma']

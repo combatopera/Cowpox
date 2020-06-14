@@ -205,11 +205,17 @@ class Recipe(Plugin):
                 log.info("%s already patched, skipping", self.name)
                 return
             for patch in self.patches:
-                if isinstance(patch, (tuple, list)): # TODO: Yuk.
-                    patch, patch_check = patch
-                    if not patch_check(self):
-                        continue
-                self.apply_patch(patch)
+                while True:
+                    try:
+                        acceptrecipe = patch.acceptrecipe
+                    except AttributeError:
+                        self.apply_patch(patch)
+                        break
+                    nextpatch = acceptrecipe(self)
+                    if nextpatch is None:
+                        log.debug("Patch denied: %s", patch)
+                        break
+                    patch = nextpatch
             touch.print(build_dir / '.patched')
 
     def should_build(self):
