@@ -82,13 +82,7 @@ class Recipe(Plugin):
     opt_depends = []
     '''A list of optional dependencies, that must be built before this
     recipe if they are built at all, but whose presence is not essential.'''
-
     patches = ()
-    '''A list of patches to apply to the source. Values can be either a string
-    referring to the patch file relative to the recipe dir, or a tuple of the
-    string patch file and a callable, which will receive the kwargs `arch` and
-    `recipe`, which should return True if the patch should be applied.'''
-
     python_depends = []
     '''A list of pure-Python packages that this package requires. These
     packages will NOT be available at build time, but will be added to the
