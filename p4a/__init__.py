@@ -204,6 +204,10 @@ class Recipe(Plugin):
     def get_recipe_env(self, arch):
         return arch.get_env()
 
+    def prebuild(self):
+        self.prebuild_arch()
+        self.apply_patches()
+
     def prebuild_arch(self):
         pass
 
