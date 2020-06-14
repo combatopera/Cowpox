@@ -39,13 +39,13 @@
 # THE SOFTWARE.
 
 from .config import Config
-from .graph import GraphInfo, recipeimpl
+from .graph import GraphInfo
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from diapyr import types, DI
 from lagoon import virtualenv
 from lagoon.program import Program
-from p4a import Arch, Context, Graph
+from p4a import Arch, Context, Graph, Recipe
 from p4a.boot import Bootstrap
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe
