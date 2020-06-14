@@ -71,4 +71,4 @@ RUN groupadd -g $GID $GROUP && useradd -g $GID -u $UID --create-home --shell /bi
 RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.gradle /mirror) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"'
 RUN { echo src = /src; } | tee /image.arid
 USER $USER
-ENTRYPOINT ["Seizure"]
+ENTRYPOINT ["Cowpox"]

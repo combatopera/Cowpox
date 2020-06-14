@@ -55,9 +55,9 @@ recursively_include(['recipes'], ['*.patch', '*.pyx', '*.py', '*.c', '*.h', '*.m
 recursively_include(['bootstraps'], ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', '*.patch', '*.aridt'])
 recursively_include(['bootstraps', 'webview'], ['*.html'])
 setup(
-    name = 'Seizure',
+    name = 'Cowpox',
     packages = find_packages(),
     package_data = package_data,
     install_requires = Path('requirements.txt').read_text().splitlines(),
-    entry_points = dict(console_scripts = ['Seizure=seizure.seizure:main']),
+    entry_points = dict(console_scripts = ['Cowpox=seizure.seizure:main']),
 )
