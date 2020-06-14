@@ -80,29 +80,27 @@ class GraphImpl(Graph):
     def __init__(self, info, di):
         self.recipenames = info.recipenames
         self.pypinames = info.pypinames
-        self.recipedi = di.createchild() # TODO: Use main.
-        self.info = info
+        self.di = di
 
     def get_recipe(self, name):
         return self._recipes[name]
 
     def allrecipes(self):
-        self.info.configure(self.recipedi) # TODO: Earlier.
-        self._recipes = {name: self.recipedi(recipeimpl(name)) for name in self.recipenames}
+        self._recipes = {r.name: r for r in self.di.all(Recipe)}
         return self._recipes.values()
 
     def _newrecipe(self, impl):
-        di = self.recipedi.createchild()
+        di = self.di.createchild()
         di.add(impl)
         return di(impl)
 
     @property
     def python_recipe(self):
-        return self.recipedi(GuestPythonRecipe)
+        return self.di(GuestPythonRecipe)
 
     @property
     def host_recipe(self):
-        return self.recipedi(HostPythonRecipe)
+        return self.di(HostPythonRecipe)
 
 class ContextImpl(Context):
 

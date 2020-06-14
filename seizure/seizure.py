@@ -93,6 +93,7 @@ def _main():
         di.add(Src)
         di.add(TargetAndroid)
         di.add(run)
+        di(GraphInfoImpl).configure(di)
         return di(Result)
     finally:
         di.discardall()
