@@ -80,16 +80,15 @@ class GraphImpl(Graph):
     def __init__(self, info, di):
         self.recipenames = info.recipenames
         self.pypinames = info.pypinames
-        self.recipedi = di.createchild()
+        self.recipedi = di.createchild() # TODO: Use main.
+        self.info = info
 
     def get_recipe(self, name):
         return self._recipes[name]
 
     def allrecipes(self):
-        impls = {name: recipeimpl(name) for name in self.recipenames}
-        for impl in impls.values():
-            self.recipedi.add(impl) # TODO: Add upfront.
-        self._recipes = {name: self.recipedi(impl) for name, impl in impls.items()}
+        self.info.configure(self.recipedi) # TODO: Earlier.
+        self._recipes = {name: self.recipedi(recipeimpl(name)) for name in self.recipenames}
         return self._recipes.values()
 
     def _newrecipe(self, impl):

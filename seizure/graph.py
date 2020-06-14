@@ -182,6 +182,10 @@ class GraphInfo:
                         break
         return '-'.join([name, *sorted(recipenames)])
 
+    def configure(self, di):
+        for name in self.recipenames:
+            di.add(recipeimpl(name))
+
 def _get_recipe_order(names, blacklist):
     names = _fix_deplist([([name] if not isinstance(name, (list, tuple)) else name) for name in names])
     blacklist = set() if blacklist is None else {bitem.lower() for bitem in blacklist}
