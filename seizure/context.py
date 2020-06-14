@@ -175,12 +175,11 @@ class ContextImpl(Context):
         log.info("The requirements (%s) don't have recipes, attempting to install them with pip", ', '.join(pypinames))
         log.info('If this fails, it may mean that the module has compiled components and needs a recipe.')
         virtualenv.print(f"--python=python{self.graph.python_recipe.major_minor_version_string.partition('.')[0]}", self.venv_path)
-        base_env = dict(os.environ, PYTHONPATH = self.python_install_dir) # XXX: Really?
         log.info('Upgrade pip to latest version')
         pip = Program.text(self.venv_path / 'bin' / 'pip')
-        pip.install._U.print('pip', env = base_env)
+        pip.install._U.print('pip', env = dict(PYTHONPATH = self.python_install_dir))
         log.info('Install Cython in case one of the modules needs it to build')
-        pip.install.print('Cython', env = base_env)
+        pip.install.print('Cython', env = dict(PYTHONPATH = self.python_install_dir))
         # Get environment variables for build (with CC/compiler set):
         env = {**base_env, **self.graph._newrecipe(CythonRecipe).get_recipe_env(self.arch)}
         # Make sure our build package dir is available, and the virtualenv
