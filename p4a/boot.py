@@ -45,6 +45,7 @@ from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import resource_filename
 from seizure.config import Config
+from seizure.graph import GraphInfo
 from seizure.platform import Platform
 from tempfile import TemporaryDirectory
 import logging, os, shutil, subprocess
@@ -74,14 +75,14 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     contribroot = Path(resource_filename('pythonforandroid', '.'))
     recipe_depends = [("python2", "python3"), 'android']
 
-    @types(Config, Graph, Arch, Platform)
-    def __init__(self, config, graph, arch, platform):
+    @types(Config, Graph, Arch, Platform, GraphInfo)
+    def __init__(self, config, graph, arch, platform, graphinfo):
         self.bootstrap_dir = self.contribroot / 'bootstraps' / config.p4a.bootstrap
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
         self.android_api = config.android.api
         self.dist_dir = Path(config.dist_dir)
-        self.build_dir = Path(config.bootstrap_builds, graph.check_recipe_choices(self.name, self.recipe_depends))
+        self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
         self.javaclass_dir = config.javaclass_dir
         self.sdk_dir = config.android_sdk_dir
         self.graph = graph

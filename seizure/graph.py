@@ -172,6 +172,16 @@ class GraphInfo:
         log.info("Recipe build order is %s", self.recipenames)
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
 
+    def check_recipe_choices(self, name, depends):
+        recipenames = []
+        for recipe in depends:
+            if isinstance(recipe, (tuple, list)):
+                for alternative in recipe:
+                    if alternative in self.recipenames:
+                        recipenames.append(alternative)
+                        break
+        return '-'.join([name, *sorted(recipenames)])
+
 def _get_recipe_order(names, blacklist):
     names = _fix_deplist([([name] if not isinstance(name, (list, tuple)) else name) for name in names])
     blacklist = set() if blacklist is None else {bitem.lower() for bitem in blacklist}

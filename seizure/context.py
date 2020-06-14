@@ -82,16 +82,6 @@ class GraphImpl(Graph):
         self.pypinames = info.pypinames
         self.recipedi = di.createchild()
 
-    def check_recipe_choices(self, name, depends):
-        recipenames = []
-        for recipe in depends:
-            if isinstance(recipe, (tuple, list)):
-                for alternative in recipe:
-                    if alternative in self.recipenames:
-                        recipenames.append(alternative)
-                        break
-        return '-'.join([name, *sorted(recipenames)])
-
     def get_recipe(self, name):
         return self._recipes[name]
 
