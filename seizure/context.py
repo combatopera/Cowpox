@@ -182,13 +182,16 @@ class ContextImpl(Context):
         pip.install.print('Cython', env = dict(PYTHONPATH = self.python_install_dir))
         if pypinames:
             # Get environment variables for build (with CC/compiler set):
-            env = {**base_env, **self.graph._newrecipe(CythonRecipe).get_recipe_env(self.arch)}
+            installenv = self.graph._newrecipe(CythonRecipe).get_recipe_env(self.arch)
             # Make sure our build package dir is available, and the virtualenv
             # site packages come FIRST (so the proper pip version is used):
-            env['PYTHONPATH'] = f"""{(self.venv_path / 'lib' / f"python{self.graph.python_recipe.major_minor_version_string}" / 'site-packages').resolve()}{os.pathsep}{env['PYTHONPATH']}{os.pathsep}{self.python_install_dir}"""
+            installenv['PYTHONPATH'] = os.pathsep.join(map(str, [
+                self.venv_path / 'lib' / f"python{self.graph.python_recipe.major_minor_version_string}" / 'site-packages',
+                self.python_install_dir,
+            ]))
             log.info('Installing Python modules with pip')
             log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
-            pip.install._v.__no_deps.print('--target', self.python_install_dir.pmkdirp(), *pypinames, env = env)
+            pip.install._v.__no_deps.print('--target', self.python_install_dir.pmkdirp(), *pypinames, env = installenv)
         else:
             log.info('There are no Python modules to install, skipping')
         self.arch.strip_object_files(self.buildsdir)
