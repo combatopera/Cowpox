@@ -76,8 +76,8 @@ class Checks:
 
 class GraphImpl(Graph):
 
-    @types(GraphInfo, DI)
-    def __init__(self, info, di):
+    @types(DI)
+    def __init__(self, di):
         self.di = di
 
     def get_recipe(self, name):
