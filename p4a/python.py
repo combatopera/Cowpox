@@ -162,7 +162,7 @@ class GuestPythonRecipe(Recipe):
         self.dist_dir = Path(config.dist_dir)
         self.ndk_api = config.android.ndk_api
         parts = LooseVersion(self.version).version
-        self.majversion = str(parts[0])
+        self.majversion = parts[0]
         self.majminversion = '.'.join(str(part) for part in parts[:2])
         self.hostrecipe = hostrecipe
 
@@ -212,7 +212,7 @@ class GuestPythonRecipe(Recipe):
     def _libpython(self):
         '''return the python's library name (with extension)'''
         py_version = self.majminversion
-        if self.majversion == '3':
+        if self.majversion == 3:
             py_version += 'm'
         return f"libpython{py_version}.so"
 
@@ -272,7 +272,7 @@ class GuestPythonRecipe(Recipe):
             log.info(" - copy %s", filen)
             copy2(filen, (dirn / 'site-packages' / filen.relative_to(installdir)).pmkdirp())
         python_lib_name = f"libpython{self.majminversion}"
-        if self.majversion == '3':
+        if self.majversion == 3:
             python_lib_name += 'm'
         cp.print(self.get_build_dir(arch) / 'android-build' / f"{python_lib_name}.so", self.dist_dir / 'libs' / arch.name)
         log.info('Renaming .so files to reflect cross-compile')
