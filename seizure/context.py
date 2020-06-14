@@ -79,7 +79,6 @@ class GraphImpl(Graph):
     @types(GraphInfo, DI)
     def __init__(self, info, di):
         self.recipenames = info.recipenames
-        self.pypinames = info.pypinames
         self.di = di
 
     def get_recipe(self, name):
@@ -104,8 +103,8 @@ class GraphImpl(Graph):
 
 class ContextImpl(Context):
 
-    @types(Config, Platform, Arch, Bootstrap, Graph)
-    def __init__(self, config, platform, arch, bootstrap, graph):
+    @types(Config, Platform, Arch, Bootstrap, Graph, GraphInfo)
+    def __init__(self, config, platform, arch, bootstrap, graph, graphinfo):
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.other_builds = Path(config.other_builds)
@@ -117,6 +116,7 @@ class ContextImpl(Context):
         self.arch = arch
         self.bootstrap = bootstrap
         self.graph = graph
+        self.graphinfo = graphinfo
 
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
@@ -154,7 +154,7 @@ class ContextImpl(Context):
             recipe.postbuild_arch()
         log.info('Installing pure Python modules')
         log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
-        pypinames = [m for m in self.graph.pypinames if not self.insitepackages(m)]
+        pypinames = [m for m in self.graphinfo.pypinames if not self.insitepackages(m)]
         if not pypinames:
             log.info('No Python modules and no setup.py to process, skipping')
             return
