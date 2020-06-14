@@ -183,10 +183,10 @@ class Recipe(Plugin):
                 except subprocess.CalledProcessError as e:
                     if e.returncode not in {1, 2}:
                         raise
-                zf = ZipFile(archivepath, 'r')
-                root_directory = zf.filelist[0].filename.split('/')[0]
-                if root_directory != targetpath.name:
-                    mv.print(root_directory, targetpath, cwd = build_dir)
+                with ZipFile(archivepath) as zf:
+                    rootname = zf.filelist[0].filename.split('/')[0]
+                if rootname != targetpath.name:
+                    mv.print(build_dir / rootname, targetpath)
             elif self.url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
                 tar.xf.print(archivepath, cwd = build_dir)
                 root_directory = tar.tf(archivepath).split('\n')[0].split('/')[0]
