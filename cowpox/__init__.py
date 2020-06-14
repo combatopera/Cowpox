@@ -43,17 +43,19 @@ from pathlib import Path
 import shutil
 
 @contextmanager
-def okorclean(dirpath):
-    okpath = dirpath / 'OK'
-    if okpath.is_dir():
+def okorclean(dirpath, leaveopen = False):
+    if dirpath.isok():
         yield True
     else:
         dirpath.mkdirp()
         for child in dirpath.iterdir():
             shutil.rmtree(child) if child.is_dir() else child.unlink()
         yield
-        okpath.mkdir()
+        if not leaveopen:
+            dirpath.markok()
 
 Path.okorclean = okorclean
+Path.isok = lambda self: (self / 'OK').is_dir()
+Path.markok = lambda self: (self / 'OK').mkdir()
 Path.mkdirp = lambda self: [self.mkdir(parents = True, exist_ok = True), self][-1]
 Path.pmkdirp = lambda self: [self.parent.mkdirp(), self][-1]

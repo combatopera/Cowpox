@@ -176,7 +176,7 @@ class Recipe(Plugin):
 
     def prepare_build_dir(self):
         targetpath = self.get_build_dir()
-        with targetpath.okorclean() as ok:
+        with targetpath.okorclean(True) as ok:
             if ok:
                 log.debug("[%s] Already unpacked.", self.name)
                 return
@@ -216,8 +216,9 @@ class Recipe(Plugin):
         return env
 
     def prebuild(self):
-        self.prebuild_arch()
-        self.apply_patches()
+        if not self.get_build_dir().isok():
+            self.prebuild_arch()
+            self.apply_patches()
 
     def prebuild_arch(self):
         pass
@@ -244,11 +245,12 @@ class Recipe(Plugin):
             touch.print(build_dir / '.patched')
 
     def mainbuild(self):
-        if self.should_build():
-            self.build_arch()
-            self.install_libraries()
-        else:
-            log.debug("[%s] Already built.", self.name)
+        if not self.get_build_dir().isok():
+            if self.should_build():
+                self.build_arch()
+                self.install_libraries()
+            else:
+                log.debug("[%s] Already built.", self.name)
 
     def should_build(self):
         return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries()) # XXX: Weird logic?
@@ -260,6 +262,12 @@ class Recipe(Plugin):
         libs = [p for p in self._get_libraries() if p.name.endswith('.so')]
         if libs:
             cp.print(*libs, self.arch.libs_dir)
+
+    def postbuild(self):
+        builddir = self.get_build_dir()
+        if not builddir.isok():
+            self.postbuild_arch()
+            builddir.markok()
 
     def postbuild_arch(self):
         pass

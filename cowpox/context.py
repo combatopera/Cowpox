@@ -137,7 +137,7 @@ class ContextImpl:
         log.info('Postbuilding recipes')
         for recipe in recipes:
             log.info("Postbuilding %s for %s", recipe.name, self.arch.name)
-            recipe.postbuild_arch()
+            recipe.postbuild()
 
     def build_nonrecipes(self):
         log.info('Installing pure Python modules')
