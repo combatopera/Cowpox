@@ -39,14 +39,14 @@
 # THE SOFTWARE.
 
 from .config import Config
-from .graph import GraphInfo
+from .graph import GraphImpl, GraphInfo
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from .util import DIProxy
 from diapyr import types
 from lagoon import virtualenv
 from lagoon.program import Program
-from p4a import Arch, Context, Graph, Recipe
+from p4a import Arch, Context, Graph
 from p4a.boot import Bootstrap
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe
@@ -74,24 +74,6 @@ class Checks:
         log.info("Requested API target %s is available, continuing.", self.android_api)
         check_ndk_version(self.ndk_dir)
         check_ndk_api(self.ndk_api, self.android_api)
-
-class GraphImpl:
-
-    @types(GraphInfo, [Recipe])
-    def __init__(self, info, recipes):
-        self.recipes = {}
-        names = set(info.recipenames)
-        for r in recipes:
-            if r.name in names:
-                self.recipes[r.name] = r
-            else:
-                log.debug("Recipe not in lookup: %s", r)
-
-    def get_recipe(self, name):
-        return self.recipes[name]
-
-    def allrecipes(self):
-        return self.recipes.values()
 
 class GraphProxy(DIProxy, Graph):
 

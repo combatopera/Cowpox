@@ -186,6 +186,24 @@ class GraphInfoImpl(GraphInfo):
         for name in self.recipenames:
             di.add(recipeimpl(name))
 
+class GraphImpl:
+
+    @types(GraphInfo, [Recipe])
+    def __init__(self, info, recipes):
+        self.recipes = {}
+        names = set(info.recipenames)
+        for r in recipes:
+            if r.name in names:
+                self.recipes[r.name] = r
+            else:
+                log.debug("Recipe not in lookup: %s", r)
+
+    def get_recipe(self, name):
+        return self.recipes[name]
+
+    def allrecipes(self):
+        return self.recipes.values()
+
 def _get_recipe_order(names, blacklist):
     names = _fix_deplist([([name] if not isinstance(name, (list, tuple)) else name) for name in names])
     blacklist = set() if blacklist is None else {bitem.lower() for bitem in blacklist}
