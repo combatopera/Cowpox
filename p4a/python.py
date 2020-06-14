@@ -164,6 +164,7 @@ class GuestPythonRecipe(Recipe):
         parts = LooseVersion(self.version).version
         self.majversion = parts[0]
         self.majminversion = '.'.join(str(part) for part in parts[:2])
+        self.exename = f"python{self.majversion}"
         self.hostrecipe = hostrecipe
 
     def get_recipe_env(self, arch):
