@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from diapyr import types
-from lagoon import cp, mv, patch as patchexe, rm, tar, touch, unzip
+from lagoon import cp, patch as patchexe, rm, tar, touch, unzip
 from pathlib import Path
 from pkg_resources import resource_filename
 from seizure.config import Config
@@ -191,7 +191,7 @@ class Recipe(Plugin):
             else:
                 raise Exception(f"Could not extract {archivepath} download, it must be .zip, .tar.gz or .tar.bz2 or .tar.xz")
             if rootname != targetpath.name:
-                mv.print(build_dir / rootname, targetpath)
+                (build_dir / rootname).rename(targetpath)
         else:
             log.info("%s is already unpacked, skipping", self.name)
 
