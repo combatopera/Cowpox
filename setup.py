@@ -59,5 +59,5 @@ setup(
     packages = find_packages(),
     package_data = package_data,
     install_requires = Path('requirements.txt').read_text().splitlines(),
-    entry_points = dict(console_scripts = ['Cowpox=cowpox.seizure:main']),
+    entry_points = dict(console_scripts = ['Cowpox=cowpox.cowpox:main']),
 )
