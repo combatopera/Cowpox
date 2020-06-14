@@ -109,8 +109,8 @@ class GraphProxy(DIProxy, Graph):
 
 class ContextImpl(Context):
 
-    @types(Config, Platform, Arch, Bootstrap, Graph, GraphInfo)
-    def __init__(self, config, platform, arch, bootstrap, graph, graphinfo):
+    @types(Config, Platform, Arch, Bootstrap, Graph, GraphInfo, PipInstallRecipe)
+    def __init__(self, config, platform, arch, bootstrap, graph, graphinfo, pipinstallrecipe):
         self.distsdir = Path(config.distsdir)
         self.buildsdir = Path(config.buildsdir)
         self.other_builds = Path(config.other_builds)
@@ -123,6 +123,7 @@ class ContextImpl(Context):
         self.bootstrap = bootstrap
         self.graph = graph
         self.graphinfo = graphinfo
+        self.pipinstallrecipe = pipinstallrecipe
 
     def insitepackages(self, name):
         return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
@@ -174,7 +175,7 @@ class ContextImpl(Context):
         pip.install.print('Cython', env = dict(PYTHONPATH = self.python_install_dir))
         if pypinames:
             # Get environment variables for build (with CC/compiler set):
-            installenv = self.graph.di(PipInstallRecipe).get_recipe_env(self.arch)
+            installenv = self.pipinstallrecipe.get_recipe_env(self.arch)
             # Make sure our build package dir is available, and the virtualenv
             # site packages come FIRST (so the proper pip version is used):
             installenv['PYTHONPATH'] = os.pathsep.join(map(str, [
