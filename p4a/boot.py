@@ -71,12 +71,12 @@ class BootstrapType(type): pass
 
 class Bootstrap(Plugin, metaclass = BootstrapType):
 
-    contribroot = Path(resource_filename('pythonforandroid', '.'))
+    bootstrapsdir = Path(resource_filename('pythonforandroid', 'bootstraps'))
     recipe_depends = [("python2", "python3"), 'android']
 
     @types(Config, Graph, Arch, Platform, GraphInfo)
     def __init__(self, config, graph, arch, platform, graphinfo):
-        self.bootstrap_dir = self.contribroot / 'bootstraps' / config.p4a.bootstrap
+        self.bootstrap_dir = self.bootstrapsdir / config.p4a.bootstrap
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
         self.android_api = config.android.api
@@ -91,7 +91,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     def prepare_dirs(self):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
-        _copy_files((self.bootstrap_dir / '..' / 'common').resolve() / 'build', self.build_dir, False)
+        _copy_files(self.bootstrapsdir / 'common' / 'build', self.build_dir, False)
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.android_api}")
         self.dist_dir.mkdirp()
 
