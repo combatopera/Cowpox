@@ -40,6 +40,7 @@
 
 from chromalog.log import ColorizingFormatter, ColorizingStreamHandler
 from collections.abc import Mapping
+from diapyr import DI, types
 from importlib import import_module
 import logging, networkx as nx
 
@@ -103,3 +104,12 @@ def findimpl(modulename, basetype):
             add(obj)
     impl, = (cls for cls, od in g.out_degree if not od)
     return impl
+
+class DIProxy:
+
+    @types(DI)
+    def __init__(self, di):
+        self.di = di
+
+    def __getattr__(self, name):
+        return getattr(self.di(self.targetclass), name)

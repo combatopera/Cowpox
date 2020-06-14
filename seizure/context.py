@@ -42,7 +42,8 @@ from .config import Config
 from .graph import GraphInfo
 from .platform import Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
-from diapyr import types, DI
+from .util import DIProxy
+from diapyr import types
 from lagoon import virtualenv
 from lagoon.program import Program
 from p4a import Arch, Context, Graph, Recipe
@@ -94,14 +95,9 @@ class GraphImpl:
     def allrecipes(self):
         return self.recipes.values()
 
-class GraphProxy(Graph):
+class GraphProxy(DIProxy, Graph):
 
-    @types(DI)
-    def __init__(self, di):
-        self.di = di
-
-    def __getattr__(self, name):
-        return getattr(self.di(GraphImpl), name)
+    targetclass = GraphImpl
 
     @property
     def python_recipe(self):
