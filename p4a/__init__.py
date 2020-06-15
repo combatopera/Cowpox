@@ -176,39 +176,36 @@ class Recipe(Plugin):
 
     def prepare_build_dir(self):
         targetpath = self.get_build_dir()
-        with targetpath.okorclean(True) as ok:
-            if ok:
-                log.debug("[%s] Already unpacked.", self.name)
-                return
-            if self.url is None:
-                log.debug("[%s] Skip unpack as no URL is set.", self.name)
-                return
-            targetpath.rmdir()
-            if not urlparse(self.url).scheme:
-                srcpath = Path(self.url.replace('/', os.sep))
-                log.info("[%s] Copy from: %s", self.name, srcpath)
-                # TODO: Copy without .git either.
-                self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), targetpath)
-                return
-            archivepath = self.mirror.getpath(self.url)
-            log.info("[%s] Unpack for: %s", self.name, self.arch.name)
-            # TODO LATER: Not such a good idea to use parent.
-            # TODO LATER: Do not assume single top-level directory in archive.
-            if self.url.endswith('.zip'):
-                try:
-                    unzip.print(archivepath, cwd = targetpath.parent)
-                except subprocess.CalledProcessError as e:
-                    if e.returncode not in {1, 2}:
-                        raise
-                with ZipFile(archivepath) as zf:
-                    rootname = zf.filelist[0].filename.split('/')[0]
-            elif self.url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
-                tar.xf.print(archivepath, cwd = targetpath.parent)
-                rootname = tar.tf(archivepath).splitlines()[0].split('/')[0]
-            else:
-                raise Exception(f"Unsupported archive type: {self.url}")
-            if rootname != targetpath.name:
-                targetpath.with_name(rootname).rename(targetpath)
+        targetpath.clear()
+        if self.url is None:
+            log.debug("[%s] Skip unpack as no URL is set.", self.name)
+            return
+        targetpath.rmdir()
+        if not urlparse(self.url).scheme:
+            srcpath = Path(self.url.replace('/', os.sep))
+            log.info("[%s] Copy from: %s", self.name, srcpath)
+            # TODO: Copy without .git either.
+            self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), targetpath)
+            return
+        archivepath = self.mirror.getpath(self.url)
+        log.info("[%s] Unpack for: %s", self.name, self.arch.name)
+        # TODO LATER: Not such a good idea to use parent.
+        # TODO LATER: Do not assume single top-level directory in archive.
+        if self.url.endswith('.zip'):
+            try:
+                unzip.print(archivepath, cwd = targetpath.parent)
+            except subprocess.CalledProcessError as e:
+                if e.returncode not in {1, 2}:
+                    raise
+            with ZipFile(archivepath) as zf:
+                rootname = zf.filelist[0].filename.split('/')[0]
+        elif self.url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
+            tar.xf.print(archivepath, cwd = targetpath.parent)
+            rootname = tar.tf(archivepath).splitlines()[0].split('/')[0]
+        else:
+            raise Exception(f"Unsupported archive type: {self.url}")
+        if rootname != targetpath.name:
+            targetpath.with_name(rootname).rename(targetpath)
 
     def get_recipe_env(self):
         env = self.arch.get_env()
@@ -216,9 +213,8 @@ class Recipe(Plugin):
         return env
 
     def prebuild(self):
-        if not self.get_build_dir().isok():
-            self.prebuild_arch()
-            self.apply_patches()
+        self.prebuild_arch()
+        self.apply_patches()
 
     def prebuild_arch(self):
         pass
@@ -245,12 +241,11 @@ class Recipe(Plugin):
             touch.print(build_dir / '.patched')
 
     def mainbuild(self):
-        if not self.get_build_dir().isok():
-            if self.should_build():
-                self.build_arch()
-                self.install_libraries()
-            else:
-                log.debug("[%s] Already built.", self.name)
+        if self.should_build():
+            self.build_arch()
+            self.install_libraries()
+        else:
+            log.debug("[%s] Already built.", self.name)
 
     def should_build(self):
         return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries()) # XXX: Weird logic?
@@ -262,12 +257,6 @@ class Recipe(Plugin):
         libs = [p for p in self._get_libraries() if p.name.endswith('.so')]
         if libs:
             cp.print(*libs, self.arch.libs_dir)
-
-    def postbuild(self):
-        builddir = self.get_build_dir()
-        if not builddir.isok():
-            self.postbuild_arch()
-            builddir.markok()
 
     def postbuild_arch(self):
         pass

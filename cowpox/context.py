@@ -40,7 +40,7 @@
 
 from .config import Config
 from .graph import GraphImpl, GraphInfo
-from .platform import Platform
+from .platform import Make, Platform
 from .recommendations import check_ndk_version, check_target_api, check_ndk_api
 from .util import DIProxy
 from diapyr import types
@@ -105,8 +105,8 @@ class PipInstallRecipe(CythonRecipe):
 
 class ContextImpl:
 
-    @types(Config, Arch, Graph, GraphInfo, PipInstallRecipe, Context)
-    def __init__(self, config, arch, graph, graphinfo, pipinstallrecipe, context):
+    @types(Config, Arch, Graph, GraphInfo, PipInstallRecipe, Context, Make)
+    def __init__(self, config, arch, graph, graphinfo, pipinstallrecipe, context, make):
         self.buildsdir = Path(config.buildsdir)
         self.python_install_dir = Path(config.python_install_dir)
         self.venv_path = Path(config.venv.path)
@@ -115,6 +115,7 @@ class ContextImpl:
         self.graphinfo = graphinfo
         self.pipinstallrecipe = pipinstallrecipe
         self.context = context
+        self.make = make
 
     def build_recipes(self):
         log.info("Will compile for the following arch: %s", self.arch.name)
@@ -125,19 +126,19 @@ class ContextImpl:
         log.info("Building all recipes for arch %s", self.arch.name)
         log.info('Unpacking recipes')
         for recipe in recipes:
-            recipe.prepare_build_dir()
+            self.make(recipe.get_build_dir(), recipe.prepare_build_dir)
         log.info('Prebuilding recipes')
         for recipe in recipes:
             log.info("Prebuilding %s for %s", recipe.name, self.arch.name)
-            recipe.prebuild()
+            self.make(recipe.get_build_dir() / 'prebuild', recipe.prebuild)
         log.info('Building recipes')
         for recipe in recipes:
             log.info("Building %s for %s", recipe.name, self.arch.name)
-            recipe.mainbuild()
+            self.make(recipe.get_build_dir() / 'mainbuild', recipe.mainbuild)
         log.info('Postbuilding recipes')
         for recipe in recipes:
             log.info("Postbuilding %s for %s", recipe.name, self.arch.name)
-            recipe.postbuild()
+            self.make(recipe.get_build_dir() / 'postbuild', recipe.postbuild_arch)
 
     def build_nonrecipes(self):
         log.info('Installing pure Python modules')

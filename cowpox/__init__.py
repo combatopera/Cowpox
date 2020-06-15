@@ -38,23 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from contextlib import contextmanager
 from pathlib import Path
 import shutil
 
-@contextmanager
-def okorclean(dirpath, leaveopen = False):
-    if dirpath.isok():
-        yield True
-    else:
-        dirpath.clear()
-        yield
-        if not leaveopen:
-            dirpath.markok()
-
-Path.okorclean = okorclean
-Path.isok = lambda self: (self / 'OK').is_dir()
-Path.markok = lambda self: (self / 'OK').mkdir()
 Path.mkdirp = lambda self: [self.mkdir(parents = True, exist_ok = True), self][-1]
 Path.pmkdirp = lambda self: [self.parent.mkdirp(), self][-1]
 Path.clear = lambda self: [self.mkdirp(), [shutil.rmtree(p) if p.is_dir() else p.unlink() for p in self.iterdir()]]
