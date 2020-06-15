@@ -59,7 +59,7 @@ class PlatformInfo:
         self.acceptlicense = config.android.accept_sdk_license
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
-        self.skip_update = config.android.skip_update:
+        self.skip_update = config.android.skip_update
         self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         self.mirror = mirror
 
