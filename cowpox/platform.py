@@ -62,6 +62,10 @@ class PlatformInfo:
         self.android_ndk_version = config.android.ndk
         self.mirror = mirror
 
+    def install(self):
+        self._install_android_sdk()
+        self._install_android_ndk()
+
     def _install_android_sdk(self):
         with self.sdk_dir.okorclean() as ok:
             if ok:
@@ -119,8 +123,7 @@ class Platform:
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.ndk_api = config.android.ndk_api
-        info._install_android_sdk()
-        info._install_android_ndk()
+        info.install()
 
     def build_tools_version(self):
         ignored = {'.DS_Store', '.ds_store'}
