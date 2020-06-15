@@ -73,21 +73,6 @@ class PlatformInfo:
             unzip._q.print(archive, cwd = self.sdk_dir)
             log.info('Android SDK tools base installation done.')
 
-    def _install_android_ndk(self):
-        with self.ndk_dir.okorclean() as ok:
-            if ok:
-                log.info('Android NDK found at %s', self.ndk_dir)
-                return
-            log.info('Android NDK is missing, downloading')
-            archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
-            log.info('Unpacking Android NDK')
-            unzip._q.print(archive, cwd = self.ndk_dir)
-            rootdir, = self.ndk_dir.iterdir()
-            for path in rootdir.iterdir():
-                path.rename(self.ndk_dir / path.relative_to(rootdir))
-            rootdir.rmdir()
-            log.info('Android NDK installation done.')
-
     def _install_android_packages(self):
         log.info('Install/update SDK platform tools.')
         if self.acceptlicense:
@@ -108,6 +93,21 @@ class PlatformInfo:
             self.sdkmanager.print(f"platforms;{self.platformname}")
         else:
             log.debug("Already have platform: %s", self.platformname)
+
+    def _install_android_ndk(self):
+        with self.ndk_dir.okorclean() as ok:
+            if ok:
+                log.info('Android NDK found at %s', self.ndk_dir)
+                return
+            log.info('Android NDK is missing, downloading')
+            archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
+            log.info('Unpacking Android NDK')
+            unzip._q.print(archive, cwd = self.ndk_dir)
+            rootdir, = self.ndk_dir.iterdir()
+            for path in rootdir.iterdir():
+                path.rename(self.ndk_dir / path.relative_to(rootdir))
+            rootdir.rmdir()
+            log.info('Android NDK installation done.')
 
 class Platform:
 
