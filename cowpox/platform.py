@@ -106,10 +106,8 @@ class PlatformInfo:
         log.info('Unpacking Android SDK')
         unzip._q.print(archive, cwd = self.sdk_dir)
         log.info('Android SDK tools base installation done.')
-        if not self.skip_update:
-            self._install_android_packages()
-
-    def _install_android_packages(self):
+        if self.skip_update:
+            return
         log.info('Install/update SDK platform tools.')
         sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         if self.acceptlicense:
