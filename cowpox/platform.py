@@ -46,14 +46,44 @@ from lagoon import unzip, yes
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import parse_version
-import logging, re
+import logging, pickle, re
 
 log = logging.getLogger(__name__)
 
+class Make:
+
+    @types(Config)
+    def __init__(self, config):
+        self.statepath = Path(config.state.path)
+        if self.statepath.exists():
+            with self.statepath.open('rb') as f:
+                self.targets = pickle.load(f)
+        else:
+            self.targets = []
+        self.cursor = 0
+
+    def __call__(self, target, install = None):
+        if self.cursor < len(self.targets):
+            if self.targets[self.cursor] == target:
+                log.debug("Accept: %s", target)
+                self.cursor += 1
+                return
+            log.debug("Discard: %s", self.targets[self.cursor:])
+            del self.targets[self.cursor:]
+        if install is None:
+            log.debug("Config: %s", target)
+        else:
+            log.info("Install: %s", target)
+            install()
+        self.targets.append(target)
+        with self.statepath.open('wb') as f:
+            pickle.dump(self.targets, f)
+        self.cursor += 1
+
 class PlatformInfo:
 
-    @types(Config, Mirror)
-    def __init__(self, config, mirror):
+    @types(Config, Mirror, Make)
+    def __init__(self, config, mirror, make):
         self.sdk_dir = Path(config.android_sdk_dir)
         self.skip_update = config.android.skip_update
         self.acceptlicense = config.android.accept_sdk_license
@@ -61,21 +91,21 @@ class PlatformInfo:
         self.ndk_dir = Path(config.android_ndk_dir)
         self.android_ndk_version = config.android.ndk
         self.mirror = mirror
+        self.make = make
 
     def install(self):
-        self._install_android_sdk()
-        self._install_android_ndk()
+        self.make(self.platformname)
+        self.make(self.sdk_dir, self._install_android_sdk)
+        self.make(self.android_ndk_version)
+        self.make(self.ndk_dir, self._install_android_ndk)
 
     def _install_android_sdk(self):
-        with self.sdk_dir.okorclean() as ok:
-            if ok:
-                log.info('Android SDK found at %s', self.sdk_dir)
-                return
-            log.info('Android SDK is missing, downloading')
-            archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
-            log.info('Unpacking Android SDK')
-            unzip._q.print(archive, cwd = self.sdk_dir)
-            log.info('Android SDK tools base installation done.')
+        self.sdk_dir.clear()
+        log.info('Android SDK is missing, downloading')
+        archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
+        log.info('Unpacking Android SDK')
+        unzip._q.print(archive, cwd = self.sdk_dir)
+        log.info('Android SDK tools base installation done.')
         if not self.skip_update:
             self._install_android_packages()
 
@@ -102,19 +132,16 @@ class PlatformInfo:
             log.debug("Already have platform: %s", self.platformname)
 
     def _install_android_ndk(self):
-        with self.ndk_dir.okorclean() as ok:
-            if ok:
-                log.info('Android NDK found at %s', self.ndk_dir)
-                return
-            log.info('Android NDK is missing, downloading')
-            archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
-            log.info('Unpacking Android NDK')
-            unzip._q.print(archive, cwd = self.ndk_dir)
-            rootdir, = self.ndk_dir.iterdir()
-            for path in rootdir.iterdir():
-                path.rename(self.ndk_dir / path.relative_to(rootdir))
-            rootdir.rmdir()
-            log.info('Android NDK installation done.')
+        self.ndk_dir.clear()
+        log.info('Android NDK is missing, downloading')
+        archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
+        log.info('Unpacking Android NDK')
+        unzip._q.print(archive, cwd = self.ndk_dir)
+        rootdir, = self.ndk_dir.iterdir()
+        for path in rootdir.iterdir():
+            path.rename(self.ndk_dir / path.relative_to(rootdir))
+        rootdir.rmdir()
+        log.info('Android NDK installation done.')
 
 class Platform:
 

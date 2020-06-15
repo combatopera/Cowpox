@@ -47,7 +47,7 @@ from .context import Checks, ContextImpl, GraphImpl, GraphProxy, PipInstallRecip
 from .dirs import Dirs
 from .graph import GraphInfoImpl
 from .mirror import Mirror
-from .platform import Platform, PlatformInfo
+from .platform import Make, Platform, PlatformInfo
 from .src import Src
 from .util import findimpl, Logging
 from diapyr import DI, types
@@ -92,6 +92,7 @@ def _main():
         di.add(GraphImpl)
         di.add(GraphInfoImpl)
         di.add(GraphProxy)
+        di.add(Make)
         di.add(Mirror)
         di.add(PipInstallRecipe)
         di.add(Platform)
