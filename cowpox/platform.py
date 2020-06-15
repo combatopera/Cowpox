@@ -54,12 +54,12 @@ class PlatformInfo:
 
     @types(Config, Mirror)
     def __init__(self, config, mirror):
-        self.android_ndk_version = config.android.ndk
-        self.platformname = config.android.platform
-        self.acceptlicense = config.android.accept_sdk_license
         self.sdk_dir = Path(config.android_sdk_dir)
-        self.ndk_dir = Path(config.android_ndk_dir)
         self.skip_update = config.android.skip_update
+        self.acceptlicense = config.android.accept_sdk_license
+        self.platformname = config.android.platform
+        self.ndk_dir = Path(config.android_ndk_dir)
+        self.android_ndk_version = config.android.ndk
         self.mirror = mirror
 
     def _install_android_sdk(self):
