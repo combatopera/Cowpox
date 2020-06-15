@@ -60,7 +60,6 @@ class PlatformInfo:
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.skip_update = config.android.skip_update
-        self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         self.mirror = mirror
 
     def _install_android_sdk(self):
@@ -78,22 +77,23 @@ class PlatformInfo:
 
     def _install_android_packages(self):
         log.info('Install/update SDK platform tools.')
+        sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         if self.acceptlicense:
             with yes.bg(check = False) as yesproc:
-                self.sdkmanager.__licenses.print(stdin = yesproc.stdout)
-        self.sdkmanager.tools.platform_tools.print()
-        self.sdkmanager.__update.print()
+                sdkmanager.__licenses.print(stdin = yesproc.stdout)
+        sdkmanager.tools.platform_tools.print()
+        sdkmanager.__update.print()
         buildtoolsdir = self.sdk_dir / 'build-tools'
         actualo, actuals = max([parse_version(p.name), p.name] for p in buildtoolsdir.iterdir()) if buildtoolsdir.exists() else [None, None]
-        latesto, latests = max([parse_version(v), v] for v in re.findall(r'\bbuild-tools;(\S+)', self.sdkmanager.__list()))
+        latesto, latests = max([parse_version(v), v] for v in re.findall(r'\bbuild-tools;(\S+)', sdkmanager.__list()))
         if actualo is None or latesto > actualo:
             log.info("Update build-tools to: %s", latests)
-            self.sdkmanager.print(f"build-tools;{latests}")
+            sdkmanager.print(f"build-tools;{latests}")
         else:
             log.debug("Already have latest build-tools: %s", actuals)
         if not (self.sdk_dir / 'platforms' / self.platformname).exists():
             log.info("Download platform: %s", self.platformname)
-            self.sdkmanager.print(f"platforms;{self.platformname}")
+            sdkmanager.print(f"platforms;{self.platformname}")
         else:
             log.debug("Already have platform: %s", self.platformname)
 
