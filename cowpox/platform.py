@@ -59,6 +59,7 @@ class PlatformInfo:
         self.acceptlicense = config.android.accept_sdk_license
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
+        self.skip_update = config.android.skip_update:
         self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         self.mirror = mirror
 
@@ -72,6 +73,8 @@ class PlatformInfo:
             log.info('Unpacking Android SDK')
             unzip._q.print(archive, cwd = self.sdk_dir)
             log.info('Android SDK tools base installation done.')
+        if not self.skip_update:
+            self._install_android_packages()
 
     def _install_android_packages(self):
         log.info('Install/update SDK platform tools.')
@@ -118,8 +121,6 @@ class Platform:
         self.ndk_api = config.android.ndk_api
         info._install_android_sdk()
         info._install_android_ndk()
-        if not config.android.skip_update:
-            info._install_android_packages()
 
     def build_tools_version(self):
         ignored = {'.DS_Store', '.ds_store'}
