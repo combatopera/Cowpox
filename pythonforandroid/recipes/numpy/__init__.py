@@ -47,11 +47,11 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
     version = '1.18.1'
     urlformat = "https://pypi.python.org/packages/source/n/numpy/numpy-{version}.zip"
     depends = ['setuptools', 'cython']
-    patches = [Path('patches', n) for n in [
+    patches = [
         'add_libm_explicitly_to_build.patch',
         'do_not_use_system_libs.patch',
         'remove_unittest_call.patch',
-    ]]
+    ]
     call_hostpython_via_targetpython = False
 
     def build_compiled_components(self):
