@@ -40,23 +40,11 @@
 
 from pathlib import Path
 from setuptools import find_packages, setup
-import glob
 
-def recursively_include(directory, patterns):
-    root = Path('pythonforandroid')
-    for path in Path(root, *directory).rglob('*'):
-        if any(glob.fnmatch.fnmatch(path.name, pattern) for pattern in patterns):
-            package_data[str(root)].append(str(path.relative_to(root)))
-
-package_data = {
-        '': ['*.arid', '*.aridt', '*.tmpl', '*.patch', '*.mk'],
-        'pythonforandroid': []}
-recursively_include(['bootstraps'], ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', '*.patch', '*.aridt'])
-recursively_include(['bootstraps', 'webview'], ['*.html'])
 setup(
     name = 'Cowpox',
     packages = find_packages(),
-    package_data = package_data,
+    package_data = {'': ['*.arid', '*.aridt', '*.patch', '*.mk']},
     install_requires = Path('requirements.txt').read_text().splitlines(),
     entry_points = dict(console_scripts = ['Cowpox=cowpox.cowpox:main']),
 )

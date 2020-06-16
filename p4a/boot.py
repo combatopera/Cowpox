@@ -45,7 +45,6 @@ from diapyr import types
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
 from pathlib import Path
-from pkg_resources import resource_filename
 from tempfile import TemporaryDirectory
 import logging, os, shutil, subprocess
 
@@ -71,11 +70,11 @@ class BootstrapType(type): pass
 
 class Bootstrap(Plugin, metaclass = BootstrapType):
 
-    bootstrapsdir = Path(resource_filename('pythonforandroid', 'bootstraps'))
     recipe_depends = [("python2", "python3"), 'android']
 
     @types(Config, Graph, Arch, Platform, GraphInfo)
     def __init__(self, config, graph, arch, platform, graphinfo):
+        self.bootstrapsdir = Path(config.bootstrapsdir)
         self.bootstrap_dir = self.bootstrapsdir / config.p4a.bootstrap
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
