@@ -47,7 +47,7 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
     build-essential ccache cmake gettext adoptopenjdk-8-hotspot zip gradle
 # XXX: Can we bundle gradle deps?
-WORKDIR /root/project
+WORKDIR /Cowpox
 COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
@@ -69,7 +69,7 @@ ARG UID=7654
 ARG GID=3210
 RUN groupadd -g $GID $GROUP && useradd -g $GID -u $UID --create-home --shell /bin/bash $USER
 RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.gradle /mirror) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"'
-RUN { echo src = /src; echo extroot = /root/project; } | tee /image.arid
+RUN { echo src = /src; echo extroot = /Cowpox; } | tee /image.arid
 USER $USER
 ENTRYPOINT ["Cowpox"]
 WORKDIR /workspace
