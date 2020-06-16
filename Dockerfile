@@ -72,3 +72,4 @@ RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.gradle /mirror) && mk
 RUN { echo src = /src; } | tee /image.arid
 USER $USER
 ENTRYPOINT ["Cowpox"]
+WORKDIR /workspace
