@@ -40,7 +40,6 @@
 
 from p4a.patch import version_starts_with
 from p4a.python import GuestPythonRecipe
-from pathlib import Path
 import lagoon
 
 class Python3Recipe(GuestPythonRecipe):
