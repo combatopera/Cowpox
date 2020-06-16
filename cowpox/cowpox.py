@@ -106,7 +106,7 @@ def _main():
     finally:
         di.discardall()
 
-def main():
+def main_Cowpox():
     try:
         log.info("Result: %s", _main())
     except:
