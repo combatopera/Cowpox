@@ -1,8 +1,0 @@
-aridity
-chromalog
-Cython
-diapyr>=11
-jinja2
-lagoon
-networkx
-virtualenv<20

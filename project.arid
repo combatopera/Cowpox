@@ -44,3 +44,15 @@ author = Andrzej Cichocki
 name = Cowpox
 licenses += MIT
 MIT path = LICENSE.kivy
+requires +=
+    aridity
+    chromalog
+    Cython
+    diapyr>=11
+    jinja2
+    lagoon
+    networkx
+    virtualenv<20
+resource types +=
+    patch
+    mk
