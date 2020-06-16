@@ -62,14 +62,14 @@ RUN find -name '*.py' \
 
 FROM base
 COPY . .
-RUN pip install . && rm -rv "$PWD" | tail -1
+RUN pip install .
 ARG USER=bdoz
 ARG GROUP=bdgp
 ARG UID=7654
 ARG GID=3210
 RUN groupadd -g $GID $GROUP && useradd -g $GID -u $UID --create-home --shell /bin/bash $USER
 RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.gradle /mirror) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"'
-RUN { echo src = /src; } | tee /image.arid
+RUN { echo src = /src; echo extroot = /root/project; } | tee /image.arid
 USER $USER
 ENTRYPOINT ["Cowpox"]
 WORKDIR /workspace

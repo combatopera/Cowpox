@@ -115,6 +115,7 @@ class Recipe(Plugin):
     def __init__(self, config, context, platform, graph, mirror, arch, graphinfo):
         self.other_builds = Path(config.other_builds)
         self.projectbuilddir = Path(config.build.dir)
+        self.extroot = Path(config.container.extroot)
         self.context = context
         self.platform = platform
         self.graph = graph
@@ -124,6 +125,9 @@ class Recipe(Plugin):
 
     def resourcepath(self, relpath):
         return Path(resource_filename(self._fqmodulename(), str(relpath)))
+
+    def _extresourcepath(self, relpath):
+        return Path(self.extroot, *self._fqmodulename().split('.'), relpath)
 
     def apply_patch(self, relpath):
         log.info("Applying patch %s", relpath)
@@ -185,7 +189,7 @@ class Recipe(Plugin):
             srcpath = Path(self.url.replace('/', os.sep))
             log.info("[%s] Copy from: %s", self.name, srcpath)
             # TODO: Copy without .git either.
-            self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), targetpath)
+            self._copywithoutbuild(srcpath if srcpath.is_absolute() else self._extresourcepath(srcpath), targetpath)
             return
         archivepath = self.mirror.getpath(self.url)
         log.info("[%s] Unpack for: %s", self.name, self.arch.name)
