@@ -55,17 +55,18 @@ WORKDIR /Cowpox
 COPY project.arid .
 RUN pipify && \
     python setup.py egg_info && \
-    pip install -r Cowpox.egg-info/requires.txt
+    pip install -r Cowpox.egg-info/requires.txt && \
+    git init
 
 FROM base
 COPY COPYING LICENSE.kivy .flakesignore ./
-RUN git init && rm setup.py && tests
+RUN rm setup.py && tests
 COPY . .
 RUN tests
 
 FROM base
 COPY . .
-RUN pip install .
+RUN pipify && pip install .
 ARG USER=bdoz
 ARG GROUP=bdgp
 ARG UID=7654
