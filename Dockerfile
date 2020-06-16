@@ -45,12 +45,13 @@ RUN apt-get update && \
     add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-    build-essential ccache cmake gettext adoptopenjdk-8-hotspot zip gradle
+    build-essential ccache cmake gettext adoptopenjdk-8-hotspot zip gradle && \
+    pip install --upgrade pip
 # XXX: Can we bundle gradle deps?
 WORKDIR /Cowpox
-COPY requirements.txt .
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+COPY setup.py requirements.txt ./
+RUN python setup.py egg_info && \
+    pip install -r Cowpox.egg-info/requires.txt
 
 FROM base AS test
 RUN pip install pyflakes pytest
