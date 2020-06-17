@@ -149,7 +149,7 @@ class TestMake(TestCase):
         m('eranu')
         m(self.d / 'target2', self.fail)
         m = Make(self, self)
-        m(self.d / 'target1', lambda: self.logs.append('c1'))
+        m(self.d / 'target1', self.fail)
         m('uvavu')
         m(self.d / 'target2', lambda: self.logs.append('c2'))
         self.assertEqual([
