@@ -66,7 +66,6 @@ class Make:
                 self.log.info(format, 'OK', target)
                 self.cursor += 1
                 return
-            self.log.debug("Discard: %s", self.targets[self.cursor:])
             del self.targets[self.cursor:]
         if install is None:
             self.log.debug("Config: %s", target)

@@ -76,14 +76,11 @@ class TestMake(TestCase):
         m(self.d / 'target2', self.fail)
         m(self.d / 'target3', lambda: self.logs.append('c3'))
         self.assertEqual([
-            ['info', "Create %s: %s", 'NOW', self.d / 'target1'],
-            'c1',
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'],
-            'c2',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 'c1',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
             ['info', "Create %s: %s", 'OK', self.d / 'target1'],
             ['info', "Create %s: %s", 'OK', self.d / 'target2'],
-            ['info', "Create %s: %s", 'NOW', self.d / 'target3'],
-            'c3',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target3'], 'c3',
         ], self.logs)
 
     def test_update(self):
@@ -101,21 +98,43 @@ class TestMake(TestCase):
         m(self.d / 'target2', self.fail)
         m(self.d / 'target1', lambda: self.logs.append('u12'))
         self.assertEqual([
-            ['info', "Create %s: %s", 'NOW', self.d / 'target1'],
-            'c1',
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'],
-            'c2',
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'],
-            'u11',
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target2'],
-            'u21',
-            ['info', "Update 2 %s: %s", 'NOW', self.d / 'target2'],
-            'u22',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 'c1',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
+            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 'u11',
+            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target2'], 'u21',
+            ['info', "Update 2 %s: %s", 'NOW', self.d / 'target2'], 'u22',
             ['info', "Create %s: %s", 'OK', self.d / 'target1'],
             ['info', "Create %s: %s", 'OK', self.d / 'target2'],
             ['info', "Update 1 %s: %s", 'OK', self.d / 'target1'],
             ['info', "Update 1 %s: %s", 'OK', self.d / 'target2'],
             ['info', "Update 2 %s: %s", 'OK', self.d / 'target2'],
-            ['info', "Update 2 %s: %s", 'NOW', self.d / 'target1'],
-            'u12',
+            ['info', "Update 2 %s: %s", 'NOW', self.d / 'target1'], 'u12',
+        ], self.logs)
+
+    def test_fork(self):
+        m = Make(self, self)
+        m(self.d / 'target1', lambda: self.logs.append('c1'))
+        m(self.d / 'target2', lambda: self.logs.append('c2'))
+        m(self.d / 'target1', lambda: self.logs.append('u11'))
+        m(self.d / 'target2', lambda: self.logs.append('u21'))
+        m(self.d / 'target3', lambda: self.logs.append('c3'))
+        m = Make(self, self)
+        m(self.d / 'target1', self.fail)
+        m(self.d / 'target3', lambda: self.logs.append('c3'))
+        m(self.d / 'target2', lambda: self.logs.append('c2'))
+        m(self.d / 'target1', lambda: self.logs.append('u11'))
+        m(self.d / 'target2', lambda: self.logs.append('u21'))
+        m(self.d / 'target3', lambda: self.logs.append('u31'))
+        self.assertEqual([
+            ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 'c1',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
+            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 'u11',
+            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target2'], 'u21',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target3'], 'c3',
+            ['info', "Create %s: %s", 'OK', self.d / 'target1'],
+            ['info', "Create %s: %s", 'NOW', self.d / 'target3'], 'c3',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
+            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 'u11',
+            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target2'], 'u21',
+            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target3'], 'u31',
         ], self.logs)
