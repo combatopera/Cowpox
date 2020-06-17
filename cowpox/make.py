@@ -64,7 +64,6 @@ class Make:
         else:
             n = self.targets[:self.cursor].count(target)
             format = f"Update {n} %s: %s" if n else "Create %s: %s"
-        when = 'NOW'
         if self.cursor < len(self.targets):
             if self.targets[self.cursor] == target:
                 if install is None or target.exists():
@@ -72,7 +71,11 @@ class Make:
                     self.cursor += 1
                     return
                 when = 'AGAIN'
+            else:
+                when = 'FRESH'
             del self.targets[self.cursor:]
+        else:
+            when = 'NOW'
         self.log.info(format, when, target)
         if install is not None:
             if not n:
