@@ -138,3 +138,28 @@ class TestMake(TestCase):
             ['info', "Update 1 %s: %s", 'NOW', self.d / 'target2'], 'u21',
             ['info', "Update 1 %s: %s", 'NOW', self.d / 'target3'], 'u31',
         ], self.logs)
+
+    def test_config(self):
+        m = Make(self, self)
+        m(self.d / 'target1', lambda: self.logs.append('c1'))
+        m('eranu')
+        m(self.d / 'target2', lambda: self.logs.append('c2'))
+        m = Make(self, self)
+        m(self.d / 'target1', self.fail)
+        m('eranu')
+        m(self.d / 'target2', self.fail)
+        m = Make(self, self)
+        m(self.d / 'target1', lambda: self.logs.append('c1'))
+        m('uvavu')
+        m(self.d / 'target2', lambda: self.logs.append('c2'))
+        self.assertEqual([
+            ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 'c1',
+            ['info', "Config %s: %s", 'NOW', 'eranu'],
+            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
+            ['info', "Create %s: %s", 'OK', self.d / 'target1'],
+            ['info', "Config %s: %s", 'OK', 'eranu'],
+            ['info', "Create %s: %s", 'OK', self.d / 'target2'],
+            ['info', "Create %s: %s", 'OK', self.d / 'target1'],
+            ['info', "Config %s: %s", 'NOW', 'uvavu'],
+            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
+        ], self.logs)

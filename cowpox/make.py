@@ -60,17 +60,15 @@ class Make:
 
     def __call__(self, target, install = None):
         n = self.targets[:self.cursor].count(target)
-        format = f"Update {n} %s: %s" if n else "Create %s: %s"
+        format = "Config %s: %s" if install is None else f"Update {n} %s: %s" if n else "Create %s: %s"
         if self.cursor < len(self.targets):
             if self.targets[self.cursor] == target:
                 self.log.info(format, 'OK', target)
                 self.cursor += 1
                 return
             del self.targets[self.cursor:]
-        if install is None:
-            self.log.debug("Config: %s", target)
-        else:
-            self.log.info(format, 'NOW', target)
+        self.log.info(format, 'NOW', target)
+        if install is not None:
             install()
         self.targets.append(target)
         with self.statepath.open('wb') as f:
