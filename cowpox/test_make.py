@@ -183,3 +183,22 @@ class TestMake(TestCase):
             ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
             ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 'u11',
         ], self.logs)
+
+    def test_cleaned2(self):
+        m = Make(self, self)
+        m(self.d / 'target1', lambda: self.logs.append('c1'))
+        m(self.d / 'target2', lambda: self.logs.append('c2'))
+        m(self.d / 'target1', lambda: self.logs.append('u11'))
+        shutil.rmtree(self.d / 'target2')
+        m = Make(self, self)
+        m(self.d / 'target1', self.fail)
+        m(self.d / 'target2', lambda: self.logs.append('c2'))
+        m(self.d / 'target1', lambda: self.logs.append('u11'))
+        self.assertEqual([
+            ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 'c1',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
+            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 'u11',
+            ['info', "Create %s: %s", 'OK', self.d / 'target1'],
+            ['info', "Create %s: %s", 'AGAIN', self.d / 'target2'], 'c2',
+            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 'u11',
+        ], self.logs)
