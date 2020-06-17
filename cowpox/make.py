@@ -84,7 +84,7 @@ class Make:
             if not n:
                 if target in self.clobberables and target.exists():
                     shutil.rmtree(target)
-                target.mkdir(parents = True)
+                target.mkdir(parents = True) # FIXME: Will fail if install failed previously.
             install()
         self.targets.append(target)
         with self.statepath.open('wb') as f:
