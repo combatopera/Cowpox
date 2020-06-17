@@ -180,7 +180,6 @@ class Recipe(Plugin):
 
     def prepare_build_dir(self):
         targetpath = self.get_build_dir()
-        targetpath.clear()
         if self.url is None:
             log.debug("[%s] Skip unpack as no URL is set.", self.name)
             return

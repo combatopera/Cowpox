@@ -71,7 +71,6 @@ class PlatformInfo:
         self.make(self.ndk_dir, self._install_android_ndk)
 
     def _install_android_sdk(self):
-        self.sdk_dir.clear()
         log.info('Android SDK is missing, downloading')
         archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
         log.info('Unpacking Android SDK')
@@ -101,7 +100,6 @@ class PlatformInfo:
             log.debug("Already have platform: %s", self.platformname)
 
     def _install_android_ndk(self):
-        self.ndk_dir.clear()
         log.info('Android NDK is missing, downloading')
         archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
         log.info('Unpacking Android NDK')

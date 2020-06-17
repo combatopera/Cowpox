@@ -41,11 +41,14 @@
 from .config import Config
 from diapyr import types
 from pathlib import Path
-import logging, pickle
+import logging, pickle, shutil
 
 log = logging.getLogger(__name__)
 
 class Make:
+
+    cursor = 0
+    clobberables = ()
 
     @types(Config)
     def __init__(self, config, log = log):
@@ -55,7 +58,6 @@ class Make:
                 self.targets = pickle.load(f)
         else:
             self.targets = []
-        self.cursor = 0
         self.log = log
 
     def __call__(self, target, install = None):
@@ -73,13 +75,16 @@ class Make:
                 when = 'AGAIN'
             else:
                 when = 'FRESH'
+            self.clobberables = set(self.targets[self.cursor:])
             del self.targets[self.cursor:]
         else:
             when = 'NOW'
         self.log.info(format, when, target)
         if install is not None:
             if not n:
-                target.clear()
+                if target in self.clobberables and target.exists():
+                    shutil.rmtree(target)
+                target.mkdir(parents = True)
             install()
         self.targets.append(target)
         with self.statepath.open('wb') as f:

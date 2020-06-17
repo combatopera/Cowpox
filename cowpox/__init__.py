@@ -39,8 +39,6 @@
 # THE SOFTWARE.
 
 from pathlib import Path
-import shutil
 
 Path.mkdirp = lambda self: [self.mkdir(parents = True, exist_ok = True), self][-1]
 Path.pmkdirp = lambda self: [self.parent.mkdirp(), self][-1]
-Path.clear = lambda self: [self.mkdirp(), [shutil.rmtree(p) if p.is_dir() else p.unlink() for p in self.iterdir()]]
