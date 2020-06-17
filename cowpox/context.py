@@ -130,15 +130,15 @@ class ContextImpl:
         log.info('Prebuilding recipes')
         for recipe in recipes:
             log.info("Prebuilding %s for %s", recipe.name, self.arch.name)
-            self.make(recipe.get_build_dir() / 'prebuild', recipe.prebuild)
+            self.make(recipe.get_build_dir(), recipe.prebuild)
         log.info('Building recipes')
         for recipe in recipes:
             log.info("Building %s for %s", recipe.name, self.arch.name)
-            self.make(recipe.get_build_dir() / 'mainbuild', recipe.mainbuild)
+            self.make(recipe.get_build_dir(), recipe.mainbuild)
         log.info('Postbuilding recipes')
         for recipe in recipes:
             log.info("Postbuilding %s for %s", recipe.name, self.arch.name)
-            self.make(recipe.get_build_dir() / 'postbuild', recipe.postbuild_arch)
+            self.make(recipe.get_build_dir(), recipe.postbuild_arch)
 
     def build_nonrecipes(self):
         log.info('Installing pure Python modules')
