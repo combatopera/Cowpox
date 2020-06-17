@@ -41,7 +41,7 @@
 from .config import Config
 from diapyr import types
 from pathlib import Path
-import logging, pickle
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -53,20 +53,21 @@ class Make:
     def __init__(self, config, log = log):
         self.statepath = Path(config.state.path)
         if self.statepath.exists():
-            with self.statepath.open('rb') as f:
-                self.targets = pickle.load(f)
+            with self.statepath.open() as f:
+                self.targets = f.read().splitlines()
         else:
             self.targets = []
         self.log = log
 
     def __call__(self, target, install = None):
+        targetstr = str(target)
         if install is None:
             format = "Config %s: %s"
         else:
-            n = self.targets[:self.cursor].count(target)
+            n = self.targets[:self.cursor].count(targetstr)
             format = f"Update {n} %s: %s" if n else "Create %s: %s"
         if self.cursor < len(self.targets):
-            if self.targets[self.cursor] == target:
+            if self.targets[self.cursor] == targetstr:
                 if install is None or target.exists():
                     self.log.info(format, 'OK', target)
                     self.cursor += 1
@@ -85,7 +86,8 @@ class Make:
                 else:
                     target.mkdir(parents = True)
             install()
-        self.targets.append(target)
-        with self.statepath.open('wb') as f:
-            pickle.dump(self.targets, f)
+        self.targets.append(targetstr)
+        with self.statepath.open('w') as f:
+            for t in self.targets:
+                print(t, file = f)
         self.cursor += 1
