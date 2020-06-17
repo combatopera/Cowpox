@@ -59,16 +59,24 @@ class Make:
         self.log = log
 
     def __call__(self, target, install = None):
-        n = self.targets[:self.cursor].count(target)
-        format = "Config %s: %s" if install is None else f"Update {n} %s: %s" if n else "Create %s: %s"
+        if install is None:
+            format = "Config %s: %s"
+        else:
+            n = self.targets[:self.cursor].count(target)
+            format = f"Update {n} %s: %s" if n else "Create %s: %s"
+        when = 'NOW'
         if self.cursor < len(self.targets):
             if self.targets[self.cursor] == target:
-                self.log.info(format, 'OK', target)
-                self.cursor += 1
-                return
+                if install is None or target.exists():
+                    self.log.info(format, 'OK', target)
+                    self.cursor += 1
+                    return
+                when = 'AGAIN'
             del self.targets[self.cursor:]
-        self.log.info(format, 'NOW', target)
+        self.log.info(format, when, target)
         if install is not None:
+            if not n:
+                target.clear()
             install()
         self.targets.append(target)
         with self.statepath.open('wb') as f:
