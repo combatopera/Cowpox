@@ -45,7 +45,7 @@ library_dirs = ['libs/' + os.environ['ARCH']]
 lib_dict = {
     'sdl2': ['SDL2', 'SDL2_image', 'SDL2_mixer', 'SDL2_ttf']
 }
-sdl_libs = lib_dict.get(os.environ['BOOTSTRAP'], [])
+sdl_libs = lib_dict.get(os.environ['BOOTSTRAP'], []) # FIXME: Breaks incremental build.
 
 modules = [Extension('android._android',
                      ['android/_android.c', 'android/_android_jni.c'],
