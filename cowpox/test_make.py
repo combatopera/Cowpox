@@ -62,9 +62,6 @@ class TestMake(TestCase):
     def tearDown(self):
         self.tempdir.cleanup()
 
-    def debug(self, *args):
-        self.logs.append(['debug', *args])
-
     def info(self, *args):
         self.logs.append(['info', *args])
 
