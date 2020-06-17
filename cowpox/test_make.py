@@ -65,6 +65,9 @@ class TestMake(TestCase):
     def info(self, *args):
         self.logs.append(['info', *args])
 
+    def warning(self, *args):
+        self.logs.append(['warn', *args])
+
     def test_replay(self):
         m = Make(self, self)
         m(self.d / 'target1', lambda: self.logs.append('c1'))
@@ -130,8 +133,8 @@ class TestMake(TestCase):
             ['info', "Update 1 %s: %s", 'NOW', self.d / 'target2'], 'u21',
             ['info', "Create %s: %s", 'NOW', self.d / 'target3'], 'c3',
             ['info', "Create %s: %s", 'OK', self.d / 'target1'],
-            ['info', "Create %s: %s", 'FRESH', self.d / 'target3'], 'c3',
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
+            ['info', "Create %s: %s", 'FRESH', self.d / 'target3'], ['warn', "Already exists: %s", self.d / 'target3'], 'c3',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], ['warn', "Already exists: %s", self.d / 'target2'], 'c2',
             ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 'u11',
             ['info', "Update 1 %s: %s", 'NOW', self.d / 'target2'], 'u21',
             ['info', "Update 1 %s: %s", 'NOW', self.d / 'target3'], 'u31',
@@ -159,7 +162,7 @@ class TestMake(TestCase):
             ['info', "Create %s: %s", 'OK', self.d / 'target2'],
             ['info', "Create %s: %s", 'OK', self.d / 'target1'],
             ['info', "Config %s: %s", 'FRESH', 'uvavu'],
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], ['warn', "Already exists: %s", self.d / 'target2'], 'c2',
         ], self.logs)
 
     def test_cleaned(self):
@@ -177,7 +180,7 @@ class TestMake(TestCase):
             ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
             ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 'u11',
             ['info', "Create %s: %s", 'AGAIN', self.d / 'target1'], 'c1',
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
+            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], ['warn', "Already exists: %s", self.d / 'target2'], 'c2',
             ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 'u11',
         ], self.logs)
 
