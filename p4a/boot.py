@@ -94,13 +94,10 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.android_api}")
         self.dist_dir.mkdirp()
 
-    def writelocalproperties(self):
-        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.sdk_dir}")
-
     def distlibs(self):
         rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
-        self.writelocalproperties()
+        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.sdk_dir}")
         log.info("Bootstrap running with arch %s", self.arch)
         log.info('Copying python distribution')
         self.distribute_libs(self.arch, self.arch.libs_dir)
