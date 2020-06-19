@@ -44,7 +44,6 @@ from .arch import all_archs
 from .build import APKMaker
 from .config import Config
 from .context import Checks, ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
-from .dirs import Dirs
 from .graph import GraphInfoImpl
 from .make import Make
 from .mirror import Mirror
@@ -62,8 +61,8 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Checks, Bootstrap, ContextImpl, Src, Dirs, TargetAndroid, Make, this = Result)
-def run(checks, bootstrap, context, src, dirs, target, make):
+@types(Checks, Bootstrap, ContextImpl, Src, TargetAndroid, Make, this = Result)
+def run(checks, bootstrap, context, src, target, make):
     log.info('Compile platform')
     checks.check()
     bootstrap.prepare_dirs()
@@ -71,7 +70,6 @@ def run(checks, bootstrap, context, src, dirs, target, make):
     context.build_nonrecipes()
     make(bootstrap.dist_dir, bootstrap.run_distribute)
     src.copy_application_sources()
-    dirs.add_sitecustomize()
     log.info('Package the application')
     return target.build_package()
 
@@ -89,7 +87,6 @@ def _main():
         di.add(Checks)
         di.add(Context)
         di.add(ContextImpl)
-        di.add(Dirs)
         di.add(GraphImpl)
         di.add(GraphInfoImpl)
         di.add(GraphProxy)
