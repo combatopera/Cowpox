@@ -69,7 +69,7 @@ def run(checks, bootstrap, context, src, target, make):
     context.build_recipes()
     context.build_nonrecipes()
     make(bootstrap.dist_dir, bootstrap.run_distribute)
-    src.copy_application_sources()
+    make(src.app_dir, src.copy_application_sources)
     log.info('Package the application')
     return target.build_package()
 
