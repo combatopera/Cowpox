@@ -40,7 +40,6 @@
 
 from . import Arch, Graph, GraphInfo, Plugin
 from cowpox.config import Config
-from cowpox.platform import Platform
 from diapyr import types
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
@@ -72,8 +71,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     recipe_depends = [("python2", "python3"), 'android']
 
-    @types(Config, Graph, Arch, Platform, GraphInfo)
-    def __init__(self, config, graph, arch, platform, graphinfo):
+    @types(Config, Graph, Arch, GraphInfo)
+    def __init__(self, config, graph, arch, graphinfo):
         self.bootstrapsdir = Path(config.bootstrapsdir)
         self.bootstrap_dir = self.bootstrapsdir / config.p4a.bootstrap
         self.buildsdir = Path(config.buildsdir)
@@ -85,7 +84,6 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.sdk_dir = config.android_sdk_dir
         self.graph = graph
         self.arch = arch
-        self.platform = platform
         self.graphinfo = graphinfo
 
     def prepare_dirs(self):
