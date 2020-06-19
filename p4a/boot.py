@@ -100,7 +100,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.sdk_dir}")
         log.info("Bootstrap running with arch %s", self.arch.name)
         log.info('Copying python distribution')
-        self._distribute_libs(self.arch, self.arch.libs_dir)
+        self._distribute_libs()
 
     def distfinish(self):
         site_packages_dir = self.graph.python_recipe.create_python_bundle()
@@ -124,10 +124,10 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
                     raise
                 log.debug("Failed to strip %s", filen)
 
-    def _distribute_libs(self, arch, src_dir):
+    def _distribute_libs(self):
         log.info('Copying libs')
-        tgt_dir = (self.dist_dir / 'libs' / arch.name).mkdirp()
-        for lib in src_dir.iterdir():
+        tgt_dir = (self.dist_dir / 'libs' / self.arch.name).mkdirp()
+        for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
 
     def distribute_javaclasses(self, dest_dir = 'src'):
