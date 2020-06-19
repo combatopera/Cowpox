@@ -74,6 +74,7 @@ class PlatformInfo:
         log.info('Android SDK is missing, downloading')
         archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
         log.info('Unpacking Android SDK')
+        self.sdk_dir.mkdir()
         unzip._q.print(archive, cwd = self.sdk_dir)
         log.info('Android SDK tools base installation done.')
         if self.skip_update:
@@ -103,6 +104,7 @@ class PlatformInfo:
         log.info('Android NDK is missing, downloading')
         archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
         log.info('Unpacking Android NDK')
+        self.ndk_dir.mkdir()
         unzip._q.print(archive, cwd = self.ndk_dir)
         rootdir, = self.ndk_dir.iterdir()
         for path in rootdir.iterdir():

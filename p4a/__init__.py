@@ -182,8 +182,8 @@ class Recipe(Plugin):
         targetpath = self.get_build_dir()
         if self.url is None:
             log.debug("[%s] Skip unpack as no URL is set.", self.name)
+            targetpath.mkdir()
             return
-        targetpath.rmdir()
         if not urlparse(self.url).scheme:
             srcpath = Path(self.url.replace('/', os.sep))
             log.info("[%s] Copy from: %s", self.name, srcpath)
