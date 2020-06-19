@@ -107,10 +107,10 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         if 'sqlite3' not in self.graphinfo.recipenames:
             with (self.dist_dir / 'blacklist.txt').open('a') as fileh:
                 fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
-        self.strip_libraries()
-        self.fry_eggs(site_packages_dir)
+        self._strip_libraries()
+        self._fry_eggs(site_packages_dir)
 
-    def strip_libraries(self):
+    def _strip_libraries(self):
         log.info('Stripping libraries')
         strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
         libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
@@ -162,7 +162,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             for f in so_src_dir.glob('*.so'):
                 cp._a.print(f, so_tgt_dir)
 
-    def fry_eggs(self, sitepackages):
+    def _fry_eggs(self, sitepackages):
         log.info("Frying eggs in %s", sitepackages)
         for rd in sitepackages.iterdir():
             if rd.is_dir() and rd.name.endswith('.egg'):
