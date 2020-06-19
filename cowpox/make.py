@@ -41,7 +41,7 @@
 from .config import Config
 from diapyr import types
 from pathlib import Path
-import logging
+import logging, shutil
 
 log = logging.getLogger(__name__)
 
@@ -82,7 +82,9 @@ class Make:
         if install is not None:
             if not n:
                 if target.exists():
-                    self.log.warning("Already exists: %s", target)
+                    self.log.warning("Already exists, clearing: %s", target)
+                    for p in target.iterdir():
+                        shutil.rmtree(p) if p.is_dir() else p.unlink()
                 else:
                     target.mkdir(parents = True)
             install()
