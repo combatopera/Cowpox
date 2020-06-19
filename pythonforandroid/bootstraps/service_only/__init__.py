@@ -52,6 +52,6 @@ class ServiceOnlyBootstrap(Bootstrap):
         log.info("Creating Android project from build and %s bootstrap", self.name)
         log.info('This currently just copies the build stuff straight from the build dir.')
         self.distlibs()
-        self.distribute_aars(self.arch)
+        self.distribute_aars()
         self.distribute_javaclasses()
         self.distfinish()

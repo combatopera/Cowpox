@@ -134,12 +134,12 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         log.info('Copying java files')
         cp._a.print(self.javaclass_dir, (self.dist_dir / dest_dir).mkdirp())
 
-    def distribute_aars(self, arch):
+    def distribute_aars(self):
         log.info('Unpacking aars')
         for aar in (self.buildsdir / 'aars' / self.package_name).mkdirp().glob('*.aar'):
-            self._unpack_aar(aar, arch)
+            self._unpack_aar(aar)
 
-    def _unpack_aar(self, aar, arch):
+    def _unpack_aar(self, aar):
         with TemporaryDirectory() as temp_dir:
             name = os.path.splitext(aar.name)[0]
             jar_name = f"{name}.jar"
@@ -154,8 +154,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             log.debug("  to %s", jar_tgt)
             libspath = (self.build_dir / 'libs').mkdirp()
             cp._a.print(jar_src, jar_tgt)
-            so_src_dir = Path(temp_dir, 'jni', arch.name)
-            so_tgt_dir = (libspath / arch.name).mkdirp()
+            so_src_dir = Path(temp_dir, 'jni', self.arch.name)
+            so_tgt_dir = (libspath / self.arch.name).mkdirp()
             log.debug("copy %s .so", name)
             log.debug("  from %s", so_src_dir)
             log.debug("  to %s", so_tgt_dir)

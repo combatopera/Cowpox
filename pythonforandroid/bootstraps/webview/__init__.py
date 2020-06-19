@@ -51,6 +51,6 @@ class WebViewBootstrap(Bootstrap):
     def run_distribute(self):
         log.info("Creating Android project from build and %s bootstrap", self.name)
         self.distlibs()
-        self.distribute_aars(self.arch)
+        self.distribute_aars()
         self.distribute_javaclasses()
         self.distfinish()
