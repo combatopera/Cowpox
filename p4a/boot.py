@@ -90,10 +90,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files(self.bootstrapsdir / 'common' / 'build', self.build_dir, False)
         (self.build_dir / 'project.properties').write_text(f"target=android-{self.android_api}")
-        self.dist_dir.mkdirp()
 
     def distlibs(self):
-        rm._rf.print(self.dist_dir)
         cp._r.print(self.build_dir, self.dist_dir)
         (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.sdk_dir}")
         log.info("Bootstrap running with arch %s", self.arch.name)
@@ -111,8 +109,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     def _strip_libraries(self):
         log.info('Stripping libraries')
         strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
-        libs_dir = self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules'
-        filens = find(libs_dir, self.dist_dir / 'libs', '-name', '*.so').splitlines()
+        filens = find(self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules', self.dist_dir / 'libs', '-name', '*.so').splitlines()
         log.info('Stripping libraries in private dir')
         for filen in filens:
             try:
