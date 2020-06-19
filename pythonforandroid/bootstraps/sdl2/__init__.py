@@ -53,10 +53,6 @@ class SDL2GradleBootstrap(Bootstrap):
     def run_distribute(self):
         log.info("Creating Android project (%s)", self.name)
         log.info("Copying SDL2/gradle build for %s", self.arch.name)
-        rm._rf.print(self.dist_dir)
-        cp._r.print(self.build_dir, self.dist_dir)
-        self.writelocalproperties()
-        log.info('Copying Python distribution')
-        self.distribute_libs(self.arch, self.arch.libs_dir)
+        self.distlibs()
         self.distribute_javaclasses(dest_dir = Path('src', 'main', 'java'))
         super().run_distribute()

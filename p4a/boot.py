@@ -97,6 +97,14 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     def writelocalproperties(self):
         (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.sdk_dir}")
 
+    def distlibs(self):
+        rm._rf.print(self.dist_dir)
+        cp._r.print(self.build_dir, self.dist_dir)
+        self.writelocalproperties()
+        log.info("Bootstrap running with arch %s", self.arch)
+        log.info('Copying python distribution')
+        self.distribute_libs(self.arch, self.arch.libs_dir)
+
     def run_distribute(self):
         site_packages_dir = self.graph.python_recipe.create_python_bundle()
         if 'sqlite3' not in self.graphinfo.recipenames:

@@ -52,12 +52,7 @@ class ServiceOnlyBootstrap(Bootstrap):
     def run_distribute(self):
         log.info("Creating Android project from build and %s bootstrap", self.name)
         log.info('This currently just copies the build stuff straight from the build dir.')
-        rm._rf.print(self.dist_dir)
-        cp._r.print(self.build_dir, self.dist_dir)
-        self.writelocalproperties()
-        log.info("Bootstrap running with arch %s", self.arch)
-        log.info('Copying python distribution')
-        self.distribute_libs(self.arch, self.arch.libs_dir)
+        self.distlibs()
         self.distribute_aars(self.arch)
         self.distribute_javaclasses()
         super().run_distribute()
