@@ -72,10 +72,19 @@ class TestMake(TestCase):
         m = Make(self, self)
         m(self.d / 'target1', lambda: self.logs.append('c1'))
         m(self.d / 'target2', lambda: self.logs.append('c2'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            self.d / 'target2',
+        ])), m.targetstrs)
         m = Make(self, self)
         m(self.d / 'target1', self.fail)
         m(self.d / 'target2', self.fail)
         m(self.d / 'target3', lambda: self.logs.append('c3'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target3',
+        ])), m.targetstrs)
         self.assertEqual([
             ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 'c1',
             ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
@@ -91,6 +100,13 @@ class TestMake(TestCase):
         m(self.d / 'target1', lambda: self.logs.append('u11'))
         m(self.d / 'target2', lambda: self.logs.append('u21'))
         m(self.d / 'target2', lambda: self.logs.append('u22'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target2',
+        ])), m.targetstrs)
         m = Make(self, self)
         m(self.d / 'target1', self.fail)
         m(self.d / 'target2', self.fail)
@@ -98,6 +114,14 @@ class TestMake(TestCase):
         m(self.d / 'target2', self.fail)
         m(self.d / 'target2', self.fail)
         m(self.d / 'target1', lambda: self.logs.append('u12'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target2',
+            self.d / 'target1',
+        ])), m.targetstrs)
         self.assertEqual([
             ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 'c1',
             ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
@@ -119,6 +143,13 @@ class TestMake(TestCase):
         m(self.d / 'target1', lambda: self.logs.append('u11'))
         m(self.d / 'target2', lambda: self.logs.append('u21'))
         m(self.d / 'target3', lambda: self.logs.append('c3'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target3',
+        ])), m.targetstrs)
         m = Make(self, self)
         m(self.d / 'target1', self.fail)
         m(self.d / 'target3', lambda: self.logs.append('c3'))
@@ -126,6 +157,14 @@ class TestMake(TestCase):
         m(self.d / 'target1', lambda: self.logs.append('u11'))
         m(self.d / 'target2', lambda: self.logs.append('u21'))
         m(self.d / 'target3', lambda: self.logs.append('u31'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            self.d / 'target3',
+            self.d / 'target2',
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target3',
+        ])), m.targetstrs)
         self.assertEqual([
             ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 'c1',
             ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
@@ -145,14 +184,29 @@ class TestMake(TestCase):
         m(self.d / 'target1', lambda: self.logs.append('c1'))
         m('eranu')
         m(self.d / 'target2', lambda: self.logs.append('c2'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            'eranu',
+            self.d / 'target2',
+        ])), m.targetstrs)
         m = Make(self, self)
         m(self.d / 'target1', self.fail)
         m('eranu')
         m(self.d / 'target2', self.fail)
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            'eranu',
+            self.d / 'target2',
+        ])), m.targetstrs)
         m = Make(self, self)
         m(self.d / 'target1', self.fail)
         m('uvavu')
         m(self.d / 'target2', lambda: self.logs.append('c2'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            'uvavu',
+            self.d / 'target2',
+        ])), m.targetstrs)
         self.assertEqual([
             ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 'c1',
             ['info', "Config %s: %s", 'NOW', 'eranu'],
@@ -170,11 +224,21 @@ class TestMake(TestCase):
         m(self.d / 'target1', lambda: self.logs.append('c1'))
         m(self.d / 'target2', lambda: self.logs.append('c2'))
         m(self.d / 'target1', lambda: self.logs.append('u11'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target1',
+        ])), m.targetstrs)
         shutil.rmtree(self.d / 'target1')
         m = Make(self, self)
         m(self.d / 'target1', lambda: self.logs.append('c1'))
         m(self.d / 'target2', lambda: self.logs.append('c2'))
         m(self.d / 'target1', lambda: self.logs.append('u11'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target1',
+        ])), m.targetstrs)
         self.assertEqual([
             ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 'c1',
             ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
@@ -189,11 +253,21 @@ class TestMake(TestCase):
         m(self.d / 'target1', lambda: self.logs.append('c1'))
         m(self.d / 'target2', lambda: self.logs.append('c2'))
         m(self.d / 'target1', lambda: self.logs.append('u11'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target1',
+        ])), m.targetstrs)
         shutil.rmtree(self.d / 'target2')
         m = Make(self, self)
         m(self.d / 'target1', self.fail)
         m(self.d / 'target2', lambda: self.logs.append('c2'))
         m(self.d / 'target1', lambda: self.logs.append('u11'))
+        self.assertEqual(list(map(str, [
+            self.d / 'target1',
+            self.d / 'target2',
+            self.d / 'target1',
+        ])), m.targetstrs)
         self.assertEqual([
             ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 'c1',
             ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 'c2',
