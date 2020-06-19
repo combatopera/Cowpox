@@ -61,11 +61,10 @@ class Src:
         with resource_stream(__name__, 'sitecustomize.py') as f, (self.app_dir.mkdirp() / 'sitecustomize.py').open('wb') as g:
             shutil.copyfileobj(f, g)
         main_py = self.app_dir / 'service' / 'main.py'
-        if not main_py.exists():
-            return
-        with open(main_py, 'rb') as fd:
-            data = fd.read()
-        with open(main_py, 'wb') as fd:
-            fd.write(b'import sys, os; sys.path = [os.path.join(os.getcwd(),"..", "_applibs")] + sys.path\n')
-            fd.write(data)
-        log.info('Patched service/main.py to include applibs')
+        if main_py.exists():
+            with open(main_py, 'rb') as fd:
+                data = fd.read()
+            with open(main_py, 'wb') as fd:
+                fd.write(b'import sys, os; sys.path = [os.path.join(os.getcwd(),"..", "_applibs")] + sys.path\n')
+                fd.write(data)
+            log.info('Patched service/main.py to include applibs')
