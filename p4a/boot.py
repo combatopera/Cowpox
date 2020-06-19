@@ -102,7 +102,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         log.info('Copying python distribution')
         self._distribute_libs(self.arch, self.arch.libs_dir)
 
-    def run_distribute(self):
+    def distfinish(self):
         site_packages_dir = self.graph.python_recipe.create_python_bundle()
         if 'sqlite3' not in self.graphinfo.recipenames:
             with (self.dist_dir / 'blacklist.txt').open('a') as fileh:

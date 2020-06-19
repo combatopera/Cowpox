@@ -53,4 +53,4 @@ class WebViewBootstrap(Bootstrap):
         self.distlibs()
         self.distribute_aars(self.arch)
         self.distribute_javaclasses()
-        super().run_distribute()
+        self.distfinish()

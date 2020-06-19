@@ -54,4 +54,4 @@ class SDL2GradleBootstrap(Bootstrap):
         log.info("Copying SDL2/gradle build for %s", self.arch.name)
         self.distlibs()
         self.distribute_javaclasses(dest_dir = Path('src', 'main', 'java'))
-        super().run_distribute()
+        self.distfinish()
