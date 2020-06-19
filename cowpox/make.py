@@ -54,9 +54,9 @@ class Make:
         self.statepath = Path(config.state.path)
         if self.statepath.exists():
             with self.statepath.open() as f:
-                self.targets = f.read().splitlines()
+                self.targetstrs = f.read().splitlines()
         else:
-            self.targets = []
+            self.targetstrs = []
         self.log = log
 
     def __call__(self, target, install = None):
@@ -64,10 +64,10 @@ class Make:
         if install is None:
             format = "Config %s: %s"
         else:
-            n = self.targets[:self.cursor].count(targetstr)
+            n = self.targetstrs[:self.cursor].count(targetstr)
             format = f"Update {n} %s: %s" if n else "Create %s: %s"
-        if self.cursor < len(self.targets):
-            if self.targets[self.cursor] == targetstr:
+        if self.cursor < len(self.targetstrs):
+            if self.targetstrs[self.cursor] == targetstr:
                 if install is None or target.exists():
                     self.log.info(format, 'OK', target)
                     self.cursor += 1
@@ -75,7 +75,7 @@ class Make:
                 when = 'AGAIN'
             else:
                 when = 'FRESH'
-            del self.targets[self.cursor:]
+            del self.targetstrs[self.cursor:]
         else:
             when = 'NOW'
         self.log.info(format, when, target)
@@ -86,8 +86,8 @@ class Make:
                 else:
                     target.mkdir(parents = True)
             install()
-        self.targets.append(targetstr)
+        self.targetstrs.append(targetstr)
         with self.statepath.open('w') as f:
-            for t in self.targets:
+            for t in self.targetstrs:
                 print(t, file = f)
         self.cursor += 1
