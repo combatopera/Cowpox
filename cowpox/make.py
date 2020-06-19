@@ -82,11 +82,10 @@ class Make:
         if install is not None:
             if not n:
                 if target.exists():
-                    self.log.warning("Already exists, clearing: %s", target)
-                    for p in target.iterdir():
-                        shutil.rmtree(p) if p.is_dir() else p.unlink()
+                    self.log.warning("Delete: %s", target)
+                    shutil.rmtree(target)
                 else:
-                    target.mkdir(parents = True)
+                    target.parent.mkdir(parents = True, exist_ok = True)
             install()
         self.targetstrs.append(targetstr)
         with self.statepath.open('w') as f:
