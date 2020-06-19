@@ -98,7 +98,12 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.sdk_dir}")
 
     def run_distribute(self):
-        pass
+        site_packages_dir = self.graph.python_recipe.create_python_bundle()
+        if 'sqlite3' not in self.graphinfo.recipenames:
+            with (self.dist_dir / 'blacklist.txt').open('a') as fileh:
+                fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
+        self.strip_libraries()
+        self.fry_eggs(site_packages_dir)
 
     def strip_libraries(self):
         log.info('Stripping libraries')
