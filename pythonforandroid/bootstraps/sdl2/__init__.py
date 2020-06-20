@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from p4a.boot import Bootstrap
+from cowpox.boot import Bootstrap
 from pathlib import Path
 import logging
 

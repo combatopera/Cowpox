@@ -38,13 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .boot import BootstrapType
 from .config import Config
 from .util import findimpl, NoSuchPluginException
 from copy import deepcopy
 from diapyr import types
 from itertools import product
 from p4a import GraphInfo, Recipe
-from p4a.boot import BootstrapType
 import logging
 
 log = logging.getLogger(__name__)

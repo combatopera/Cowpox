@@ -38,12 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, Graph, GraphInfo, Plugin
-from cowpox.config import Config
+from .config import Config
 from diapyr import types
 from jproperties import Properties
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
+from p4a import Arch, Graph, GraphInfo, Plugin
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import logging, os, shutil, subprocess

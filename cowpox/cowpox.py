@@ -41,6 +41,7 @@
 from . import etc
 from .android import TargetAndroid
 from .arch import all_archs
+from .boot import Bootstrap
 from .build import APKMaker
 from .config import Config
 from .context import ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
@@ -52,7 +53,6 @@ from .src import Src
 from .util import findimpl, Logging
 from diapyr import DI, types
 from p4a import Context
-from p4a.boot import Bootstrap
 from pathlib import Path
 from pkg_resources import resource_filename
 import logging

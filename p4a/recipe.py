@@ -39,8 +39,8 @@
 # THE SOFTWARE.
 
 from . import Recipe
-from .boot import Bootstrap
 from .python import HostPythonRecipe
+from cowpox.boot import Bootstrap
 from cowpox.config import Config
 from diapyr import types
 from lagoon import find
