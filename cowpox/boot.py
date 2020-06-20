@@ -43,7 +43,7 @@ from diapyr import types
 from jproperties import Properties
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
-from p4a import Arch, Graph, GraphInfo, Plugin
+from p4a import Arch, Graph, GraphInfo, Plugin, PluginType
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import logging, os, shutil, subprocess
@@ -66,7 +66,7 @@ def _copy_files(src_root, dest_root, override):
             else:
                 dest_file.mkdirp()
 
-class BootstrapType(type): pass
+class BootstrapType(PluginType): pass
 
 class Bootstrap(Plugin, metaclass = BootstrapType):
 
