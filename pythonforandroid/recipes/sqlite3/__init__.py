@@ -62,3 +62,6 @@ class Sqlite3Recipe(NDKRecipe):
         env = super().get_recipe_env()
         env['NDK_PROJECT_PATH'] = str(self.get_build_dir())
         return env
+
+    def includeslinkslibs(self):
+        return [[self.get_build_dir()], [self.get_lib_dir()], ['sqlite3']]
