@@ -42,7 +42,6 @@ from . import etc
 from .android import TargetAndroid
 from .arch import all_archs
 from .build import APKMaker
-from .checks import Checks
 from .config import Config
 from .context import ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
 from .graph import GraphInfoImpl
@@ -62,9 +61,8 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Checks, Bootstrap, ContextImpl, Src, TargetAndroid, Make, this = Result)
-def run(checks, bootstrap, context, src, target, make):
-    checks.check()
+@types(Bootstrap, ContextImpl, Src, TargetAndroid, Make, this = Result)
+def run(bootstrap, context, src, target, make):
     bootstrap.prepare_dirs()
     context.build_recipes()
     context.build_nonrecipes()
@@ -82,7 +80,6 @@ def _main():
         di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap))
         di.add(di)
         di.add(APKMaker)
-        di.add(Checks)
         di.add(Context)
         di.add(ContextImpl)
         di.add(GraphImpl)

@@ -116,6 +116,9 @@ class PlatformInfo:
 
 class Platform:
 
+    MIN_NDK_VERSION = 19
+    MAX_NDK_VERSION = 20
+
     @types(Config)
     def __init__(self, config):
         self.sdk_dir = Path(config.android_sdk_dir)
@@ -126,6 +129,16 @@ class Platform:
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
         assert android_api in apis
         log.info("Requested API target %s is available, continuing.", android_api)
+        version = self._read_ndk_version()
+        minor_to_letter = {0: ''}
+        minor_to_letter.update([n + 1, chr(i)] for n, i in enumerate(range(ord('b'), ord('b') + 25)))
+        major_version = version.version[0]
+        letter_version = minor_to_letter[version.version[1]]
+        string_version = f"{major_version}{letter_version}"
+        log.info("Found NDK version %s", string_version)
+        assert major_version >= self.MIN_NDK_VERSION
+        if major_version > self.MAX_NDK_VERSION:
+            log.warning('Newer NDKs may not be fully supported by p4a.')
 
     def build_tools_version(self):
         ignored = {'.DS_Store', '.ds_store'}
@@ -144,7 +157,7 @@ class Platform:
         apis = [re.findall(r'[0-9]+', s) for s in apis]
         return [int(s[0]) for s in apis if s]
 
-    def read_ndk_version(self):
+    def _read_ndk_version(self):
         p = Properties()
         with (self.ndk_dir / 'source.properties').open('rb') as f:
             p.load(f)
