@@ -191,6 +191,7 @@ class GuestPythonRecipe(Recipe):
             cppflags.extend(f"-I{i}" for i in include_flags)
             ldflags.extend(f"-L{d}" for d in link_dirs)
             libs.extend(f"-l{l}" for l in link_libs)
+        # XXX: Could we make install to somewhere to avoid much of this sort of thing?
         # TODO LATER: Use polymorphism!
         if 'sqlite3' in self.graphinfo.recipenames:
             log.info('Activating flags for sqlite3')
