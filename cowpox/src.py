@@ -58,7 +58,7 @@ class Src:
         topath = self.app_dir.mkdirp() / 'main.py'
         log.debug("Create: %s", topath)
         self.config.processtemplate(resource_filename(skel.__name__, 'main.py.aridt'), topath)
-        with resource_stream(__name__, 'sitecustomize.py') as f, (self.app_dir.mkdirp() / 'sitecustomize.py').open('wb') as g:
+        with resource_stream(skel.__name__, 'sitecustomize.py') as f, (self.app_dir / 'sitecustomize.py').open('wb') as g:
             shutil.copyfileobj(f, g)
         main_py = self.app_dir / 'service' / 'main.py'
         if main_py.exists(): # XXX: Why would it?
