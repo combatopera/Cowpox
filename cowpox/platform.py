@@ -119,6 +119,12 @@ class Platform:
     MIN_NDK_VERSION = 19
     MAX_NDK_VERSION = 20
 
+    @staticmethod
+    def _stringversion(version):
+        minor_to_letter = {0: ''}
+        minor_to_letter.update([n + 1, chr(i)] for n, i in enumerate(range(ord('b'), ord('b') + 25)))
+        return f"{version[0]}{minor_to_letter[version[1]]}"
+
     @types(Config)
     def __init__(self, config):
         self.sdk_dir = Path(config.android_sdk_dir)
@@ -130,12 +136,8 @@ class Platform:
         assert android_api in apis
         log.info("Requested API target %s is available, continuing.", android_api)
         version = self._read_ndk_version()
-        minor_to_letter = {0: ''}
-        minor_to_letter.update([n + 1, chr(i)] for n, i in enumerate(range(ord('b'), ord('b') + 25)))
-        major_version = version.version[0]
-        letter_version = minor_to_letter[version.version[1]]
-        string_version = f"{major_version}{letter_version}"
-        log.info("Found NDK version %s", string_version)
+        log.info("Found NDK version %s", self._stringversion(version))
+        major_version = version[0]
         assert major_version >= self.MIN_NDK_VERSION
         if major_version > self.MAX_NDK_VERSION:
             log.warning('Newer NDKs may not be fully supported by p4a.')
@@ -161,7 +163,7 @@ class Platform:
         p = Properties()
         with (self.ndk_dir / 'source.properties').open('rb') as f:
             p.load(f)
-        return LooseVersion(p['Pkg.Revision'].data)
+        return LooseVersion(p['Pkg.Revision'].data).version
 
     def toolchain_version(self, arch):
         prefix = f"{arch.toolchain_prefix}-"
