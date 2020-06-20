@@ -10,6 +10,8 @@ log = logging.getLogger(__name__)
 
 class Checks:
 
+    ARMEABI_MAX_TARGET_API = 21
+    MIN_TARGET_API = 26
     MIN_NDK_API = 21
 
     @types(Config, Platform, Arch)
@@ -21,7 +23,13 @@ class Checks:
         self.arch = arch
 
     def check(self):
-        check_target_api(self.android_api, self.arch.name)
+        if self.android_api >= self.ARMEABI_MAX_TARGET_API and self.arch.name == 'armeabi':
+            raise Exception(
+                    f"Asked to build for armeabi architecture with API {self.android_api}, but API {self.ARMEABI_MAX_TARGET_API} or greater does not support armeabi.",
+                    'You probably want to build with --arch=armeabi-v7a instead')
+        if self.android_api < self.MIN_TARGET_API:
+            log.warning("Target API %s < %s", self.android_api, self.MIN_TARGET_API)
+            log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
         apis = self.platform.apilevels()
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
         if self.android_api not in apis:
@@ -42,10 +50,6 @@ NDK_DOWNLOAD_URL = "https://developer.android.com/ndk/downloads/"
 NDK_LOWER_THAN_SUPPORTED_MESSAGE = (
     'The minimum supported NDK version is {min_supported}. '
     'You can download it from {ndk_url}.'
-)
-UNSUPPORTED_NDK_API_FOR_ARMEABI_MESSAGE = (
-    'Asked to build for armeabi architecture with API '
-    '{req_ndk_api}, but API {max_ndk_api} or greater does not support armeabi.'
 )
 
 def check_ndk_version(ndk_dir):
@@ -99,22 +103,3 @@ def _read_ndk_version(ndk_dir):
         return
     ndk_version = LooseVersion(line.split('=')[-1].strip())
     return ndk_version
-
-MIN_TARGET_API = 26
-ARMEABI_MAX_TARGET_API = 21
-
-def check_target_api(api, arch):
-    """Warn if the user's target API is less than the current minimum
-    recommendation
-    """
-
-    if api >= ARMEABI_MAX_TARGET_API and arch == 'armeabi':
-        raise Exception(
-            UNSUPPORTED_NDK_API_FOR_ARMEABI_MESSAGE.format(
-                req_ndk_api=api, max_ndk_api=ARMEABI_MAX_TARGET_API
-            ),
-            'You probably want to build with --arch=armeabi-v7a instead')
-
-    if api < MIN_TARGET_API:
-        log.warning("Target API %s < %s", api, MIN_TARGET_API)
-        log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
