@@ -48,7 +48,7 @@ requires +=
     aridity
     chromalog
     Cython
-    diapyr>=11
+    diapyr>=12
     jinja2
     lagoon
     networkx

@@ -77,8 +77,7 @@ def _main():
     logging = Logging()
     config = Config.load(resource_filename(etc.__name__, 'root.arid')).Cowpox
     logging.setpath(Path(config.log.path))
-    di = DI()
-    try:
+    with DI() as di:
         di.add(config)
         di.add(all_archs[config.android.arch])
         di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap))
@@ -100,8 +99,6 @@ def _main():
         di.add(run)
         di(GraphInfoImpl).configure(di)
         return di(Result)
-    finally:
-        di.discardall()
 
 def main_Cowpox():
     try:
