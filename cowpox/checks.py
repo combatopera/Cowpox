@@ -1,7 +1,7 @@
+from .arch import ArchARM
 from .config import Config
 from .platform import Platform
 from diapyr import types
-from p4a import Arch
 import logging
 
 log = logging.getLogger(__name__)
@@ -15,15 +15,15 @@ class Checks:
     MAX_NDK_VERSION = 20
     MIN_NDK_API = 21
 
-    @types(Config, Platform, Arch)
-    def __init__(self, config, platform, arch):
+    @types(Config, Platform)
+    def __init__(self, config, platform):
         self.android_api = config.android.api
         self.ndk_api = config.android.ndk_api
+        self.archname = config.android.arch
         self.platform = platform
-        self.arch = arch
 
     def check(self):
-        if self.android_api >= self.ARMEABI_MAX_TARGET_API and self.arch.name == 'armeabi':
+        if self.android_api >= self.ARMEABI_MAX_TARGET_API and self.archname == ArchARM.name:
             raise Exception(
                     f"Asked to build for armeabi architecture with API {self.android_api}, but API {self.ARMEABI_MAX_TARGET_API} or greater does not support armeabi.",
                     'You probably want to build with --arch=armeabi-v7a instead')

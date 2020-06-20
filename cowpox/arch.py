@@ -141,7 +141,7 @@ class BaseArchARM(ArchImpl):
 
 class ArchARM(BaseArchARM):
 
-    name = "armeabi"
+    name = 'armeabi'
     arch_cflags = []
     numver = 1
 
