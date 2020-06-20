@@ -10,19 +10,12 @@ class Checks:
     MIN_NDK_VERSION = 19
     NDK_DOWNLOAD_URL = 'https://developer.android.com/ndk/downloads/'
     MAX_NDK_VERSION = 20
-    MIN_NDK_API = 21
 
     @types(Config, Platform)
     def __init__(self, config, platform):
-        self.ndk_api = config.android.ndk_api
         self.platform = platform
 
     def check(self):
-        self._check_ndk_version()
-        if self.ndk_api < self.MIN_NDK_API:
-            log.warning("NDK API less than %s is not supported", self.MIN_NDK_API)
-
-    def _check_ndk_version(self):
         version = self.platform.read_ndk_version()
         minor_to_letter = {0: ''}
         minor_to_letter.update([n + 1, chr(i)] for n, i in enumerate(range(ord('b'), ord('b') + 25)))

@@ -63,6 +63,7 @@ class ArchImpl(Arch):
         **{k: v for k, v in os.environ.items() if k.startswith('CCACHE_')},
     )
     minbadapi = float('inf')
+    MIN_NDK_API = 21
 
     @types(Config, Platform, Graph)
     def __init__(self, config, platform, graph):
@@ -70,6 +71,8 @@ class ArchImpl(Arch):
         assert android_api < self.minbadapi
         self.ndk_api = config.android.ndk_api
         assert self.ndk_api <= android_api
+        if self.ndk_api < self.MIN_NDK_API:
+            log.warning("NDK API less than %s is not supported", self.MIN_NDK_API)
         self.libs_parent = Path(config.libs_parent)
         self.python_install_dir = Path(config.python_install_dir)
         self.cflags = _spjoin(
