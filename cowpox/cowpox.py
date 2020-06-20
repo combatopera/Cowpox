@@ -42,8 +42,9 @@ from . import etc
 from .android import TargetAndroid
 from .arch import all_archs
 from .build import APKMaker
+from .checks import Checks
 from .config import Config
-from .context import Checks, ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
+from .context import ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
 from .graph import GraphInfoImpl
 from .make import Make
 from .mirror import Mirror
