@@ -25,10 +25,6 @@ class Checks:
             raise Exception("Requested API target %s is not available, install it with the SDK android tool." % self.android_api)
         log.info("Requested API target %s is available, continuing.", self.android_api)
         self._check_ndk_version()
-        if self.ndk_api > self.android_api:
-            raise Exception(
-                    f"Target NDK API is {self.ndk_api}, higher than the target Android API {self.android_api}.",
-                    'The NDK API is a minimum supported API number and must be lower than the target Android API')
         if self.ndk_api < self.MIN_NDK_API:
             log.warning("NDK API less than %s is not supported", self.MIN_NDK_API)
 

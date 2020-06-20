@@ -66,8 +66,10 @@ class ArchImpl(Arch):
 
     @types(Config, Platform, Graph)
     def __init__(self, config, platform, graph):
-        assert config.android.api < self.minbadapi
+        android_api = config.android.api
+        assert android_api < self.minbadapi
         self.ndk_api = config.android.ndk_api
+        assert self.ndk_api <= android_api
         self.libs_parent = Path(config.libs_parent)
         self.python_install_dir = Path(config.python_install_dir)
         self.cflags = _spjoin(
