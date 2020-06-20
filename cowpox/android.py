@@ -41,6 +41,7 @@
 from .build import APKMaker
 from .config import Config
 from diapyr import types
+from jproperties import Properties
 from lagoon import gradle
 from pathlib import Path
 from types import SimpleNamespace
@@ -155,17 +156,12 @@ class TargetAndroid:
         return apkpath
 
     def _update_libraries_references(self):
+        p = Properties()
         project_fn = self.dist_dir / 'project.properties'
-        with project_fn.open(encoding = 'utf-8') as fd:
-            content = fd.readlines()
-        for line in content[:]:
-            if line.startswith('android.library.reference.'):
-                content.remove(line)
-        with project_fn.open('w', encoding = 'utf-8') as fd:
-            try:
-                fd.writelines((line.decode('utf-8') for line in content))
-            except:
-                fd.writelines(content)
-            if content and not content[-1].endswith('\n'):
-                fd.write('\n')
+        with project_fn.open('rb') as f:
+            p.load(f)
+        for key in [k for k in p if k.startswith('android.library.reference.')]:
+            del p[key]
+        with project_fn.open('wb') as f:
+            p.store(f)
         log.debug('project.properties updated')
