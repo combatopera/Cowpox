@@ -41,6 +41,7 @@
 from . import Arch, Graph, GraphInfo, Plugin
 from cowpox.config import Config
 from diapyr import types
+from jproperties import Properties
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
 from pathlib import Path
@@ -89,11 +90,17 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     def prepare_dirs(self):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files(self.bootstrapsdir / 'common' / 'build', self.build_dir, False)
-        (self.build_dir / 'project.properties').write_text(f"target=android-{self.android_api}")
+        p = Properties()
+        p['target'] = f"android-{self.android_api}"
+        with (self.build_dir / 'project.properties').open('wb') as f:
+            p.store(f)
 
     def distlibs(self):
         cp._r.print(self.build_dir, self.dist_dir)
-        (self.dist_dir / 'local.properties').write_text(f"sdk.dir={self.sdk_dir}")
+        p = Properties()
+        p['sdk.dir'] = self.sdk_dir
+        with (self.dist_dir / 'local.properties').open('wb') as f:
+            p.store(f)
         log.info("Bootstrap running with arch %s", self.arch.name)
         log.info('Copying python distribution')
         self._distribute_libs()
