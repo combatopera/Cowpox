@@ -56,9 +56,8 @@ class PluginType(type):
 
     def __init__(cls, *args):
         super().__init__(*args)
-        if not hasattr(cls, 'name'):
-            fqmodule = cls.__module__
-            cls.name = fqmodule[fqmodule.rfind('.') + 1:]
+        fqmodule = cls.__module__
+        cls.name = fqmodule[fqmodule.rfind('.') + 1:] # FIXME LATER: Do not override (possibly inherited) explicit name.
 
 class Plugin(metaclass = PluginType): pass
 
