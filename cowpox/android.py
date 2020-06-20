@@ -159,11 +159,11 @@ class TargetAndroid:
         if project_fn.exists():
             with project_fn.open(encoding = 'utf-8') as fd:
                 content = fd.readlines()
+            for line in content[:]:
+                if line.startswith('android.library.reference.'):
+                    content.remove(line)
         else:
             content = [f"target=android-{self.android_api}\n", f"APP_PLATFORM={self.android_minapi}\n"]
-        for line in content[:]:
-            if line.startswith('android.library.reference.'):
-                content.remove(line)
         with project_fn.open('w', encoding = 'utf-8') as fd:
             try:
                 fd.writelines((line.decode('utf-8') for line in content))
