@@ -46,7 +46,6 @@ log = logging.getLogger(__name__)
 
 class SDL2GradleBootstrap(Bootstrap):
 
-    name = 'sdl2'
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'sdl2'})
 
     def run_distribute(self):

@@ -45,7 +45,6 @@ log = logging.getLogger(__name__)
 
 class WebViewBootstrap(Bootstrap):
 
-    name = 'webview'
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'genericndkbuild'})
 
     def run_distribute(self):

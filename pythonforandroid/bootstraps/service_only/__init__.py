@@ -45,7 +45,6 @@ log = logging.getLogger(__name__)
 
 class ServiceOnlyBootstrap(Bootstrap):
 
-    name = 'service_only'
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'genericndkbuild'})
 
     def run_distribute(self):
