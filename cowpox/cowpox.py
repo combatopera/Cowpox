@@ -64,14 +64,12 @@ class Result: pass
 
 @types(Checks, Bootstrap, ContextImpl, Src, TargetAndroid, Make, this = Result)
 def run(checks, bootstrap, context, src, target, make):
-    log.info('Compile platform')
     checks.check()
     bootstrap.prepare_dirs()
     context.build_recipes()
     context.build_nonrecipes()
     make(bootstrap.dist_dir, bootstrap.run_distribute)
     make(src.app_dir, src.copy_application_sources)
-    log.info('Package the application')
     return target.build_package()
 
 def _main():
