@@ -38,8 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox.config import Config
+from diapyr import types
 from p4a.recipe import CythonRecipe
 
 class RecipeImpl(CythonRecipe):
 
-    url = '/src' # TODO: Get from config.
+    @types(Config)
+    def __init(self, config):
+        self.url = config.container.src
