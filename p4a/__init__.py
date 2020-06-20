@@ -56,11 +56,8 @@ class Plugin:
 
     @property
     def name(self):
-        fqmodule = self._fqmodulename()
+        fqmodule = self.__module__
         return fqmodule[fqmodule.rfind('.') + 1:]
-
-    def _fqmodulename(self):
-        return type(self).__module__
 
 class Context:
 
@@ -124,10 +121,10 @@ class Recipe(Plugin):
         self.graphinfo = graphinfo
 
     def resourcepath(self, relpath):
-        return Path(resource_filename(self._fqmodulename(), str(relpath)))
+        return Path(resource_filename(self.__module__, str(relpath)))
 
     def _extresourcepath(self, relpath):
-        return Path(self.extroot, *self._fqmodulename().split('.'), relpath)
+        return Path(self.extroot, *self.__module__.split('.'), relpath)
 
     def apply_patch(self, relpath):
         log.info("Applying patch %s", relpath)
