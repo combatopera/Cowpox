@@ -96,7 +96,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             p.store(f)
 
     def distlibs(self):
-        cp._r.print(self.build_dir, self.dist_dir)
+        shutil.copytree(self.build_dir, self.dist_dir)
         p = Properties()
         p['sdk.dir'] = self.sdk_dir
         with (self.dist_dir / 'local.properties').open('wb') as f:
