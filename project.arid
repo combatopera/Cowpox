@@ -52,7 +52,7 @@ requires +=
     jinja2
     lagoon
     networkx
-    virtualenv<20
+    virtualenv
 resource types +=
     patch
     mk
