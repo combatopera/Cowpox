@@ -193,8 +193,7 @@ class GuestPythonRecipe(Recipe):
         # TODO LATER: Use polymorphism!
         if 'sqlite3' in self.graphinfo.recipenames:
             log.info('Activating flags for sqlite3')
-            recipe = self.graph.get_recipe('sqlite3')
-            add_flags(*recipe.includeslinkslibs())
+            add_flags(*self.graph.get_recipe('sqlite3').includeslinkslibs())
         if 'libffi' in self.graphinfo.recipenames:
             log.info('Activating flags for libffi')
             recipe = self.graph.get_recipe('libffi')
@@ -202,8 +201,7 @@ class GuestPythonRecipe(Recipe):
             add_flags(*recipe.includeslinkslibs())
         if 'openssl' in self.graphinfo.recipenames:
             log.info('Activating flags for openssl')
-            recipe = self.graph.get_recipe('openssl')
-            add_flags(*recipe.includeslinkslibs())
+            add_flags(*self.graph.get_recipe('openssl').includeslinkslibs())
         log.info('''Activating flags for android's zlib''')
         zlib_includes = self.ndk_dir / 'sysroot' / 'usr' / 'include'
         line, = (l for l in (zlib_includes / 'zlib.h').read_text().split('\n') if l.startswith('#define ZLIB_VERSION '))
