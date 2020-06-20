@@ -212,7 +212,8 @@ class Recipe(Plugin):
 
     def get_recipe_env(self):
         env = self.arch.get_env()
-        env['BUILDLIB_PATH'] = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir() / 'native-build' / 'build' / f"lib.{self.arch.build_platform}-{self.graph.python_recipe.majminversion}"
+        build_platform, = (f"{uname.sysname}-{uname.machine}".lower() for uname in [os.uname()])
+        env['BUILDLIB_PATH'] = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir() / 'native-build' / 'build' / f"lib.{build_platform}-{self.graph.python_recipe.majminversion}"
         return env
 
     def prebuild(self):

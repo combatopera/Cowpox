@@ -48,7 +48,7 @@ from lagoon import unzip, yes
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import parse_version
-import logging, re
+import logging, os, re
 
 log = logging.getLogger(__name__)
 
@@ -168,7 +168,8 @@ class Platform:
 
     def clang_path(self, arch):
         llvm_dir, = (self.ndk_dir / 'toolchains').glob('llvm*')
-        return llvm_dir / 'prebuilt' / arch.build_platform / 'bin'
+        build_platform, = (f"{uname.sysname}-{uname.machine}".lower() for uname in [os.uname()])
+        return llvm_dir / 'prebuilt' / build_platform / 'bin'
 
     def clang_exe(self, arch, with_target = False, plus_plus = False):
         return self.clang_path(arch) / f"""{f"{arch.target()}-" if with_target else ''}clang{'++' if plus_plus else ''}"""
