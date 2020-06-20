@@ -120,10 +120,9 @@ class Platform:
     MAX_NDK_VERSION = 20
 
     @staticmethod
-    def _stringversion(version):
-        minor_to_letter = {0: ''}
-        minor_to_letter.update([n + 1, chr(i)] for n, i in enumerate(range(ord('b'), ord('b') + 25)))
-        return f"{version[0]}{minor_to_letter[version[1]]}"
+    def _ndkversionstr(version):
+        minor = version[1]
+        return f"{version[0]}{chr(ord('a') + minor) if minor else ''}"
 
     @types(Config)
     def __init__(self, config):
@@ -136,7 +135,7 @@ class Platform:
         assert android_api in apis
         log.info("Requested API target %s is available, continuing.", android_api)
         version = self._read_ndk_version()
-        log.info("Found NDK version %s", self._stringversion(version))
+        log.info("Found NDK version %s", self._ndkversionstr(version))
         major_version = version[0]
         assert major_version >= self.MIN_NDK_VERSION
         if major_version > self.MAX_NDK_VERSION:
