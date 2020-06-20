@@ -68,8 +68,6 @@ def _walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
 class HostPythonRecipe(Recipe):
 
     build_subdir = 'native-build'
-    '''Specify the sub build directory for the hostpython recipe. Defaults
-    to ``native-build``.'''
     urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
 
     @property
