@@ -63,4 +63,4 @@ class LibffiRecipe(Recipe):
         make.print('-j', cpu_count(), 'libffi.la', env = env, cwd = build_dir)
 
     def includeslinkslibs(self):
-        return [[self.get_build_dir() / 'include'], [recipe.get_build_dir() / '.libs'], ['ffi']]
+        return [[self.get_build_dir() / 'include'], [self.get_build_dir() / '.libs'], ['ffi']]

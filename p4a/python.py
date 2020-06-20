@@ -48,7 +48,7 @@ from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
 from shutil import copy2
-import lagoon, logging, os
+import lagoon, logging, os, re
 
 log = logging.getLogger(__name__)
 
@@ -151,6 +151,7 @@ class GuestPythonRecipe(Recipe):
         python 2.x-3.4 but as of Python 3.5, the .pyo filename extension is no
         longer used and has been removed in favour of extension .pyc
     '''
+    zlibversionpattern = re.compile('^#define ZLIB_VERSION "(.+)"$', re.MULTILINE)
 
     @types(Config, HostPythonRecipe)
     def __init(self, config, hostrecipe):
@@ -203,10 +204,9 @@ class GuestPythonRecipe(Recipe):
             log.info('Activating flags for openssl')
             add_flags(*self.graph.get_recipe('openssl').includeslinkslibs())
         log.info('''Activating flags for android's zlib''')
-        zlib_includes = self.ndk_dir / 'sysroot' / 'usr' / 'include'
-        line, = (l for l in (zlib_includes / 'zlib.h').read_text().split('\n') if l.startswith('#define ZLIB_VERSION '))
-        env['ZLIB_VERSION'] = line.replace('#define ZLIB_VERSION ', '')
-        add_flags([zlib_includes], [self.platform.ndk_platform(self.arch) / 'usr' / 'lib'], ['z'])
+        zlibinclude = self.ndk_dir / 'sysroot' / 'usr' / 'include'
+        env['ZLIB_VERSION'] = self.zlibversionpattern.search((zlibinclude / 'zlib.h').read_text()).group(1)
+        add_flags([zlibinclude], [self.platform.ndk_platform(self.arch) / 'usr' / 'lib'], ['z'])
         env['CPPFLAGS'] = ' '.join(cppflags)
         env['LDFLAGS'] = ' '.join(ldflags)
         env['LIBS'] = ' '.join(libs)
