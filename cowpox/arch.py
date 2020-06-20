@@ -54,7 +54,7 @@ def _spjoin(*v):
 
 class ArchImpl(Arch):
 
-    build_platform = f"{os.uname()[0]}-{os.uname()[-1]}".lower()
+    build_platform, = (f"{uname.sysname}-{uname.machine}" for uname in [os.uname()])
     ccachepath, = which('ccache').splitlines()
     staticenv = dict(
         LDLIBS = '-lm',
