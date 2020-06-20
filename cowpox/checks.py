@@ -10,6 +10,8 @@ log = logging.getLogger(__name__)
 
 class Checks:
 
+    MIN_NDK_API = 21
+
     @types(Config, Platform, Arch)
     def __init__(self, config, platform, arch):
         self.ndk_api = config.android.ndk_api
@@ -26,7 +28,12 @@ class Checks:
             raise Exception("Requested API target %s is not available, install it with the SDK android tool." % self.android_api)
         log.info("Requested API target %s is available, continuing.", self.android_api)
         check_ndk_version(self.ndk_dir)
-        check_ndk_api(self.ndk_api, self.android_api)
+        if self.ndk_api > self.android_api:
+            raise Exception(
+                    f"Target NDK API is {self.ndk_api}, higher than the target Android API {self.android_api}.",
+                    'The NDK API is a minimum supported API number and must be lower than the target Android API')
+        if self.ndk_api < self.MIN_NDK_API:
+            log.warning("NDK API less than %s is not supported", self.MIN_NDK_API)
 
 # We only check the NDK major version
 MIN_NDK_VERSION = 19
@@ -111,17 +118,3 @@ def check_target_api(api, arch):
     if api < MIN_TARGET_API:
         log.warning("Target API %s < %s", api, MIN_TARGET_API)
         log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
-
-MIN_NDK_API = 21
-TARGET_NDK_API_GREATER_THAN_TARGET_API_MESSAGE = (
-    'Target NDK API is {ndk_api}, '
-    'higher than the target Android API {android_api}.'
-)
-
-def check_ndk_api(ndk_api, android_api):
-    if ndk_api > android_api:
-        raise Exception(
-                TARGET_NDK_API_GREATER_THAN_TARGET_API_MESSAGE.format(ndk_api = ndk_api, android_api = android_api),
-                'The NDK API is a minimum supported API number and must be lower than the target Android API')
-    if ndk_api < MIN_NDK_API:
-        log.warning("NDK API less than %s is not supported", MIN_NDK_API)
