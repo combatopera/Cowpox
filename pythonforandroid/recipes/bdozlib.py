@@ -44,6 +44,8 @@ from p4a.recipe import CythonRecipe
 
 class RecipeImpl(CythonRecipe):
 
+    url = None
+
     @types(Config)
     def __init(self, config):
         self.url = config.container.src
