@@ -53,7 +53,6 @@ class TargetAndroid:
 
     @types(Config, APKMaker)
     def __init__(self, config, apkmaker):
-        self.android_api = config.android.api
         self.android_minapi = config.android.minapi
         self.arch = config.android.arch
         self.dist_name = config.package.name
