@@ -161,7 +161,6 @@ class TargetAndroid:
         else:
             with project_fn.open(encoding = 'utf-8') as fd:
                 content = fd.readlines()
-        references = []
         for line in content[:]:
             if not line.startswith('android.library.reference.'):
                 continue
@@ -173,6 +172,4 @@ class TargetAndroid:
                 fd.writelines(content)
             if content and not content[-1].endswith('\n'):
                 fd.write('\n')
-            for index, ref in enumerate(references):
-                fd.write('android.library.reference.{}={}\n'.format(index + 1, ref))
         log.debug('project.properties updated')
