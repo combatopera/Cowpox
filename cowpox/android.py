@@ -108,7 +108,7 @@ class TargetAndroid:
     def _permissions(self):
         for permission in self.permissions:
             words = permission.split('.')
-            words[-1] = words[-1].upper()
+            words[-1] = words[-1].upper() # TODO: Require correct format instead of cleaning.
             yield '.'.join(words)
 
     def build_package(self):
