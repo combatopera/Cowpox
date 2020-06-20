@@ -138,6 +138,20 @@ class Platform:
         apis = [re.findall(r'[0-9]+', s) for s in apis]
         return [int(s[0]) for s in apis if s]
 
+    def read_ndk_version(self):
+        try:
+            ndk_data = (self.ndk_dir / 'source.properties').read_text()
+        except IOError:
+            log.info('Could not determine NDK version, no source.properties in the NDK dir.')
+            return
+        for line in ndk_data.split('\n'):
+            if line.startswith('Pkg.Revision'):
+                break
+        else:
+            log.info('Could not parse $NDK_DIR/source.properties, not checking NDK version.')
+            return
+        return LooseVersion(line.split('=')[-1].strip())
+
     def toolchain_version(self, arch):
         prefix = f"{arch.toolchain_prefix}-"
         toolchain_path = self.ndk_dir / 'toolchains'
