@@ -61,7 +61,7 @@ class Src:
         with resource_stream(__name__, 'sitecustomize.py') as f, (self.app_dir.mkdirp() / 'sitecustomize.py').open('wb') as g:
             shutil.copyfileobj(f, g)
         main_py = self.app_dir / 'service' / 'main.py'
-        if main_py.exists():
+        if main_py.exists(): # XXX: Why would it?
             with open(main_py, 'rb') as fd:
                 data = fd.read()
             with open(main_py, 'wb') as fd:
