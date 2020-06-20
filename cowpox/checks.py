@@ -7,7 +7,6 @@ log = logging.getLogger(__name__)
 
 class Checks:
 
-    MIN_TARGET_API = 26
     MIN_NDK_VERSION = 19
     NDK_DOWNLOAD_URL = 'https://developer.android.com/ndk/downloads/'
     MAX_NDK_VERSION = 20
@@ -20,9 +19,6 @@ class Checks:
         self.platform = platform
 
     def check(self):
-        if self.android_api < self.MIN_TARGET_API:
-            log.warning("Target API %s < %s", self.android_api, self.MIN_TARGET_API)
-            log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
         apis = self.platform.apilevels()
         log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
         if self.android_api not in apis:

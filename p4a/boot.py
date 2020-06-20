@@ -70,6 +70,7 @@ class BootstrapType(type): pass
 
 class Bootstrap(Plugin, metaclass = BootstrapType):
 
+    MIN_TARGET_API = 26
     recipe_depends = [("python2", "python3"), 'android']
 
     @types(Config, Graph, Arch, GraphInfo)
@@ -79,6 +80,9 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
         self.android_api = config.android.api
+        if self.android_api < self.MIN_TARGET_API:
+            log.warning("Target API %s < %s", self.android_api, self.MIN_TARGET_API)
+            log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
         self.dist_dir = Path(config.dist_dir)
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
         self.javaclass_dir = config.javaclass_dir
