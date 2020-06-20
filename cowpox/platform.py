@@ -121,12 +121,17 @@ class Platform:
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.ndk_api = config.android.ndk_api
+        android_api = config.android.api
+        apis = self._apilevels()
+        log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
+        assert android_api in apis
+        log.info("Requested API target %s is available, continuing.", android_api)
 
     def build_tools_version(self):
         ignored = {'.DS_Store', '.ds_store'}
         return max((p.name for p in (self.sdk_dir / 'build-tools').iterdir() if p.name not in ignored), key = LooseVersion)
 
-    def apilevels(self):
+    def _apilevels(self):
         avdmanagerpath = self.sdk_dir / 'tools' / 'bin' / 'avdmanager'
         if avdmanagerpath.exists():
             targets = Program.text(avdmanagerpath)('list', 'target').split('\n')

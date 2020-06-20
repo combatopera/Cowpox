@@ -19,11 +19,6 @@ class Checks:
         self.platform = platform
 
     def check(self):
-        apis = self.platform.apilevels()
-        log.info("Available Android APIs are (%s)", ', '.join(map(str, apis)))
-        if self.android_api not in apis:
-            raise Exception("Requested API target %s is not available, install it with the SDK android tool." % self.android_api)
-        log.info("Requested API target %s is available, continuing.", self.android_api)
         self._check_ndk_version()
         if self.ndk_api < self.MIN_NDK_API:
             log.warning("NDK API less than %s is not supported", self.MIN_NDK_API)
