@@ -52,12 +52,15 @@ import hashlib, logging, os, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
-class Plugin:
+class PluginType(type):
 
-    @property
-    def name(self):
-        fqmodule = self.__module__
-        return fqmodule[fqmodule.rfind('.') + 1:]
+    def __init__(cls, *args):
+        super().__init__(*args)
+        if not hasattr(cls, 'name'):
+            fqmodule = cls.__module__
+            cls.name = fqmodule[fqmodule.rfind('.') + 1:]
+
+class Plugin(metaclass = PluginType): pass
 
 class Context:
 
