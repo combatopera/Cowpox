@@ -14,7 +14,6 @@ class Checks:
 
     @types(Config, Platform)
     def __init__(self, config, platform):
-        self.android_api = config.android.api
         self.ndk_api = config.android.ndk_api
         self.platform = platform
 
