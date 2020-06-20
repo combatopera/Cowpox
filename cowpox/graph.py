@@ -49,7 +49,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-def recipeimpl(name):
+def _recipeimpl(name):
     return findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
 
 def _fix_deplist(deps):
@@ -60,7 +60,7 @@ class RecipeOrder(dict):
     def conflicts(self):
         for name in self:
             try:
-                conflicts = [dep.lower() for dep in recipeimpl(name).conflicts]
+                conflicts = [dep.lower() for dep in _recipeimpl(name).conflicts]
             except NoSuchPluginException:
                 conflicts = []
             if any(c in self for c in conflicts):
@@ -80,7 +80,7 @@ def _recursively_collect_orders(name, all_inputs, orders, blacklist):
     if blacklist is None:
         blacklist = set()
     try:
-        recipe = recipeimpl(name)
+        recipe = _recipeimpl(name)
         dependencies = _get_dependency_tuple_list_for_recipe(recipe, blacklist)
         dependencies.extend(_fix_deplist([[d] for d in recipe.get_opt_depends_in_list(all_inputs) if d.lower() not in blacklist]))
         conflicts = [] if recipe.conflicts is None else [dep.lower() for dep in recipe.conflicts]
@@ -134,7 +134,7 @@ def _obvious_conflict_checker(name_tuples, blacklist):
             recipe_conflicts = set()
             recipe_dependencies = []
             try:
-                recipe = recipeimpl(name)
+                recipe = _recipeimpl(name)
                 recipe_conflicts = {c.lower() for c in recipe.conflicts}
                 recipe_dependencies = _get_dependency_tuple_list_for_recipe(recipe, blacklist)
             except NoSuchPluginException:
@@ -148,7 +148,7 @@ def _obvious_conflict_checker(name_tuples, blacklist):
                 if len(dep_tuple_list) > 1:
                     continue
                 try:
-                    dep_recipe = recipeimpl(dep_tuple_list[0])
+                    dep_recipe = _recipeimpl(dep_tuple_list[0])
                 except NoSuchPluginException:
                     continue
                 conflicts = [c.lower() for c in dep_recipe.conflicts]
@@ -184,7 +184,7 @@ class GraphInfoImpl(GraphInfo):
 
     def configure(self, di):
         for name in self.recipenames:
-            di.add(recipeimpl(name))
+            di.add(_recipeimpl(name))
 
 class GraphImpl:
 
@@ -244,7 +244,7 @@ def _get_recipe_order(names, blacklist):
     pypinames = []
     for name in chosen_order:
         try:
-            pypinames += recipeimpl(name).python_depends
+            pypinames += _recipeimpl(name).python_depends
         except NoSuchPluginException:
             pypinames.append(name)
         else:
