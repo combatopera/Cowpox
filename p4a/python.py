@@ -188,29 +188,28 @@ class GuestPythonRecipe(Recipe):
         ldflags = aslist('LDFLAGS')
         libs = aslist('LIBS')
         def add_flags(include_flags, link_dirs, link_libs):
-            cppflags.extend(include_flags)
-            ldflags.extend(link_dirs)
-            libs.extend(link_libs)
+            cppflags.extend(f"-I{i}" for i in include_flags)
+            ldflags.extend(f"-L{d}" for d in link_dirs)
+            libs.extend(f"-l{l}" for l in link_libs)
         # TODO LATER: Use polymorphism!
         if 'sqlite3' in self.graphinfo.recipenames:
             log.info('Activating flags for sqlite3')
             recipe = self.graph.get_recipe('sqlite3')
-            add_flags([f"-I{recipe.get_build_dir()}"], [f"-L{recipe.get_lib_dir()}"], ['-lsqlite3'])
+            add_flags([recipe.get_build_dir()], [recipe.get_lib_dir()], ['sqlite3'])
         if 'libffi' in self.graphinfo.recipenames:
             log.info('Activating flags for libffi')
             recipe = self.graph.get_recipe('libffi')
             env['PKG_CONFIG_PATH'] = recipe.get_build_dir()
-            add_flags([f"-I{d}" for d in recipe.get_include_dirs()], [f"-L{recipe.get_build_dir() / '.libs'}"], ['-lffi'])
+            add_flags(recipe.get_include_dirs(), [recipe.get_build_dir() / '.libs'], ['ffi'])
         if 'openssl' in self.graphinfo.recipenames:
             log.info('Activating flags for openssl')
             recipe = self.graph.get_recipe('openssl')
             add_flags(recipe.include_flags(), recipe.link_dirs_flags(), recipe.link_libs_flags())
         log.info('''Activating flags for android's zlib''')
-        zlib_lib_path = self.platform.ndk_platform(self.arch) / 'usr' / 'lib'
         zlib_includes = self.ndk_dir / 'sysroot' / 'usr' / 'include'
         line, = (l for l in (zlib_includes / 'zlib.h').read_text().split('\n') if l.startswith('#define ZLIB_VERSION '))
         env['ZLIB_VERSION'] = line.replace('#define ZLIB_VERSION ', '')
-        add_flags([f"-I{zlib_includes}"], [f"-L{zlib_lib_path}"], ['-lz'])
+        add_flags([zlib_includes], [self.platform.ndk_platform(self.arch) / 'usr' / 'lib'], ['z'])
         env['CPPFLAGS'] = ' '.join(cppflags)
         env['LDFLAGS'] = ' '.join(ldflags)
         env['LIBS'] = ' '.join(libs)

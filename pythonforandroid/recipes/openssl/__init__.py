@@ -60,14 +60,13 @@ class OpenSSLRecipe(Recipe):
         return f"{self.name}{self.version}" # XXX: Why?
 
     def include_flags(self):
-        openssl_includes = self.get_build_dir() / 'include'
-        return [f"-I{openssl_includes}", f"-I{openssl_includes / 'internal'}", f"-I{openssl_includes / 'openssl'}"]
+        return [self.get_build_dir() / 'include' / p for p in ['.', 'internal', 'openssl']]
 
     def link_dirs_flags(self):
-        return [f"-L{self.get_build_dir()}"]
+        return [self.get_build_dir()]
 
     def link_libs_flags(self):
-        return [f"-lcrypto{self.version}", f"-lssl{self.version}"]
+        return [f"crypto{self.version}", f"ssl{self.version}"]
 
     def get_recipe_env(self):
         env = super().get_recipe_env()
