@@ -70,7 +70,7 @@ p4a bootstrap = sdl2
 requirements +=
     python3
     bdozlib
-    $*$map($(project requires) it $lower$(it))
+    $*$(project requires)
 package
     domain = org.test
     fq = $lower($(domain).$(name))
