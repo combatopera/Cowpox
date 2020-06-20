@@ -65,11 +65,12 @@ class PlatformInfo:
         self.mirror = mirror
         self.make = make
 
-    def install(self):
+    def configure(self, di):
         self.make(self.platformname)
         self.make(self.sdk_dir, self._install_android_sdk)
         self.make(self.android_ndk_version)
         self.make(self.ndk_dir, self._install_android_ndk)
+        di.add(Platform)
 
     def _install_android_sdk(self):
         log.info('Android SDK is missing, downloading')
@@ -115,12 +116,11 @@ class PlatformInfo:
 
 class Platform:
 
-    @types(Config, PlatformInfo)
-    def __init__(self, config, info):
+    @types(Config)
+    def __init__(self, config):
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.ndk_api = config.android.ndk_api
-        info.install()
 
     def build_tools_version(self):
         ignored = {'.DS_Store', '.ds_store'}
