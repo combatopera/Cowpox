@@ -182,20 +182,25 @@ class GuestPythonRecipe(Recipe):
         return env
 
     def set_libs_flags(self, env):
+        def aslist(key):
+            return [env[key]] if key in env else []
+        cppflags = aslist('CPPFLAGS')
+        ldflags = aslist('LDFLAGS')
+        libs = aslist('LIBS')
         def add_flags(include_flags, link_dirs, link_libs):
-            env['CPPFLAGS'] = env.get('CPPFLAGS', '') + include_flags
-            env['LDFLAGS'] = env.get('LDFLAGS', '') + link_dirs
-            env['LIBS'] = env.get('LIBS', '') + link_libs
+            cppflags.extend(include_flags)
+            ldflags.extend(link_dirs)
+            libs.extend(link_libs)
         # TODO LATER: Use polymorphism!
         if 'sqlite3' in self.graphinfo.recipenames:
             log.info('Activating flags for sqlite3')
             recipe = self.graph.get_recipe('sqlite3')
-            add_flags(f" -I{recipe.get_build_dir()}", f" -L{recipe.get_lib_dir()}", ' -lsqlite3')
+            add_flags([f"-I{recipe.get_build_dir()}"], [f"-L{recipe.get_lib_dir()}"], ['-lsqlite3'])
         if 'libffi' in self.graphinfo.recipenames:
             log.info('Activating flags for libffi')
             recipe = self.graph.get_recipe('libffi')
             env['PKG_CONFIG_PATH'] = recipe.get_build_dir()
-            add_flags(' -I' + ' -I'.join(map(str, recipe.get_include_dirs())), f" -L{recipe.get_build_dir() / '.libs'}", ' -lffi')
+            add_flags([f"-I{d}" for d in recipe.get_include_dirs()], [f"-L{recipe.get_build_dir() / '.libs'}"], ['-lffi'])
         if 'openssl' in self.graphinfo.recipenames:
             log.info('Activating flags for openssl')
             recipe = self.graph.get_recipe('openssl')
@@ -205,7 +210,10 @@ class GuestPythonRecipe(Recipe):
         zlib_includes = self.ndk_dir / 'sysroot' / 'usr' / 'include'
         line, = (l for l in (zlib_includes / 'zlib.h').read_text().split('\n') if l.startswith('#define ZLIB_VERSION '))
         env['ZLIB_VERSION'] = line.replace('#define ZLIB_VERSION ', '')
-        add_flags(f" -I{zlib_includes}", f" -L{zlib_lib_path}", ' -lz')
+        add_flags([f"-I{zlib_includes}"], [f"-L{zlib_lib_path}"], ['-lz'])
+        env['CPPFLAGS'] = ' '.join(cppflags)
+        env['LDFLAGS'] = ' '.join(ldflags)
+        env['LIBS'] = ' '.join(libs)
         return env
 
     @property

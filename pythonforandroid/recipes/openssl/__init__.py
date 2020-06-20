@@ -61,13 +61,13 @@ class OpenSSLRecipe(Recipe):
 
     def include_flags(self):
         openssl_includes = self.get_build_dir() / 'include'
-        return f" -I{openssl_includes} -I{openssl_includes / 'internal'} -I{openssl_includes / 'openssl'}"
+        return [f"-I{openssl_includes}", f"-I{openssl_includes / 'internal'}", f"-I{openssl_includes / 'openssl'}"]
 
     def link_dirs_flags(self):
-        return f" -L{self.get_build_dir()}"
+        return [f"-L{self.get_build_dir()}"]
 
     def link_libs_flags(self):
-        return f" -lcrypto{self.version} -lssl{self.version}"
+        return [f"-lcrypto{self.version}", f"-lssl{self.version}"]
 
     def get_recipe_env(self):
         env = super().get_recipe_env()
