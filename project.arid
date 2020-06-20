@@ -50,6 +50,7 @@ requires +=
     Cython
     diapyr
     jinja2
+    jproperties
     lagoon
     networkx
     virtualenv

@@ -14,8 +14,8 @@ class Checks:
 
     @types(Config, Platform, Arch)
     def __init__(self, config, platform, arch):
-        self.ndk_api = config.android.ndk_api
         self.android_api = config.android.api
+        self.ndk_api = config.android.ndk_api
         self.platform = platform
         self.arch = arch
 
@@ -32,7 +32,7 @@ class Checks:
         if self.android_api not in apis:
             raise Exception("Requested API target %s is not available, install it with the SDK android tool." % self.android_api)
         log.info("Requested API target %s is available, continuing.", self.android_api)
-        check_ndk_version(self.platform)
+        _check_ndk_version(self.platform.read_ndk_version())
         if self.ndk_api > self.android_api:
             raise Exception(
                     f"Target NDK API is {self.ndk_api}, higher than the target Android API {self.android_api}.",
@@ -44,12 +44,7 @@ MIN_NDK_VERSION = 19
 MAX_NDK_VERSION = 20
 NDK_DOWNLOAD_URL = 'https://developer.android.com/ndk/downloads/'
 
-def check_ndk_version(platform):
-    version = platform.read_ndk_version()
-    if version is None:
-        log.warning("Unable to read the NDK version from the given directory %s.", platform.ndk_dir)
-        log.warning("Make sure your NDK version is greater than %s. If you get build errors, download the recommended NDK from %s.", MIN_NDK_VERSION, NDK_DOWNLOAD_URL)
-        return
+def _check_ndk_version(version):
     minor_to_letter = {0: ''}
     minor_to_letter.update([n + 1, chr(i)] for n, i in enumerate(range(ord('b'), ord('b') + 25)))
     major_version = version.version[0]
