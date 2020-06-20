@@ -62,9 +62,11 @@ class ArchImpl(Arch):
         MAKE = f"make -j{cpu_count()}",
         **{k: v for k, v in os.environ.items() if k.startswith('CCACHE_')},
     )
+    minbadapi = float('inf')
 
     @types(Config, Platform, Graph)
     def __init__(self, config, platform, graph):
+        assert config.android.api < self.minbadapi
         self.ndk_api = config.android.ndk_api
         self.libs_parent = Path(config.libs_parent)
         self.python_install_dir = Path(config.python_install_dir)
@@ -144,6 +146,7 @@ class ArchARM(BaseArchARM):
     name = 'armeabi'
     arch_cflags = []
     numver = 1
+    minbadapi = 21
 
 class ArchARMv7_a(BaseArchARM):
 

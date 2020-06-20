@@ -1,4 +1,3 @@
-from .arch import ArchARM
 from .config import Config
 from .platform import Platform
 from diapyr import types
@@ -8,7 +7,6 @@ log = logging.getLogger(__name__)
 
 class Checks:
 
-    ARMEABI_MAX_TARGET_API = 21
     MIN_TARGET_API = 26
     MIN_NDK_VERSION = 19
     NDK_DOWNLOAD_URL = 'https://developer.android.com/ndk/downloads/'
@@ -19,14 +17,9 @@ class Checks:
     def __init__(self, config, platform):
         self.android_api = config.android.api
         self.ndk_api = config.android.ndk_api
-        self.archname = config.android.arch
         self.platform = platform
 
     def check(self):
-        if self.android_api >= self.ARMEABI_MAX_TARGET_API and self.archname == ArchARM.name:
-            raise Exception(
-                    f"Asked to build for armeabi architecture with API {self.android_api}, but API {self.ARMEABI_MAX_TARGET_API} or greater does not support armeabi.",
-                    'You probably want to build with --arch=armeabi-v7a instead')
         if self.android_api < self.MIN_TARGET_API:
             log.warning("Target API %s < %s", self.android_api, self.MIN_TARGET_API)
             log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
