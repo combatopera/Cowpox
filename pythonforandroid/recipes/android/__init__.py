@@ -38,8 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox.patch import will_build
 from p4a.recipe import CythonRecipe
-from p4a.patch import will_build
 from types import MappingProxyType
 import logging
 

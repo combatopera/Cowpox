@@ -39,10 +39,10 @@
 # THE SOFTWARE.
 
 from cowpox.config import Config
+from cowpox.patch import will_build
 from diapyr import types
 from lagoon import cp
 from p4a.recipe import CythonRecipe
-from p4a.patch import will_build
 from pathlib import Path
 import logging
 

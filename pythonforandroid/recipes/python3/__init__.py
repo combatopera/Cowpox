@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from p4a.patch import version_starts_with
+from cowpox.patch import version_starts_with
 from p4a.python import GuestPythonRecipe
 import lagoon
 
