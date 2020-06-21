@@ -46,8 +46,9 @@ from .config import Config
 from .context import Checks, ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
 from .dirs import Dirs
 from .graph import GraphInfoImpl
+from .make import Make
 from .mirror import Mirror
-from .platform import Make, Platform, PlatformInfo
+from .platform import Platform, PlatformInfo
 from .src import Src
 from .util import findimpl, Logging
 from diapyr import DI, types

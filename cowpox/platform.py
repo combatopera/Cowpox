@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from .config import Config
+from .make import Make
 from .mirror import Mirror
 from diapyr import types
 from distutils.version import LooseVersion
@@ -46,39 +47,9 @@ from lagoon import unzip, yes
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import parse_version
-import logging, pickle, re
+import logging, re
 
 log = logging.getLogger(__name__)
-
-class Make:
-
-    @types(Config)
-    def __init__(self, config):
-        self.statepath = Path(config.state.path)
-        if self.statepath.exists():
-            with self.statepath.open('rb') as f:
-                self.targets = pickle.load(f)
-        else:
-            self.targets = []
-        self.cursor = 0
-
-    def __call__(self, target, install = None):
-        if self.cursor < len(self.targets):
-            if self.targets[self.cursor] == target:
-                log.debug("Accept: %s", target)
-                self.cursor += 1
-                return
-            log.debug("Discard: %s", self.targets[self.cursor:])
-            del self.targets[self.cursor:]
-        if install is None:
-            log.debug("Config: %s", target)
-        else:
-            log.info("Install: %s", target)
-            install()
-        self.targets.append(target)
-        with self.statepath.open('wb') as f:
-            pickle.dump(self.targets, f)
-        self.cursor += 1
 
 class PlatformInfo:
 
