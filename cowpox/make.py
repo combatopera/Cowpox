@@ -48,7 +48,7 @@ log = logging.getLogger(__name__)
 class Make:
 
     @types(Config)
-    def __init__(self, config):
+    def __init__(self, config, log = log):
         self.statepath = Path(config.state.path)
         if self.statepath.exists():
             with self.statepath.open('rb') as f:
@@ -56,19 +56,22 @@ class Make:
         else:
             self.targets = []
         self.cursor = 0
+        self.log = log
 
     def __call__(self, target, install = None):
+        n = self.targets[:self.cursor].count(target)
+        format = f"Update {n} %s: %s" if n else "Create %s: %s"
         if self.cursor < len(self.targets):
             if self.targets[self.cursor] == target:
-                log.debug("Accept: %s", target)
+                self.log.info(format, 'OK', target)
                 self.cursor += 1
                 return
-            log.debug("Discard: %s", self.targets[self.cursor:])
+            self.log.debug("Discard: %s", self.targets[self.cursor:])
             del self.targets[self.cursor:]
         if install is None:
-            log.debug("Config: %s", target)
+            self.log.debug("Config: %s", target)
         else:
-            log.info("Install: %s", target)
+            self.log.info(format, 'NOW', target)
             install()
         self.targets.append(target)
         with self.statepath.open('wb') as f:
