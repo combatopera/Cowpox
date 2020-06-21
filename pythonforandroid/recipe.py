@@ -39,16 +39,16 @@
 # THE SOFTWARE.
 
 from .logger import logger, info, warning, debug, shprint, info_main
-from .util import urlretrieve, current_directory, ensure_dir, BuildInterruptingException
+from .mirror import Mirror
+from .util import current_directory, ensure_dir, BuildInterruptingException
 from os import listdir, unlink, environ, mkdir, curdir, walk
 from os.path import basename, dirname, exists, isdir, isfile, join, realpath, split
 from pathlib import Path
 from re import match
 from shutil import rmtree
 from six import PY2, with_metaclass
-from sys import stdout
 from urllib.parse import urlparse
-import fnmatch, glob, hashlib, sh, shutil, time
+import fnmatch, glob, hashlib, sh, shutil
 
 def import_recipe(module, filename):
     if PY2:
@@ -213,44 +213,15 @@ class Recipe(with_metaclass(RecipeMeta)):
             return None
         return self.url.format(version=self.version)
 
-    mirror = Path('/mirror') # TODO: Make configurable.
-
     def download_file(self, url, target):
         if not url:
             return
         info('Downloading {} from {}'.format(self.name, url))
         parsed_url = urlparse(url)
         if parsed_url.scheme in {'http', 'https'}:
-            def report_hook(index, blksize, size):
-                if size <= 0:
-                    progression = '{0} bytes'.format(index * blksize)
-                else:
-                    progression = '{0:.2f}%'.format(
-                        index * blksize * 100. / float(size))
-                if "CI" not in environ:
-                    stdout.write('- Download {}\r'.format(progression))
-                    stdout.flush()
             if exists(target):
                 unlink(target)
-            mirrorpath = self.mirror / hashlib.md5(url.encode('ascii')).hexdigest()
-            if mirrorpath.exists():
-                info("Already downloaded: %s", url) # XXX: How to enable debug?
-            else:
-                partialpath = mirrorpath.with_name(mirrorpath.name + '.part')
-                # Download item with multiple attempts (for bad connections):
-                attempts = 0
-                while True:
-                    try:
-                        urlretrieve(url, partialpath, report_hook)
-                        break
-                    except OSError:
-                        attempts += 1
-                        if attempts >= 5:
-                            raise
-                    stdout.write('Download failed retrying in a second...')
-                    time.sleep(1)
-                partialpath.rename(mirrorpath)
-            Path(target).symlink_to(mirrorpath)
+            Path(target).symlink_to(Mirror.download(url))
             return target
         elif parsed_url.scheme in {'git', 'git+file', 'git+ssh', 'git+http', 'git+https'}:
             if isdir(target):
