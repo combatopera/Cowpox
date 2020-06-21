@@ -38,44 +38,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from chromalog.log import ColorizingFormatter, ColorizingStreamHandler
-from collections.abc import Mapping
-import logging
+from .util import DictView
+from unittest import TestCase
 
-class Logging:
+class TestUtil(TestCase):
 
-    formatter = ColorizingFormatter("%(asctime)s [%(levelname)s] %(message)s")
-
-    def __init__(self):
-        logging.root.setLevel(logging.DEBUG)
-        console = ColorizingStreamHandler()
-        console.setLevel(logging.INFO)
-        self._addhandler(console)
-
-    def _addhandler(self, h):
-        h.setFormatter(self.formatter)
-        logging.root.addHandler(h)
-
-    def setpath(self, logpath):
-        self._addhandler(logging.FileHandler(logpath.pmkdirp()))
-
-class DictView(Mapping):
-
-    @classmethod
-    def format(cls, format_string, obj):
-        return format_string.format_map(cls(obj))
-
-    def __init__(self, obj):
-        self.obj = obj
-
-    def __getitem__(self, key):
-        try:
-            return getattr(self.obj, key)
-        except AttributeError:
-            raise KeyError(key)
-
-    def __iter__(self):
-        return iter(dir(self.obj))
-
-    def __len__(self):
-        return len(dir(self.obj))
+    def test_dictview(self):
+        class Cls:
+            static = 100
+            def __init__(self, dynamic):
+                self.dynamic = dynamic
+        self.assertEqual('100 200', DictView.format("{static} {dynamic}", Cls(200)))

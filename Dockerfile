@@ -53,11 +53,12 @@ RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
 FROM base
-RUN pip install pyflakes
+RUN pip install pyflakes pytest
 COPY . .
 RUN find -name '*.py' \
     -not -wholename ./pythonforandroid/recipes/android/src/android/__init__.py \
-    -exec pyflakes '{}' +
+    -exec pyflakes '{}' + && \
+    pytest
 
 FROM base
 COPY . .
