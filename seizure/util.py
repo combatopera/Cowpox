@@ -38,62 +38,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import etc
-from .android import TargetAndroid
-from .config import Config
-from .jsonstore import JsonStore
-from .dirs import Dirs
-from .src import Src
-from .util import Logging
-from diapyr import DI, types
-from lagoon import pipify
-from pathlib import Path
-from pkg_resources import resource_filename
-import logging, os, shutil
+from chromalog.log import ColorizingFormatter, ColorizingStreamHandler
+import logging
 
-log = logging.getLogger(__name__)
+class Logging:
 
-class Result: pass
+    formatter = ColorizingFormatter("%(asctime)s [%(levelname)s] %(message)s")
 
-@types(Config, Dirs, TargetAndroid, Src, this = Result)
-def run(config, dirs, target, src):
-    log.info('Copy project.')
-    shutil.copytree(config.container.src, config.container.project, symlinks = True, dirs_exist_ok = True)
-    # TODO: Preparation should happen on host.
-    log.info('Prepare project.')
-    pipify.print('-f', resource_filename(etc.__name__, 'bdozlib.arid'), cwd = config.container.project)
-    dirs.install()
-    log.info('Install platform')
-    target.install_platform() # TODO: Bake these into the image.
-    log.info('Compile platform')
-    target.compile_platform()
-    src._copy_application_sources()
-    shutil.copytree(dirs.applibs_dir, dirs.app_dir / '_applibs')
-    dirs.add_sitecustomize()
-    log.info('Package the application')
-    return target.build_package()
+    def __init__(self):
+        logging.root.setLevel(logging.DEBUG)
+        console = ColorizingStreamHandler()
+        console.setLevel(logging.INFO)
+        self._addhandler(console)
 
-def _main():
-    logging = Logging()
-    config = Config.load(resource_filename(etc.__name__, 'root.arid')).Seizure
-    logging.setpath(Path(config.log.path))
-    # TODO: Run in arbitrary directory.
-    os.chdir(config.container.workspace)
-    di = DI()
-    try:
-        di.add(config)
-        di.add(Dirs)
-        di.add(JsonStore) # TODO: Retire.
-        di.add(Src)
-        di.add(TargetAndroid)
-        di.add(run)
-        return di(Result)
-    finally:
-        di.discardall()
+    def _addhandler(self, h):
+        h.setFormatter(self.formatter)
+        logging.root.addHandler(h)
 
-def main():
-    try:
-        log.info("Result: %s", _main())
-    except:
-        log.exception('Abort:')
-        raise
+    def setpath(self, logpath):
+        self._addhandler(logging.FileHandler(logpath.pmkdirp()))
