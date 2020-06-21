@@ -41,12 +41,8 @@
 from .config import Config
 from .context import Context
 from .distribution import generate_dist_folder_name
-from .libs.version import parse
-from .mirror import Mirror
 from .p4a import create, makeapk
 from diapyr import types
-from lagoon import unzip, yes
-from lagoon.program import Program
 from pathlib import Path
 from types import SimpleNamespace
 import logging, os, shutil
@@ -55,16 +51,13 @@ log = logging.getLogger(__name__)
 
 class TargetAndroid:
 
-    @types(Config, Mirror, Context)
-    def __init__(self, config, mirror, context):
-        self.android_ndk_version = config.android.ndk
+    @types(Config, Context)
+    def __init__(self, config, context):
         self.android_api = config.android.api
         self.android_minapi = config.android.minapi
         self.arch = config.android.arch
         self.dist_name = config.package.name
         self.bootstrapname = config.p4a.bootstrap
-        self.acceptlicense = config.android.accept_sdk_license
-        self.skip_upd = config.android.skip_update
         self.ndk_api = config.android.ndk_api
         self.requirements = config.requirements.list()
         self.fqpackage = config.package.fq
@@ -94,99 +87,9 @@ class TargetAndroid:
         self.intent_filters = config.android.manifest.intent_filters
         self.presplash = config.presplash.filename
         self.apkdir = Path(config.apk.dir)
-        self.sdk_dir = Path(config.android_sdk_dir)
-        self.ndk_dir = Path(config.android_ndk_dir)
         self.app_dir = Path(config.app_dir)
         self.distsdir = Path(config.distsdir)
-        self.sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager').partial(cwd = self.sdk_dir)
-        self.mirror = mirror
         self.context = context
-
-    def _install_android_sdk(self):
-        with self.sdk_dir.okorclean() as ok:
-            if ok:
-                log.info('Android SDK found at %s', self.sdk_dir)
-                return
-            log.info('Android SDK is missing, downloading')
-            archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
-            log.info('Unpacking Android SDK')
-            unzip._q.print(archive, cwd = self.sdk_dir)
-            log.info('Android SDK tools base installation done.')
-
-    def _install_android_ndk(self):
-        with self.ndk_dir.okorclean() as ok:
-            if ok:
-                log.info('Android NDK found at %s', self.ndk_dir)
-                return
-            log.info('Android NDK is missing, downloading')
-            archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
-            log.info('Unpacking Android NDK')
-            unzip._q.print(archive, cwd = self.ndk_dir)
-            rootdir, = self.ndk_dir.iterdir()
-            for path in rootdir.iterdir():
-                path.rename(self.ndk_dir / path.relative_to(rootdir))
-            rootdir.rmdir()
-            log.info('Android NDK installation done.')
-
-    def _android_list_build_tools_versions(self):
-        for line in (l.strip() for l in self.sdkmanager.__list().split('\n')):
-            if line.startswith('build-tools;'):
-                package_name = line.split(' ')[0]
-                assert package_name.count(';') == 1, f'could not parse package "{package_name}"'
-                yield parse(package_name.split(';')[1])
-
-    def _android_update_sdk(self, *args):
-        if self.acceptlicense:
-            with yes.bg(check = False) as yesproc:
-                self.sdkmanager.__licenses.print(stdin = yesproc.stdout)
-        self.sdkmanager.print(*args)
-
-    @staticmethod
-    def _read_version_subdir(path):
-        versions = []
-        if not path.exists():
-            log.debug("build-tools folder not found %s", path)
-            return parse("0")
-        for v in (p.name for p in path.iterdir()):
-            try:
-                versions.append(parse(v))
-            except:
-                pass
-        if not versions:
-            log.error('Unable to find the latest version for %s', path)
-            return parse("0")
-        return max(versions)
-
-    def _install_android_packages(self):
-        if not self.skip_upd:
-            log.info('Installing/updating SDK platform tools if necessary')
-            self._android_update_sdk('tools', 'platform-tools')
-            self._android_update_sdk('--update')
-        else:
-            log.info('Skipping Android SDK update due to spec file setting')
-            log.info('Note: this also prevents installing missing SDK components')
-        log.info('Updating SDK build tools if necessary')
-        available_v_build_tools = list(self._android_list_build_tools_versions())
-        if not available_v_build_tools:
-            log.error('Did not find any build tools available to download')
-        latest_v_build_tools = max(available_v_build_tools)
-        if latest_v_build_tools > self._read_version_subdir(self.sdk_dir / 'build-tools'):
-            if not self.skip_upd:
-                self._android_update_sdk(f"build-tools;{latest_v_build_tools}")
-            else:
-                log.info('Skipping update to build tools %s due to spec setting', latest_v_build_tools)
-        log.info('Downloading platform api target if necessary')
-        if not (self.sdk_dir / 'platforms' / f"android-{self.android_api}").exists():
-            if not self.skip_upd:
-                self.sdkmanager.print(f"platforms;android-{self.android_api}")
-            else:
-                log.info('Skipping install API %s platform tools due to spec setting', self.android_api)
-        log.info('Android packages installation done.')
-
-    def install_platform(self):
-        self._install_android_sdk()
-        self._install_android_ndk()
-        self._install_android_packages()
 
     def compile_platform(self):
         self.context.init()

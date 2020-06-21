@@ -44,6 +44,7 @@ from .config import Config
 from .context import Context
 from .dirs import Dirs
 from .mirror import Mirror
+from .platform import Platform
 from .src import Src
 from .util import Logging
 from diapyr import DI, types
@@ -55,10 +56,10 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Config, Dirs, TargetAndroid, Src, this = Result)
-def run(config, dirs, target, src):
-    log.info('Install platform')
-    target.install_platform() # XXX: Bake these into the image?
+@types(Config, Dirs, Platform, TargetAndroid, Src, this = Result)
+def run(config, dirs, platform, target, src):
+    log.info('Install platform.')
+    platform.install_platform()
     log.info('Compile platform')
     dist = target.compile_platform()
     src._copy_application_sources()
@@ -76,6 +77,7 @@ def _main():
         di.add(Context)
         di.add(Dirs)
         di.add(Mirror)
+        di.add(Platform)
         di.add(Src)
         di.add(TargetAndroid)
         di.add(run)
