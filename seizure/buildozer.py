@@ -40,8 +40,8 @@
 
 from . import BuildozerException, USE_COLOR
 from .android import TargetAndroid
+from .config import Config
 from .jsonstore import JsonStore
-from configparser import SafeConfigParser
 from fnmatch import fnmatch
 from lagoon import tar, unzip
 from os import walk, makedirs
@@ -99,14 +99,7 @@ class Buildozer:
         self.environ = {}
         self.state = None
         self.build_id = None
-        self.config = SafeConfigParser(allow_no_value=True)
-        self.config.optionxform = lambda value: value
-        self.config.getlist = self._get_config_list
-        self.config.getlistvalues = self._get_config_list_values
-        self.config.getdefault = self._get_config_default
-        self.config.getbooldefault = self._get_config_bool
-        self.config.getrawdefault = self._get_config_raw_default
-        self.config.read(self.specfilename, 'utf-8')
+        self.config = Config(self.specfilename)
         try:
             self.log_level = int(self.config.getdefault('buildozer', 'log_level', '2'))
         except Exception:
@@ -660,55 +653,3 @@ class Buildozer:
         self.prepare_for_build()
         self.target.build_mode = 'debug'
         self.build()
-
-    def _get_config_list_values(self, *args, **kwargs):
-        kwargs['with_values'] = True
-        return self._get_config_list(*args, **kwargs)
-
-    def _get_config_list(self, section, token, default=None, with_values=False):
-        # monkey-patch method for ConfigParser
-        # get a key as a list of string, separated from the comma
-        # if a section:token is defined, let's use the content as a list.
-        l_section = '{}:{}'.format(section, token)
-        if self.config.has_section(l_section):
-            values = self.config.options(l_section)
-            if with_values:
-                return ['{}={}'.format(key, self.config.get(l_section, key)) for
-                        key in values]
-            else:
-                return [x.strip() for x in values]
-
-        values = self.config.getdefault(section, token, '')
-        if not values:
-            return default
-        values = values.split(',')
-        if not values:
-            return default
-        return [x.strip() for x in values]
-
-    def _get_config_default(self, section, token, default=None):
-        # monkey-patch method for ConfigParser
-        # get an appropriate env var if it exists, else
-        # get a key in a section, or the default
-        if not self.config.has_section(section):
-            return default
-        if not self.config.has_option(section, token):
-            return default
-        return self.config.get(section, token)
-
-    def _get_config_bool(self, section, token, default=False):
-        # monkey-patch method for ConfigParser
-        # get a key in a section, or the default
-        if not self.config.has_section(section):
-            return default
-        if not self.config.has_option(section, token):
-            return default
-        return self.config.getboolean(section, token)
-
-    def _get_config_raw_default(self, section, token, default=None, section_sep="=", split_char=" "):
-        l_section = '{}:{}'.format(section, token)
-        if self.config.has_section(l_section):
-            return [section_sep.join(item) for item in self.config.items(l_section)]
-        if not self.config.has_option(section, token):
-            return default.split(split_char)
-        return self.config.get(section, token).split(split_char)
