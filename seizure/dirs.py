@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .config import LegacyConfig
+from .config import Config, LegacyConfig
 from diapyr import types
 from pathlib import Path
 from pkg_resources import resource_stream
@@ -52,17 +52,17 @@ class Dirs:
     global_buildozer_dir = Path.home() / '.buildozer'
     global_cache_dir = global_buildozer_dir / 'cache' # XXX: Used?
 
-    @types(LegacyConfig)
-    def __init__(self, config):
+    @types(Config, LegacyConfig)
+    def __init__(self, config, legacyconfig):
         self.global_platform_dir = self.global_buildozer_dir / config.targetname / 'platform'
         self.buildozer_dir = config.workspace / '.buildozer'
         self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
         self.app_dir = self.buildozer_dir / config.targetname / 'app'
         self.bin_dir = config.workspace / 'bin'
         self.applibs_dir = self.buildozer_dir / 'applibs'
-        self.apache_ant_dir = self.global_platform_dir / f"apache-ant-{config.getdefault('app', 'android.ant', APACHE_ANT_VERSION)}"
+        self.apache_ant_dir = self.global_platform_dir / f"apache-ant-{legacyconfig.getdefault('app', 'android.ant', APACHE_ANT_VERSION)}"
         self.android_sdk_dir = self.global_platform_dir / 'android-sdk'
-        self.android_ndk_dir = self.global_platform_dir / f"android-ndk-r{config.getdefault('app', 'android.ndk', config.android_ndk_version)}"
+        self.android_ndk_dir = self.global_platform_dir / f"android-ndk-r{legacyconfig.getdefault('app', 'android.ndk', legacyconfig.android_ndk_version)}"
 
     def install(self):
         for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:

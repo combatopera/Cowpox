@@ -71,7 +71,7 @@ WORKDIR /workspace
 RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin . /mirror /project) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"' && git init
 USER $USER
 ENTRYPOINT ["Seizure", "/workspace/Seizure.arid"]
-RUN { echo workspace = /workspace; echo project = /project; } | tee Seizure.arid
 COPY workspace .
+RUN { echo workspace = /workspace; echo project = /project; } | tee -a Seizure.arid
 ENV P4A_bdozlib_DIR /project
 WORKDIR /src

@@ -78,7 +78,6 @@ class Config:
 
 class LegacyConfig(SafeConfigParser):
 
-    targetname = 'android'
     build_mode = 'debug'
 
     @types(Config)
