@@ -1,1 +1,5 @@
 __pycache__/
+/Cowpox.egg-info/
+/setup.cfg
+/setup.py
+/pyproject.toml
