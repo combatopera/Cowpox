@@ -80,7 +80,7 @@ def _main():
     _initlogging()
     parser = ArgumentParser()
     parser.add_argument('configpath')
-    config = Config.load(parser.parse_args().configpath)
+    config = Config.load(parser.parse_args().configpath).Seizure
     shutil.copytree('.', config.container.project, symlinks = True, dirs_exist_ok = True)
     workspace = Path(config.container.workspace)
     soak.print(cwd = workspace)

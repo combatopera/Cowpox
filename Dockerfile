@@ -72,6 +72,6 @@ RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.grad
 COPY workspace .
 RUN { echo workspace = /workspace; echo project = /project; echo src = /src; } | tee container.arid
 USER $USER
-ENTRYPOINT ["Seizure", "/workspace/Seizure.arid"]
+ENTRYPOINT ["Seizure", "/workspace/root.arid"]
 ENV P4A_bdozlib_DIR /project
 WORKDIR /src
