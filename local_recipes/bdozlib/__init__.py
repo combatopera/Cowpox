@@ -38,54 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-FROM p4a
+from pythonforandroid.recipe import CythonRecipe
+import os
 
-FROM python AS base
-RUN apt-get update && \
-    apt-get install --yes --no-install-recommends apt-utils software-properties-common && \
-    wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - && \
-    add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ && \
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-    autoconf \
-    automake \
-    build-essential \
-    ccache \
-    cmake \
-    gettext \
-    git \
-    libffi-dev \
-    libltdl-dev \
-    libtool \
-    adoptopenjdk-8-hotspot \
-    patch \
-    pkg-config \
-    unzip \
-    zip \
-    zlib1g-dev
-WORKDIR /root/project
-COPY requirements.txt .
-RUN pip install --upgrade -r requirements.txt
-COPY --from=p4a /*.whl wheels/
-RUN pip install --upgrade -f wheels python-for-android==2020.3.30
+class RecipeImpl(CythonRecipe): pass
 
-FROM base
-RUN pip install pyflakes
-COPY . .
-RUN pyflakes .
-
-FROM base
-COPY . .
-RUN pip install . && rm -rv "$PWD" | tail -1
-ARG USER=bdoz
-ARG GROUP=bdgp
-ARG UID=7654
-ARG GID=3210
-RUN groupadd -g $GID $GROUP && useradd -g $GID -u $UID --create-home --shell /bin/bash $USER
-WORKDIR /project
-RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.buildozer $home/.gradle .buildozer bin . /mirror /self) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"'
-USER $USER
-ENTRYPOINT ["buildozer"]
-CMD ["android", "debug"]
-COPY soak.arid .
-COPY local_recipes local_recipes
+os.environ['P4A_bdozlib_DIR'] = '/self'
+recipe = RecipeImpl()
