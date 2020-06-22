@@ -38,10 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox.config import Config
 from diapyr import types
 from lagoon import make, perl
 from p4a import Recipe
-from seizure.config import Config
 
 class OpenSSLRecipe(Recipe):
 

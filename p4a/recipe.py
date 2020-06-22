@@ -41,11 +41,11 @@
 from . import Recipe
 from .boot import Bootstrap
 from .python import HostPythonRecipe
+from cowpox.config import Config
 from diapyr import types
 from lagoon import find
 from lagoon.program import Program
 from pathlib import Path
-from seizure.config import Config
 import logging, os, subprocess
 
 log = logging.getLogger(__name__)

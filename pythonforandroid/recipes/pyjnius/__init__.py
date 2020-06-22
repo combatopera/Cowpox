@@ -38,12 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox.config import Config
 from diapyr import types
 from lagoon import cp
 from p4a.recipe import CythonRecipe
 from p4a.patch import will_build
 from pathlib import Path
-from seizure.config import Config
 import logging
 
 log = logging.getLogger(__name__)

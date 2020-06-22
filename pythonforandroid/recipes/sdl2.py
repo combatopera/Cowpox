@@ -38,11 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox.config import Config
 from diapyr import types
 from lagoon.program import Program
 from p4a.recipe import BootstrapNDKRecipe
 from pathlib import Path
-from seizure.config import Config
 
 class LibSDL2Recipe(BootstrapNDKRecipe):
 

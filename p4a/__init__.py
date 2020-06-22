@@ -38,14 +38,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox.config import Config
+from cowpox.mirror import Mirror
+from cowpox.platform import Platform
+from cowpox.util import format_obj
 from diapyr import types
 from lagoon import cp, patch as patchexe, tar, touch, unzip
 from pathlib import Path
 from pkg_resources import resource_filename
-from seizure.config import Config
-from seizure.mirror import Mirror
-from seizure.platform import Platform
-from seizure.util import format_obj
 from urllib.parse import urlparse
 from zipfile import ZipFile
 import hashlib, logging, os, shutil, subprocess

@@ -39,13 +39,13 @@
 # THE SOFTWARE.
 
 from . import Arch, Graph, GraphInfo, Plugin
+from cowpox.config import Config
+from cowpox.platform import Platform
 from diapyr import types
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import resource_filename
-from seizure.config import Config
-from seizure.platform import Platform
 from tempfile import TemporaryDirectory
 import logging, os, shutil, subprocess
 
