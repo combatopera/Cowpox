@@ -1,0 +1,163 @@
+# Copyright 2020 Andrzej Cichocki
+
+# This file is part of Cowpox.
+#
+# Cowpox is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Cowpox is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Cowpox.  If not, see <http://www.gnu.org/licenses/>.
+
+# This file incorporates work covered by the following copyright and
+# permission notice:
+
+# Copyright (c) 2010-2017 Kivy Team and other contributors
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+import sh
+import os
+from os.path import join, isdir, exists
+from multiprocessing import cpu_count
+from pythonforandroid.recipe import Recipe
+from pythonforandroid.toolchain import shprint
+from pythonforandroid.util import current_directory, ensure_dir
+
+
+class ICURecipe(Recipe):
+    name = 'icu4c'
+    version = '57.1'
+    major_version = version.split('.')[0]
+    url = ('http://download.icu-project.org/files/icu4c/'
+           '{version}/icu4c-{version_underscore}-src.tgz')
+
+    depends = [('hostpython2', 'hostpython3')]  # installs in python
+    patches = ['disable-libs-version.patch']
+
+    built_libraries = {
+        'libicui18n{}.so'.format(major_version): 'build_icu_android/lib',
+        'libicuuc{}.so'.format(major_version): 'build_icu_android/lib',
+        'libicudata{}.so'.format(major_version): 'build_icu_android/lib',
+        'libicule{}.so'.format(major_version): 'build_icu_android/lib',
+        'libicuio{}.so'.format(major_version): 'build_icu_android/lib',
+        'libicutu{}.so'.format(major_version): 'build_icu_android/lib',
+        'libiculx{}.so'.format(major_version): 'build_icu_android/lib',
+    }
+    need_stl_shared = True
+
+    @property
+    def versioned_url(self):
+        if self.url is None:
+            return None
+        return self.url.format(
+            version=self.version,
+            version_underscore=self.version.replace('.', '_'))
+
+    def get_recipe_dir(self):
+        """
+        .. note:: We need to overwrite `Recipe.get_recipe_dir` due to the
+                  mismatch name between the recipe's folder (icu) and the value
+                  of `ICURecipe.name` (icu4c).
+        """
+        if self.ctx.local_recipes is not None:
+            local_recipe_dir = join(self.ctx.local_recipes, 'icu')
+            if exists(local_recipe_dir):
+                return local_recipe_dir
+        return join(self.ctx.root_dir, 'recipes', 'icu')
+
+    def build_arch(self, arch):
+        env = self.get_recipe_env(arch).copy()
+        build_root = self.get_build_dir(arch.arch)
+
+        def make_build_dest(dest):
+            build_dest = join(build_root, dest)
+            if not isdir(build_dest):
+                ensure_dir(build_dest)
+                return build_dest, False
+
+            return build_dest, True
+
+        icu_build = join(build_root, "icu_build")
+        build_linux, exists = make_build_dest("build_icu_linux")
+
+        host_env = os.environ.copy()
+        # reduce the function set
+        host_env["CPPFLAGS"] = (
+            "-O3 -fno-short-wchar -DU_USING_ICU_NAMESPACE=1 -fno-short-enums "
+            "-DU_HAVE_NL_LANGINFO_CODESET=0 -D__STDC_INT64__ -DU_TIMEZONE=0 "
+            "-DUCONFIG_NO_LEGACY_CONVERSION=1 "
+            "-DUCONFIG_NO_TRANSLITERATION=0 ")
+
+        if not exists:
+            configure = sh.Command(
+                join(build_root, "source", "runConfigureICU"))
+            with current_directory(build_linux):
+                shprint(
+                    configure,
+                    "Linux",
+                    "--prefix="+icu_build,
+                    "--enable-extras=no",
+                    "--enable-strict=no",
+                    "--enable-static=no",
+                    "--enable-tests=no",
+                    "--enable-samples=no",
+                    _env=host_env)
+                shprint(sh.make, "-j", str(cpu_count()), _env=host_env)
+                shprint(sh.make, "install", _env=host_env)
+
+        build_android, exists = make_build_dest("build_icu_android")
+        if not exists:
+
+            configure = sh.Command(join(build_root, "source", "configure"))
+
+            with current_directory(build_android):
+                shprint(
+                    configure,
+                    "--with-cross-build="+build_linux,
+                    "--enable-extras=no",
+                    "--enable-strict=no",
+                    "--enable-static=no",
+                    "--enable-tests=no",
+                    "--enable-samples=no",
+                    "--host="+env["TOOLCHAIN_PREFIX"],
+                    "--prefix="+icu_build,
+                    _env=env)
+                shprint(sh.make, "-j", str(cpu_count()), _env=env)
+                shprint(sh.make, "install", _env=env)
+
+    def install_libraries(self, arch):
+        super(ICURecipe, self).install_libraries(arch)
+
+        src_include = join(
+            self.get_build_dir(arch.arch), "icu_build", "include")
+        dst_include = join(
+            self.ctx.get_python_install_dir(), "include", "icu")
+        ensure_dir(dst_include)
+        shprint(sh.cp, "-r", join(src_include, "layout"), dst_include)
+        shprint(sh.cp, "-r", join(src_include, "unicode"), dst_include)
+
+
+recipe = ICURecipe()
