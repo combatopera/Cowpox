@@ -1,0 +1,4 @@
+from $(main module) import $(main name)
+
+if '__main__' == __name__:
+    $(main name)()

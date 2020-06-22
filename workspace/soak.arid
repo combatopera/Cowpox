@@ -1,4 +1,0 @@
-Seizure
-    main name = main
-    . /src/Seizure.arid
-soak main.py from = main.py.aridt

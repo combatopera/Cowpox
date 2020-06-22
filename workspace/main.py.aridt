@@ -1,4 +1,0 @@
-from $(Seizure main module) import $(Seizure main name)
-
-if '__main__' == __name__:
-    $(Seizure main name)()

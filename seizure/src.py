@@ -38,14 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import skel
 from .config import Config
 from .dirs import Dirs
 from diapyr import types
-from os import walk
-from os.path import splitext
-from pathlib import Path
-from shutil import copyfile, rmtree
-import logging, os
+from pkg_resources import resource_filename
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -53,22 +51,10 @@ class Src:
 
     @types(Config, Dirs)
     def __init__(self, config, dirs):
-        self.source_dir = Path(config.source.dir).resolve()
-        self.include_exts = config.source.include_exts.list()
+        self.config = config
         self.dirs = dirs
 
     def _copy_application_sources(self):
-        log.debug('Copy application source from %s', self.source_dir)
-        rmtree(self.dirs.app_dir)
-        for root, dirs, files in walk(self.source_dir, followlinks=True):
-            if any(x.startswith('.') for x in root.split(os.sep)):
-                continue
-            for fn in files:
-                if fn.startswith('.'):
-                    continue
-                _, ext = splitext(fn)
-                if ext and self.include_exts and ext[1:] not in self.include_exts:
-                    continue
-                sfn = Path(root, fn)
-                log.debug('Copy %s', sfn)
-                copyfile(sfn, (self.dirs.app_dir / root[len(str(self.source_dir)) + 1:] / fn).resolve().pmkdirp())
+        topath = self.dirs.app_dir / 'main.py'
+        log.debug("Create: %s", topath)
+        self.config.processtemplate(resource_filename(skel.__name__, 'main.py.aridt'), topath)
