@@ -49,7 +49,7 @@ def recursively_include(directory, patterns):
             package_data[str(root)].append(str(path.relative_to(root)))
 
 package_data = {
-        '': ['*.aridt', '*.tmpl', '*.patch'],
+        '': ['*.arid', '*.aridt', '*.tmpl', '*.patch'],
         'pythonforandroid': []}
 recursively_include(['recipes'], ['*.patch', '*.pyx', '*.py', '*.c', '*.h', '*.mk', '*.jam'])
 recursively_include(['bootstraps'], ['*.properties', '*.xml', '*.java', '*.tmpl', '*.txt', '*.png', '*.mk', '*.c', '*.h', '*.py', '*.sh', '*.jpg', '*.gradle', '.gitkeep', 'gradlew*', '*.jar', '*.patch'])

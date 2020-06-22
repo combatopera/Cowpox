@@ -38,16 +38,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import etc
 from .android import TargetAndroid
 from .config import Config
 from .jsonstore import JsonStore
 from .dirs import Dirs
 from .src import Src
-from argparse import ArgumentParser
 from chromalog.log import ColorizingFormatter, ColorizingStreamHandler
 from diapyr import DI, types
 from lagoon import pipify, soak
 from pathlib import Path
+from pkg_resources import resource_filename
 import logging, os, shutil
 
 log = logging.getLogger(__name__)
@@ -67,20 +68,21 @@ def run(dirs, target, src):
     log.info('Package the application')
     return target.build_package()
 
-def _initlogging(logpath):
-    console = ColorizingStreamHandler()
-    console.setLevel(logging.INFO)
+def _initlogging():
+    logging.root.setLevel(logging.DEBUG)
     formatter = ColorizingFormatter("%(asctime)s [%(levelname)s] %(message)s")
-    for h in logging.FileHandler(logpath.pmkdirp()), console:
+    def addhandler(h):
         h.setFormatter(formatter)
         logging.root.addHandler(h)
-    logging.root.setLevel(logging.DEBUG)
+    console = ColorizingStreamHandler()
+    console.setLevel(logging.INFO)
+    addhandler(console)
+    return lambda logpath: addhandler(logging.FileHandler(logpath.pmkdirp()))
 
 def _main():
-    parser = ArgumentParser()
-    parser.add_argument('configpath')
-    config = Config.load(parser.parse_args().configpath).Seizure
-    _initlogging(Path(config.log.path))
+    setlogpath = _initlogging()
+    config = Config.load(resource_filename(etc.__name__, 'root.arid')).Seizure
+    setlogpath(Path(config.log.path))
     shutil.copytree('.', config.container.project, symlinks = True, dirs_exist_ok = True)
     workspace = Path(config.container.workspace)
     soak.print(cwd = workspace)
