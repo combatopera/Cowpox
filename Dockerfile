@@ -46,20 +46,22 @@ RUN apt-get update && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
     build-essential ccache cmake gettext adoptopenjdk-8-hotspot zip gradle && \
-    pip install --upgrade pip
+    pip install --upgrade pip && \
+    pip install pyven && \
+    echo /.pyven/ | tee ~/.gitignore_global && \
+    git config --global core.excludesfile ~/.gitignore_global
 # XXX: Can we bundle gradle deps?
 WORKDIR /Cowpox
-COPY setup.py requirements.txt ./
-RUN python setup.py egg_info && \
+COPY project.arid .
+RUN pipify && \
+    python setup.py egg_info && \
     pip install -r Cowpox.egg-info/requires.txt
 
-FROM base AS test
-RUN pip install pyflakes pytest
+FROM base
+COPY COPYING LICENSE.kivy .flakesignore ./
+RUN git init && rm setup.py && tests
 COPY . .
-RUN find -name '*.py' \
-    -not -wholename ./pythonforandroid/recipes/android/src/android/__init__.py \
-    -exec pyflakes '{}' + && \
-    pytest
+RUN tests
 
 FROM base
 COPY . .
