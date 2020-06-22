@@ -39,6 +39,8 @@
 # THE SOFTWARE.
 
 from .android import TargetAndroid
+from .config import Config
+from .dirs import Dirs
 from .jsonstore import JsonStore
 from diapyr import types
 from fnmatch import fnmatch
@@ -55,25 +57,6 @@ BOLD_SEQ = ''
 BLACK = colorama.Fore.BLACK + colorama.Style.BRIGHT
 RED = colorama.Fore.RED
 BLUE = colorama.Fore.CYAN
-
-class Dirs:
-
-    global_buildozer_dir = Path.home() / '.buildozer'
-    global_cache_dir = global_buildozer_dir / 'cache' # XXX: Used?
-    root_dir = Path.cwd()
-    buildozer_dir = root_dir / '.buildozer'
-    bin_dir = root_dir / 'bin'
-    applibs_dir = buildozer_dir / 'applibs'
-
-    @types(Config)
-    def __init__(self, config):
-        self.global_platform_dir = self.global_buildozer_dir / config.targetname / 'platform'
-        self.platform_dir = self.buildozer_dir / config.targetname / 'platform'
-        self.app_dir = self.buildozer_dir / config.targetname / 'app'
-
-    def install(self):
-        for path in self.global_cache_dir, self.bin_dir, self.applibs_dir, self.global_platform_dir, self.platform_dir, self.app_dir:
-            path.mkdir(parents = True, exist_ok = True)
 
 class Cmd:
 
