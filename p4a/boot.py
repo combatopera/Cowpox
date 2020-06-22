@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .recipe import Plugin
+from . import Plugin
 from diapyr import types
 from lagoon import cp, mv, rm, unzip
 from pathlib import Path

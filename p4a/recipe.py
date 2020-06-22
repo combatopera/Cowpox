@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import Plugin
 from diapyr import types
 from lagoon import cp, find, mv, patch as patchexe, rm, tar, touch, unzip
 from lagoon.program import Program
@@ -52,16 +53,6 @@ import hashlib, logging, os, subprocess
 log = logging.getLogger(__name__)
 
 class Context: pass
-
-class Plugin:
-
-    @property
-    def name(self):
-        fqmodule = self._fqmodulename()
-        return fqmodule[fqmodule.rfind('.') + 1:]
-
-    def _fqmodulename(self):
-        return type(self).__module__
 
 class Recipe(Plugin):
 
