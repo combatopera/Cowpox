@@ -72,7 +72,7 @@ ARG GROUP=bdgp
 ARG UID=7654
 ARG GID=3210
 RUN groupadd -g $GID $GROUP && useradd -g $GID -u $UID --create-home --shell /bin/bash $USER
-RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.gradle /mirror) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"'
+RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.gradle) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"'
 RUN { echo src = /src; echo extroot = /Cowpox; } | tee /image.arid
 USER $USER
 ENTRYPOINT ["Cowpox"]
