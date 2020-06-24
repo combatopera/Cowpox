@@ -51,6 +51,7 @@ from .mirror import Mirror
 from .platform import PlatformInfo
 from .src import Src
 from .util import findimpl, Logging
+from argparse import ArgumentParser
 from diapyr import DI, types
 from p4a import Context
 from pathlib import Path
@@ -72,7 +73,11 @@ def run(bootstrap, context, src, target, make):
 
 def _main():
     logging = Logging()
+    parser = ArgumentParser()
+    parser.add_argument('srcpath')
+    args = parser.parse_args()
     config = Config.blank()
+    config.container.src = args.srcpath
     config.load(resource_filename(etc.__name__, 'root.arid'))
     config = config.Cowpox
     logging.setpath(Path(config.log.path))

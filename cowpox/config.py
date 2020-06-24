@@ -52,6 +52,8 @@ class Config:
     def blank(cls):
         context = Context()
         context['githash',] = Function(_githash)
+        with Repl(context) as repl:
+            repl('container := $fork()') # TODO LATER: Bit of a hack.
         return cls(context, [])
 
     def __init__(self, context, prefix):
@@ -72,6 +74,12 @@ class Config:
             return obj.value # TODO: Does not work for all kinds of scalar.
         except AttributeError:
             return type(self)(self._context, path)
+
+    def __setattr__(self, name, value):
+        if name in {'_context', '_prefix'}:
+            super().__setattr__(name, value)
+        else:
+            self._context[tuple([*self._prefix, name])] = Text(value)
 
     def _localcontext(self):
         return self._context.resolved(*self._prefix)
