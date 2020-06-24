@@ -42,7 +42,7 @@
 SHELL = /bin/bash
 export BASH_ENV = bash_env
 
-TAG = cowpox
+TAG = combatopera/cowpox
 PREVIOUS = $(TAG):previous
 
 .PHONY: all
