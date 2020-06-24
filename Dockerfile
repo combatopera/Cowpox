@@ -58,7 +58,7 @@ RUN pipify && \
     pip install -r Cowpox.egg-info/requires.txt && \
     git init
 
-FROM base
+FROM base AS test
 COPY COPYING LICENSE.kivy .flakesignore ./
 RUN rm setup.py && tests
 COPY . .
