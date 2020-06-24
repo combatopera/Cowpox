@@ -75,7 +75,7 @@ class Mirror:
         if mirrorpath.exists():
             log.info("Already downloaded: %s", url)
         else:
-            partialpath = mirrorpath.with_name(f"{mirrorpath.name}.part")
+            partialpath = mirrorpath.with_name(f"{mirrorpath.name}.part").pmkdirp()
             attempts = 0
             while True:
                 try:
