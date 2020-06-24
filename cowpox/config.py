@@ -56,7 +56,7 @@ class Config:
 
     def load(self, path):
         with Repl(self._context) as repl:
-            repl.printf(f"""{''.join("%s " for _ in len(self._prefix))}. %s""", *self._prefix, path)
+            repl.printf(f"""{''.join("%s " for _ in self._prefix)}. %s""", *self._prefix, path)
 
     def __getattr__(self, name):
         path = [*self._prefix, name]
