@@ -72,7 +72,9 @@ def run(bootstrap, context, src, target, make):
 
 def _main():
     logging = Logging()
-    config = Config.load(resource_filename(etc.__name__, 'root.arid')).Cowpox
+    config = Config()
+    config.load(resource_filename(etc.__name__, 'root.arid'))
+    config = config.Cowpox
     logging.setpath(Path(config.log.path))
     with DI() as di:
         di.add(config)

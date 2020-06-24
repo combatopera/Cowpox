@@ -48,17 +48,15 @@ def _githash(context, pathresolvable):
 
 class Config:
 
-    @classmethod
-    def load(cls, path):
-        context = Context()
-        context['githash',] = Function(_githash)
-        with Repl(context) as repl:
-            repl.printf(". %s", path)
-        return cls(context, [])
+    _prefix = ()
 
-    def __init__(self, context, prefix):
-        self._context = context
-        self._prefix = prefix
+    def __init__(self):
+        self._context = Context()
+        self._context['githash',] = Function(_githash)
+
+    def load(self, path):
+        with Repl(self._context) as repl:
+            repl.printf(f"""{''.join("%s " for _ in len(self._prefix))}. %s""", *self._prefix, path)
 
     def __getattr__(self, name):
         path = [*self._prefix, name]
@@ -78,7 +76,7 @@ class Config:
         # TODO LATER: Should return Configs for non-scalars.
         return [o.value for _, o in self._localcontext().itero()]
 
-    def dict(self):
+    def dict(self): # XXX: Expose items instead?
         return {k: o.value for k, o in self._localcontext().itero()}
 
     def processtemplate(self, frompath, topath):
