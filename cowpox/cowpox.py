@@ -53,10 +53,11 @@ from .src import Src
 from .util import findimpl, Logging
 from argparse import ArgumentParser
 from diapyr import DI, types
+from lagoon import groupadd, useradd
 from p4a import Context
 from pathlib import Path
 from pkg_resources import resource_filename
-import logging
+import logging, os
 
 log = logging.getLogger(__name__)
 
@@ -71,13 +72,21 @@ def run(bootstrap, context, src, target, make):
     make(src.app_dir, src.copy_application_sources)
     return target.build_package()
 
+def _inituser(srcpath):
+    uid, gid = (getattr(s, n) for s in [srcpath.stat()] for n in ['st_uid', 'st_gid'])
+    groupadd.print('-g', gid, 'Cowpox')
+    useradd.__create_home.print('-g', gid, '-u', uid, '--shell', '/bin/bash', 'Cowpox')
+    os.setgid(gid)
+    os.setuid(uid)
+
 def _main():
     logging = Logging()
     parser = ArgumentParser()
-    parser.add_argument('srcpath')
+    parser.add_argument('srcpath', type = Path)
     args = parser.parse_args()
+    _inituser(args.srcpath)
     config = Config.blank()
-    config.puttext('container', 'src', text = args.srcpath)
+    config.puttext('container', 'src', text = str(args.srcpath))
     config.load(resource_filename(etc.__name__, 'root.arid'))
     config = config.Cowpox
     logging.setpath(Path(config.log.path))

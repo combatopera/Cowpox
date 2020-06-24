@@ -67,12 +67,5 @@ RUN tests
 FROM base
 COPY . .
 RUN pipify && pip install . && echo "extroot = $PWD" | tee /image.arid
-ARG USER=bdoz
-ARG GROUP=bdgp
-ARG UID=7654
-ARG GID=3210
-RUN groupadd -g $GID $GROUP && useradd -g $GID -u $UID --create-home --shell /bin/bash $USER
-RUN bash -c 'home=$(eval "echo ~$USER") && volumes=($home/.gradle) && mkdir -pv "${volumes[@]}" && chown -v $USER:$GROUP "${volumes[@]}"'
-USER $USER
 ENTRYPOINT ["Cowpox"]
 WORKDIR /workspace
