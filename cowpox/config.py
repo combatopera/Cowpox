@@ -48,11 +48,15 @@ def _githash(context, pathresolvable):
 
 class Config:
 
-    _prefix = ()
+    @classmethod
+    def blank(cls):
+        context = Context()
+        context['githash',] = Function(_githash)
+        return cls(context, [])
 
-    def __init__(self):
-        self._context = Context()
-        self._context['githash',] = Function(_githash)
+    def __init__(self, context, prefix):
+        self._context = context
+        self._prefix = prefix
 
     def load(self, path):
         with Repl(self._context) as repl:
