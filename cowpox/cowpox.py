@@ -77,7 +77,7 @@ def _main():
     parser.add_argument('srcpath')
     args = parser.parse_args()
     config = Config.blank()
-    config.container.src = args.srcpath
+    config.puttext('container', 'src', text = args.srcpath)
     config.load(resource_filename(etc.__name__, 'root.arid'))
     config = config.Cowpox
     logging.setpath(Path(config.log.path))
