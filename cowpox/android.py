@@ -67,7 +67,6 @@ class TargetAndroid:
         self.android_apptheme = config.android.apptheme
         self.version = config.version
         self.commit = config.commit
-        self.add_activity = config.android.add_activities.list()
         self.wakelock = config.android.wakelock
         self.launch_mode = config.android.manifest.launch_mode
         self.fullscreen = config.fullscreen
@@ -116,7 +115,6 @@ class TargetAndroid:
             yield 'android_entrypoint', self.android_entrypoint
             yield 'android_apptheme', self.android_apptheme
             yield 'permissions', list(self._permissions())
-            yield 'add_activity', self.add_activity
             yield 'icon', None if self.icon is None else self.projectdir / self.icon
             yield 'wakelock', True if self.wakelock else None
             yield 'intent_filters', None if self.intent_filters is None else self.projectdir / self.intent_filters

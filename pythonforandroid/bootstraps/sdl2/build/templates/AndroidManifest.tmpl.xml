@@ -81,9 +81,6 @@
         <service android:name="{{ args.package }}.Service{{ name|capitalize }}"
                  android:process=":service_{{ name }}" />
         {% endfor %}
-    {% for a in args.add_activity  %}
-    <activity android:name="{{ a }}"></activity>
-    {% endfor %}
     </application>
 
 </manifest>

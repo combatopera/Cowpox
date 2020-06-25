@@ -52,7 +52,6 @@ android
     permissions := $list()
     entrypoint = org.kivy.android.PythonActivity
     apptheme = @android:style/Theme.NoTitleBar
-    add_activities := $list()
     wakelock = false
     manifest
         launch_mode = singleTask
