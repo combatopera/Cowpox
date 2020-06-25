@@ -74,7 +74,6 @@ class TargetAndroid:
         self.services = config.services.list()
         self.projectdir = Path(config.container.src)
         self.icon = config.icon.filename
-        self.intent_filters = config.android.manifest.intent_filters
         self.presplash = config.presplash.filename
         self.apkdir = Path(config.apk.dir)
         self.dist_dir = Path(config.dist_dir)
@@ -117,7 +116,6 @@ class TargetAndroid:
             yield 'permissions', list(self._permissions())
             yield 'icon', None if self.icon is None else self.projectdir / self.icon
             yield 'wakelock', True if self.wakelock else None
-            yield 'intent_filters', None if self.intent_filters is None else self.projectdir / self.intent_filters
             yield 'activity_launch_mode', self.launch_mode
             if self.bootstrapname != 'service_only':
                 yield 'orientation', 'sensor' if self.orientation == 'all' else self.orientation

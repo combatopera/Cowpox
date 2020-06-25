@@ -53,9 +53,7 @@ android
     entrypoint = org.kivy.android.PythonActivity
     apptheme = @android:style/Theme.NoTitleBar
     wakelock = false
-    manifest
-        launch_mode = singleTask
-        intent_filters = $(None)
+    manifest launch_mode = singleTask
     presplash_color = #000000
 icon filename = $(None)
 presplash filename = $(None)

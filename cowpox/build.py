@@ -188,8 +188,6 @@ class APKMaker:
             default_presplash = distdir / 'templates' / 'kivy-presplash.jpg'
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
         args.numeric_version = self._numver(args) # TODO: Do not abuse args for this.
-        if args.intent_filters:
-            args.intent_filters = args.intent_filters.read_text()
         service_names = []
         for sid, spec in enumerate(args.services):
             name, entrypoint, *options = spec.split(':')

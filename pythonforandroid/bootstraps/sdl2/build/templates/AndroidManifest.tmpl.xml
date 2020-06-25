@@ -54,9 +54,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            {%- if args.intent_filters -%}
-            {{- args.intent_filters -}}
-            {%- endif -%}
         </activity>
         {% if service %}
         <service android:name="org.kivy.android.PythonService"
