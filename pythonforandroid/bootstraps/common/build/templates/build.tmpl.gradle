@@ -79,13 +79,6 @@ android {
         }
     }
     {%- endif %}
-    {% if args.packaging_options -%}
-    packagingOptions {
-        {%- for option in args.packaging_options %}
-        {{option}}
-        {%- endfor %}
-    }
-    {%- endif %}
     buildTypes {
         debug {
         }
