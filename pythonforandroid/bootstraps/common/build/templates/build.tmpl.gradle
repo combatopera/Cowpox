@@ -64,12 +64,12 @@ android {
     compileSdkVersion {{ android_api }}
     buildToolsVersion '{{ build_tools_version }}'
     defaultConfig {
-        minSdkVersion {{ args.min_sdk_version }}
+        minSdkVersion {{ min_sdk_version }}
         targetSdkVersion {{ android_api }}
-        versionCode {{ args.numeric_version }}
-        versionName '{{ args.version }}'
+        versionCode {{ numeric_version }}
+        versionName '{{ version }}'
     }
-    {% if args.sign -%}
+    {% if sign -%}
     signingConfigs {
         release {
             storeFile file(System.getenv("P4A_RELEASE_KEYSTORE"))
@@ -83,7 +83,7 @@ android {
         debug {
         }
         release {
-            {% if args.sign -%}
+            {% if sign -%}
             signingConfig signingConfigs.release
             {%- endif %}
         }

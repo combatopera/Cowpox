@@ -221,7 +221,10 @@ class APKMaker:
         render(
             'build.tmpl.gradle',
             distdir / 'build.gradle',
-            args = args,
+            min_sdk_version = args.min_sdk_version,
+            numeric_version = args.numeric_version,
+            version = args.version,
+            sign = args.sign,
             android_api = self.android_api,
             build_tools_version = self.platform.build_tools_version(),
         )
