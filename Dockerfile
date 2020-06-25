@@ -44,13 +44,11 @@ RUN apt-get update && \
     wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - && \
     add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ && \
     apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-    build-essential ccache cmake gettext adoptopenjdk-8-hotspot zip gradle && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends adoptopenjdk-8-hotspot build-essential ccache cmake gettext gradle zip && \
     pip install --upgrade pip && \
     pip install pyven && \
     echo /.pyven/ | tee ~/.gitignore_global && \
     git config --global core.excludesfile ~/.gitignore_global
-# XXX: Can we bundle gradle deps?
 WORKDIR /Cowpox
 COPY project.arid .
 RUN pipify && \
