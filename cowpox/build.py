@@ -222,8 +222,6 @@ class APKMaker:
             'build.tmpl.gradle',
             distdir / 'build.gradle',
             args = args,
-            aars = [],
-            jars = [],
             android_api = self.android_api,
             build_tools_version = self.platform.build_tools_version(),
         )
