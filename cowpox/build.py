@@ -225,6 +225,10 @@ class APKMaker:
             numeric_version = args.numeric_version,
             version = args.version,
             sign = args.sign,
+            P4A_RELEASE_KEYSTORE = os.environ.get('P4A_RELEASE_KEYSTORE'),
+            P4A_RELEASE_KEYALIAS = os.environ.get('P4A_RELEASE_KEYALIAS'),
+            P4A_RELEASE_KEYSTORE_PASSWD = os.environ.get('P4A_RELEASE_KEYSTORE_PASSWD'),
+            P4A_RELEASE_KEYALIAS_PASSWD = os.environ.get('P4A_RELEASE_KEYALIAS_PASSWD'),
             android_api = self.android_api,
             build_tools_version = self.platform.build_tools_version(),
         )
