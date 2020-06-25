@@ -189,19 +189,6 @@ class APKMaker:
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
         args.numeric_version = self._numver(args) # TODO: Do not abuse args for this.
         service_names = []
-        for sid, spec in enumerate(args.services):
-            name, entrypoint, *options = spec.split(':')
-            service_names.append(name)
-            render(
-                'Service.tmpl.java',
-                distdir / 'src' / 'main' / 'java' / args.package.replace('.', os.sep) / f"Service{name.capitalize()}.java",
-                name = name,
-                entrypoint = entrypoint,
-                args = args,
-                foreground = 'foreground' in options,
-                sticky = 'sticky' in options,
-                service_id = 1 + sid,
-            )
         url_scheme = 'kivy'
         render_args = {
             "args": args,
