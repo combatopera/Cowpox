@@ -53,7 +53,6 @@ android
     meta_data := $fork()
     entrypoint = org.kivy.android.PythonActivity
     apptheme = @android:style/Theme.NoTitleBar
-    add_gradle_repositories := $list()
     add_packaging_options := $list()
     add_activities := $list()
     wakelock = false

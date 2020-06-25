@@ -68,7 +68,6 @@ class TargetAndroid:
         self.android_apptheme = config.android.apptheme
         self.version = config.version
         self.commit = config.commit
-        self.gradle_repositories = config.android.add_gradle_repositories.list()
         self.packaging_options = config.android.add_packaging_options.list()
         self.add_activity = config.android.add_activities.list()
         self.wakelock = config.android.wakelock
@@ -120,7 +119,6 @@ class TargetAndroid:
             yield 'android_entrypoint', self.android_entrypoint
             yield 'android_apptheme', self.android_apptheme
             yield 'permissions', list(self._permissions())
-            yield 'gradle_repositories', self.gradle_repositories
             yield 'packaging_options', self.packaging_options
             yield 'meta_data', ['='.join(korv.strip() for korv in item) for item in self.meta_data.items()]
             yield 'add_activity', self.add_activity
