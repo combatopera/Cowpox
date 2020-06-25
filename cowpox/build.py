@@ -188,12 +188,10 @@ class APKMaker:
             default_presplash = distdir / 'templates' / 'kivy-presplash.jpg'
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
         args.numeric_version = self._numver(args) # TODO: Do not abuse args for this.
-        service_names = []
         url_scheme = 'kivy'
         render_args = {
             "args": args,
             "service": any((self.app_dir / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
-            "service_names": service_names,
             "android_api": self.android_api,
         }
         if self.bootstrapname == 'sdl2':

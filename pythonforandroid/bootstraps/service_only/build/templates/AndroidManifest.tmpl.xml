@@ -52,11 +52,6 @@
                  android:process=":pythonservice" 
                  android:exported="true"/>
         {% endif %}
-        {% for name in service_names %}
-        <service android:name="{{ args.package }}.Service{{ name|capitalize }}"
-                 android:process=":service_{{ name }}"
-                 android:exported="true" />
-        {% endfor %}
     </application>
 
 </manifest>
