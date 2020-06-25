@@ -62,7 +62,6 @@ class TargetAndroid:
         self.p4a_whitelist = config.android.whitelist.list()
         self.permissions = config.android.permissions.list()
         self.orientation = config.orientation
-        self.meta_data = config.android.meta_data.dict()
         self.title = config.title
         self.android_entrypoint = config.android.entrypoint
         self.android_apptheme = config.android.apptheme
@@ -117,7 +116,6 @@ class TargetAndroid:
             yield 'android_entrypoint', self.android_entrypoint
             yield 'android_apptheme', self.android_apptheme
             yield 'permissions', list(self._permissions())
-            yield 'meta_data', ['='.join(korv.strip() for korv in item) for item in self.meta_data.items()]
             yield 'add_activity', self.add_activity
             yield 'icon', None if self.icon is None else self.projectdir / self.icon
             yield 'wakelock', True if self.wakelock else None

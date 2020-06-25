@@ -50,7 +50,6 @@ android
     ndk_api = $(minapi)
     whitelist := $list()
     permissions := $list()
-    meta_data := $fork()
     entrypoint = org.kivy.android.PythonActivity
     apptheme = @android:style/Theme.NoTitleBar
     add_activities := $list()
