@@ -74,7 +74,6 @@ class TargetAndroid:
         self.fullscreen = config.fullscreen
         self.presplash_color = config.android.presplash_color
         self.services = config.services.list()
-        self.android_used_libs = config.android.uses_library.list()
         self.projectdir = Path(config.container.src)
         self.icon = config.icon.filename
         self.intent_filters = config.android.manifest.intent_filters
@@ -131,7 +130,6 @@ class TargetAndroid:
                 yield 'presplash_color', self.presplash_color
             yield 'sign', True if self.releasemode and self._check_p4a_sign_env(True) else None
             yield 'services', self.services
-            yield 'android_used_libs', self.android_used_libs
             if self.bootstrapname == 'webview':
                 yield 'port', '5000'
         self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())))
