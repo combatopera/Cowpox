@@ -73,7 +73,7 @@ def run(bootstrap, context, src, target, make):
     return target.build_package()
 
 def _inituser(srcpath):
-    uid, gid = (getattr(s, n) for s in [srcpath.stat()] for n in ['st_uid', 'st_gid'])
+    uid, gid = (x for s in [srcpath.stat()] for x in [s.st_uid, s.st_gid])
     groupadd.print('-g', gid, 'Cowpox')
     useradd.__create_home.print('-g', gid, '-u', uid, '--shell', '/bin/bash', 'Cowpox')
     os.setgid(gid)
