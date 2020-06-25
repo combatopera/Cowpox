@@ -78,6 +78,7 @@ def _inituser(srcpath):
     useradd.__create_home.print('-g', gid, '-u', uid, '--shell', '/bin/bash', 'Cowpox')
     os.setgid(gid)
     os.setuid(uid)
+    del os.environ['HOME'] # XXX: Why is it set in the first place?
 
 def _main():
     logging = Logging()
