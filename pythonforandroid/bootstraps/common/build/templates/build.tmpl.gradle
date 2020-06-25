@@ -101,9 +101,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
-        {%- for option in args.compile_options %}
-        {{option}}
-        {%- endfor %}
     }
     sourceSets {
         main {
