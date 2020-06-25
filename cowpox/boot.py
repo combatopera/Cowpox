@@ -102,7 +102,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     def distlibs(self):
         shutil.copytree(self.build_dir, self.dist_dir)
         p = Properties()
-        p['sdk.dir'] = self.sdk_dir
+        p['sdk.dir'] = self.sdk_dir # Required by gradle build.
         with (self.dist_dir / 'local.properties').open('wb') as f:
             p.store(f)
         log.info("Bootstrap running with arch %s", self.arch.name)
