@@ -63,7 +63,6 @@ android
         intent_filters = $(None)
     presplash_color = #000000
     uses_library := $list()
-    gradle_dependencies := $list()
 icon filename = $(None)
 presplash filename = $(None)
 p4a bootstrap = sdl2

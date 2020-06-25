@@ -118,11 +118,3 @@ android {
     }
 
 }
-
-dependencies {
-    {%- if args.depends -%}
-    {%- for depend in args.depends %}
-    compile '{{ depend }}'
-    {%- endfor %}
-    {%- endif %}
-}
