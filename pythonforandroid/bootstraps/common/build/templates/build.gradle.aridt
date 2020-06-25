@@ -61,31 +61,27 @@ allprojects {
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion {{ android_api }}
-    buildToolsVersion '{{ build_tools_version }}'
+    compileSdkVersion $(android_api)
+    buildToolsVersion $"$(build_tools_version)
     defaultConfig {
-        minSdkVersion {{ min_sdk_version }}
-        targetSdkVersion {{ android_api }}
-        versionCode {{ numeric_version }}
-        versionName '{{ version }}'
-    }
-    {% if sign -%}
+        minSdkVersion $(min_sdk_version)
+        targetSdkVersion $(android_api)
+        versionCode $(numeric_version)
+        versionName $"$(version)
+    }$try[$.[
     signingConfigs {
-        release {
-            storeFile file('{{ P4A_RELEASE_KEYSTORE }}')
-            keyAlias '{{ P4A_RELEASE_KEYALIAS }}'
-            storePassword '{{ P4A_RELEASE_KEYSTORE_PASSWD }}'
-            keyPassword '{{ P4A_RELEASE_KEYALIAS_PASSWD }}'
+        $(signingConfig) {
+            storeFile file($"$(P4A_RELEASE_KEYSTORE))
+            keyAlias $"$(P4A_RELEASE_KEYALIAS)
+            storePassword $"$(P4A_RELEASE_KEYSTORE_PASSWD)
+            keyPassword $"$(P4A_RELEASE_KEYALIAS_PASSWD)
         }
-    }
-    {%- endif %}
+    }] $.()]
     buildTypes {
         debug {
         }
-        release {
-            {% if sign -%}
-            signingConfig signingConfigs.release
-            {%- endif %}
+        release {$try[$.(
+            signingConfig signingConfigs.$(signingConfig)) $.()]
         }
     }
     compileOptions {

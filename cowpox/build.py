@@ -218,20 +218,22 @@ class APKMaker:
             self.dist_dir / 'src' / 'main' / 'AndroidManifest.xml',
             **render_args,
         )
-        render(
-            'build.tmpl.gradle',
-            distdir / 'build.gradle',
-            min_sdk_version = args.min_sdk_version,
-            numeric_version = args.numeric_version,
-            version = args.version,
-            sign = args.sign,
-            P4A_RELEASE_KEYSTORE = os.environ.get('P4A_RELEASE_KEYSTORE'),
-            P4A_RELEASE_KEYALIAS = os.environ.get('P4A_RELEASE_KEYALIAS'),
-            P4A_RELEASE_KEYSTORE_PASSWD = os.environ.get('P4A_RELEASE_KEYSTORE_PASSWD'),
-            P4A_RELEASE_KEYALIAS_PASSWD = os.environ.get('P4A_RELEASE_KEYALIAS_PASSWD'),
-            android_api = self.android_api,
-            build_tools_version = self.platform.build_tools_version(),
-        )
+        c = aridity.Context()
+        with Repl(c) as repl:
+            repl('" = $(groovystr)')
+            repl.printf("android_api = %s", self.android_api)
+            repl.printf("build_tools_version = %s", self.platform.build_tools_version())
+            repl.printf("min_sdk_version = %s", args.min_sdk_version)
+            repl.printf("numeric_version = %s", args.numeric_version)
+            repl.printf("version = %s", args.version)
+            if args.sign:
+                repl('signingConfig = release')
+                repl.printf("P4A_RELEASE_KEYSTORE = %s", os.environ['P4A_RELEASE_KEYSTORE']) # TODO: Get from config instead.
+                repl.printf("P4A_RELEASE_KEYALIAS = %s", os.environ['P4A_RELEASE_KEYALIAS'])
+                repl.printf("P4A_RELEASE_KEYSTORE_PASSWD = %s", os.environ['P4A_RELEASE_KEYSTORE_PASSWD'])
+                repl.printf("P4A_RELEASE_KEYALIAS_PASSWD = %s", os.environ['P4A_RELEASE_KEYALIAS_PASSWD'])
+            repl.printf("redirect %s", distdir / 'build.gradle')
+            repl.printf("< %s", self.dist_dir / 'templates' / 'build.gradle.aridt')
         c = aridity.Context()
         c['"',] = Function(_xmlquote)
         with Repl(c) as repl:
