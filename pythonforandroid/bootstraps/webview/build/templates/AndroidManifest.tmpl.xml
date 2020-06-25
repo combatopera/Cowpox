@@ -74,19 +74,6 @@
         <service android:name="{{ args.package }}.Service{{ name|capitalize }}"
                  android:process=":service_{{ name }}" />
         {% endfor %}
-
-        {% if args.billing_pubkey %}
-        <service android:name="org.kivy.android.billing.BillingReceiver"
-                 android:process=":pythonbilling" />
-        <receiver android:name="org.kivy.android.billing.BillingReceiver"
-                  android:process=":pythonbillingreceiver">
-            <intent-filter>
-                <action android:name="com.android.vending.billing.IN_APP_NOTIFY" />
-                <action android:name="com.android.vending.billing.RESPONSE_CODE" />
-                <action android:name="com.android.vending.billing.PURCHASE_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
-        {% endif %}
     </application>
 
 </manifest>
