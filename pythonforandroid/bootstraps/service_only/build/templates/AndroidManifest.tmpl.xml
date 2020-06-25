@@ -20,11 +20,7 @@
 
     <!-- Set permissions -->
     {% for perm in args.permissions %}
-    {% if '.' in perm %}
     <uses-permission android:name="{{ perm }}" />
-    {% else %}
-    <uses-permission android:name="android.permission.{{ perm }}" />
-    {% endif %}
     {% endfor %}
 
     {% if args.wakelock %}
