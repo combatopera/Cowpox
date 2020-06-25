@@ -191,7 +191,6 @@ class APKMaker:
         url_scheme = 'kivy'
         render_args = {
             "args": args,
-            "service": any((self.app_dir / 'service' / name).exists() for name in ['main.py', 'main.pyo']),
             "android_api": self.android_api,
         }
         if self.bootstrapname == 'sdl2':

@@ -46,12 +46,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        {% if service %}
-        <service android:name="org.kivy.android.PythonService"
-                 android:process=":pythonservice" 
-                 android:exported="true"/>
-        {% endif %}
     </application>
 
 </manifest>
