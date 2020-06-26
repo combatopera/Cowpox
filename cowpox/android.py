@@ -101,6 +101,8 @@ class TargetAndroid:
             words = permission.split('.')
             words[-1] = words[-1].upper() # TODO: Require correct format instead of cleaning.
             yield '.'.join(words)
+        if self.wakelock:
+            yield 'android.permission.WAKE_LOCK'
 
     def build_package(self):
         self._update_libraries_references()

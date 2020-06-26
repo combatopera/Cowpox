@@ -21,10 +21,6 @@
     {% for perm in args.permissions %}
     <uses-permission android:name="{{ perm }}" />
     {% endfor %}
-
-    {% if args.wakelock %}
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    {% endif %}
     <application android:label="@string/app_name"
                  android:icon="@drawable/icon"
                  android:allowBackup="true"
