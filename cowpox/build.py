@@ -199,13 +199,14 @@ class APKMaker:
             'AndroidManifest.tmpl.xml',
             self.dist_dir / 'src' / 'main' / 'AndroidManifest.xml',
             **render_args,
+            xlargeScreens = 'true' if self.min_sdk_version >= 9 else 'false',
         )
         c = aridity.Context()
         with Repl(c) as repl:
             repl('" = $(groovystr)')
             repl.printf("android_api = %s", self.android_api)
             repl.printf("build_tools_version = %s", self.platform.build_tools_version())
-            repl.printf("min_sdk_version = %s", args.min_sdk_version)
+            repl.printf("min_sdk_version = %s", self.min_sdk_version)
             repl.printf("numeric_version = %s", args.numeric_version)
             repl.printf("version = %s", args.version)
             if args.sign:

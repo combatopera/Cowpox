@@ -10,9 +10,7 @@
             android:normalScreens="true"
             android:largeScreens="true"
             android:anyDensity="true"
-            {% if args.min_sdk_version >= 9 %}
-            android:xlargeScreens="true"
-            {% endif %}
+            android:xlargeScreens="{{xlargeScreens}}"
     />
 
     <!-- Android 2.3.3 -->
