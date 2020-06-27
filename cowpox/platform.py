@@ -65,12 +65,11 @@ class PlatformInfo:
         self.mirror = mirror
         self.make = make
 
-    def configure(self, di):
+    def install(self):
         self.make(self.platformname)
         self.make(self.sdk_dir, self._install_android_sdk)
         self.make(self.android_ndk_version)
         self.make(self.ndk_dir, self._install_android_ndk)
-        di.add(Platform)
 
     def _install_android_sdk(self):
         log.info('Android SDK is missing, downloading')
@@ -114,6 +113,12 @@ class PlatformInfo:
         rootdir.rmdir()
         log.info('Android NDK installation done.')
 
+class PlatformInstall: pass
+
+@types(PlatformInfo, this = PlatformInstall)
+def installplatform(info):
+    info.install()
+
 class Platform:
 
     MIN_NDK_VERSION = 19
@@ -124,8 +129,8 @@ class Platform:
         minor = version[1]
         return f"{version[0]}{chr(ord('a') + minor) if minor else ''}"
 
-    @types(Config)
-    def __init__(self, config):
+    @types(Config, PlatformInstall)
+    def __init__(self, config, _):
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
         self.ndk_api = config.android.ndk_api

@@ -48,7 +48,7 @@ from .context import ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
 from .graph import GraphInfoImpl
 from .make import Make
 from .mirror import Mirror
-from .platform import PlatformInfo
+from .platform import installplatform, Platform, PlatformInfo
 from .src import Src
 from .util import findimpl, Logging
 from argparse import ArgumentParser
@@ -103,15 +103,16 @@ def _main():
         di.add(GraphImpl)
         di.add(GraphInfoImpl)
         di.add(GraphProxy)
+        di.add(installplatform)
         di.add(Make)
         di.add(Mirror)
         di.add(PipInstallRecipe)
+        di.add(Platform)
         di.add(PlatformInfo)
         di.add(Src)
         di.add(TargetAndroid)
         di.add(run)
         di(GraphInfoImpl).configure(di)
-        di(PlatformInfo).configure(di)
         return di(Result)
 
 def main_Cowpox():
