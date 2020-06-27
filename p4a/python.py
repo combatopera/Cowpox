@@ -143,14 +143,6 @@ class GuestPythonRecipe(Recipe):
 
     opt_depends = ['sqlite3', 'libffi', 'openssl']
     '''The optional libraries which we would like to get our python linked'''
-
-    compiled_extension = '.pyc'
-    '''the default extension for compiled python files.
-
-    .. note:: the default extension for compiled python files has been .pyo for
-        python 2.x-3.4 but as of Python 3.5, the .pyo filename extension is no
-        longer used and has been removed in favour of extension .pyc
-    '''
     zlibversionpattern = re.compile('^#define ZLIB_VERSION "(.+)"$', re.MULTILINE)
 
     @types(Config, HostPythonRecipe)
@@ -258,8 +250,7 @@ class GuestPythonRecipe(Recipe):
         self._compile_python_files(dirn / self.get_build_dir() / 'Lib')
         self._compile_python_files(dirn / self.python_install_dir)
         modules_dir = (dirn / 'modules').mkdirp()
-        c_ext = self.compiled_extension
-        module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob(f"*{c_ext}")]
+        module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # XXX: Not recursive?
         log.info("Copy %s files into the bundle", len(module_filens))
         for filen in module_filens:
             log.info(" - copy %s", filen)
