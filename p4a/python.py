@@ -253,7 +253,7 @@ class GuestPythonRecipe(Recipe):
         module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # XXX: Not recursive?
         log.info("Copy %s files into the bundle", len(module_filens))
         for filen in module_filens:
-            log.info(" - copy %s", filen)
+            log.debug(" - copy %s", filen)
             copy2(filen, modules_dir)
         stdlib_zip = dirn / 'stdlib.zip'
         libdir = self.get_build_dir() / 'Lib'
@@ -265,7 +265,7 @@ class GuestPythonRecipe(Recipe):
         filens = list(_walk_valid_filens(installdir, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
         log.info("Copy %s files into the site-packages", len(filens))
         for filen in filens:
-            log.info(" - copy %s", filen)
+            log.debug(" - copy %s", filen)
             copy2(filen, (dirn / 'site-packages' / filen.relative_to(installdir)).pmkdirp())
         python_lib_name = f"libpython{self.majminversion}"
         if self.majversion == 3:
