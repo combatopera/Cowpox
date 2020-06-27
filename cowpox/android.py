@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .build import APKMaker
 from .config import Config
 from .platform import Platform
 from aridimpl.model import Function, Text
