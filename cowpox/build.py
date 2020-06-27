@@ -181,7 +181,7 @@ class APKMaker:
         if self.bootstrapname != 'service_only':
             default_presplash = self.dist_dir / 'templates' / 'kivy-presplash.jpg'
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
-        args.numeric_version = self._numver(args) # TODO: Do not abuse args for this.
+        numeric_version = self._numver(args)
         url_scheme = 'kivy'
         configChanges = []
         if self.bootstrapname != 'service_only':
@@ -209,7 +209,7 @@ class APKMaker:
                 repl.printf("orientation = %s", args.orientation)
             repl.printf("xlargeScreens = %s", 'true' if self.min_sdk_version >= 9 else 'false')
             repl.printf("package = %s", args.package)
-            repl.printf("versionCode = %s", args.numeric_version)
+            repl.printf("versionCode = %s", numeric_version)
             repl.printf("versionName = %s", args.version)
             repl.printf("minSdkVersion = %s", args.min_sdk_version)
             for p in args.permissions:
@@ -226,7 +226,7 @@ class APKMaker:
             repl.printf("android_api = %s", self.android_api)
             repl.printf("build_tools_version = %s", self.platform.build_tools_version())
             repl.printf("min_sdk_version = %s", self.min_sdk_version)
-            repl.printf("numeric_version = %s", args.numeric_version)
+            repl.printf("numeric_version = %s", numeric_version)
             repl.printf("version = %s", args.version)
             if args.sign:
                 repl('signingConfig = release')
