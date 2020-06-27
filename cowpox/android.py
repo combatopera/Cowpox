@@ -108,7 +108,6 @@ class TargetAndroid:
             yield 'package', self.fqpackage
             yield 'android_apptheme', self.android_apptheme
             yield 'permissions', list(self._permissions())
-            yield 'wakelock', True if self.wakelock else None
             if self.bootstrapname != 'service_only':
                 yield 'orientation', 'sensor' if self.orientation == 'all' else self.orientation
                 yield 'window', not self.fullscreen

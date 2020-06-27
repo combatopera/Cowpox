@@ -139,6 +139,7 @@ class APKMaker:
         self.sdl2_launchMode = config.sdl2.launchMode
         self.sdl2_activity_name = config.sdl2.activity.name
         self.icon_path = config.icon.full.path
+        self.wakelock = config.android.wakelock
         self.graph = graph
         self.arch = arch
         self.platform = platform
@@ -220,7 +221,7 @@ class APKMaker:
             for p in args.permissions:
                 repl.printf("permissions += %s", p)
             repl.printf("theme = %s", f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}")
-            repl.printf("wakelock = %s", int(bool(args.wakelock)))
+            repl.printf("wakelock = %s", int(self.wakelock))
             repl.printf("android_api = %s", self.android_api)
             repl.printf("configChanges = %s", '|'.join(configChanges))
             repl.printf("redirect %s", self.dist_dir / 'src' / 'main' / 'AndroidManifest.xml')
