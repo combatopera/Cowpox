@@ -39,10 +39,9 @@
 # THE SOFTWARE.
 
 from . import etc
-from .android import TargetAndroid
+from .android import APKMaker, AssetArchive, TargetAndroid
 from .arch import all_archs
 from .boot import Bootstrap
-from .build import APKMaker, AssetArchive
 from .config import Config
 from .context import ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
 from .graph import GraphInfoImpl
