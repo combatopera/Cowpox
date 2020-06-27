@@ -56,7 +56,6 @@ class TargetAndroid:
         self.arch = config.android.arch
         self.dist_name = config.package.name
         self.bootstrapname = config.p4a.bootstrap
-        self.fqpackage = config.package.fq
         self.releasemode = 'debug' != config.build_mode
         self.p4a_whitelist = config.android.whitelist.list()
         self.title = config.title
@@ -88,7 +87,6 @@ class TargetAndroid:
         self._update_libraries_references()
         self._generate_whitelist()
         def downstreamargs():
-            yield 'package', self.fqpackage
             yield 'sign', True if self.releasemode and self._check_p4a_sign_env(True) else None
         self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())))
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.dist_dir)

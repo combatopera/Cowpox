@@ -145,6 +145,7 @@ class APKMaker:
         self.android_apptheme = config.android.apptheme
         self.fullscreen = config.fullscreen
         self.orientation = config.orientation
+        self.fqpackage = config.package.fq
         self.graph = graph
         self.arch = arch
         self.platform = platform
@@ -217,7 +218,7 @@ class APKMaker:
             if self.bootstrapname != 'service_only':
                 repl.printf("orientation = %s", self.orientation)
             repl.printf("xlargeScreens = %s", 'true' if self.min_sdk_version >= 9 else 'false')
-            repl.printf("package = %s", args.package)
+            repl.printf("package = %s", self.fqpackage)
             repl.printf("versionCode = %s", numeric_version)
             repl.printf("versionName = %s", self.version)
             repl.printf("minSdkVersion = %s", self.min_sdk_version)
