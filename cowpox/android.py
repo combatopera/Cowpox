@@ -62,7 +62,6 @@ class TargetAndroid:
         self.title = config.title
         self.version = config.version
         self.commit = config.commit
-        self.presplash_color = config.android.presplash_color
         self.apkdir = Path(config.apk.dir)
         self.dist_dir = Path(config.dist_dir)
         self.gradleenv = dict(ANDROID_NDK_HOME = config.android_ndk_dir, ANDROID_HOME = config.android_sdk_dir)
@@ -91,8 +90,6 @@ class TargetAndroid:
         def downstreamargs():
             yield 'name', self.title
             yield 'package', self.fqpackage
-            if self.bootstrapname != 'service_only':
-                yield 'presplash_color', self.presplash_color
             yield 'sign', True if self.releasemode and self._check_p4a_sign_env(True) else None
         self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())))
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.dist_dir)
