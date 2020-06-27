@@ -146,19 +146,18 @@ class APKMaker:
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
     def makeapkversion(self, args):
-        distdir = self.dist_dir
         blacklist = Blacklist(self.bootstrapname)
         if self.ndk_api != self.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
-        with (distdir / 'blacklist.txt').open() as f:
+        with (self.dist_dir / 'blacklist.txt').open() as f:
             blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-        with (distdir / 'whitelist.txt').open() as f:
+        with (self.dist_dir / 'whitelist.txt').open() as f:
             blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
-        assets_dir = (distdir / 'src' / 'main' / 'assets').mkdirp()
+        assets_dir = (self.dist_dir / 'src' / 'main' / 'assets').mkdirp()
         for p in (assets_dir / n for n in ['public.mp3', 'private.mp3']):
             if p.exists():
                 p.unlink()
@@ -170,17 +169,17 @@ class APKMaker:
                     print(f"P4A_ORIENTATION={args.orientation}", file = f)
                 print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
             tar_dirs = [env_vars_tarpath, self.app_dir]
-            for python_bundle_dir in (distdir / n for n in ['private', '_python_bundle']):
+            for python_bundle_dir in (self.dist_dir / n for n in ['private', '_python_bundle']):
                 if python_bundle_dir.exists():
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
-                tar_dirs.append(distdir / 'webview_includes')
+                tar_dirs.append(self.dist_dir / 'webview_includes')
             _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.graph.host_recipe.python_exe)
-        res_dir = distdir / 'src' / 'main' / 'res'
-        default_icon = distdir / 'templates' / 'kivy-icon.png'
+        res_dir = self.dist_dir / 'src' / 'main' / 'res'
+        default_icon = self.dist_dir / 'templates' / 'kivy-icon.png'
         shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
         if self.bootstrapname != 'service_only':
-            default_presplash = distdir / 'templates' / 'kivy-presplash.jpg'
+            default_presplash = self.dist_dir / 'templates' / 'kivy-presplash.jpg'
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
         args.numeric_version = self._numver(args) # TODO: Do not abuse args for this.
         url_scheme = 'kivy'
@@ -235,7 +234,7 @@ class APKMaker:
                 repl.printf("P4A_RELEASE_KEYALIAS = %s", os.environ['P4A_RELEASE_KEYALIAS'])
                 repl.printf("P4A_RELEASE_KEYSTORE_PASSWD = %s", os.environ['P4A_RELEASE_KEYSTORE_PASSWD'])
                 repl.printf("P4A_RELEASE_KEYALIAS_PASSWD = %s", os.environ['P4A_RELEASE_KEYALIAS_PASSWD'])
-            repl.printf("redirect %s", distdir / 'build.gradle')
+            repl.printf("redirect %s", self.dist_dir / 'build.gradle')
             repl.printf("< %s", self.dist_dir / 'templates' / 'build.gradle.aridt')
         c = aridity.Context()
         c['&',] = Function(_xmltext)
@@ -250,15 +249,15 @@ class APKMaker:
             c = aridity.Context()
             with Repl(c) as repl:
                 repl.printf("port = %s", args.port)
-                repl.printf("redirect %s", (distdir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android').mkdirp() / 'WebViewLoader.java')
+                repl.printf("redirect %s", (self.dist_dir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android').mkdirp() / 'WebViewLoader.java')
                 repl.printf("< %s", self.dist_dir / 'templates' / 'WebViewLoader.tmpl.java')
-        src_patches = distdir / 'src' / 'patches'
+        src_patches = self.dist_dir / 'src' / 'patches'
         if src_patches.exists():
             log.info("Applying Java source code patches...")
             for patch_path in src_patches.iterdir():
                 log.info("Applying patch: %s", patch_path)
                 try:
-                    patch._N._p1._t._i.print(patch_path, cwd = distdir)
+                    patch._N._p1._t._i.print(patch_path, cwd = self.dist_dir)
                 except subprocess.CalledProcessError as e:
                     if e.returncode != 1:
                         raise e
