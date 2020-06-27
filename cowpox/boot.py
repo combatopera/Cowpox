@@ -94,13 +94,13 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     def prepare_dirs(self):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files(self.bootstrapsdir / 'common' / 'build', self.build_dir, False)
-        p = Properties()
-        p['target'] = f"android-{self.android_api}"
-        with (self.build_dir / 'project.properties').open('wb') as f:
-            p.store(f)
 
     def distlibs(self):
         shutil.copytree(self.build_dir, self.android_project_dir)
+        p = Properties()
+        p['target'] = f"android-{self.android_api}"
+        with (self.android_project_dir / 'project.properties').open('wb') as f:
+            p.store(f)
         p = Properties()
         p['sdk.dir'] = self.sdk_dir # Required by gradle build.
         with (self.android_project_dir / 'local.properties').open('wb') as f:
