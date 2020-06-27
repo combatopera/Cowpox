@@ -55,6 +55,17 @@ import aridity, logging, os, shutil, subprocess, tarfile, time
 
 log = logging.getLogger(__name__)
 
+def _check_p4a_sign_env(error):
+    keys = ["KEYALIAS", "KEYSTORE_PASSWD", "KEYSTORE", "KEYALIAS_PASSWD"]
+    check = True
+    for key in keys:
+        key = "P4A_RELEASE_{}".format(key)
+        if key not in os.environ:
+            if error:
+                log.error("Asking for release but %s is missing--sign will not be passed", key)
+            check = False
+    return check
+
 class Assembly:
 
     @types(Config, AndroidProject)
@@ -69,26 +80,14 @@ class Assembly:
         self.gradleenv = dict(ANDROID_NDK_HOME = config.android_ndk_dir, ANDROID_HOME = config.android_sdk_dir)
         self.androidproject = androidproject
 
-    @staticmethod
-    def _check_p4a_sign_env(error):
-        keys = ["KEYALIAS", "KEYSTORE_PASSWD", "KEYSTORE", "KEYALIAS_PASSWD"]
-        check = True
-        for key in keys:
-            key = "P4A_RELEASE_{}".format(key)
-            if key not in os.environ:
-                if error:
-                    log.error("Asking for release but %s is missing--sign will not be passed", key)
-                check = False
-        return check
-
     def build_package(self):
-        self.androidproject.prepare(self.releasemode and self._check_p4a_sign_env(True))
+        self.androidproject.prepare(self.releasemode and _check_p4a_sign_env(True))
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.android_project_dir)
         if not self.releasemode:
             mode_sign = mode = 'debug'
         else:
             mode_sign = 'release'
-            mode = 'release' if self._check_p4a_sign_env(False) else 'release-unsigned'
+            mode = 'release' if _check_p4a_sign_env(False) else 'release-unsigned'
         apkpath = self.apkdir / f"{self.dist_name}-{self.version}-{self.commit}-{self.arch}-{mode}.apk"
         shutil.copyfile(self.android_project_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{self.android_project_dir.name}-{mode}.apk", apkpath)
         log.info('Android packaging done!')
