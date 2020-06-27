@@ -140,6 +140,7 @@ class APKMaker:
         self.sdl2_activity_name = config.sdl2.activity.name
         self.icon_path = config.icon.full.path
         self.wakelock = config.android.wakelock
+        self.permissions = config.android.permissions.list()
         self.graph = graph
         self.arch = arch
         self.platform = platform
@@ -218,8 +219,10 @@ class APKMaker:
             repl.printf("versionName = %s", self.version)
             repl.printf("minSdkVersion = %s", self.min_sdk_version)
             repl('permissions := $list()')
-            for p in args.permissions:
+            for p in self.permissions:
                 repl.printf("permissions += %s", p)
+            if self.wakelock:
+                repl('permissions += android.permission.WAKE_LOCK')
             repl.printf("theme = %s", f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}")
             repl.printf("wakelock = %s", int(self.wakelock))
             repl.printf("android_api = %s", self.android_api)

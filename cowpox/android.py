@@ -59,13 +59,11 @@ class TargetAndroid:
         self.fqpackage = config.package.fq
         self.releasemode = 'debug' != config.build_mode
         self.p4a_whitelist = config.android.whitelist.list()
-        self.permissions = config.android.permissions.list()
         self.orientation = config.orientation
         self.title = config.title
         self.android_apptheme = config.android.apptheme
         self.version = config.version
         self.commit = config.commit
-        self.wakelock = config.android.wakelock
         self.fullscreen = config.fullscreen
         self.presplash_color = config.android.presplash_color
         self.projectdir = Path(config.container.src)
@@ -92,14 +90,6 @@ class TargetAndroid:
             for entry in self.p4a_whitelist:
                 print(entry, file = f)
 
-    def _permissions(self):
-        for permission in self.permissions:
-            words = permission.split('.')
-            words[-1] = words[-1].upper() # TODO: Require correct format instead of cleaning.
-            yield '.'.join(words)
-        if self.wakelock:
-            yield 'android.permission.WAKE_LOCK'
-
     def build_package(self):
         self._update_libraries_references()
         self._generate_whitelist()
@@ -107,7 +97,6 @@ class TargetAndroid:
             yield 'name', self.title
             yield 'package', self.fqpackage
             yield 'android_apptheme', self.android_apptheme
-            yield 'permissions', list(self._permissions())
             if self.bootstrapname != 'service_only':
                 yield 'orientation', 'sensor' if self.orientation == 'all' else self.orientation
                 yield 'window', not self.fullscreen
