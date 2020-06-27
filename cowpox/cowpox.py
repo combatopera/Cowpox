@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from . import etc
-from .android import AndroidProject, Assembly, AssetArchive, prepareandroidproject
+from .android import AndroidProject, APKPath, Assembly, AssetArchive, BulkOK, getapkpath, prepareandroidproject
 from .arch import all_archs
 from .boot import Bootstrap
 from .config import Config
@@ -60,16 +60,13 @@ import logging, os
 
 log = logging.getLogger(__name__)
 
-class Result: pass
-
-@types(Bootstrap, ContextImpl, Src, Assembly, Make, this = Result)
-def run(bootstrap, context, src, assembly, make):
+@types(Bootstrap, ContextImpl, Src, Make, this = BulkOK)
+def bulk(bootstrap, context, src, make):
     bootstrap.prepare_dirs()
     context.build_recipes()
     context.build_nonrecipes()
     make(bootstrap.android_project_dir, bootstrap.run_distribute)
     make(src.app_dir, src.copy_application_sources)
-    return assembly.build_package()
 
 def _inituser(srcpath):
     uid, gid = (x for s in [srcpath.stat()] for x in [s.st_uid, s.st_gid])
@@ -96,10 +93,12 @@ def _main():
         di.add(AndroidProject)
         di.add(Assembly)
         di.add(AssetArchive)
+        di.add(bulk)
         di.add(config)
         di.add(Context)
         di.add(ContextImpl)
         di.add(di)
+        di.add(getapkpath)
         di.add(GraphImpl)
         di.add(GraphInfoImpl)
         di.add(GraphProxy)
@@ -110,14 +109,13 @@ def _main():
         di.add(Platform)
         di.add(PlatformInfo)
         di.add(prepareandroidproject)
-        di.add(run)
         di.add(Src)
         di(GraphInfoImpl).configure(di)
-        return di(Result)
+        return di(APKPath)
 
 def main_Cowpox():
     try:
-        log.info("Result: %s", _main())
+        log.info("APK path: %s", _main())
     except:
         log.exception('Abort:')
         raise

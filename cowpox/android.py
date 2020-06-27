@@ -66,6 +66,8 @@ def _check_p4a_sign_env(error):
             check = False
     return check
 
+class APKPath: pass
+
 class AndroidProjectOK: pass
 
 class Assembly:
@@ -92,6 +94,10 @@ class Assembly:
         shutil.copyfile(self.android_project_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{self.android_project_dir.name}-{mode}.apk", apkpath)
         log.info('Android packaging done!')
         return apkpath
+
+@types(Assembly, AndroidProjectOK, this = APKPath)
+def getapkpath(assembly, _):
+    return assembly.build_package()
 
 class AssetArchive:
 
@@ -330,6 +336,8 @@ class AndroidProject:
                         raise e
                     log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
 
-@types(AndroidProject, this = AndroidProjectOK)
-def prepareandroidproject(project):
+class BulkOK: pass
+
+@types(AndroidProject, BulkOK, this = AndroidProjectOK)
+def prepareandroidproject(project, _):
     project.prepare()
