@@ -56,3 +56,4 @@ requires +=
 resource types +=
     patch
     mk
+    txt
