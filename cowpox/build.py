@@ -133,10 +133,13 @@ class APKMaker:
 
     @types(Config, Graph, Arch, Platform)
     def __init__(self, config, graph, arch, platform):
-        self.app_dir = Path(config.app_dir)
         self.ndk_api = config.android.ndk_api
-        self.android_api = config.android.api
         self.min_sdk_version = config.android.minapi
+        if self.ndk_api != self.min_sdk_version:
+            log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
+            raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
+        self.app_dir = Path(config.app_dir)
+        self.android_api = config.android.api
         self.title = config.title
         self.presplash_color = config.android.presplash_color
         self.bootstrapname = config.p4a.bootstrap
@@ -167,9 +170,6 @@ class APKMaker:
 
     def makeapkversion(self, sign):
         archive = AssetArchive(self.bootstrapname)
-        if self.ndk_api != self.min_sdk_version:
-            log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
-            raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
         archive.update(self.android_project_dir)
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
