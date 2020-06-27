@@ -60,7 +60,10 @@ icon
     full path = $/($(container src) $(icon path))
     default path = $/($(dist_dir) templates kivy-icon.png)
     path = $(default path)
-presplash filename = $(None)
+presplash
+    full path = $/($(container src) $(presplash path))
+    default path = $/($(dist_dir) templates kivy-presplash.jpg)
+    path = $(default path)
 p4a bootstrap = sdl2
 requirements +=
     python3

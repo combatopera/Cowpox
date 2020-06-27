@@ -64,7 +64,6 @@ class TargetAndroid:
         self.commit = config.commit
         self.presplash_color = config.android.presplash_color
         self.projectdir = Path(config.container.src)
-        self.presplash = config.presplash.filename
         self.apkdir = Path(config.apk.dir)
         self.dist_dir = Path(config.dist_dir)
         self.gradleenv = dict(ANDROID_NDK_HOME = config.android_ndk_dir, ANDROID_HOME = config.android_sdk_dir)
@@ -94,7 +93,6 @@ class TargetAndroid:
             yield 'name', self.title
             yield 'package', self.fqpackage
             if self.bootstrapname != 'service_only':
-                yield 'presplash', None if self.presplash is None else self.projectdir / self.presplash
                 yield 'presplash_color', self.presplash_color
             yield 'sign', True if self.releasemode and self._check_p4a_sign_env(True) else None
         self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())))

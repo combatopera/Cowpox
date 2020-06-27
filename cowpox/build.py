@@ -139,6 +139,7 @@ class APKMaker:
         self.sdl2_launchMode = config.sdl2.launchMode
         self.sdl2_activity_name = config.sdl2.activity.name
         self.icon_path = config.icon.full.path
+        self.presplash_path = config.presplash.full.path
         self.wakelock = config.android.wakelock
         self.permissions = config.android.permissions.list()
         self.android_apptheme = config.android.apptheme
@@ -188,8 +189,7 @@ class APKMaker:
         res_dir = self.dist_dir / 'src' / 'main' / 'res'
         shutil.copy(self.icon_path, res_dir / 'drawable' / 'icon.png')
         if self.bootstrapname != 'service_only':
-            default_presplash = self.dist_dir / 'templates' / 'kivy-presplash.jpg'
-            shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
+            shutil.copy(self.presplash_path, res_dir / 'drawable' / 'presplash.jpg')
         numeric_version = self._numver()
         url_scheme = 'kivy'
         configChanges = []
