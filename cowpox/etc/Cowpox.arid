@@ -56,6 +56,7 @@ android
     project
         dir = $/($(storage_dir) dists $(package name)__$(android arch))
         assets dir = $/($(project dir) src main assets)
+        res dir = $/($(project dir) src main res)
 sdl2
     launchMode = singleTask
     activity name = org.kivy.android.PythonActivity

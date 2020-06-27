@@ -145,7 +145,7 @@ class APKMaker:
         self.android_api = config.android.api
         self.title = config.title
         self.presplash_color = config.android.presplash_color
-        self.bootstrapname = config.p4a.bootstrap
+        self.bootstrapname = config.p4a.bootstrap # TODO: Use polymorphism.
         self.android_project_dir = Path(config.android.project.dir)
         self.version = config.version
         self.webview_port = config.webview.port
@@ -159,6 +159,7 @@ class APKMaker:
         self.fullscreen = config.fullscreen
         self.orientation = config.orientation
         self.fqpackage = config.package.fq
+        self.res_dir = Path(config.android.project.res.dir)
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
@@ -188,10 +189,9 @@ class APKMaker:
             if self.bootstrapname == 'webview':
                 tar_dirs.append(self.android_project_dir / 'webview_includes')
             self.assetarchive.makeprivate(tar_dirs)
-        res_dir = self.android_project_dir / 'src' / 'main' / 'res'
-        shutil.copy(self.icon_path, res_dir / 'drawable' / 'icon.png')
+        shutil.copy(self.icon_path, self.res_dir / 'drawable' / 'icon.png')
         if self.bootstrapname != 'service_only':
-            shutil.copy(self.presplash_path, res_dir / 'drawable' / 'presplash.jpg')
+            shutil.copy(self.presplash_path, self.res_dir / 'drawable' / 'presplash.jpg')
         numeric_version = self._numver()
         url_scheme = 'kivy'
         configChanges = []
@@ -257,7 +257,7 @@ class APKMaker:
             repl.printf("private_version = %s", time.time()) # XXX: Must we use time?
             repl.printf("presplash_color = %s", self.presplash_color)
             repl.printf("urlScheme = %s", url_scheme)
-            repl.printf("redirect %s", (res_dir / 'values' / 'strings.xml').pmkdirp())
+            repl.printf("redirect %s", (self.res_dir / 'values' / 'strings.xml').pmkdirp())
             repl.printf("< %s", self.android_project_dir / 'templates' / 'strings.xml.aridt')
         if self.bootstrapname == 'webview':
             c = aridity.Context()
