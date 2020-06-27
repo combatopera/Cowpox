@@ -151,13 +151,13 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             log.debug("  to %s", temp_dir)
             unzip._o.print(aar, '-d', temp_dir)
             jar_src = Path(temp_dir, 'classes.jar')
-            jar_tgt = (self.build_dir / 'libs').mkdirp() / jar_name
+            jar_tgt = (self.android_project_dir / 'libs').mkdirp() / jar_name
             log.debug("copy %s jar", name)
             log.debug("  from %s", jar_src)
             log.debug("  to %s", jar_tgt)
             cp._a.print(jar_src, jar_tgt)
             so_src_dir = Path(temp_dir, 'jni', self.arch.name)
-            so_tgt_dir = (self.build_dir / 'libs' / self.arch.name).mkdirp()
+            so_tgt_dir = (self.android_project_dir / 'libs' / self.arch.name).mkdirp()
             log.debug("copy %s .so", name)
             log.debug("  from %s", so_src_dir)
             log.debug("  to %s", so_tgt_dir)
