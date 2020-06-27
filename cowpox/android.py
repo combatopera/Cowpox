@@ -59,7 +59,6 @@ class TargetAndroid:
         self.fqpackage = config.package.fq
         self.releasemode = 'debug' != config.build_mode
         self.p4a_whitelist = config.android.whitelist.list()
-        self.orientation = config.orientation
         self.title = config.title
         self.version = config.version
         self.commit = config.commit
@@ -95,7 +94,6 @@ class TargetAndroid:
             yield 'name', self.title
             yield 'package', self.fqpackage
             if self.bootstrapname != 'service_only':
-                yield 'orientation', 'sensor' if self.orientation == 'all' else self.orientation
                 yield 'presplash', None if self.presplash is None else self.projectdir / self.presplash
                 yield 'presplash_color', self.presplash_color
             yield 'sign', True if self.releasemode and self._check_p4a_sign_env(True) else None

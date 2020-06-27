@@ -143,6 +143,7 @@ class APKMaker:
         self.permissions = config.android.permissions.list()
         self.android_apptheme = config.android.apptheme
         self.fullscreen = config.fullscreen
+        self.orientation = config.orientation
         self.graph = graph
         self.arch = arch
         self.platform = platform
@@ -175,7 +176,7 @@ class APKMaker:
             with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:
                 if self.bootstrapname != 'service_only':
                     print(f"P4A_IS_WINDOWED={not self.fullscreen}", file = f)
-                    print(f"P4A_ORIENTATION={args.orientation}", file = f)
+                    print(f"P4A_ORIENTATION={self.orientation}", file = f)
                 print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
             tar_dirs = [env_vars_tarpath, self.app_dir]
             for python_bundle_dir in (self.dist_dir / n for n in ['private', '_python_bundle']):
@@ -214,7 +215,7 @@ class APKMaker:
                 repl.printf("launchMode = %s", self.sdl2_launchMode)
                 repl.printf("activity name = %s", self.sdl2_activity_name)
             if self.bootstrapname != 'service_only':
-                repl.printf("orientation = %s", args.orientation)
+                repl.printf("orientation = %s", self.orientation)
             repl.printf("xlargeScreens = %s", 'true' if self.min_sdk_version >= 9 else 'false')
             repl.printf("package = %s", args.package)
             repl.printf("versionCode = %s", numeric_version)
