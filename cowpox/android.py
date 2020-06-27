@@ -82,7 +82,6 @@ class Assembly:
         return check
 
     def build_package(self):
-        self._update_libraries_references()
         self.androidproject.prepare(self.releasemode and self._check_p4a_sign_env(True))
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.android_project_dir)
         if not self.releasemode:
@@ -94,17 +93,6 @@ class Assembly:
         shutil.copyfile(self.android_project_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{self.android_project_dir.name}-{mode}.apk", apkpath)
         log.info('Android packaging done!')
         return apkpath
-
-    def _update_libraries_references(self):
-        p = Properties()
-        project_fn = self.android_project_dir / 'project.properties'
-        with project_fn.open('rb') as f:
-            p.load(f)
-        for key in [k for k in p if k.startswith('android.library.reference.')]:
-            del p[key]
-        with project_fn.open('wb') as f:
-            p.store(f)
-        log.debug('project.properties updated')
 
 class AssetArchive:
 
@@ -224,7 +212,19 @@ class AndroidProject:
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
+    def _update_libraries_references(self):
+        p = Properties()
+        project_fn = self.android_project_dir / 'project.properties'
+        with project_fn.open('rb') as f:
+            p.load(f)
+        for key in [k for k in p if k.startswith('android.library.reference.')]:
+            del p[key]
+        with project_fn.open('wb') as f:
+            p.store(f)
+        log.debug('project.properties updated')
+
     def prepare(self, sign):
+        self._update_libraries_references()
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
