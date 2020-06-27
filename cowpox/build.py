@@ -48,6 +48,7 @@ from lagoon import patch
 from lagoon.program import Program
 from p4a import Arch, Graph, GraphInfo
 from pathlib import Path
+from pkg_resources import resource_string
 from tempfile import TemporaryDirectory
 import aridity, logging, os, shutil, subprocess, tarfile, time
 
@@ -69,8 +70,8 @@ class AssetArchive:
             '*.bak',
             '*.swp',
             '*.py',
-        ]
-        if 'sqlite3' not in graphinfo.recipenames:
+        ] + resource_string(__name__, 'blacklist.txt').decode().splitlines()
+        if config.p4a.bootstrap in {'webview', 'service_only'} or 'sqlite3' not in graphinfo.recipenames:
             self.BLACKLIST_PATTERNS += ['sqlite3/*', 'lib-dynload/_sqlite3.so']
         self.graph = graph
 

@@ -1,17 +1,8 @@
-# prevent user to include invalid extensions
 *.apk
 *.pxd
-
-# eggs
 *.egg-info
-
-# unit test
 unittest/*
-
-# python config
 config/makesetup
-
-# unused kivy files (platform specific)
 kivy/input/providers/wm_*
 kivy/input/providers/mactouch*
 kivy/input/providers/probesysfs*
@@ -24,8 +15,6 @@ kivy/tools
 kivy/tests/*
 kivy/*/*.h
 kivy/*/*.pxi
-
-# unused encodings
 lib-dynload/*codec*
 encodings/cp*.pyo
 encodings/tis*
@@ -44,8 +33,6 @@ encodings/gb*
 encodings/big5*
 encodings/hp*
 encodings/hz*
-
-# unused python modules
 bsddb/*
 wsgiref/*
 hotshot/*
@@ -64,8 +51,6 @@ __phello__.foo.pyo
 sunaudio.pyo
 os2emxpath.pyo
 multiprocessing/dummy*
-
-# unused binaries python modules
 lib-dynload/termios.so
 lib-dynload/_lsprof.so
 lib-dynload/*audioop.so
@@ -77,6 +62,4 @@ lib-dynload/resource.so
 lib-dynload/pyexpat.so
 lib-dynload/_ctypes_test.so
 lib-dynload/_testcapi.so
-
-# odd files
 plat-linux3/regen
