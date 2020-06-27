@@ -191,10 +191,11 @@ class APKMaker:
         url_scheme = 'kivy'
         render_args = {
             "args": args,
-            "android_api": self.android_api,
         }
         if self.bootstrapname == 'sdl2':
             render_args["url_scheme"] = url_scheme
+        if self.bootstrapname != 'service_only':
+            render_args['orientation'] = args.orientation
         render(
             'AndroidManifest.tmpl.xml',
             self.dist_dir / 'src' / 'main' / 'AndroidManifest.xml',
@@ -207,6 +208,7 @@ class APKMaker:
             permissions = args.permissions,
             theme = f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}",
             wakelock = int(bool(args.wakelock)),
+            android_api = self.android_api,
         )
         c = aridity.Context()
         with Repl(c) as repl:
