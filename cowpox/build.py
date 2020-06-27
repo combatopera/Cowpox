@@ -226,7 +226,7 @@ class APKMaker:
             repl.printf("android_api = %s", self.android_api)
             repl.printf("build_tools_version = %s", self.platform.build_tools_version())
             repl.printf("min_sdk_version = %s", self.min_sdk_version)
-            repl.printf("numeric_version = %s", numeric_version)
+            repl.printf("versionCode = %s", numeric_version)
             repl.printf("version = %s", args.version)
             if args.sign:
                 repl('signingConfig = release')
