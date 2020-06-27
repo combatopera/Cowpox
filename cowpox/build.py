@@ -122,7 +122,7 @@ def _make_tar(tfn, source_dirs, blacklist, hostpython):
                         tf.addfile(tinfo)
             tf.add(fn, afn)
 
-def _xmlquote(context, resolvable):
+def _xmltext(context, resolvable):
     from xml.sax.saxutils import escape
     return Text(escape(resolvable.resolve(context).cat())) # FIXME LATER: Insufficient for attributes.
 
@@ -242,7 +242,7 @@ class APKMaker:
             repl.printf("redirect %s", distdir / 'build.gradle')
             repl.printf("< %s", self.dist_dir / 'templates' / 'build.gradle.aridt')
         c = aridity.Context()
-        c['"',] = Function(_xmlquote)
+        c['&',] = Function(_xmltext)
         with Repl(c) as repl:
             repl.printf("app_name = %s", self.title)
             repl.printf("private_version = %s", time.time()) # XXX: Must we use time?
