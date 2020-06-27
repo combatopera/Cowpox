@@ -68,7 +68,7 @@ class AssetArchive:
         ]
         self.WHITELIST_PATTERNS = ['pyconfig.h'] if bootstrapname in {'sdl2', 'webview', 'service_only'} else []
 
-    def has(self, name):
+    def _has(self, name):
         def match_filename(pattern_list):
             for pattern in pattern_list:
                 if pattern.startswith('^'):
@@ -79,6 +79,31 @@ class AssetArchive:
                     return True
         return not match_filename(self.WHITELIST_PATTERNS) and match_filename(self.BLACKLIST_PATTERNS)
 
+    def maketar(self, tfn, source_dirs, hostpython):
+        files = []
+        compileall = Program.text(hostpython)._OO._m.compileall._b._f
+        for sd in source_dirs:
+            sd = sd.resolve()
+            for path in sd.rglob('*.py'):
+                os.utime(path, (0, 0)) # Determinism.
+            compileall.print(sd)
+            files.extend([x, x.resolve().relative_to(sd)] for x in _listfiles(sd) if not self._has(x))
+        with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
+            dirs = set()
+            for fn, afn in files:
+                dn = afn.parent
+                if dn not in dirs:
+                    d = Path('.')
+                    for component in dn.parent, dn.name:
+                        d /= component
+                        if d != Path('.') and d not in dirs:
+                            dirs.add(d)
+                            tinfo = tarfile.TarInfo(str(d))
+                            tinfo.type = tarfile.DIRTYPE
+                            tinfo.mode |= 0o111
+                            tf.addfile(tinfo)
+                tf.add(fn, afn)
+
 def _listfiles(d):
     subdirlist = []
     for fn in d.iterdir():
@@ -88,31 +113,6 @@ def _listfiles(d):
             subdirlist.append(fn)
     for subdir in subdirlist:
         yield from _listfiles(subdir)
-
-def _make_tar(tfn, source_dirs, archive, hostpython):
-    files = []
-    compileall = Program.text(hostpython)._OO._m.compileall._b._f
-    for sd in source_dirs:
-        sd = sd.resolve()
-        for path in sd.rglob('*.py'):
-            os.utime(path, (0, 0)) # Determinism.
-        compileall.print(sd)
-        files.extend([x, x.resolve().relative_to(sd)] for x in _listfiles(sd) if not archive.has(x))
-    with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
-        dirs = set()
-        for fn, afn in files:
-            dn = afn.parent
-            if dn not in dirs:
-                d = Path('.')
-                for component in dn.parent, dn.name:
-                    d /= component
-                    if d != Path('.') and d not in dirs:
-                        dirs.add(d)
-                        tinfo = tarfile.TarInfo(str(d))
-                        tinfo.type = tarfile.DIRTYPE
-                        tinfo.mode |= 0o111
-                        tf.addfile(tinfo)
-            tf.add(fn, afn)
 
 def _xmltext(context, resolvable):
     from xml.sax.saxutils import escape
@@ -186,7 +186,7 @@ class APKMaker:
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
                 tar_dirs.append(self.android_project_dir / 'webview_includes')
-            _make_tar(assets_dir / 'private.mp3', tar_dirs, archive, self.graph.host_recipe.python_exe)
+            archive.maketar(assets_dir / 'private.mp3', tar_dirs, self.graph.host_recipe.python_exe)
         res_dir = self.android_project_dir / 'src' / 'main' / 'res'
         shutil.copy(self.icon_path, res_dir / 'drawable' / 'icon.png')
         if self.bootstrapname != 'service_only':
