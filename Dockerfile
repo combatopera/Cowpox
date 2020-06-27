@@ -64,6 +64,6 @@ RUN tests
 
 FROM base
 COPY . .
-RUN pipify && pip install . && echo "extroot = $PWD" | tee /image.arid
+RUN pipify && pip install . && echo "extroot = $PWD" | tee /etc/settings.arid
 ENTRYPOINT ["Cowpox"]
 WORKDIR /workspace
