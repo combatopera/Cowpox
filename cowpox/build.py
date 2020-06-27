@@ -133,7 +133,7 @@ class APKMaker:
         self.title = config.title
         self.presplash_color = config.android.presplash_color
         self.bootstrapname = config.p4a.bootstrap
-        self.dist_dir = Path(config.android.project.dir)
+        self.android_project_dir = Path(config.android.project.dir)
         self.version = config.version
         self.webview_port = config.webview.port
         self.sdl2_launchMode = config.sdl2.launchMode
@@ -162,14 +162,14 @@ class APKMaker:
         if self.ndk_api != self.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
-        with (self.dist_dir / 'blacklist.txt').open() as f:
+        with (self.android_project_dir / 'blacklist.txt').open() as f:
             blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-        with (self.dist_dir / 'whitelist.txt').open() as f:
+        with (self.android_project_dir / 'whitelist.txt').open() as f:
             blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
-        assets_dir = (self.dist_dir / 'src' / 'main' / 'assets').mkdirp()
+        assets_dir = (self.android_project_dir / 'src' / 'main' / 'assets').mkdirp()
         for p in (assets_dir / n for n in ['public.mp3', 'private.mp3']):
             if p.exists():
                 p.unlink()
@@ -181,13 +181,13 @@ class APKMaker:
                     print(f"P4A_ORIENTATION={self.orientation}", file = f)
                 print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
             tar_dirs = [env_vars_tarpath, self.app_dir]
-            for python_bundle_dir in (self.dist_dir / n for n in ['private', '_python_bundle']):
+            for python_bundle_dir in (self.android_project_dir / n for n in ['private', '_python_bundle']):
                 if python_bundle_dir.exists():
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
-                tar_dirs.append(self.dist_dir / 'webview_includes')
+                tar_dirs.append(self.android_project_dir / 'webview_includes')
             _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.graph.host_recipe.python_exe)
-        res_dir = self.dist_dir / 'src' / 'main' / 'res'
+        res_dir = self.android_project_dir / 'src' / 'main' / 'res'
         shutil.copy(self.icon_path, res_dir / 'drawable' / 'icon.png')
         if self.bootstrapname != 'service_only':
             shutil.copy(self.presplash_path, res_dir / 'drawable' / 'presplash.jpg')
@@ -231,8 +231,8 @@ class APKMaker:
             repl.printf("wakelock = %s", int(self.wakelock))
             repl.printf("android_api = %s", self.android_api)
             repl.printf("configChanges = %s", '|'.join(configChanges))
-            repl.printf("redirect %s", self.dist_dir / 'src' / 'main' / 'AndroidManifest.xml')
-            repl.printf("< %s", self.dist_dir / 'templates' / 'AndroidManifest.xml.aridt')
+            repl.printf("redirect %s", self.android_project_dir / 'src' / 'main' / 'AndroidManifest.xml')
+            repl.printf("< %s", self.android_project_dir / 'templates' / 'AndroidManifest.xml.aridt')
         c = aridity.Context()
         with Repl(c) as repl:
             repl('" = $(groovystr)')
@@ -247,8 +247,8 @@ class APKMaker:
                 repl.printf("P4A_RELEASE_KEYALIAS = %s", os.environ['P4A_RELEASE_KEYALIAS'])
                 repl.printf("P4A_RELEASE_KEYSTORE_PASSWD = %s", os.environ['P4A_RELEASE_KEYSTORE_PASSWD'])
                 repl.printf("P4A_RELEASE_KEYALIAS_PASSWD = %s", os.environ['P4A_RELEASE_KEYALIAS_PASSWD'])
-            repl.printf("redirect %s", self.dist_dir / 'build.gradle')
-            repl.printf("< %s", self.dist_dir / 'templates' / 'build.gradle.aridt')
+            repl.printf("redirect %s", self.android_project_dir / 'build.gradle')
+            repl.printf("< %s", self.android_project_dir / 'templates' / 'build.gradle.aridt')
         c = aridity.Context()
         c['&',] = Function(_xmltext)
         with Repl(c) as repl:
@@ -257,20 +257,20 @@ class APKMaker:
             repl.printf("presplash_color = %s", self.presplash_color)
             repl.printf("urlScheme = %s", url_scheme)
             repl.printf("redirect %s", (res_dir / 'values' / 'strings.xml').pmkdirp())
-            repl.printf("< %s", self.dist_dir / 'templates' / 'strings.xml.aridt')
+            repl.printf("< %s", self.android_project_dir / 'templates' / 'strings.xml.aridt')
         if self.bootstrapname == 'webview':
             c = aridity.Context()
             with Repl(c) as repl:
                 repl.printf("port = %s", self.webview_port)
-                repl.printf("redirect %s", (self.dist_dir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android').mkdirp() / 'WebViewLoader.java')
-                repl.printf("< %s", self.dist_dir / 'templates' / 'WebViewLoader.tmpl.java')
-        src_patches = self.dist_dir / 'src' / 'patches'
+                repl.printf("redirect %s", (self.android_project_dir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android').mkdirp() / 'WebViewLoader.java')
+                repl.printf("< %s", self.android_project_dir / 'templates' / 'WebViewLoader.tmpl.java')
+        src_patches = self.android_project_dir / 'src' / 'patches'
         if src_patches.exists():
             log.info("Applying Java source code patches...")
             for patch_path in src_patches.iterdir():
                 log.info("Applying patch: %s", patch_path)
                 try:
-                    patch._N._p1._t._i.print(patch_path, cwd = self.dist_dir)
+                    patch._N._p1._t._i.print(patch_path, cwd = self.android_project_dir)
                 except subprocess.CalledProcessError as e:
                     if e.returncode != 1:
                         raise e

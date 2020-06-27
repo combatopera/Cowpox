@@ -157,7 +157,7 @@ class GuestPythonRecipe(Recipe):
     def __init(self, config, hostrecipe):
         self.python_install_dir = Path(config.python_install_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
-        self.dist_dir = Path(config.android.project.dir)
+        self.android_project_dir = Path(config.android.project.dir)
         self.ndk_api = config.android.ndk_api
         parts = LooseVersion(self.version).version
         self.majversion = parts[0]
@@ -252,7 +252,7 @@ class GuestPythonRecipe(Recipe):
         Program.text(self.hostrecipe.python_exe)._OO._m.compileall.print(*args, '-f', dirpath, check = False) # XXX: Why not check?
 
     def create_python_bundle(self):
-        dirn = (self.dist_dir / '_python_bundle' / '_python_bundle').mkdirp()
+        dirn = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.get_build_dir() / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
         self._compile_python_files(dirn / modules_build_dir)
         self._compile_python_files(dirn / self.get_build_dir() / 'Lib')
@@ -279,7 +279,7 @@ class GuestPythonRecipe(Recipe):
         python_lib_name = f"libpython{self.majminversion}"
         if self.majversion == 3:
             python_lib_name += 'm'
-        cp.print(self.get_build_dir() / 'android-build' / f"{python_lib_name}.so", self.dist_dir / 'libs' / self.arch.name)
+        cp.print(self.get_build_dir() / 'android-build' / f"{python_lib_name}.so", self.android_project_dir / 'libs' / self.arch.name)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(dirn / 'site-packages')
         return dirn / 'site-packages'
