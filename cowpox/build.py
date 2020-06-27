@@ -194,6 +194,7 @@ class APKMaker:
         }
         if self.bootstrapname == 'sdl2':
             render_args["url_scheme"] = url_scheme
+            render_args['launchMode'] = args.activity_launch_mode
         if self.bootstrapname != 'service_only':
             render_args['orientation'] = args.orientation
         configChanges = []

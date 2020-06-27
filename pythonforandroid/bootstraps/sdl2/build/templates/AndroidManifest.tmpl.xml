@@ -37,7 +37,7 @@
                   android:label="@string/app_name"
                   android:configChanges="{{configChanges}}"
                   android:screenOrientation="{{ orientation }}"
-                  android:launchMode="{{ args.activity_launch_mode }}"
+                  android:launchMode="{{ launchMode }}"
                   >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
