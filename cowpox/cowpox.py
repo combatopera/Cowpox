@@ -42,7 +42,7 @@ from . import etc
 from .android import TargetAndroid
 from .arch import all_archs
 from .boot import Bootstrap
-from .build import APKMaker
+from .build import APKMaker, AssetArchive
 from .config import Config
 from .context import ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
 from .graph import GraphInfoImpl
@@ -97,6 +97,7 @@ def _main():
         di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap))
         di.add(di)
         di.add(APKMaker)
+        di.add(AssetArchive)
         di.add(Context)
         di.add(ContextImpl)
         di.add(GraphImpl)

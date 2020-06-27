@@ -55,9 +55,10 @@ log = logging.getLogger(__name__)
 
 class AssetArchive:
 
-    def __init__(self, bootstrapname, whitelist, graphinfo):
-        self.WHITELIST_PATTERNS = ['pyconfig.h'] if bootstrapname in {'sdl2', 'webview', 'service_only'} else []
-        self.WHITELIST_PATTERNS.extend(whitelist)
+    @types(Config, GraphInfo)
+    def __init__(self, config, graphinfo):
+        self.WHITELIST_PATTERNS = ['pyconfig.h'] if config.p4a.bootstrap in {'sdl2', 'webview', 'service_only'} else []
+        self.WHITELIST_PATTERNS.extend(config.android.whitelist.list())
         self.BLACKLIST_PATTERNS = [
             '^*.hg/*',
             '^*.git/*',
@@ -131,8 +132,8 @@ def _xmlattr(context, resolvable):
 
 class APKMaker:
 
-    @types(Config, Graph, Arch, Platform, GraphInfo)
-    def __init__(self, config, graph, arch, platform, graphinfo):
+    @types(Config, Graph, Arch, Platform, AssetArchive)
+    def __init__(self, config, graph, arch, platform, assetarchive):
         self.ndk_api = config.android.ndk_api
         self.min_sdk_version = config.android.minapi
         if self.ndk_api != self.min_sdk_version:
@@ -157,11 +158,10 @@ class APKMaker:
         self.fullscreen = config.fullscreen
         self.orientation = config.orientation
         self.fqpackage = config.package.fq
-        self.p4a_whitelist = config.android.whitelist.list()
         self.graph = graph
         self.arch = arch
         self.platform = platform
-        self.graphinfo = graphinfo
+        self.assetarchive = assetarchive
 
     def _numver(self):
         version_code = 0
@@ -171,7 +171,6 @@ class APKMaker:
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
     def makeapkversion(self, sign):
-        archive = AssetArchive(self.bootstrapname, self.p4a_whitelist, self.graphinfo)
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
@@ -188,7 +187,7 @@ class APKMaker:
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
                 tar_dirs.append(self.android_project_dir / 'webview_includes')
-            archive.makeprivate(self.assets_dir, tar_dirs, self.graph.host_recipe.python_exe)
+            self.assetarchive.makeprivate(self.assets_dir, tar_dirs, self.graph.host_recipe.python_exe)
         res_dir = self.android_project_dir / 'src' / 'main' / 'res'
         shutil.copy(self.icon_path, res_dir / 'drawable' / 'icon.png')
         if self.bootstrapname != 'service_only':
