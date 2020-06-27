@@ -55,7 +55,7 @@ import aridity, logging, os, shutil, subprocess, tarfile, time
 
 log = logging.getLogger(__name__)
 
-class TargetAndroid:
+class Assembly:
 
     @types(Config, APKMaker)
     def __init__(self, config, apkmaker):

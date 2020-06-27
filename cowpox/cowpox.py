@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from . import etc
-from .android import APKMaker, AssetArchive, TargetAndroid
+from .android import APKMaker, AssetArchive, Assembly
 from .arch import all_archs
 from .boot import Bootstrap
 from .config import Config
@@ -62,14 +62,14 @@ log = logging.getLogger(__name__)
 
 class Result: pass
 
-@types(Bootstrap, ContextImpl, Src, TargetAndroid, Make, this = Result)
-def run(bootstrap, context, src, target, make):
+@types(Bootstrap, ContextImpl, Src, Assembly, Make, this = Result)
+def run(bootstrap, context, src, assembly, make):
     bootstrap.prepare_dirs()
     context.build_recipes()
     context.build_nonrecipes()
     make(bootstrap.android_project_dir, bootstrap.run_distribute)
     make(src.app_dir, src.copy_application_sources)
-    return target.build_package()
+    return assembly.build_package()
 
 def _inituser(srcpath):
     uid, gid = (x for s in [srcpath.stat()] for x in [s.st_uid, s.st_gid])
@@ -96,6 +96,7 @@ def _main():
         di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap))
         di.add(di)
         di.add(APKMaker)
+        di.add(Assembly)
         di.add(AssetArchive)
         di.add(Context)
         di.add(ContextImpl)
@@ -109,7 +110,6 @@ def _main():
         di.add(Platform)
         di.add(PlatformInfo)
         di.add(Src)
-        di.add(TargetAndroid)
         di.add(run)
         di(GraphInfoImpl).configure(di)
         return di(Result)
