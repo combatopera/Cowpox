@@ -53,7 +53,7 @@ import aridity, logging, os, shutil, subprocess, tarfile, time
 
 log = logging.getLogger(__name__)
 
-class Blacklist:
+class AssetArchive:
 
     def __init__(self, bootstrapname):
         self.BLACKLIST_PATTERNS = [
@@ -89,7 +89,7 @@ def _listfiles(d):
     for subdir in subdirlist:
         yield from _listfiles(subdir)
 
-def _make_tar(tfn, source_dirs, blacklist, hostpython):
+def _make_tar(tfn, source_dirs, archive, hostpython):
     files = []
     compileall = Program.text(hostpython)._OO._m.compileall._b._f
     for sd in source_dirs:
@@ -97,7 +97,7 @@ def _make_tar(tfn, source_dirs, blacklist, hostpython):
         for path in sd.rglob('*.py'):
             os.utime(path, (0, 0)) # Determinism.
         compileall.print(sd)
-        files.extend([x, x.resolve().relative_to(sd)] for x in _listfiles(sd) if not blacklist.has(x))
+        files.extend([x, x.resolve().relative_to(sd)] for x in _listfiles(sd) if not archive.has(x))
     with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
         dirs = set()
         for fn, afn in files:
@@ -158,14 +158,14 @@ class APKMaker:
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
     def makeapkversion(self, sign):
-        blacklist = Blacklist(self.bootstrapname)
+        archive = AssetArchive(self.bootstrapname)
         if self.ndk_api != self.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
         with (self.android_project_dir / 'blacklist.txt').open() as f:
-            blacklist.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
+            archive.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
         with (self.android_project_dir / 'whitelist.txt').open() as f:
-            blacklist.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
+            archive.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
@@ -186,7 +186,7 @@ class APKMaker:
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
                 tar_dirs.append(self.android_project_dir / 'webview_includes')
-            _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.graph.host_recipe.python_exe)
+            _make_tar(assets_dir / 'private.mp3', tar_dirs, archive, self.graph.host_recipe.python_exe)
         res_dir = self.android_project_dir / 'src' / 'main' / 'res'
         shutil.copy(self.icon_path, res_dir / 'drawable' / 'icon.png')
         if self.bootstrapname != 'service_only':
