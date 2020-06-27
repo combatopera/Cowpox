@@ -63,7 +63,6 @@ class TargetAndroid:
         self.title = config.title
         self.version = config.version
         self.commit = config.commit
-        self.fullscreen = config.fullscreen
         self.presplash_color = config.android.presplash_color
         self.projectdir = Path(config.container.src)
         self.presplash = config.presplash.filename
@@ -97,7 +96,6 @@ class TargetAndroid:
             yield 'package', self.fqpackage
             if self.bootstrapname != 'service_only':
                 yield 'orientation', 'sensor' if self.orientation == 'all' else self.orientation
-                yield 'window', not self.fullscreen
                 yield 'presplash', None if self.presplash is None else self.projectdir / self.presplash
                 yield 'presplash_color', self.presplash_color
             yield 'sign', True if self.releasemode and self._check_p4a_sign_env(True) else None

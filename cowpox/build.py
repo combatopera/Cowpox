@@ -142,6 +142,7 @@ class APKMaker:
         self.wakelock = config.android.wakelock
         self.permissions = config.android.permissions.list()
         self.android_apptheme = config.android.apptheme
+        self.fullscreen = config.fullscreen
         self.graph = graph
         self.arch = arch
         self.platform = platform
@@ -173,7 +174,7 @@ class APKMaker:
             env_vars_tarpath = Path(env_vars_tarpath)
             with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:
                 if self.bootstrapname != 'service_only':
-                    print(f"P4A_IS_WINDOWED={args.window}", file = f)
+                    print(f"P4A_IS_WINDOWED={not self.fullscreen}", file = f)
                     print(f"P4A_ORIENTATION={args.orientation}", file = f)
                 print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
             tar_dirs = [env_vars_tarpath, self.app_dir]
@@ -224,7 +225,7 @@ class APKMaker:
                 repl.printf("permissions += %s", p)
             if self.wakelock:
                 repl('permissions += android.permission.WAKE_LOCK')
-            repl.printf("theme = %s", f"{self.android_apptheme}{'' if args.window else '.Fullscreen'}")
+            repl.printf("theme = %s", f"{self.android_apptheme}{'.Fullscreen' if self.fullscreen else ''}")
             repl.printf("wakelock = %s", int(self.wakelock))
             repl.printf("android_api = %s", self.android_api)
             repl.printf("configChanges = %s", '|'.join(configChanges))
