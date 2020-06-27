@@ -44,7 +44,6 @@ from diapyr import types
 from jproperties import Properties
 from lagoon import gradle
 from pathlib import Path
-from types import SimpleNamespace
 import logging, os, shutil
 
 log = logging.getLogger(__name__)
@@ -86,9 +85,7 @@ class TargetAndroid:
     def build_package(self):
         self._update_libraries_references()
         self._generate_whitelist()
-        def downstreamargs():
-            yield 'sign', True if self.releasemode and self._check_p4a_sign_env(True) else None
-        self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())))
+        self.apkmaker.makeapkversion(self.releasemode and self._check_p4a_sign_env(True))
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.dist_dir)
         if not self.releasemode:
             mode_sign = mode = 'debug'

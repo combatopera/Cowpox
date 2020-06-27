@@ -157,7 +157,7 @@ class APKMaker:
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
-    def makeapkversion(self, args):
+    def makeapkversion(self, sign):
         blacklist = Blacklist(self.bootstrapname)
         if self.ndk_api != self.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
@@ -241,7 +241,7 @@ class APKMaker:
             repl.printf("minSdkVersion = %s", self.min_sdk_version)
             repl.printf("versionCode = %s", numeric_version)
             repl.printf("versionName = %s", self.version)
-            if args.sign:
+            if sign:
                 repl('signingConfig = release')
                 repl.printf("P4A_RELEASE_KEYSTORE = %s", os.environ['P4A_RELEASE_KEYSTORE']) # TODO: Get from config instead.
                 repl.printf("P4A_RELEASE_KEYALIAS = %s", os.environ['P4A_RELEASE_KEYALIAS'])
