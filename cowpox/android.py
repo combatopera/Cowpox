@@ -55,7 +55,6 @@ class TargetAndroid:
         self.arch = config.android.arch
         self.dist_name = config.package.name
         self.releasemode = 'debug' != config.build_mode
-        self.p4a_whitelist = config.android.whitelist.list()
         self.version = config.version
         self.commit = config.commit
         self.apkdir = Path(config.apk.dir)
@@ -75,14 +74,8 @@ class TargetAndroid:
                 check = False
         return check
 
-    def _generate_whitelist(self):
-        with (self.android_project_dir / 'whitelist.txt').open('w') as f:
-            for entry in self.p4a_whitelist:
-                print(entry, file = f)
-
     def build_package(self):
         self._update_libraries_references()
-        self._generate_whitelist()
         self.apkmaker.makeapkversion(self.releasemode and self._check_p4a_sign_env(True))
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.android_project_dir)
         if not self.releasemode:

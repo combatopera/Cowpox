@@ -55,8 +55,9 @@ log = logging.getLogger(__name__)
 
 class AssetArchive:
 
-    def __init__(self, bootstrapname):
+    def __init__(self, bootstrapname, whitelist):
         self.WHITELIST_PATTERNS = ['pyconfig.h'] if bootstrapname in {'sdl2', 'webview', 'service_only'} else []
+        self.WHITELIST_PATTERNS.extend(whitelist)
         self.BLACKLIST_PATTERNS = [
             '^*.hg/*',
             '^*.git/*',
@@ -71,8 +72,6 @@ class AssetArchive:
     def update(self, android_project_dir):
         with (android_project_dir / 'blacklist.txt').open() as f:
             self.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-        with (android_project_dir / 'whitelist.txt').open() as f:
-            self.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
 
     def _has(self, name):
         def match_filename(pattern_list):
@@ -160,6 +159,7 @@ class APKMaker:
         self.fullscreen = config.fullscreen
         self.orientation = config.orientation
         self.fqpackage = config.package.fq
+        self.p4a_whitelist = config.android.whitelist.list()
         self.graph = graph
         self.arch = arch
         self.platform = platform
@@ -172,7 +172,7 @@ class APKMaker:
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
     def makeapkversion(self, sign):
-        archive = AssetArchive(self.bootstrapname)
+        archive = AssetArchive(self.bootstrapname, self.p4a_whitelist)
         archive.update(self.android_project_dir)
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
