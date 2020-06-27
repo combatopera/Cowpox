@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import skel
 from .config import Config
 from .platform import Platform
 from aridimpl.model import Function, Text
@@ -49,7 +50,7 @@ from lagoon import gradle, patch
 from lagoon.program import Program
 from p4a import Arch, Graph, GraphInfo
 from pathlib import Path
-from pkg_resources import resource_string
+from pkg_resources import resource_filename, resource_stream, resource_string
 from tempfile import TemporaryDirectory
 import aridity, logging, os, shutil, subprocess, tarfile, time
 
@@ -229,11 +230,24 @@ class AndroidProject:
             p.store(f)
         log.debug('project.properties updated')
 
+    def _copy_application_sources(self):
+        topath = self.app_dir.mkdirp() / 'main.py'
+        log.debug("Create: %s", topath)
+        self.config.processtemplate(resource_filename(skel.__name__, 'main.py.aridt'), topath)
+        with resource_stream(skel.__name__, 'sitecustomize.py') as f, (self.app_dir / 'sitecustomize.py').open('wb') as g:
+            shutil.copyfileobj(f, g)
+        main_py = self.app_dir / 'service' / 'main.py'
+        if main_py.exists(): # XXX: Why would it?
+            with open(main_py, 'rb') as fd:
+                data = fd.read()
+            with open(main_py, 'wb') as fd:
+                fd.write(b'import sys, os; sys.path = [os.path.join(os.getcwd(),"..", "_applibs")] + sys.path\n')
+                fd.write(data)
+            log.info('Patched service/main.py to include applibs')
+
     def prepare(self):
         self._update_libraries_references()
-        if self.bootstrapname != 'webview':
-            if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
-                raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
+        self._copy_application_sources()
         with TemporaryDirectory() as env_vars_tarpath:
             env_vars_tarpath = Path(env_vars_tarpath)
             with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:

@@ -48,7 +48,6 @@ from .graph import GraphInfoImpl
 from .make import Make
 from .mirror import Mirror
 from .platform import installplatform, Platform, PlatformInfo
-from .src import Src
 from .util import findimpl, Logging
 from argparse import ArgumentParser
 from diapyr import DI, types
@@ -60,13 +59,12 @@ import logging, os
 
 log = logging.getLogger(__name__)
 
-@types(Bootstrap, ContextImpl, Src, Make, this = BulkOK)
-def bulk(bootstrap, context, src, make):
+@types(Bootstrap, ContextImpl, Make, this = BulkOK)
+def bulk(bootstrap, context, make):
     bootstrap.prepare_dirs()
     context.build_recipes()
     context.build_nonrecipes()
     make(bootstrap.android_project_dir, bootstrap.run_distribute)
-    make(src.app_dir, src.copy_application_sources)
 
 def _inituser(srcpath):
     uid, gid = (x for s in [srcpath.stat()] for x in [s.st_uid, s.st_gid])
@@ -109,7 +107,6 @@ def _main():
         di.add(Platform)
         di.add(PlatformInfo)
         di.add(prepareandroidproject)
-        di.add(Src)
         di(GraphInfoImpl).configure(di)
         return di(APKPath)
 
