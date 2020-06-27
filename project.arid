@@ -49,7 +49,6 @@ requires +=
     chromalog
     Cython
     diapyr
-    jinja2
     jproperties
     lagoon
     networkx

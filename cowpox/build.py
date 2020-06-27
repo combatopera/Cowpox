@@ -49,7 +49,7 @@ from lagoon.program import Program
 from p4a import Arch, Graph
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import aridity, jinja2, logging, os, shutil, subprocess, tarfile, time
+import aridity, logging, os, shutil, subprocess, tarfile, time
 
 log = logging.getLogger(__name__)
 
@@ -78,14 +78,6 @@ class Blacklist:
                 if fnmatch(name, pattern):
                     return True
         return not match_filename(self.WHITELIST_PATTERNS) and match_filename(self.BLACKLIST_PATTERNS)
-
-class Render:
-
-    def __init__(self, distdir):
-        self.environment = jinja2.Environment(loader = jinja2.FileSystemLoader(distdir / 'templates'))
-
-    def __call__(self, template, dest, **kwargs):
-        dest.pmkdirp().write_text(self.environment.get_template(template).render(**kwargs))
 
 def _listfiles(d):
     subdirlist = []
@@ -155,7 +147,6 @@ class APKMaker:
 
     def makeapkversion(self, args):
         distdir = self.dist_dir
-        render = Render(distdir)
         blacklist = Blacklist(self.bootstrapname)
         if self.ndk_api != self.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
