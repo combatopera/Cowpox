@@ -189,13 +189,6 @@ class APKMaker:
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
         args.numeric_version = self._numver(args) # TODO: Do not abuse args for this.
         url_scheme = 'kivy'
-        render_args = {}
-        if self.bootstrapname == 'sdl2':
-            render_args["url_scheme"] = url_scheme
-            render_args['launchMode'] = args.activity_launch_mode
-            render_args['android_entrypoint'] = args.android_entrypoint
-        if self.bootstrapname != 'service_only':
-            render_args['orientation'] = args.orientation
         configChanges = []
         if self.bootstrapname != 'service_only':
             configChanges.append('mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode')
@@ -211,21 +204,27 @@ class APKMaker:
             configChanges.append('keyboardHidden|orientation')
             if args.min_sdk_version >= 13:
                 configChanges.append('screenSize')
-        render(
-            'AndroidManifest.tmpl.xml',
-            self.dist_dir / 'src' / 'main' / 'AndroidManifest.xml',
-            **render_args,
-            xlargeScreens = 'true' if self.min_sdk_version >= 9 else 'false',
-            package = args.package,
-            versionCode = args.numeric_version,
-            versionName = args.version,
-            minSdkVersion = args.min_sdk_version,
-            permissions = args.permissions,
-            theme = f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}",
-            wakelock = int(bool(args.wakelock)),
-            android_api = self.android_api,
-            configChanges = '|'.join(configChanges),
-        )
+        c = aridity.Context()
+        with Repl(c) as repl:
+            repl('" = $(xmlattr)')
+            if self.bootstrapname == 'sdl2':
+                repl.printf("url_scheme = %s", url_scheme)
+                repl.printf("launchMode = %s", args.activity_launch_mode)
+                repl.printf("android_entrypoint = %s", args.android_entrypoint)
+            if self.bootstrapname != 'service_only':
+                repl.printf("orientation = %s", args.orientation)
+            repl.printf("xlargeScreens = %s", 'true' if self.min_sdk_version >= 9 else 'false')
+            repl.printf("package = %s", args.package)
+            repl.printf("versionCode = %s", args.numeric_version)
+            repl.printf("versionName = %s", args.version)
+            repl.printf("minSdkVersion = %s", args.min_sdk_version)
+            repl.printf("permissions = %s", args.permissions)
+            repl.printf("theme = %s", f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}")
+            repl.printf("wakelock = %s", int(bool(args.wakelock)))
+            repl.printf("android_api = %s", self.android_api)
+            repl.printf("configChanges = %s", '|'.join(configChanges))
+            repl.printf("redirect %s", self.dist_dir / 'src' / 'main' / 'AndroidManifest.xml')
+            repl.printf("< %s", self.dist_dir / 'templates' / 'AndroidManifest.xml.aridt')
         c = aridity.Context()
         with Repl(c) as repl:
             repl('" = $(groovystr)')
