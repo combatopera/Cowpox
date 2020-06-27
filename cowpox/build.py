@@ -134,13 +134,14 @@ class APKMaker:
         self.presplash_color = config.android.presplash_color
         self.bootstrapname = config.p4a.bootstrap
         self.dist_dir = Path(config.dist_dir)
+        self.version = config.version
         self.graph = graph
         self.arch = arch
         self.platform = platform
 
-    def _numver(self, args):
+    def _numver(self):
         version_code = 0
-        for i in args.version.split('.'):
+        for i in self.version.split('.'):
             version_code *= 100
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
@@ -181,7 +182,7 @@ class APKMaker:
         if self.bootstrapname != 'service_only':
             default_presplash = self.dist_dir / 'templates' / 'kivy-presplash.jpg'
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
-        numeric_version = self._numver(args)
+        numeric_version = self._numver()
         url_scheme = 'kivy'
         configChanges = []
         if self.bootstrapname != 'service_only':
@@ -210,7 +211,7 @@ class APKMaker:
             repl.printf("xlargeScreens = %s", 'true' if self.min_sdk_version >= 9 else 'false')
             repl.printf("package = %s", args.package)
             repl.printf("versionCode = %s", numeric_version)
-            repl.printf("versionName = %s", args.version)
+            repl.printf("versionName = %s", self.version)
             repl.printf("minSdkVersion = %s", self.min_sdk_version)
             for p in args.permissions:
                 repl.printf("permissions += %s", p)
@@ -227,7 +228,7 @@ class APKMaker:
             repl.printf("build_tools_version = %s", self.platform.build_tools_version())
             repl.printf("minSdkVersion = %s", self.min_sdk_version)
             repl.printf("versionCode = %s", numeric_version)
-            repl.printf("versionName = %s", args.version)
+            repl.printf("versionName = %s", self.version)
             if args.sign:
                 repl('signingConfig = release')
                 repl.printf("P4A_RELEASE_KEYSTORE = %s", os.environ['P4A_RELEASE_KEYSTORE']) # TODO: Get from config instead.

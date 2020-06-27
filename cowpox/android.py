@@ -108,7 +108,6 @@ class TargetAndroid:
         self._generate_whitelist()
         def downstreamargs():
             yield 'name', self.title
-            yield 'version', self.version
             yield 'package', self.fqpackage
             yield 'android_entrypoint', self.android_entrypoint
             yield 'android_apptheme', self.android_apptheme
