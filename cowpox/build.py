@@ -206,6 +206,7 @@ class APKMaker:
             minSdkVersion = args.min_sdk_version,
             permissions = args.permissions,
             theme = f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}",
+            wakelock = int(bool(args.wakelock)),
         )
         c = aridity.Context()
         with Repl(c) as repl:
