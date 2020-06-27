@@ -208,6 +208,7 @@ class AndroidProject:
         self.fqpackage = config.package.fq
         self.res_dir = Path(config.android.project.res.dir)
         self.sign = 'debug' != config.build_mode and _check_p4a_sign_env(True)
+        self.config = config
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
