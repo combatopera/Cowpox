@@ -83,7 +83,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         if self.android_api < self.MIN_TARGET_API:
             log.warning("Target API %s < %s", self.android_api, self.MIN_TARGET_API)
             log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
-        self.dist_dir = Path(config.dist_dir)
+        self.dist_dir = Path(config.android.project.dir)
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
         self.javaclass_dir = config.javaclass_dir
         self.sdk_dir = config.android_sdk_dir

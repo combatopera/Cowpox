@@ -157,7 +157,7 @@ class GuestPythonRecipe(Recipe):
     def __init(self, config, hostrecipe):
         self.python_install_dir = Path(config.python_install_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
-        self.dist_dir = Path(config.dist_dir)
+        self.dist_dir = Path(config.android.project.dir)
         self.ndk_api = config.android.ndk_api
         parts = LooseVersion(self.version).version
         self.majversion = parts[0]

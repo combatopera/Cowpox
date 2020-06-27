@@ -53,16 +53,17 @@ android
     apptheme = @android:style/Theme.NoTitleBar
     wakelock = false
     presplash_color = #000000
+    project dir = $/($(distsdir) $(package name)__$(android arch))
 sdl2
     launchMode = singleTask
     activity name = org.kivy.android.PythonActivity
 icon
     full path = $/($(container src) $(icon path))
-    default path = $/($(dist_dir) templates kivy-icon.png)
+    default path = $/($(android project dir) templates kivy-icon.png)
     path = $(default path)
 presplash
     full path = $/($(container src) $(presplash path))
-    default path = $/($(dist_dir) templates kivy-presplash.jpg)
+    default path = $/($(android project dir) templates kivy-presplash.jpg)
     path = $(default path)
 p4a bootstrap = sdl2
 requirements +=
@@ -91,7 +92,6 @@ distsdir = $/($(storage_dir) dists)
 buildsdir = $/($(storage_dir) build)
 other_builds = $/($(buildsdir) other_builds)
 bootstrap_builds = $/($(buildsdir) bootstrap_builds)
-dist_dir = $/($(distsdir) $(package name)__$(android arch))
 libs_parent = $/($(buildsdir) libs_collections $(package name))
 javaclass_dir = $/($(buildsdir) javaclasses $(package name))
 python_install_dir = $/($(buildsdir) python-installs $(package name))

@@ -133,7 +133,7 @@ class APKMaker:
         self.title = config.title
         self.presplash_color = config.android.presplash_color
         self.bootstrapname = config.p4a.bootstrap
-        self.dist_dir = Path(config.dist_dir)
+        self.dist_dir = Path(config.android.project.dir)
         self.version = config.version
         self.webview_port = config.webview.port
         self.sdl2_launchMode = config.sdl2.launchMode

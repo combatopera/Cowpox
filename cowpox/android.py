@@ -59,7 +59,7 @@ class TargetAndroid:
         self.version = config.version
         self.commit = config.commit
         self.apkdir = Path(config.apk.dir)
-        self.dist_dir = Path(config.dist_dir)
+        self.dist_dir = Path(config.android.project.dir)
         self.gradleenv = dict(ANDROID_NDK_HOME = config.android_ndk_dir, ANDROID_HOME = config.android_sdk_dir)
         self.apkmaker = apkmaker
 
