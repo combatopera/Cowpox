@@ -205,6 +205,7 @@ class APKMaker:
             versionName = args.version,
             minSdkVersion = args.min_sdk_version,
             permissions = args.permissions,
+            theme = f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}",
         )
         c = aridity.Context()
         with Repl(c) as repl:
