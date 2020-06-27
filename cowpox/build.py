@@ -186,17 +186,17 @@ class APKMaker:
         configChanges = []
         if self.bootstrapname != 'service_only':
             configChanges.append('mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode')
-            if args.min_sdk_version >= 8:
+            if self.min_sdk_version >= 8:
                 configChanges.append('uiMode')
-            if args.min_sdk_version >= 13:
+            if self.min_sdk_version >= 13:
                 configChanges.append('screenSize|smallestScreenSize')
-            if args.min_sdk_version >= 17:
+            if self.min_sdk_version >= 17:
                 configChanges.append('layoutDirection')
-            if args.min_sdk_version >= 24:
+            if self.min_sdk_version >= 24:
                 configChanges.append('density')
         else:
             configChanges.append('keyboardHidden|orientation')
-            if args.min_sdk_version >= 13:
+            if self.min_sdk_version >= 13:
                 configChanges.append('screenSize')
         c = aridity.Context()
         c['"',] = Function(_xmlattr)
@@ -211,7 +211,7 @@ class APKMaker:
             repl.printf("package = %s", args.package)
             repl.printf("versionCode = %s", numeric_version)
             repl.printf("versionName = %s", args.version)
-            repl.printf("minSdkVersion = %s", args.min_sdk_version)
+            repl.printf("minSdkVersion = %s", self.min_sdk_version)
             for p in args.permissions:
                 repl.printf("permissions += %s", p)
             repl.printf("theme = %s", f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}")

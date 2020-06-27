@@ -53,7 +53,6 @@ class TargetAndroid:
 
     @types(Config, APKMaker)
     def __init__(self, config, apkmaker):
-        self.android_minapi = config.android.minapi
         self.arch = config.android.arch
         self.dist_name = config.package.name
         self.bootstrapname = config.p4a.bootstrap
@@ -111,7 +110,6 @@ class TargetAndroid:
             yield 'name', self.title
             yield 'version', self.version
             yield 'package', self.fqpackage
-            yield 'min_sdk_version', self.android_minapi
             yield 'android_entrypoint', self.android_entrypoint
             yield 'android_apptheme', self.android_apptheme
             yield 'permissions', list(self._permissions())
