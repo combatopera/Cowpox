@@ -64,7 +64,7 @@ android {
     compileSdkVersion $(android_api)
     buildToolsVersion $"$(build_tools_version)
     defaultConfig {
-        minSdkVersion $(min_sdk_version)
+        minSdkVersion $(minSdkVersion)
         targetSdkVersion $(android_api)
         versionCode $(versionCode)
         versionName $"$(versionName)
