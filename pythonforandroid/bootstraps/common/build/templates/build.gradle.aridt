@@ -67,7 +67,7 @@ android {
         minSdkVersion $(min_sdk_version)
         targetSdkVersion $(android_api)
         versionCode $(versionCode)
-        versionName $"$(version)
+        versionName $"$(versionName)
     }$try[$.[
     signingConfigs {
         $(signingConfig) {

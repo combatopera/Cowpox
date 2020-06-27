@@ -227,7 +227,7 @@ class APKMaker:
             repl.printf("build_tools_version = %s", self.platform.build_tools_version())
             repl.printf("min_sdk_version = %s", self.min_sdk_version)
             repl.printf("versionCode = %s", numeric_version)
-            repl.printf("version = %s", args.version)
+            repl.printf("versionName = %s", args.version)
             if args.sign:
                 repl('signingConfig = release')
                 repl.printf("P4A_RELEASE_KEYSTORE = %s", os.environ['P4A_RELEASE_KEYSTORE']) # TODO: Get from config instead.
