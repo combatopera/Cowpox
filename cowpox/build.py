@@ -196,6 +196,21 @@ class APKMaker:
             render_args["url_scheme"] = url_scheme
         if self.bootstrapname != 'service_only':
             render_args['orientation'] = args.orientation
+        configChanges = []
+        if self.bootstrapname != 'service_only':
+            configChanges.append('mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode')
+            if args.min_sdk_version >= 8:
+                configChanges.append('uiMode')
+            if args.min_sdk_version >= 13:
+                configChanges.append('screenSize|smallestScreenSize')
+            if args.min_sdk_version >= 17:
+                configChanges.append('layoutDirection')
+            if args.min_sdk_version >= 24:
+                configChanges.append('density')
+        else:
+            configChanges.append('keyboardHidden|orientation')
+            if args.min_sdk_version >= 13:
+                configChanges.append('screenSize')
         render(
             'AndroidManifest.tmpl.xml',
             self.dist_dir / 'src' / 'main' / 'AndroidManifest.xml',
@@ -209,6 +224,7 @@ class APKMaker:
             theme = f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}",
             wakelock = int(bool(args.wakelock)),
             android_api = self.android_api,
+            configChanges = '|'.join(configChanges),
         )
         c = aridity.Context()
         with Repl(c) as repl:
