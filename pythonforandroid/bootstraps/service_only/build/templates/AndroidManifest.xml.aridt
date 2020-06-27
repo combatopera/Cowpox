@@ -17,7 +17,7 @@
     <uses-sdk android:minSdkVersion=$"$(minSdkVersion) android:targetSdkVersion=$"$(android_api) />
 
     <!-- Set permissions -->
-$join$map($(permissions) $.[
+$join$map($(permissions) perm $.[
     <uses-permission android:name=$"$(perm) />])
     <application android:label="@string/app_name"
                  android:icon="@drawable/icon"

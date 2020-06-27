@@ -222,7 +222,8 @@ class APKMaker:
             repl.printf("versionCode = %s", args.numeric_version)
             repl.printf("versionName = %s", args.version)
             repl.printf("minSdkVersion = %s", args.min_sdk_version)
-            repl.printf("permissions = %s", args.permissions)
+            for p in args.permissions:
+                repl.printf("permissions += %s", p)
             repl.printf("theme = %s", f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}")
             repl.printf("wakelock = %s", int(bool(args.wakelock)))
             repl.printf("android_api = %s", self.android_api)

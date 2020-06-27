@@ -18,7 +18,7 @@
 
     <!-- Allow writing to external storage -->
     <uses-permission android:name="android.permission.INTERNET" />
-$join$map($(permissions) $.[
+$join$map($(permissions) perm $.[
     <uses-permission android:name=$"$(perm) />])
     <application android:label="@string/app_name"
                  android:icon="@drawable/icon"
