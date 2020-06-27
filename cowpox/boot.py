@@ -111,9 +111,6 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     def distfinish(self):
         site_packages_dir = self.graph.python_recipe.create_python_bundle()
-        if 'sqlite3' not in self.graphinfo.recipenames:
-            with (self.android_project_dir / 'blacklist.txt').open('a') as fileh:
-                fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
         self._strip_libraries()
         self._fry_eggs(site_packages_dir)
 

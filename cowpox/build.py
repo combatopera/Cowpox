@@ -46,7 +46,7 @@ from diapyr import types
 from fnmatch import fnmatch
 from lagoon import patch
 from lagoon.program import Program
-from p4a import Arch, Graph
+from p4a import Arch, Graph, GraphInfo
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import aridity, logging, os, shutil, subprocess, tarfile, time
@@ -55,7 +55,7 @@ log = logging.getLogger(__name__)
 
 class AssetArchive:
 
-    def __init__(self, bootstrapname, whitelist):
+    def __init__(self, bootstrapname, whitelist, graphinfo):
         self.WHITELIST_PATTERNS = ['pyconfig.h'] if bootstrapname in {'sdl2', 'webview', 'service_only'} else []
         self.WHITELIST_PATTERNS.extend(whitelist)
         self.BLACKLIST_PATTERNS = [
@@ -68,10 +68,8 @@ class AssetArchive:
             '*.swp',
             '*.py',
         ]
-
-    def update(self, android_project_dir):
-        with (android_project_dir / 'blacklist.txt').open() as f:
-            self.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
+        if 'sqlite3' not in graphinfo.recipenames:
+            self.BLACKLIST_PATTERNS += ['sqlite3/*', 'lib-dynload/_sqlite3.so']
 
     def _has(self, name):
         def match_filename(pattern_list):
@@ -133,8 +131,8 @@ def _xmlattr(context, resolvable):
 
 class APKMaker:
 
-    @types(Config, Graph, Arch, Platform)
-    def __init__(self, config, graph, arch, platform):
+    @types(Config, Graph, Arch, Platform, GraphInfo)
+    def __init__(self, config, graph, arch, platform, graphinfo):
         self.ndk_api = config.android.ndk_api
         self.min_sdk_version = config.android.minapi
         if self.ndk_api != self.min_sdk_version:
@@ -163,6 +161,7 @@ class APKMaker:
         self.graph = graph
         self.arch = arch
         self.platform = platform
+        self.graphinfo = graphinfo
 
     def _numver(self):
         version_code = 0
@@ -172,8 +171,7 @@ class APKMaker:
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
     def makeapkversion(self, sign):
-        archive = AssetArchive(self.bootstrapname, self.p4a_whitelist)
-        archive.update(self.android_project_dir)
+        archive = AssetArchive(self.bootstrapname, self.p4a_whitelist, self.graphinfo)
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
