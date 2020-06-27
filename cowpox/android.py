@@ -54,10 +54,8 @@ class TargetAndroid:
     def __init__(self, config, apkmaker):
         self.arch = config.android.arch
         self.dist_name = config.package.name
-        self.bootstrapname = config.p4a.bootstrap
         self.releasemode = 'debug' != config.build_mode
         self.p4a_whitelist = config.android.whitelist.list()
-        self.title = config.title
         self.version = config.version
         self.commit = config.commit
         self.apkdir = Path(config.apk.dir)
