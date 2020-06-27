@@ -85,7 +85,10 @@ class AssetArchive:
                     return True
         return not match_filename(self.WHITELIST_PATTERNS) and match_filename(self.BLACKLIST_PATTERNS)
 
-    def maketar(self, tfn, source_dirs, hostpython):
+    def makeprivate(self, assets_dir, source_dirs, hostpython):
+        for tfn in (assets_dir / n for n in ['public.mp3', 'private.mp3']):
+            if tfn.exists():
+                tfn.unlink()
         files = []
         compileall = Program.text(hostpython)._OO._m.compileall._b._f
         for sd in source_dirs:
@@ -94,7 +97,7 @@ class AssetArchive:
                 os.utime(path, (0, 0)) # Determinism.
             compileall.print(sd)
             files.extend([x, x.resolve().relative_to(sd)] for x in self._listfiles(sd) if not self._has(x))
-        with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
+        with tarfile.open(tfn.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             dirs = set()
             for fn, afn in files:
                 dn = afn.parent
@@ -174,10 +177,6 @@ class APKMaker:
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
-        self.assets_dir.mkdirp()
-        for p in (self.assets_dir / n for n in ['public.mp3', 'private.mp3']):
-            if p.exists():
-                p.unlink()
         with TemporaryDirectory() as env_vars_tarpath:
             env_vars_tarpath = Path(env_vars_tarpath)
             with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:
@@ -191,7 +190,7 @@ class APKMaker:
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
                 tar_dirs.append(self.android_project_dir / 'webview_includes')
-            archive.maketar(self.assets_dir / 'private.mp3', tar_dirs, self.graph.host_recipe.python_exe)
+            archive.makeprivate(self.assets_dir, tar_dirs, self.graph.host_recipe.python_exe)
         res_dir = self.android_project_dir / 'src' / 'main' / 'res'
         shutil.copy(self.icon_path, res_dir / 'drawable' / 'icon.png')
         if self.bootstrapname != 'service_only':
