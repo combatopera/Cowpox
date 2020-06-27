@@ -91,3 +91,4 @@ python_install_dir = $/($(buildsdir) python-installs $(package name))
 venv path = $/($(buildsdir) venv)
 state path = $/($(build dir) Cowpox.txt)
 bootstrapsdir = $/($(container extroot) pythonforandroid bootstraps)
+webview port = 5000

@@ -121,8 +121,6 @@ class TargetAndroid:
                 yield 'presplash', None if self.presplash is None else self.projectdir / self.presplash
                 yield 'presplash_color', self.presplash_color
             yield 'sign', True if self.releasemode and self._check_p4a_sign_env(True) else None
-            if self.bootstrapname == 'webview':
-                yield 'port', '5000'
         self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())))
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.dist_dir)
         if not self.releasemode:

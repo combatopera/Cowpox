@@ -135,6 +135,7 @@ class APKMaker:
         self.bootstrapname = config.p4a.bootstrap
         self.dist_dir = Path(config.dist_dir)
         self.version = config.version
+        self.webview_port = config.webview.port
         self.graph = graph
         self.arch = arch
         self.platform = platform
@@ -249,7 +250,7 @@ class APKMaker:
         if self.bootstrapname == 'webview':
             c = aridity.Context()
             with Repl(c) as repl:
-                repl.printf("port = %s", args.port)
+                repl.printf("port = %s", self.webview_port)
                 repl.printf("redirect %s", (self.dist_dir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android').mkdirp() / 'WebViewLoader.java')
                 repl.printf("< %s", self.dist_dir / 'templates' / 'WebViewLoader.tmpl.java')
         src_patches = self.dist_dir / 'src' / 'patches'
