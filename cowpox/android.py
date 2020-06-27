@@ -62,7 +62,6 @@ class TargetAndroid:
         self.permissions = config.android.permissions.list()
         self.orientation = config.orientation
         self.title = config.title
-        self.android_entrypoint = config.android.entrypoint
         self.android_apptheme = config.android.apptheme
         self.version = config.version
         self.commit = config.commit
@@ -108,7 +107,6 @@ class TargetAndroid:
         def downstreamargs():
             yield 'name', self.title
             yield 'package', self.fqpackage
-            yield 'android_entrypoint', self.android_entrypoint
             yield 'android_apptheme', self.android_apptheme
             yield 'permissions', list(self._permissions())
             yield 'icon', None if self.icon is None else self.projectdir / self.icon

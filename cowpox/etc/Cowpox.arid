@@ -50,11 +50,12 @@ android
     ndk_api = $(minapi)
     whitelist := $list()
     permissions := $list()
-    entrypoint = org.kivy.android.PythonActivity
     apptheme = @android:style/Theme.NoTitleBar
     wakelock = false
     presplash_color = #000000
-sdl2 launchMode = singleTask
+sdl2
+    launchMode = singleTask
+    activity name = org.kivy.android.PythonActivity
 icon filename = $(None)
 presplash filename = $(None)
 p4a bootstrap = sdl2

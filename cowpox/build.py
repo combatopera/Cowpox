@@ -137,6 +137,7 @@ class APKMaker:
         self.version = config.version
         self.webview_port = config.webview.port
         self.sdl2_launchMode = config.sdl2.launchMode
+        self.sdl2_activity_name = config.sdl2.activity.name
         self.graph = graph
         self.arch = arch
         self.platform = platform
@@ -207,7 +208,7 @@ class APKMaker:
             if self.bootstrapname == 'sdl2':
                 repl.printf("url_scheme = %s", url_scheme)
                 repl.printf("launchMode = %s", self.sdl2_launchMode)
-                repl.printf("android_entrypoint = %s", args.android_entrypoint)
+                repl.printf("activity name = %s", self.sdl2_activity_name)
             if self.bootstrapname != 'service_only':
                 repl.printf("orientation = %s", args.orientation)
             repl.printf("xlargeScreens = %s", 'true' if self.min_sdk_version >= 9 else 'false')
