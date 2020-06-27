@@ -56,6 +56,7 @@ log = logging.getLogger(__name__)
 class AssetArchive:
 
     def __init__(self, bootstrapname):
+        self.WHITELIST_PATTERNS = ['pyconfig.h'] if bootstrapname in {'sdl2', 'webview', 'service_only'} else []
         self.BLACKLIST_PATTERNS = [
             '^*.hg/*',
             '^*.git/*',
@@ -66,7 +67,12 @@ class AssetArchive:
             '*.swp',
             '*.py',
         ]
-        self.WHITELIST_PATTERNS = ['pyconfig.h'] if bootstrapname in {'sdl2', 'webview', 'service_only'} else []
+
+    def update(self, android_project_dir):
+        with (android_project_dir / 'blacklist.txt').open() as f:
+            self.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
+        with (android_project_dir / 'whitelist.txt').open() as f:
+            self.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
 
     def _has(self, name):
         def match_filename(pattern_list):
@@ -164,10 +170,7 @@ class APKMaker:
         if self.ndk_api != self.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
-        with (self.android_project_dir / 'blacklist.txt').open() as f:
-            archive.BLACKLIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
-        with (self.android_project_dir / 'whitelist.txt').open() as f:
-            archive.WHITELIST_PATTERNS += [x for x in (l.strip() for l in f.read().splitlines()) if x and not x.startswith('#')]
+        archive.update(self.android_project_dir)
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
