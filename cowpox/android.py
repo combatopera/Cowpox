@@ -81,7 +81,7 @@ class Assembly:
         self.androidproject = androidproject
 
     def build_package(self):
-        self.androidproject.prepare(self.releasemode and _check_p4a_sign_env(True))
+        self.androidproject.prepare()
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.android_project_dir)
         if not self.releasemode:
             mode_sign = mode = 'debug'
@@ -200,6 +200,7 @@ class AndroidProject:
         self.orientation = config.orientation
         self.fqpackage = config.package.fq
         self.res_dir = Path(config.android.project.res.dir)
+        self.sign = 'debug' != config.build_mode and _check_p4a_sign_env(True)
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
@@ -222,7 +223,7 @@ class AndroidProject:
             p.store(f)
         log.debug('project.properties updated')
 
-    def prepare(self, sign):
+    def prepare(self):
         self._update_libraries_references()
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
@@ -294,7 +295,7 @@ class AndroidProject:
             repl.printf("minSdkVersion = %s", self.min_sdk_version)
             repl.printf("versionCode = %s", numeric_version)
             repl.printf("versionName = %s", self.version)
-            if sign:
+            if self.sign:
                 repl('signingConfig = release')
                 repl.printf("P4A_RELEASE_KEYSTORE = %s", os.environ['P4A_RELEASE_KEYSTORE']) # TODO: Get from config instead.
                 repl.printf("P4A_RELEASE_KEYALIAS = %s", os.environ['P4A_RELEASE_KEYALIAS'])
