@@ -189,9 +189,7 @@ class APKMaker:
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')
         args.numeric_version = self._numver(args) # TODO: Do not abuse args for this.
         url_scheme = 'kivy'
-        render_args = {
-            "args": args,
-        }
+        render_args = {}
         if self.bootstrapname == 'sdl2':
             render_args["url_scheme"] = url_scheme
             render_args['launchMode'] = args.activity_launch_mode
