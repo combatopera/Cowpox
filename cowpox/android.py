@@ -61,7 +61,6 @@ class TargetAndroid:
         self.p4a_whitelist = config.android.whitelist.list()
         self.orientation = config.orientation
         self.title = config.title
-        self.android_apptheme = config.android.apptheme
         self.version = config.version
         self.commit = config.commit
         self.fullscreen = config.fullscreen
@@ -96,7 +95,6 @@ class TargetAndroid:
         def downstreamargs():
             yield 'name', self.title
             yield 'package', self.fqpackage
-            yield 'android_apptheme', self.android_apptheme
             if self.bootstrapname != 'service_only':
                 yield 'orientation', 'sensor' if self.orientation == 'all' else self.orientation
                 yield 'window', not self.fullscreen

@@ -141,6 +141,7 @@ class APKMaker:
         self.icon_path = config.icon.full.path
         self.wakelock = config.android.wakelock
         self.permissions = config.android.permissions.list()
+        self.android_apptheme = config.android.apptheme
         self.graph = graph
         self.arch = arch
         self.platform = platform
@@ -223,7 +224,7 @@ class APKMaker:
                 repl.printf("permissions += %s", p)
             if self.wakelock:
                 repl('permissions += android.permission.WAKE_LOCK')
-            repl.printf("theme = %s", f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}")
+            repl.printf("theme = %s", f"{self.android_apptheme}{'' if args.window else '.Fullscreen'}")
             repl.printf("wakelock = %s", int(self.wakelock))
             repl.printf("android_api = %s", self.android_api)
             repl.printf("configChanges = %s", '|'.join(configChanges))
