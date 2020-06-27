@@ -68,7 +68,7 @@ def run(bootstrap, context, src, target, make):
     bootstrap.prepare_dirs()
     context.build_recipes()
     context.build_nonrecipes()
-    make(bootstrap.dist_dir, bootstrap.run_distribute)
+    make(bootstrap.android_project_dir, bootstrap.run_distribute)
     make(src.app_dir, src.copy_application_sources)
     return target.build_package()
 

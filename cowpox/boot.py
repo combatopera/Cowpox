@@ -83,7 +83,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         if self.android_api < self.MIN_TARGET_API:
             log.warning("Target API %s < %s", self.android_api, self.MIN_TARGET_API)
             log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
-        self.dist_dir = Path(config.android.project.dir)
+        self.android_project_dir = Path(config.android.project.dir)
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
         self.javaclass_dir = config.javaclass_dir
         self.sdk_dir = config.android_sdk_dir
@@ -100,10 +100,10 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             p.store(f)
 
     def distlibs(self):
-        shutil.copytree(self.build_dir, self.dist_dir)
+        shutil.copytree(self.build_dir, self.android_project_dir)
         p = Properties()
         p['sdk.dir'] = self.sdk_dir # Required by gradle build.
-        with (self.dist_dir / 'local.properties').open('wb') as f:
+        with (self.android_project_dir / 'local.properties').open('wb') as f:
             p.store(f)
         log.info("Bootstrap running with arch %s", self.arch.name)
         log.info('Copying python distribution')
@@ -112,7 +112,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     def distfinish(self):
         site_packages_dir = self.graph.python_recipe.create_python_bundle()
         if 'sqlite3' not in self.graphinfo.recipenames:
-            with (self.dist_dir / 'blacklist.txt').open('a') as fileh:
+            with (self.android_project_dir / 'blacklist.txt').open('a') as fileh:
                 fileh.write('\nsqlite3/*\nlib-dynload/_sqlite3.so\n')
         self._strip_libraries()
         self._fry_eggs(site_packages_dir)
@@ -120,7 +120,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     def _strip_libraries(self):
         log.info('Stripping libraries')
         strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
-        filens = find(self.dist_dir / '_python_bundle' / '_python_bundle' / 'modules', self.dist_dir / 'libs', '-name', '*.so').splitlines()
+        filens = find(self.android_project_dir / '_python_bundle' / '_python_bundle' / 'modules', self.android_project_dir / 'libs', '-name', '*.so').splitlines()
         log.info('Stripping libraries in private dir')
         for filen in filens:
             try:
@@ -132,13 +132,13 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     def _distribute_libs(self):
         log.info('Copying libs')
-        tgt_dir = (self.dist_dir / 'libs' / self.arch.name).mkdirp()
+        tgt_dir = (self.android_project_dir / 'libs' / self.arch.name).mkdirp()
         for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
 
     def distribute_javaclasses(self, dest_dir = 'src'):
         log.info('Copying java files')
-        cp._a.print(self.javaclass_dir, (self.dist_dir / dest_dir).mkdirp())
+        cp._a.print(self.javaclass_dir, (self.android_project_dir / dest_dir).mkdirp())
 
     def distribute_aars(self):
         log.info('Unpacking aars')
