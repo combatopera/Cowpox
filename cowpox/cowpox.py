@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from . import etc
-from .android import APKMaker, AssetArchive, Assembly
+from .android import AndroidProject, Assembly, AssetArchive
 from .arch import all_archs
 from .boot import Bootstrap
 from .config import Config
@@ -95,7 +95,7 @@ def _main():
         di.add(all_archs[config.android.arch])
         di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap))
         di.add(di)
-        di.add(APKMaker)
+        di.add(AndroidProject)
         di.add(Assembly)
         di.add(AssetArchive)
         di.add(Context)

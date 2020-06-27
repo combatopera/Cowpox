@@ -57,8 +57,8 @@ log = logging.getLogger(__name__)
 
 class Assembly:
 
-    @types(Config, APKMaker)
-    def __init__(self, config, apkmaker):
+    @types(Config, AndroidProject)
+    def __init__(self, config, androidproject):
         self.arch = config.android.arch
         self.dist_name = config.package.name
         self.releasemode = 'debug' != config.build_mode
@@ -67,7 +67,7 @@ class Assembly:
         self.apkdir = Path(config.apk.dir)
         self.android_project_dir = Path(config.android.project.dir)
         self.gradleenv = dict(ANDROID_NDK_HOME = config.android_ndk_dir, ANDROID_HOME = config.android_sdk_dir)
-        self.apkmaker = apkmaker
+        self.androidproject = androidproject
 
     @staticmethod
     def _check_p4a_sign_env(error):
@@ -83,7 +83,7 @@ class Assembly:
 
     def build_package(self):
         self._update_libraries_references()
-        self.apkmaker.makeapkversion(self.releasemode and self._check_p4a_sign_env(True))
+        self.androidproject.prepare(self.releasemode and self._check_p4a_sign_env(True))
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.android_project_dir)
         if not self.releasemode:
             mode_sign = mode = 'debug'
@@ -185,7 +185,7 @@ def _xmlattr(context, resolvable):
     from xml.sax.saxutils import quoteattr
     return Text(quoteattr(resolvable.resolve(context).cat()))
 
-class APKMaker:
+class AndroidProject:
 
     @types(Config, Arch, Platform, AssetArchive)
     def __init__(self, config, arch, platform, assetarchive):
@@ -224,7 +224,7 @@ class APKMaker:
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
-    def makeapkversion(self, sign):
+    def prepare(self, sign):
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
