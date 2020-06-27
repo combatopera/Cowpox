@@ -24,7 +24,7 @@
 
     <!-- Allow writing to external storage -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    {% for perm in args.permissions %}
+    {% for perm in permissions %}
     <uses-permission android:name="{{ perm }}" />
     {% endfor %}
     <application android:label="@string/app_name"

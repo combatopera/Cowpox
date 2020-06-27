@@ -204,6 +204,7 @@ class APKMaker:
             versionCode = args.numeric_version,
             versionName = args.version,
             minSdkVersion = args.min_sdk_version,
+            permissions = args.permissions,
         )
         c = aridity.Context()
         with Repl(c) as repl:
