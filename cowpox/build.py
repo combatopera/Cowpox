@@ -214,6 +214,7 @@ class APKMaker:
             repl.printf("versionCode = %s", numeric_version)
             repl.printf("versionName = %s", self.version)
             repl.printf("minSdkVersion = %s", self.min_sdk_version)
+            repl('permissions := $list()')
             for p in args.permissions:
                 repl.printf("permissions += %s", p)
             repl.printf("theme = %s", f"{args.android_apptheme}{'' if args.window else '.Fullscreen'}")
