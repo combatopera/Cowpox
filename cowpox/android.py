@@ -69,7 +69,6 @@ class TargetAndroid:
         self.fullscreen = config.fullscreen
         self.presplash_color = config.android.presplash_color
         self.projectdir = Path(config.container.src)
-        self.icon = config.icon.filename
         self.presplash = config.presplash.filename
         self.apkdir = Path(config.apk.dir)
         self.dist_dir = Path(config.dist_dir)
@@ -109,7 +108,6 @@ class TargetAndroid:
             yield 'package', self.fqpackage
             yield 'android_apptheme', self.android_apptheme
             yield 'permissions', list(self._permissions())
-            yield 'icon', None if self.icon is None else self.projectdir / self.icon
             yield 'wakelock', True if self.wakelock else None
             if self.bootstrapname != 'service_only':
                 yield 'orientation', 'sensor' if self.orientation == 'all' else self.orientation

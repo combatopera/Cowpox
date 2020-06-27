@@ -138,6 +138,7 @@ class APKMaker:
         self.webview_port = config.webview.port
         self.sdl2_launchMode = config.sdl2.launchMode
         self.sdl2_activity_name = config.sdl2.activity.name
+        self.icon_path = config.icon.full.path
         self.graph = graph
         self.arch = arch
         self.platform = platform
@@ -180,8 +181,7 @@ class APKMaker:
                 tar_dirs.append(self.dist_dir / 'webview_includes')
             _make_tar(assets_dir / 'private.mp3', tar_dirs, blacklist, self.graph.host_recipe.python_exe)
         res_dir = self.dist_dir / 'src' / 'main' / 'res'
-        default_icon = self.dist_dir / 'templates' / 'kivy-icon.png'
-        shutil.copy(args.icon or default_icon, res_dir / 'drawable' / 'icon.png')
+        shutil.copy(self.icon_path, res_dir / 'drawable' / 'icon.png')
         if self.bootstrapname != 'service_only':
             default_presplash = self.dist_dir / 'templates' / 'kivy-presplash.jpg'
             shutil.copy(args.presplash or default_presplash, res_dir / 'drawable' / 'presplash.jpg')

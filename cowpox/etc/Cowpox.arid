@@ -56,7 +56,10 @@ android
 sdl2
     launchMode = singleTask
     activity name = org.kivy.android.PythonActivity
-icon filename = $(None)
+icon
+    full path = $/($(container src) $(icon path))
+    default path = $/($(dist_dir) templates kivy-icon.png)
+    path = $(default path)
 presplash filename = $(None)
 p4a bootstrap = sdl2
 requirements +=
