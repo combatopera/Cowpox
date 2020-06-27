@@ -87,7 +87,7 @@ class AssetArchive:
             for path in sd.rglob('*.py'):
                 os.utime(path, (0, 0)) # Determinism.
             compileall.print(sd)
-            files.extend([x, x.resolve().relative_to(sd)] for x in _listfiles(sd) if not self._has(x))
+            files.extend([x, x.resolve().relative_to(sd)] for x in self._listfiles(sd) if not self._has(x))
         with tarfile.open(tfn, 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             dirs = set()
             for fn, afn in files:
@@ -104,15 +104,16 @@ class AssetArchive:
                             tf.addfile(tinfo)
                 tf.add(fn, afn)
 
-def _listfiles(d):
-    subdirlist = []
-    for fn in d.iterdir():
-        if fn.is_file():
-            yield fn
-        else:
-            subdirlist.append(fn)
-    for subdir in subdirlist:
-        yield from _listfiles(subdir)
+    @classmethod
+    def _listfiles(cls, d):
+        subdirlist = []
+        for fn in d.iterdir():
+            if fn.is_file():
+                yield fn
+            else:
+                subdirlist.append(fn)
+        for subdir in subdirlist:
+            yield from cls._listfiles(subdir)
 
 def _xmltext(context, resolvable):
     from xml.sax.saxutils import escape
