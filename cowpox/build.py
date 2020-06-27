@@ -55,8 +55,9 @@ log = logging.getLogger(__name__)
 
 class AssetArchive:
 
-    @types(Config, GraphInfo)
-    def __init__(self, config, graphinfo):
+    @types(Config, GraphInfo, Graph)
+    def __init__(self, config, graphinfo, graph):
+        self.assets_dir = Path(config.android.project.assets.dir)
         self.WHITELIST_PATTERNS = ['pyconfig.h'] if config.p4a.bootstrap in {'sdl2', 'webview', 'service_only'} else []
         self.WHITELIST_PATTERNS.extend(config.android.whitelist.list())
         self.BLACKLIST_PATTERNS = [
@@ -71,6 +72,7 @@ class AssetArchive:
         ]
         if 'sqlite3' not in graphinfo.recipenames:
             self.BLACKLIST_PATTERNS += ['sqlite3/*', 'lib-dynload/_sqlite3.so']
+        self.graph = graph
 
     def _has(self, name):
         def match_filename(pattern_list):
@@ -83,12 +85,12 @@ class AssetArchive:
                     return True
         return not match_filename(self.WHITELIST_PATTERNS) and match_filename(self.BLACKLIST_PATTERNS)
 
-    def makeprivate(self, assets_dir, source_dirs, hostpython):
-        for tfn in (assets_dir / n for n in ['public.mp3', 'private.mp3']):
+    def makeprivate(self, source_dirs):
+        for tfn in (self.assets_dir / n for n in ['public.mp3', 'private.mp3']):
             if tfn.exists():
                 tfn.unlink()
         files = []
-        compileall = Program.text(hostpython)._OO._m.compileall._b._f
+        compileall = Program.text(self.graph.host_recipe.python_exe)._OO._m.compileall._b._f
         for sd in source_dirs:
             sd = sd.resolve()
             for path in sd.rglob('*.py'):
@@ -132,8 +134,8 @@ def _xmlattr(context, resolvable):
 
 class APKMaker:
 
-    @types(Config, Graph, Arch, Platform, AssetArchive)
-    def __init__(self, config, graph, arch, platform, assetarchive):
+    @types(Config, Arch, Platform, AssetArchive)
+    def __init__(self, config, arch, platform, assetarchive):
         self.ndk_api = config.android.ndk_api
         self.min_sdk_version = config.android.minapi
         if self.ndk_api != self.min_sdk_version:
@@ -145,7 +147,6 @@ class APKMaker:
         self.presplash_color = config.android.presplash_color
         self.bootstrapname = config.p4a.bootstrap
         self.android_project_dir = Path(config.android.project.dir)
-        self.assets_dir = Path(config.android.project.assets.dir)
         self.version = config.version
         self.webview_port = config.webview.port
         self.sdl2_launchMode = config.sdl2.launchMode
@@ -158,7 +159,6 @@ class APKMaker:
         self.fullscreen = config.fullscreen
         self.orientation = config.orientation
         self.fqpackage = config.package.fq
-        self.graph = graph
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
@@ -187,7 +187,7 @@ class APKMaker:
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
                 tar_dirs.append(self.android_project_dir / 'webview_includes')
-            self.assetarchive.makeprivate(self.assets_dir, tar_dirs, self.graph.host_recipe.python_exe)
+            self.assetarchive.makeprivate(tar_dirs)
         res_dir = self.android_project_dir / 'src' / 'main' / 'res'
         shutil.copy(self.icon_path, res_dir / 'drawable' / 'icon.png')
         if self.bootstrapname != 'service_only':
