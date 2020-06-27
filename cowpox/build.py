@@ -256,11 +256,11 @@ class APKMaker:
             repl.printf("redirect %s", (res_dir / 'values' / 'strings.xml').pmkdirp())
             repl.printf("< %s", self.dist_dir / 'templates' / 'strings.xml.aridt')
         if self.bootstrapname == 'webview':
-            render(
-                'WebViewLoader.tmpl.java',
-                distdir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android' / 'WebViewLoader.java',
-                args = args,
-            )
+            c = aridity.Context()
+            with Repl(c) as repl:
+                repl.printf("port = %s", args.port)
+                repl.printf("redirect %s", (distdir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android').mkdirp() / 'WebViewLoader.java')
+                repl.printf("< %s", self.dist_dir / 'templates' / 'WebViewLoader.tmpl.java')
         src_patches = distdir / 'src' / 'patches'
         if src_patches.exists():
             log.info("Applying Java source code patches...")
