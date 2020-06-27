@@ -136,6 +136,7 @@ class APKMaker:
         self.dist_dir = Path(config.dist_dir)
         self.version = config.version
         self.webview_port = config.webview.port
+        self.sdl2_launchMode = config.sdl2.launchMode
         self.graph = graph
         self.arch = arch
         self.platform = platform
@@ -205,7 +206,7 @@ class APKMaker:
         with Repl(c) as repl:
             if self.bootstrapname == 'sdl2':
                 repl.printf("url_scheme = %s", url_scheme)
-                repl.printf("launchMode = %s", args.activity_launch_mode)
+                repl.printf("launchMode = %s", self.sdl2_launchMode)
                 repl.printf("android_entrypoint = %s", args.android_entrypoint)
             if self.bootstrapname != 'service_only':
                 repl.printf("orientation = %s", args.orientation)

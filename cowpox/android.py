@@ -67,7 +67,6 @@ class TargetAndroid:
         self.version = config.version
         self.commit = config.commit
         self.wakelock = config.android.wakelock
-        self.launch_mode = config.android.manifest.launch_mode
         self.fullscreen = config.fullscreen
         self.presplash_color = config.android.presplash_color
         self.projectdir = Path(config.container.src)
@@ -114,7 +113,6 @@ class TargetAndroid:
             yield 'permissions', list(self._permissions())
             yield 'icon', None if self.icon is None else self.projectdir / self.icon
             yield 'wakelock', True if self.wakelock else None
-            yield 'activity_launch_mode', self.launch_mode
             if self.bootstrapname != 'service_only':
                 yield 'orientation', 'sensor' if self.orientation == 'all' else self.orientation
                 yield 'window', not self.fullscreen
