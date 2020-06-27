@@ -88,7 +88,6 @@ class TargetAndroid:
         self._update_libraries_references()
         self._generate_whitelist()
         def downstreamargs():
-            yield 'name', self.title
             yield 'package', self.fqpackage
             yield 'sign', True if self.releasemode and self._check_p4a_sign_env(True) else None
         self.apkmaker.makeapkversion(SimpleNamespace(**dict(downstreamargs())))
