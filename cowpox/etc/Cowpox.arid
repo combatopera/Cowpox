@@ -53,7 +53,9 @@ android
     apptheme = @android:style/Theme.NoTitleBar
     wakelock = false
     presplash_color = #000000
-    project dir = $/($(storage_dir) dists $(package name)__$(android arch))
+    project
+        dir = $/($(storage_dir) dists $(package name)__$(android arch))
+        assets dir = $/($(project dir) src main assets)
 sdl2
     launchMode = singleTask
     activity name = org.kivy.android.PythonActivity

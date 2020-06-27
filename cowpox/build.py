@@ -134,6 +134,7 @@ class APKMaker:
         self.presplash_color = config.android.presplash_color
         self.bootstrapname = config.p4a.bootstrap
         self.android_project_dir = Path(config.android.project.dir)
+        self.assets_dir = Path(config.android.project.assets.dir)
         self.version = config.version
         self.webview_port = config.webview.port
         self.sdl2_launchMode = config.sdl2.launchMode
@@ -169,8 +170,8 @@ class APKMaker:
         if self.bootstrapname != 'webview':
             if not (self.app_dir / 'main.py').exists() and not (self.app_dir / 'main.pyo').exists():
                 raise Exception('No main.py(o) found in your app directory. This file must exist to act as the entry point for you app. If your app is started by a file with a different name, rename it to main.py or add a main.py that loads it.')
-        assets_dir = (self.android_project_dir / 'src' / 'main' / 'assets').mkdirp()
-        for p in (assets_dir / n for n in ['public.mp3', 'private.mp3']):
+        self.assets_dir.mkdirp()
+        for p in (self.assets_dir / n for n in ['public.mp3', 'private.mp3']):
             if p.exists():
                 p.unlink()
         with TemporaryDirectory() as env_vars_tarpath:
@@ -186,7 +187,7 @@ class APKMaker:
                     tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
                 tar_dirs.append(self.android_project_dir / 'webview_includes')
-            archive.maketar(assets_dir / 'private.mp3', tar_dirs, self.graph.host_recipe.python_exe)
+            archive.maketar(self.assets_dir / 'private.mp3', tar_dirs, self.graph.host_recipe.python_exe)
         res_dir = self.android_project_dir / 'src' / 'main' / 'res'
         shutil.copy(self.icon_path, res_dir / 'drawable' / 'icon.png')
         if self.bootstrapname != 'service_only':
