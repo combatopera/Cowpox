@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="{{ args.package }}"
-      android:versionCode="{{ args.numeric_version }}"
-      android:versionName="{{ args.version }}"
+      package="{{ package }}"
+      android:versionCode="{{ versionCode }}"
+      android:versionName="{{ versionName }}"
       android:installLocation="auto">
 
     <supports-screens
@@ -14,7 +14,7 @@
     />
 
     <!-- Android 2.3.3 -->
-    <uses-sdk android:minSdkVersion="{{ args.min_sdk_version }}" android:targetSdkVersion="{{ android_api }}" />
+    <uses-sdk android:minSdkVersion="{{ minSdkVersion }}" android:targetSdkVersion="{{ android_api }}" />
 
     <!-- Set permissions -->
     {% for perm in args.permissions %}

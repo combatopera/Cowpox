@@ -200,6 +200,10 @@ class APKMaker:
             self.dist_dir / 'src' / 'main' / 'AndroidManifest.xml',
             **render_args,
             xlargeScreens = 'true' if self.min_sdk_version >= 9 else 'false',
+            package = args.package,
+            versionCode = args.numeric_version,
+            versionName = args.version,
+            minSdkVersion = args.min_sdk_version,
         )
         c = aridity.Context()
         with Repl(c) as repl:
