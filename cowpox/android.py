@@ -66,10 +66,12 @@ def _check_p4a_sign_env(error):
             check = False
     return check
 
+class AndroidProjectOK: pass
+
 class Assembly:
 
-    @types(Config, AndroidProject)
-    def __init__(self, config, androidproject):
+    @types(Config, AndroidProjectOK)
+    def __init__(self, config, _):
         self.arch = config.android.arch
         self.dist_name = config.package.name
         self.releasemode = 'debug' != config.build_mode
@@ -78,10 +80,8 @@ class Assembly:
         self.apkdir = Path(config.apk.dir)
         self.android_project_dir = Path(config.android.project.dir)
         self.gradleenv = dict(ANDROID_NDK_HOME = config.android_ndk_dir, ANDROID_HOME = config.android_sdk_dir)
-        self.androidproject = androidproject
 
     def build_package(self):
-        self.androidproject.prepare()
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.android_project_dir)
         if not self.releasemode:
             mode_sign = mode = 'debug'
@@ -329,3 +329,7 @@ class AndroidProject:
                     if e.returncode != 1:
                         raise e
                     log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
+
+@types(AndroidProject, this = AndroidProjectOK)
+def prepareandroidproject(project):
+    project.prepare()

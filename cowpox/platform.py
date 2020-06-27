@@ -113,9 +113,9 @@ class PlatformInfo:
         rootdir.rmdir()
         log.info('Android NDK installation done.')
 
-class PlatformInstall: pass
+class PlatformOK: pass
 
-@types(PlatformInfo, this = PlatformInstall)
+@types(PlatformInfo, this = PlatformOK)
 def installplatform(info):
     info.install()
 
@@ -129,7 +129,7 @@ class Platform:
         minor = version[1]
         return f"{version[0]}{chr(ord('a') + minor) if minor else ''}"
 
-    @types(Config, PlatformInstall)
+    @types(Config, PlatformOK)
     def __init__(self, config, _):
         self.sdk_dir = Path(config.android_sdk_dir)
         self.ndk_dir = Path(config.android_ndk_dir)

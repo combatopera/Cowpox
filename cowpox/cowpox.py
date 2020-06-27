@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from . import etc
-from .android import AndroidProject, Assembly, AssetArchive
+from .android import AndroidProject, Assembly, AssetArchive, prepareandroidproject
 from .arch import all_archs
 from .boot import Bootstrap
 from .config import Config
@@ -91,15 +91,15 @@ def _main():
     config = config.Cowpox
     logging.setpath(Path(config.log.path))
     with DI() as di:
-        di.add(config)
         di.add(all_archs[config.android.arch])
         di.add(findimpl(f"pythonforandroid.bootstraps.{config.p4a.bootstrap}", Bootstrap))
-        di.add(di)
         di.add(AndroidProject)
         di.add(Assembly)
         di.add(AssetArchive)
+        di.add(config)
         di.add(Context)
         di.add(ContextImpl)
+        di.add(di)
         di.add(GraphImpl)
         di.add(GraphInfoImpl)
         di.add(GraphProxy)
@@ -109,8 +109,9 @@ def _main():
         di.add(PipInstallRecipe)
         di.add(Platform)
         di.add(PlatformInfo)
-        di.add(Src)
+        di.add(prepareandroidproject)
         di.add(run)
+        di.add(Src)
         di(GraphInfoImpl).configure(di)
         return di(Result)
 
