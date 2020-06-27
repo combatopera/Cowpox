@@ -124,7 +124,11 @@ def _make_tar(tfn, source_dirs, blacklist, hostpython):
 
 def _xmltext(context, resolvable):
     from xml.sax.saxutils import escape
-    return Text(escape(resolvable.resolve(context).cat())) # FIXME LATER: Insufficient for attributes.
+    return Text(escape(resolvable.resolve(context).cat())) # FIXME LATER: Insufficient for attr content.
+
+def _xmlattr(context, resolvable):
+    from xml.sax.saxutils import quoteattr
+    return Text(quoteattr(resolvable.resolve(context).cat()))
 
 class APKMaker:
 
@@ -205,8 +209,8 @@ class APKMaker:
             if args.min_sdk_version >= 13:
                 configChanges.append('screenSize')
         c = aridity.Context()
+        c['"',] = Function(_xmlattr)
         with Repl(c) as repl:
-            repl('" = $(xmlattr)')
             if self.bootstrapname == 'sdl2':
                 repl.printf("url_scheme = %s", url_scheme)
                 repl.printf("launchMode = %s", args.activity_launch_mode)
