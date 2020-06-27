@@ -189,7 +189,7 @@ class APKMaker:
             if self.bootstrapname == 'webview':
                 tar_dirs.append(self.android_project_dir / 'webview_includes')
             self.assetarchive.makeprivate(tar_dirs)
-        shutil.copy(self.icon_path, self.res_dir / 'drawable' / 'icon.png')
+        shutil.copy(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':
             shutil.copy(self.presplash_path, self.res_dir / 'drawable' / 'presplash.jpg')
         numeric_version = self._numver()
@@ -257,7 +257,7 @@ class APKMaker:
             repl.printf("private_version = %s", time.time()) # XXX: Must we use time?
             repl.printf("presplash_color = %s", self.presplash_color)
             repl.printf("urlScheme = %s", url_scheme)
-            repl.printf("redirect %s", (self.res_dir / 'values' / 'strings.xml').pmkdirp())
+            repl.printf("redirect %s", (self.res_dir / 'values').mkdirp() / 'strings.xml')
             repl.printf("< %s", self.android_project_dir / 'templates' / 'strings.xml.aridt')
         if self.bootstrapname == 'webview':
             c = aridity.Context()
