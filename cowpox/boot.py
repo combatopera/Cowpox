@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from .config import Config
+from .make import BulkOK, Make
 from diapyr import types
 from jproperties import Properties
 from lagoon import cp, find, mv, rm, unzip
@@ -68,6 +69,8 @@ def _copy_files(src_root, dest_root, override):
 
 class BootstrapType(PluginType): pass
 
+class BootstrapOK: pass
+
 class Bootstrap(Plugin, metaclass = BootstrapType):
 
     MIN_TARGET_API = 26
@@ -94,6 +97,10 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     def prepare_dirs(self):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files(self.bootstrapsdir / 'common' / 'build', self.build_dir, False)
+
+    @types(Make, BulkOK, this = BootstrapOK)
+    def toandroidproject(self, make, _):
+        make(self.android_project_dir, self.run_distribute)
 
     def distlibs(self):
         shutil.copytree(self.build_dir, self.android_project_dir)

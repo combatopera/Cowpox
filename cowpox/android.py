@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from . import skel
+from .boot import BootstrapOK
 from .config import Config
 from .platform import Platform
 from aridity import Repl
@@ -167,8 +168,6 @@ class AssetArchive:
         for subdir in subdirlist:
             yield from cls._listfiles(subdir)
 
-class BulkOK: pass
-
 class AndroidProject:
 
     @types(Config, Arch, Platform, AssetArchive)
@@ -236,7 +235,7 @@ class AndroidProject:
                 fd.write(data)
             log.info('Patched service/main.py to include applibs')
 
-    @types(BulkOK, this = AndroidProjectOK)
+    @types(BootstrapOK, this = AndroidProjectOK)
     def prepare(self, _):
         self._update_libraries_references()
         self._copy_application_sources()

@@ -39,13 +39,13 @@
 # THE SOFTWARE.
 
 from . import etc
-from .android import AndroidProject, APKPath, Assembly, AssetArchive, BulkOK
+from .android import AndroidProject, APKPath, Assembly, AssetArchive
 from .arch import all_archs
 from .boot import Bootstrap
 from .config import Config
 from .context import ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
 from .graph import GraphInfoImpl
-from .make import Make
+from .make import BulkOK, Make
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
 from .util import findimpl, Logging
@@ -58,12 +58,11 @@ import logging, os
 
 log = logging.getLogger(__name__)
 
-@types(Bootstrap, ContextImpl, PipInstallRecipe, Make, this = BulkOK)
-def bulk(bootstrap, context, pipinstallrecipe, make):
+@types(Bootstrap, ContextImpl, PipInstallRecipe, this = BulkOK)
+def bulk(bootstrap, context, pipinstallrecipe):
     bootstrap.prepare_dirs()
     context.build_recipes()
     pipinstallrecipe.build_nonrecipes()
-    make(bootstrap.android_project_dir, bootstrap.run_distribute)
 
 def _inituser(srcpath):
     uid, gid = (x for s in [srcpath.stat()] for x in [s.st_uid, s.st_gid])
