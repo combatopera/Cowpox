@@ -109,7 +109,7 @@ class ContextImpl:
         log.info('Prebuilding recipes')
         for recipe in recipes:
             log.info("Prebuilding %s for %s", recipe.name, self.arch.name)
-            self.make(recipe.get_build_dir(), recipe.prebuild)
+            self.make(recipe.get_build_dir(), recipe.prebuild_arch)
         log.info('Building recipes')
         for recipe in recipes:
             log.info("Building %s for %s", recipe.name, self.arch.name)
