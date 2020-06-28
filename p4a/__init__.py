@@ -217,7 +217,6 @@ class Recipe(Plugin):
 
     def prebuild(self):
         self.prebuild_arch()
-        self.apply_patches()
 
     def prebuild_arch(self):
         pass
@@ -244,6 +243,7 @@ class Recipe(Plugin):
             touch.print(build_dir / '.patched')
 
     def mainbuild(self):
+        self.apply_patches()
         self.build_arch()
         libs = [p for p in self._get_libraries() if p.name.endswith('.so')]
         if libs:
