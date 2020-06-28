@@ -41,7 +41,6 @@
 from . import skel
 from .config import Config
 from .platform import Platform
-from aridimpl.model import Function, Text
 from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
@@ -168,14 +167,6 @@ class AssetArchive:
         for subdir in subdirlist:
             yield from cls._listfiles(subdir)
 
-def _xmltext(context, resolvable):
-    from xml.sax.saxutils import escape
-    return Text(escape(resolvable.resolve(context).cat())) # FIXME LATER: Insufficient for attr content.
-
-def _xmlattr(context, resolvable):
-    from xml.sax.saxutils import quoteattr
-    return Text(quoteattr(resolvable.resolve(context).cat()))
-
 class BulkOK: pass
 
 class AndroidProject:
@@ -284,8 +275,8 @@ class AndroidProject:
             if self.min_sdk_version >= 13:
                 configChanges.append('screenSize')
         c = aridity.Context()
-        c['"',] = Function(_xmlattr)
         with Repl(c) as repl:
+            repl('" = $(xmlattr)')
             if self.bootstrapname == 'sdl2':
                 repl.printf("url_scheme = %s", url_scheme)
                 repl.printf("launchMode = %s", self.sdl2_launchMode)
@@ -325,8 +316,8 @@ class AndroidProject:
             repl.printf("redirect %s", self.android_project_dir / 'build.gradle')
             repl.printf("< %s", self.android_project_dir / 'templates' / 'build.gradle.aridt')
         c = aridity.Context()
-        c['&',] = Function(_xmltext)
         with Repl(c) as repl:
+            repl('& = $(xmltext)')
             repl.printf("app_name = %s", self.title)
             repl.printf("private_version = %s", time.time()) # XXX: Must we use time?
             repl.printf("presplash_color = %s", self.presplash_color)
