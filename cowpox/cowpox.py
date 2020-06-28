@@ -58,11 +58,10 @@ import logging, os
 
 log = logging.getLogger(__name__)
 
-@types(Bootstrap, ContextImpl, PipInstallRecipe, this = BulkOK)
-def bulk(bootstrap, context, pipinstallrecipe):
+@types(Bootstrap, ContextImpl, this = BulkOK)
+def bulk(bootstrap, context):
     bootstrap.prepare_dirs()
     context.build_recipes()
-    pipinstallrecipe.build_nonrecipes()
 
 def _inituser(srcpath):
     uid, gid = (x for s in [srcpath.stat()] for x in [s.st_uid, s.st_gid])

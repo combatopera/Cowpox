@@ -39,7 +39,8 @@
 # THE SOFTWARE.
 
 from .config import Config
-from .make import BulkOK, Make
+from .context import SiteOK
+from .make import Make
 from diapyr import types
 from jproperties import Properties
 from lagoon import cp, find, mv, rm, unzip
@@ -98,7 +99,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files(self.bootstrapsdir / 'common' / 'build', self.build_dir, False)
 
-    @types(Make, BulkOK, this = BootstrapOK)
+    @types(Make, SiteOK, this = BootstrapOK)
     def toandroidproject(self, make, _):
         make(self.android_project_dir, self.run_distribute)
 

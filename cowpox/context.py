@@ -40,6 +40,7 @@
 
 from .config import Config
 from .graph import GraphImpl
+from .make import BulkOK
 from .platform import Make
 from .util import DIProxy
 from diapyr import types
@@ -66,6 +67,8 @@ class GraphProxy(DIProxy, Graph):
     def host_recipe(self):
         return self.di(HostPythonRecipe)
 
+class SiteOK: pass
+
 class PipInstallRecipe(CythonRecipe):
 
     @types(Config)
@@ -74,7 +77,8 @@ class PipInstallRecipe(CythonRecipe):
         self.python_install_dir = config.python_install_dir
         self.buildsdir = Path(config.buildsdir)
 
-    def build_nonrecipes(self):
+    @types(BulkOK, this = SiteOK)
+    def buildsite(self, _):
         pythonrecipe = self.graph.python_recipe
         virtualenv.print('--python', pythonrecipe.exename, self.venv_path)
         pip = Program.text(self.venv_path / 'bin' / 'pip')
