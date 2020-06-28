@@ -78,7 +78,6 @@ class PipInstallRecipe(CythonRecipe):
         pythonrecipe = self.graph.python_recipe
         virtualenv.print('--python', pythonrecipe.exename, self.venv_path)
         pip = Program.text(self.venv_path / 'bin' / 'pip')
-        pip.install._U.print('pip', env = dict(PYTHONPATH = self.python_install_dir)) # XXX: Really?
         pip.install.print(get_distribution('Cython').as_requirement(), env = dict(PYTHONPATH = self.python_install_dir))
         installenv = self.get_recipe_env()
         installenv['PYTHONPATH'] = os.pathsep.join(map(str, [
