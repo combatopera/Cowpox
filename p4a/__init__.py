@@ -242,6 +242,9 @@ class Recipe(Plugin):
     def mainbuild(self):
         self.apply_patches()
         self.build_arch()
+        self.install_libraries()
+
+    def install_libraries(self):
         libs = [p for p in self._get_libraries() if p.name.endswith('.so')]
         if libs:
             cp.print(*libs, self.arch.libs_dir)
