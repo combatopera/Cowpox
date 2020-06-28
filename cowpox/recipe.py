@@ -44,7 +44,7 @@ from .config import Config
 from .mirror import Mirror
 from .platform import Platform
 from .python import HostPythonRecipe
-from .util import format_obj
+from .util import format_obj, Plugin
 from diapyr import types
 from lagoon import cp, find, patch as patchexe, tar, touch, unzip
 from lagoon.program import Program
@@ -55,15 +55,6 @@ from zipfile import ZipFile
 import hashlib, logging, os, shutil, subprocess
 
 log = logging.getLogger(__name__)
-
-class PluginType(type):
-
-    def __init__(cls, *args):
-        super().__init__(*args)
-        fqmodule = cls.__module__
-        cls.name = fqmodule[fqmodule.rfind('.') + 1:] # FIXME LATER: Do not override (possibly inherited) explicit name.
-
-class Plugin(metaclass = PluginType): pass
 
 class Recipe(Plugin):
 

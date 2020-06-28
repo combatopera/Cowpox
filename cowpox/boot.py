@@ -41,7 +41,7 @@
 from . import Arch, BootstrapOK, Graph, GraphInfo, SiteOK, SkeletonOK
 from .config import Config
 from .make import Make
-from .recipe import Plugin, PluginType
+from .util import Plugin, PluginType
 from diapyr import types
 from jproperties import Properties
 from lagoon import cp, find, mv, rm, unzip
