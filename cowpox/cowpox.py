@@ -94,7 +94,8 @@ def _main():
         di.add(PipInstallRecipe)
         di.add(Platform)
         di.add(PlatformInfo)
-        di(GraphInfoImpl).configure(di)
+        for recipeimpl in di(GraphInfoImpl).recipeimpls():
+            di.add(recipeimpl)
         return di(APKPath)
 
 def main_Cowpox():

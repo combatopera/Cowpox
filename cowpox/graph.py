@@ -182,9 +182,9 @@ class GraphInfoImpl(GraphInfo):
                         break
         return '-'.join([name, *sorted(recipenames)])
 
-    def configure(self, di):
+    def recipeimpls(self):
         for name in self.recipenames:
-            di.add(_recipeimpl(name))
+            yield _recipeimpl(name)
 
 class GraphImpl:
 
