@@ -63,7 +63,7 @@ class Python3Recipe(GuestPythonRecipe):
     def mainbuild(self):
         self.apply_patches()
         configure_args = [
-            '--host={android_host}',
+            f"--host={self.arch.command_prefix}",
             '--build={android_build}',
             '--enable-shared',
             '--enable-ipv6',
