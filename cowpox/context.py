@@ -74,13 +74,14 @@ class PipInstallRecipe(CythonRecipe):
         self.buildsdir = Path(config.buildsdir)
 
     def build_nonrecipes(self):
-        virtualenv.print('--python', self.graph.python_recipe.exename, self.venv_path)
+        pythonrecipe = self.graph.python_recipe
+        virtualenv.print('--python', pythonrecipe.exename, self.venv_path)
         pip = Program.text(self.venv_path / 'bin' / 'pip')
         pip.install._U.print('pip', env = dict(PYTHONPATH = self.python_install_dir)) # XXX: Really?
         pip.install.print('Cython', env = dict(PYTHONPATH = self.python_install_dir)) # TODO: Use same version as in image.
         installenv = self.get_recipe_env()
         installenv['PYTHONPATH'] = os.pathsep.join(map(str, [
-            self.venv_path / 'lib' / f"python{self.graph.python_recipe.majminversion}" / 'site-packages',
+            self.venv_path / 'lib' / f"python{pythonrecipe.majminversion}" / 'site-packages',
             self.python_install_dir,
         ]))
         pypinames = self.graphinfo.pypinames
