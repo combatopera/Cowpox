@@ -167,9 +167,6 @@ class PythonRecipe(Recipe):
                     env['PYTHONPATH'] = os.pathsep.join(map(str, hppath))
         return env
 
-    def build_arch(self):
-        self.install_python_package()
-
     def install_python_package(self):
         log.info("Installing %s into site-packages", self.name)
         Program.text(self.hostpython_location).print(

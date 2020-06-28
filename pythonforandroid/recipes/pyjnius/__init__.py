@@ -64,7 +64,7 @@ class PyjniusRecipe(CythonRecipe):
 
     def mainbuild(self):
         self.apply_patches()
-        self.build_arch()
+        self.install_python_package()
         self.install_libraries()
         log.info('Copying pyjnius java class to classes build dir')
         cp._a.print(self.get_build_dir() / 'jnius' / 'src' / 'org', self.javaclass_dir.mkdirp())

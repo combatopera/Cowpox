@@ -75,5 +75,5 @@ class KivyRecipe(CythonRecipe):
 
     def mainbuild(self):
         self.apply_patches()
-        self.build_arch()
+        self.install_python_package()
         self.install_libraries()
