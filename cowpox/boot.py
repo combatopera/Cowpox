@@ -70,6 +70,8 @@ def _copy_files(src_root, dest_root, override):
 
 class BootstrapType(PluginType): pass
 
+class SkeletonOK: pass
+
 class BootstrapOK: pass
 
 class Bootstrap(Plugin, metaclass = BootstrapType):
@@ -95,6 +97,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.arch = arch
         self.graphinfo = graphinfo
 
+    @types(this = SkeletonOK)
     def prepare_dirs(self):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files(self.bootstrapsdir / 'common' / 'build', self.build_dir, False)

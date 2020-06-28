@@ -45,8 +45,6 @@ import logging, shutil
 
 log = logging.getLogger(__name__)
 
-class BulkOK: pass
-
 class Make:
 
     cursor = 0

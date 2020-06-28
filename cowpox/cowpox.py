@@ -45,22 +45,18 @@ from .boot import Bootstrap
 from .config import Config
 from .context import buildrecipes, GraphImpl, GraphProxy, PipInstallRecipe
 from .graph import GraphInfoImpl
-from .make import BulkOK, Make
+from .make import Make
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
 from .util import findimpl, Logging
 from argparse import ArgumentParser
-from diapyr import DI, types
+from diapyr import DI
 from lagoon import groupadd, useradd
 from pathlib import Path
 from pkg_resources import resource_filename
 import logging, os
 
 log = logging.getLogger(__name__)
-
-@types(Bootstrap, this = BulkOK)
-def bulk(bootstrap):
-    bootstrap.prepare_dirs()
 
 def _inituser(srcpath):
     uid, gid = (x for s in [srcpath.stat()] for x in [s.st_uid, s.st_gid])
@@ -88,7 +84,6 @@ def _main():
         di.add(Assembly)
         di.add(AssetArchive)
         di.add(buildrecipes)
-        di.add(bulk)
         di.add(config)
         di.add(di)
         di.add(GraphImpl)

@@ -38,9 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .boot import SkeletonOK
 from .config import Config
 from .graph import GraphImpl
-from .make import BulkOK
 from .platform import Make
 from .util import DIProxy
 from diapyr import types
@@ -95,7 +95,7 @@ class PipInstallRecipe(CythonRecipe):
             pip.install._v.__no_deps.print('--target', self.python_install_dir, *pypinames, env = installenv)
         self.arch.strip_object_files(self.buildsdir) # XXX: What's this for?
 
-@types(Graph, Make, BulkOK, this = RecipesOK)
+@types(Graph, Make, SkeletonOK, this = RecipesOK)
 def buildrecipes(self, graph, make, _):
     for recipe in graph.allrecipes():
         log.info("Build recipe: %s", recipe.name)
