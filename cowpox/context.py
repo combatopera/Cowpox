@@ -91,7 +91,7 @@ class PipInstallRecipe(CythonRecipe):
         self.arch.strip_object_files(self.buildsdir) # XXX: What's this for?
 
 @types(Graph, Make, SkeletonOK, this = RecipesOK)
-def buildrecipes(self, graph, make, _):
+def buildrecipes(graph, make, _):
     for recipe in graph.allrecipes():
         log.info("Build recipe: %s", recipe.name)
         recipe.download_if_necessary()
