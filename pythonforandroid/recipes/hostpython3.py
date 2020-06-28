@@ -44,3 +44,8 @@ class Hostpython3Recipe(HostPythonRecipe):
 
     version = '3.8.1'
     conflicts = ['hostpython2']
+
+    def mainbuild(self):
+        self.apply_patches()
+        self.build_arch()
+        self.install_libraries()

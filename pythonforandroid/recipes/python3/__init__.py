@@ -76,3 +76,8 @@ class Python3Recipe(GuestPythonRecipe):
         if 'openssl' in self.graphinfo.recipenames:
             self.configure_args += (f"--with-openssl={self.graph.get_recipe('openssl').get_build_dir()}",)
         return super().set_libs_flags(env)
+
+    def mainbuild(self):
+        self.apply_patches()
+        self.build_arch()
+        self.install_libraries()

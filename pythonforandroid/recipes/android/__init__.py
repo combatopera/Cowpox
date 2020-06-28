@@ -81,3 +81,8 @@ class AndroidRecipe(CythonRecipe):
                 print('JNIEnv *SDL_AndroidGetJNIEnv(void);', file = fh)
                 print('#define SDL_ANDROID_GetJNIEnv SDL_AndroidGetJNIEnv', file = fh)
         self.config_env = {key: str(value) for key, value in config.items()}
+
+    def mainbuild(self):
+        self.apply_patches()
+        self.build_arch()
+        self.install_libraries()

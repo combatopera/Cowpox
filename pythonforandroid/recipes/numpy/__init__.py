@@ -58,3 +58,8 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
 
     def rebuild_compiled_components(self):
         super().rebuild_compiled_components('-j', cpu_count())
+
+    def mainbuild(self):
+        self.apply_patches()
+        self.build_arch()
+        self.install_libraries()

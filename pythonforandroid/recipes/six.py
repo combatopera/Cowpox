@@ -45,3 +45,8 @@ class SixRecipe(PythonRecipe): # XXX: Why do we need this?
     version = '1.10.0'
     urlformat = "https://pypi.python.org/packages/source/s/six/six-{version}.tar.gz"
     depends = ['setuptools']
+
+    def mainbuild(self):
+        self.apply_patches()
+        self.build_arch()
+        self.install_libraries()

@@ -49,3 +49,8 @@ class RecipeImpl(CythonRecipe):
     @types(Config)
     def __init(self, config):
         self.url = config.container.src
+
+    def mainbuild(self):
+        self.apply_patches()
+        self.build_arch()
+        self.install_libraries()

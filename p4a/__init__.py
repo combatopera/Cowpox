@@ -239,11 +239,6 @@ class Recipe(Plugin):
                     patch = nextpatch
             touch.print(build_dir / '.patched')
 
-    def mainbuild(self):
-        self.apply_patches()
-        self.build_arch()
-        self.install_libraries()
-
     def install_libraries(self):
         libs = [p for p in self._get_libraries() if p.name.endswith('.so')]
         if libs:

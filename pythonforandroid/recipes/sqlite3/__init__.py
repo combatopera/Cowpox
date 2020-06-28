@@ -61,3 +61,8 @@ class Sqlite3Recipe(NDKRecipe):
 
     def includeslinkslibs(self):
         return [[self.get_build_dir()], [self.get_lib_dir()], ['sqlite3']]
+
+    def mainbuild(self):
+        self.apply_patches()
+        self.build_arch()
+        self.install_libraries()

@@ -48,3 +48,8 @@ class CythonRecipe(CompiledComponentsPythonRecipe):
     depends = ['setuptools']
     call_hostpython_via_targetpython = False
     install_in_hostpython = True
+
+    def mainbuild(self):
+        self.apply_patches()
+        self.build_arch()
+        self.install_libraries()

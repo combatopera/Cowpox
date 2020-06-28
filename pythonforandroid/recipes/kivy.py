@@ -72,3 +72,8 @@ class KivyRecipe(CythonRecipe):
                 self.bootstrap.build_dir / 'jni' / 'SDL2_ttf',
             ]))
         return env
+
+    def mainbuild(self):
+        self.apply_patches()
+        self.build_arch()
+        self.install_libraries()

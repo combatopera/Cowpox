@@ -64,3 +64,8 @@ class LibffiRecipe(Recipe):
 
     def includeslinkslibs(self):
         return [[self.get_build_dir() / 'include'], [self.get_build_dir() / '.libs'], ['ffi']]
+
+    def mainbuild(self):
+        self.apply_patches()
+        self.build_arch()
+        self.install_libraries()

@@ -46,3 +46,8 @@ class SetuptoolsRecipe(PythonRecipe):
     urlformat = "https://pypi.python.org/packages/source/s/setuptools/setuptools-{version}.zip"
     call_hostpython_via_targetpython = False
     install_in_hostpython = True
+
+    def mainbuild(self):
+        self.apply_patches()
+        self.build_arch()
+        self.install_libraries()
