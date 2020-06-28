@@ -202,7 +202,7 @@ class GuestPythonRecipe(Recipe):
             py_version += 'm'
         return f"libpython{py_version}.so"
 
-    def build_arch(self):
+    def build_android(self):
         assert self.ndk_api >= self.MIN_NDK_API
         recipe_build_dir = self.get_build_dir()
         build_dir = (recipe_build_dir / 'android-build').mkdirp()

@@ -79,5 +79,5 @@ class Python3Recipe(GuestPythonRecipe):
 
     def mainbuild(self):
         self.apply_patches()
-        self.build_arch()
+        self.build_android()
         self.install_libraries()
