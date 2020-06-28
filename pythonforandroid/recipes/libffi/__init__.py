@@ -52,7 +52,8 @@ class LibffiRecipe(Recipe):
     patches = ['remove-version-info.patch']
     builtlibpaths = [Path('.libs', 'libffi.so')]
 
-    def build_arch(self):
+    def mainbuild(self):
+        self.apply_patches()
         env = self.get_recipe_env()
         build_dir = self.get_build_dir()
         if not (build_dir / 'configure').exists():
@@ -61,11 +62,7 @@ class LibffiRecipe(Recipe):
         Program.text(f".{os.sep}configure").print(
                 f"--host={self.arch.command_prefix}", f"--prefix={build_dir}", '--disable-builddir', '--enable-shared', env = env, cwd = build_dir)
         make.print('-j', cpu_count(), 'libffi.la', env = env, cwd = build_dir)
+        self.install_libraries()
 
     def includeslinkslibs(self):
         return [[self.get_build_dir() / 'include'], [self.get_build_dir() / '.libs'], ['ffi']]
-
-    def mainbuild(self):
-        self.apply_patches()
-        self.build_arch()
-        self.install_libraries()
