@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox.recipe import PythonRecipe
+from cowpox.pyrecipe import PythonRecipe
 
 class SetuptoolsRecipe(PythonRecipe):
 

@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox.recipe import CompiledComponentsPythonRecipe
+from cowpox.pyrecipe import CompiledComponentsPythonRecipe
 
 class CythonRecipe(CompiledComponentsPythonRecipe):
 

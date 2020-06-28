@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from cowpox.patch import will_build
-from cowpox.recipe import CythonRecipe
+from cowpox.pyrecipe import CythonRecipe
 from types import MappingProxyType
 import logging
 

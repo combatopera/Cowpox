@@ -42,8 +42,8 @@ from . import Graph, RecipesOK, SiteOK, SkeletonOK
 from .config import Config
 from .graph import GraphImpl
 from .platform import Make
+from .pyrecipe import CythonRecipe
 from .python import GuestPythonRecipe, HostPythonRecipe
-from .recipe import CythonRecipe
 from .util import DIProxy
 from diapyr import types
 from lagoon import virtualenv

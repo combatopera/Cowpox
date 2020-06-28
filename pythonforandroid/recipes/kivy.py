@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox.recipe import CythonRecipe
+from cowpox.pyrecipe import CythonRecipe
 from lagoon import cp
 import os
 
