@@ -103,22 +103,12 @@ class ContextImpl:
             self.make(recipe.recipebuilddir, recipe.mainbuild)
 
     def build_nonrecipes(self):
-        log.info('Installing pure Python modules')
-        log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
         pypinames = self.graphinfo.pypinames
         if not pypinames:
-            log.info('No Python modules and no setup.py to process, skipping')
             return
-        log.info("The requirements (%s) don't have recipes, attempting to install them with pip", ', '.join(pypinames))
-        log.info('If this fails, it may mean that the module has compiled components and needs a recipe.')
         virtualenv.print(f"--python={self.graph.python_recipe.exename}", self.venv_path)
-        log.info('Upgrade pip to latest version')
         pip = Program.text(self.venv_path / 'bin' / 'pip')
         pip.install._U.print('pip', env = dict(PYTHONPATH = self.python_install_dir))
-        log.info('Install Cython in case one of the modules needs it to build')
         pip.install.print('Cython', env = dict(PYTHONPATH = self.python_install_dir))
-        log.info('Installing Python modules with pip')
-        log.info('IF THIS FAILS, THE MODULES MAY NEED A RECIPE. A reason for this is often modules compiling native code that is unaware of Android cross-compilation and does not work without additional changes / workarounds.')
-        # Get environment variables for build (with CC/compiler set):
         pip.install._v.__no_deps.print('--target', self.python_install_dir.pmkdirp(), *pypinames, env = self.pipinstallrecipe.get_recipe_env())
         self.arch.strip_object_files(self.buildsdir)
