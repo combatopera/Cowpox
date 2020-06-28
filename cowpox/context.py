@@ -106,7 +106,7 @@ class ContextImpl:
     def build_nonrecipes(self):
         log.info('Installing pure Python modules')
         log.info('*** PYTHON PACKAGE / PROJECT INSTALL STAGE ***')
-        pypinames = [name for name in self.graphinfo.pypinames if not self.context.insitepackages(name)]
+        pypinames = self.graphinfo.pypinames
         if not pypinames:
             log.info('No Python modules and no setup.py to process, skipping')
             return

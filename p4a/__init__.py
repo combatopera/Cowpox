@@ -67,9 +67,6 @@ class Context:
     def __init__(self):
         pass
 
-    def insitepackages(self, name):
-        return False # TODO: Probably recreate site-packages if a dep has been rebuilt.
-
 class Graph: pass
 
 class GraphInfo: pass
