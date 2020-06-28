@@ -215,9 +215,6 @@ class Recipe(Plugin):
         env['BUILDLIB_PATH'] = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir() / 'native-build' / 'build' / f"lib.{build_platform}-{self.graph.python_recipe.majminversion}"
         return env
 
-    def prebuild_arch(self):
-        pass
-
     def apply_patches(self):
         if self.patches:
             log.info("Applying patches for %s[%s]", self.name, self.arch.name)

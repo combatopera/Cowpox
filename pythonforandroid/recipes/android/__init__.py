@@ -56,8 +56,7 @@ class AndroidRecipe(CythonRecipe):
         env.update(self.config_env)
         return env
 
-    def prebuild_arch(self):
-        super().prebuild_arch()
+    def mainbuild(self):
         bootstrap_name = self.bootstrap.name
         is_sdl2 = bootstrap_name in {'sdl2', 'sdl2python3', 'sdl2_gradle'}
         is_webview = bootstrap_name == 'webview'
@@ -81,8 +80,6 @@ class AndroidRecipe(CythonRecipe):
                 print('JNIEnv *SDL_AndroidGetJNIEnv(void);', file = fh)
                 print('#define SDL_ANDROID_GetJNIEnv SDL_AndroidGetJNIEnv', file = fh)
         self.config_env = {key: str(value) for key, value in config.items()}
-
-    def mainbuild(self):
         self.apply_patches()
         self.install_python_package()
         self.install_libraries()
