@@ -90,8 +90,7 @@ class OpenSSLRecipe(Recipe):
     def mainbuild(self):
         self.apply_patches()
         env = self.get_recipe_env()
-        cwd = self.recipebuilddir
-        perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = cwd)
+        perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = self.recipebuilddir)
         self.apply_patch('disable-sover.patch')
-        make.print('build_libs', env = env, cwd = cwd)
+        make.print('build_libs', env = env, cwd = self.recipebuilddir)
         self.install_libraries()

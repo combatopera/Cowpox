@@ -195,12 +195,11 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def build_compiled_components(self, *setup_extra_args):
         log.info("Building compiled components in %s", self.name)
-        builddir = self.recipebuilddir
-        hostpython = Program.text(self.hostpython_location).partial(env = self.get_recipe_env(), cwd = builddir)
+        hostpython = Program.text(self.hostpython_location).partial(env = self.get_recipe_env(), cwd = self.recipebuilddir)
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
-        objsdir, = builddir.glob('build/lib.*')
+        objsdir, = self.recipebuilddir.glob('build/lib.*')
         find.print(objsdir, '-name', '*.o', '-exec', *self.arch.strip, '{}', ';')
 
     def install_hostpython_package(self):
@@ -227,8 +226,7 @@ class CythonRecipe(PythonRecipe):
     def install_python_package(self):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env()
-        builddir = self.recipebuilddir
-        hostpython = Program.text(self.hostrecipe.python_exe).partial(env = env, cwd = builddir)
+        hostpython = Program.text(self.hostrecipe.python_exe).partial(env = env, cwd = self.recipebuilddir)
         hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False
@@ -241,11 +239,11 @@ class CythonRecipe(PythonRecipe):
             log.info("%s first build failed (as expected)", self.name)
             manually_cythonise = True
         if manually_cythonise:
-            self.cythonize_build(env, builddir)
+            self.cythonize_build(env, self.recipebuilddir)
             setup.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
-        self.arch.strip_object_files(builddir)
+        self.arch.strip_object_files(self.recipebuilddir)
         super().install_python_package()
 
     def cythonize_file(self, env, filename):

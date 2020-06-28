@@ -81,18 +81,17 @@ class HostPythonRecipe(Recipe):
         return self.recipebuilddir / self.build_subdir
 
     def build_exe(self):
-        recipe_build_dir = self.recipebuilddir
-        build_dir = (recipe_build_dir / self.build_subdir).mkdirp()
+        build_dir = (self.recipebuilddir / self.build_subdir).mkdirp()
         if not (build_dir / 'config.status').exists():
-            Program.text(recipe_build_dir / 'configure').print(cwd = build_dir)
-        setup_dist_location = recipe_build_dir / 'Modules' / 'Setup.dist'
+            Program.text(self.recipebuilddir / 'configure').print(cwd = build_dir)
+        setup_dist_location = self.recipebuilddir / 'Modules' / 'Setup.dist'
         if setup_dist_location.exists():
             cp.print(setup_dist_location, build_dir / 'Modules' / 'Setup')
         else:
-            setup_location = recipe_build_dir / 'Modules' / 'Setup'
+            setup_location = self.recipebuilddir / 'Modules' / 'Setup'
             if not setup_location.exists():
                 raise Exception('Could not find Setup.dist or Setup in Python build')
-        make.print('-j', cpu_count(), '-C', build_dir, cwd = recipe_build_dir)
+        make.print('-j', cpu_count(), '-C', build_dir, cwd = self.recipebuilddir)
         exe, = (exe for exe in (self.get_path_to_python() / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
         cp.print(exe, self.python_exe)
 
@@ -204,12 +203,11 @@ class GuestPythonRecipe(Recipe):
 
     def build_android(self, configure_args):
         assert self.ndk_api >= self.MIN_NDK_API
-        recipe_build_dir = self.recipebuilddir
-        build_dir = (recipe_build_dir / 'android-build').mkdirp()
+        build_dir = (self.recipebuilddir / 'android-build').mkdirp()
         env = self._set_libs_flags()
-        Program.text(recipe_build_dir / 'configure').print(*configure_args, env = env, cwd = build_dir)
+        Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = build_dir)
         make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env, cwd = build_dir)
-        cp.print(build_dir / 'pyconfig.h', recipe_build_dir / 'Include')
+        cp.print(build_dir / 'pyconfig.h', self.recipebuilddir / 'Include')
 
     def include_root(self):
         return self.recipebuilddir / 'Include'

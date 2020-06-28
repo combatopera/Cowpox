@@ -179,16 +179,15 @@ class Recipe(Plugin):
             log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
 
     def prepare_build_dir(self):
-        targetpath = self.recipebuilddir
         if self.url is None:
             log.debug("[%s] Skip unpack as no URL is set.", self.name)
-            targetpath.mkdir()
+            self.recipebuilddir.mkdir()
             return
         if not urlparse(self.url).scheme:
             srcpath = Path(self.url.replace('/', os.sep))
             log.info("[%s] Copy from: %s", self.name, srcpath)
             # TODO: Copy without .git either.
-            self._copywithoutbuild(srcpath if srcpath.is_absolute() else self._extresourcepath(srcpath), targetpath)
+            self._copywithoutbuild(srcpath if srcpath.is_absolute() else self._extresourcepath(srcpath), self.recipebuilddir)
             return
         archivepath = self.mirror.getpath(self.url)
         log.info("[%s] Unpack for: %s", self.name, self.arch.name)
@@ -196,19 +195,19 @@ class Recipe(Plugin):
         # TODO LATER: Do not assume single top-level directory in archive.
         if self.url.endswith('.zip'):
             try:
-                unzip.print(archivepath, cwd = targetpath.parent)
+                unzip.print(archivepath, cwd = self.recipebuilddir.parent)
             except subprocess.CalledProcessError as e:
                 if e.returncode not in {1, 2}:
                     raise
             with ZipFile(archivepath) as zf:
                 rootname = zf.filelist[0].filename.split('/')[0]
         elif self.url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
-            tar.xf.print(archivepath, cwd = targetpath.parent)
+            tar.xf.print(archivepath, cwd = self.recipebuilddir.parent)
             rootname = tar.tf(archivepath).splitlines()[0].split('/')[0]
         else:
             raise Exception(f"Unsupported archive type: {self.url}")
-        if rootname != targetpath.name:
-            targetpath.with_name(rootname).rename(targetpath)
+        if rootname != self.recipebuilddir.name:
+            self.recipebuilddir.with_name(rootname).rename(self.recipebuilddir)
 
     def get_recipe_env(self):
         env = self.arch.get_env()
@@ -219,8 +218,7 @@ class Recipe(Plugin):
     def apply_patches(self):
         if self.patches:
             log.info("Applying patches for %s[%s]", self.name, self.arch.name)
-            build_dir = self.recipebuilddir
-            if (build_dir / '.patched').exists():
+            if (self.recipebuilddir / '.patched').exists():
                 log.info("%s already patched, skipping", self.name)
                 return
             for patch in self.patches:
@@ -235,7 +233,7 @@ class Recipe(Plugin):
                         log.debug("Patch denied: %s", patch)
                         break
                     patch = nextpatch
-            touch.print(build_dir / '.patched')
+            touch.print(self.recipebuilddir / '.patched')
 
     def install_libraries(self):
         libs = [p for p in self._get_libraries() if p.name.endswith('.so')]

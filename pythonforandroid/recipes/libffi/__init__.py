@@ -55,13 +55,12 @@ class LibffiRecipe(Recipe):
     def mainbuild(self):
         self.apply_patches()
         env = self.get_recipe_env()
-        build_dir = self.recipebuilddir
-        if not (build_dir / 'configure').exists():
-            Program.text(f".{os.sep}autogen.sh").print(env = env, cwd = build_dir)
-        autoreconf._vif.print(env = env, cwd = build_dir)
+        if not (self.recipebuilddir / 'configure').exists():
+            Program.text(f".{os.sep}autogen.sh").print(env = env, cwd = self.recipebuilddir)
+        autoreconf._vif.print(env = env, cwd = self.recipebuilddir)
         Program.text(f".{os.sep}configure").print(
-                f"--host={self.arch.command_prefix}", f"--prefix={build_dir}", '--disable-builddir', '--enable-shared', env = env, cwd = build_dir)
-        make.print('-j', cpu_count(), 'libffi.la', env = env, cwd = build_dir)
+                f"--host={self.arch.command_prefix}", f"--prefix={self.recipebuilddir}", '--disable-builddir', '--enable-shared', env = env, cwd = self.recipebuilddir)
+        make.print('-j', cpu_count(), 'libffi.la', env = env, cwd = self.recipebuilddir)
         self.install_libraries()
 
     def includeslinkslibs(self):
