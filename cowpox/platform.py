@@ -56,8 +56,8 @@ class PlatformOK: pass
 
 class PlatformInfo:
 
-    @types(Config, Mirror, Make)
-    def __init__(self, config, mirror, make):
+    @types(Config, Mirror)
+    def __init__(self, config, mirror):
         self.sdk_dir = Path(config.android_sdk_dir)
         self.skip_update = config.android.skip_update
         self.acceptlicense = config.android.accept_sdk_license
@@ -65,14 +65,13 @@ class PlatformInfo:
         self.ndk_dir = Path(config.android_ndk_dir)
         self.android_ndk_version = config.android.ndk
         self.mirror = mirror
-        self.make = make
 
-    @types(this = PlatformOK)
-    def install(self):
-        self.make(self.platformname)
-        self.make(self.sdk_dir, self._install_android_sdk)
-        self.make(self.android_ndk_version)
-        self.make(self.ndk_dir, self._install_android_ndk)
+    @types(Make, this = PlatformOK)
+    def install(self, make):
+        make(self.platformname)
+        make(self.sdk_dir, self._install_android_sdk)
+        make(self.android_ndk_version)
+        make(self.ndk_dir, self._install_android_ndk)
 
     def _install_android_sdk(self):
         log.info('Android SDK is missing, downloading')
