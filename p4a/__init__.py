@@ -61,12 +61,6 @@ class PluginType(type):
 
 class Plugin(metaclass = PluginType): pass
 
-class Context:
-
-    @types()
-    def __init__(self):
-        pass
-
 class Graph: pass
 
 class GraphInfo: pass
@@ -107,12 +101,11 @@ class Recipe(Plugin):
     def dir_name(self):
         return self.name
 
-    @types(Config, Context, Platform, Graph, Mirror, Arch, GraphInfo)
-    def __init__(self, config, context, platform, graph, mirror, arch, graphinfo):
+    @types(Config, Platform, Graph, Mirror, Arch, GraphInfo)
+    def __init__(self, config, platform, graph, mirror, arch, graphinfo):
         self.other_builds = Path(config.other_builds)
         self.projectbuilddir = Path(config.build.dir)
         self.extroot = Path(config.container.extroot)
-        self.context = context
         self.platform = platform
         self.graph = graph
         self.mirror = mirror

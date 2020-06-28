@@ -52,7 +52,6 @@ from .util import findimpl, Logging
 from argparse import ArgumentParser
 from diapyr import DI, types
 from lagoon import groupadd, useradd
-from p4a import Context
 from pathlib import Path
 from pkg_resources import resource_filename
 import logging, os
@@ -93,7 +92,6 @@ def _main():
         di.add(AssetArchive)
         di.add(bulk)
         di.add(config)
-        di.add(Context)
         di.add(ContextImpl)
         di.add(di)
         di.add(GraphImpl)

@@ -45,7 +45,7 @@ from .util import DIProxy
 from diapyr import types
 from lagoon import virtualenv
 from lagoon.program import Program
-from p4a import Arch, Context, Graph
+from p4a import Arch, Graph
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe
 from pathlib import Path
@@ -84,8 +84,8 @@ class PipInstallRecipe(CythonRecipe):
 
 class ContextImpl:
 
-    @types(Config, Arch, Graph, GraphInfo, PipInstallRecipe, Context, Make)
-    def __init__(self, config, arch, graph, graphinfo, pipinstallrecipe, context, make):
+    @types(Config, Arch, Graph, GraphInfo, PipInstallRecipe, Make)
+    def __init__(self, config, arch, graph, graphinfo, pipinstallrecipe, make):
         self.buildsdir = Path(config.buildsdir)
         self.python_install_dir = Path(config.python_install_dir)
         self.venv_path = Path(config.venv.path)
@@ -93,7 +93,6 @@ class ContextImpl:
         self.graph = graph
         self.graphinfo = graphinfo
         self.pipinstallrecipe = pipinstallrecipe
-        self.context = context
         self.make = make
 
     def build_recipes(self):
