@@ -43,7 +43,7 @@ from .android import AndroidProject, APKPath, Assembly, AssetArchive
 from .arch import all_archs
 from .boot import Bootstrap
 from .config import Config
-from .context import ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
+from .context import buildrecipes, GraphImpl, GraphProxy, PipInstallRecipe
 from .graph import GraphInfoImpl
 from .make import BulkOK, Make
 from .mirror import Mirror
@@ -58,10 +58,9 @@ import logging, os
 
 log = logging.getLogger(__name__)
 
-@types(Bootstrap, ContextImpl, this = BulkOK)
-def bulk(bootstrap, context):
+@types(Bootstrap, this = BulkOK)
+def bulk(bootstrap):
     bootstrap.prepare_dirs()
-    context.build_recipes()
 
 def _inituser(srcpath):
     uid, gid = (x for s in [srcpath.stat()] for x in [s.st_uid, s.st_gid])
@@ -88,9 +87,9 @@ def _main():
         di.add(AndroidProject)
         di.add(Assembly)
         di.add(AssetArchive)
+        di.add(buildrecipes)
         di.add(bulk)
         di.add(config)
-        di.add(ContextImpl)
         di.add(di)
         di.add(GraphImpl)
         di.add(GraphInfoImpl)

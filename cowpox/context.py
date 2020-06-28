@@ -67,6 +67,8 @@ class GraphProxy(DIProxy, Graph):
     def host_recipe(self):
         return self.di(HostPythonRecipe)
 
+class RecipesOK: pass
+
 class SiteOK: pass
 
 class PipInstallRecipe(CythonRecipe):
@@ -77,7 +79,7 @@ class PipInstallRecipe(CythonRecipe):
         self.python_install_dir = config.python_install_dir
         self.buildsdir = Path(config.buildsdir)
 
-    @types(BulkOK, this = SiteOK)
+    @types(RecipesOK, this = SiteOK)
     def buildsite(self, _):
         pythonrecipe = self.graph.python_recipe
         virtualenv.print('--python', pythonrecipe.exename, self.venv_path)
@@ -93,16 +95,10 @@ class PipInstallRecipe(CythonRecipe):
             pip.install._v.__no_deps.print('--target', self.python_install_dir, *pypinames, env = installenv)
         self.arch.strip_object_files(self.buildsdir) # XXX: What's this for?
 
-class ContextImpl:
-
-    @types(Graph, Make)
-    def __init__(self, graph, make):
-        self.graph = graph
-        self.make = make
-
-    def build_recipes(self):
-        for recipe in self.graph.allrecipes():
-            log.info("Build recipe: %s", recipe.name)
-            recipe.download_if_necessary()
-            self.make(recipe.recipebuilddir, recipe.prepare_build_dir)
-            self.make(recipe.recipebuilddir, recipe.mainbuild)
+@types(Graph, Make, BulkOK, this = RecipesOK)
+def buildrecipes(self, graph, make, _):
+    for recipe in graph.allrecipes():
+        log.info("Build recipe: %s", recipe.name)
+        recipe.download_if_necessary()
+        make(recipe.recipebuilddir, recipe.prepare_build_dir)
+        make(recipe.recipebuilddir, recipe.mainbuild)
