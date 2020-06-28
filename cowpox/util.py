@@ -105,7 +105,7 @@ def findimpl(modulename, basetype):
     impl, = (cls for cls, od in g.out_degree if not od)
     return impl
 
-class DIProxy:
+class DIProxy: # TODO: Migrate to diapyr.
 
     @types(DI)
     def __init__(self, di):
