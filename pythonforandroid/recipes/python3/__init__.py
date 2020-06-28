@@ -59,25 +59,22 @@ class Python3Recipe(GuestPythonRecipe):
     depends = ['hostpython3', 'sqlite3', 'openssl', 'libffi']
     opt_depends = ['libbz2', 'liblzma']
     conflicts = ['python2']
-    configure_args = (
-        '--host={android_host}',
-        '--build={android_build}',
-        '--enable-shared',
-        '--enable-ipv6',
-        'ac_cv_file__dev_ptmx=yes',
-        'ac_cv_file__dev_ptc=no',
-        '--without-ensurepip',
-        'ac_cv_little_endian_double=yes',
-        '--prefix={prefix}',
-        '--exec-prefix={exec_prefix}',
-    )
-
-    def set_libs_flags(self, env):
-        if 'openssl' in self.graphinfo.recipenames:
-            self.configure_args += (f"--with-openssl={self.graph.get_recipe('openssl').get_build_dir()}",)
-        return super().set_libs_flags(env)
 
     def mainbuild(self):
         self.apply_patches()
-        self.build_android()
+        configure_args = [
+            '--host={android_host}',
+            '--build={android_build}',
+            '--enable-shared',
+            '--enable-ipv6',
+            'ac_cv_file__dev_ptmx=yes',
+            'ac_cv_file__dev_ptc=no',
+            '--without-ensurepip',
+            'ac_cv_little_endian_double=yes',
+            '--prefix={prefix}',
+            '--exec-prefix={exec_prefix}',
+        ]
+        if 'openssl' in self.graphinfo.recipenames:
+            configure_args += [f"--with-openssl={self.graph.get_recipe('openssl').get_build_dir()}"]
+        self.build_android(configure_args)
         self.install_libraries()

@@ -99,7 +99,6 @@ class HostPythonRecipe(Recipe):
 class GuestPythonRecipe(Recipe):
 
     MIN_NDK_API = 21
-    configure_args = ()
     stdlib_dir_blacklist = {
         '__pycache__',
         'test',
@@ -162,7 +161,8 @@ class GuestPythonRecipe(Recipe):
             log.warning('lld not found, linking without it. Consider installing lld if linker errors occur.')
         return env
 
-    def set_libs_flags(self, env):
+    def _set_libs_flags(self):
+        env = self.get_recipe_env()
         def aslist(key):
             return [env[key]] if key in env else []
         cppflags = aslist('CPPFLAGS')
@@ -202,17 +202,17 @@ class GuestPythonRecipe(Recipe):
             py_version += 'm'
         return f"libpython{py_version}.so"
 
-    def build_android(self):
+    def build_android(self, configure_args):
         assert self.ndk_api >= self.MIN_NDK_API
         recipe_build_dir = self.get_build_dir()
         build_dir = (recipe_build_dir / 'android-build').mkdirp()
         sys_prefix = '/usr/local'
         sys_exec_prefix = '/usr/local'
-        env = self.set_libs_flags(self.get_recipe_env())
+        env = self._set_libs_flags()
         android_build = Program.text(recipe_build_dir / 'config.guess')(cwd = build_dir).strip()
         if not (build_dir / 'config.status').exists():
             kwargs = dict(android_host = env['HOSTARCH'], android_build = android_build, prefix = sys_prefix, exec_prefix = sys_exec_prefix)
-            configureargs = [a.format(**kwargs) for a in self.configure_args] # TODO: Use format_obj.
+            configureargs = [a.format(**kwargs) for a in configure_args] # TODO: Use format_obj.
             Program.text(recipe_build_dir / 'configure').print(*configureargs, env = env, cwd = build_dir)
         make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env, cwd = build_dir)
         cp.print(build_dir / 'pyconfig.h', recipe_build_dir / 'Include')
