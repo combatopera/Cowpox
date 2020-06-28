@@ -72,18 +72,10 @@ class BootstrapNDKRecipe(Recipe):
 class NDKRecipe(Recipe):
     '''A recipe class for any NDK project not included in the bootstrap.'''
 
-    generated_libraries = ()
-
     @types(Config)
     def __init(self, config):
         self.ndk_dir = Path(config.android_ndk_dir)
         self.ndk_api = config.android.ndk_api
-
-    def should_build(self):
-        lib_dir = self.get_lib_dir()
-        for lib in self.generated_libraries:
-            if not (lib_dir / lib).exists():
-                return True
 
     def get_lib_dir(self):
         return self.get_build_dir() / 'obj' / 'local' / self.arch.name
@@ -175,13 +167,6 @@ class PythonRecipe(Recipe):
                 else:
                     env['PYTHONPATH'] = os.pathsep.join(map(str, hppath))
         return env
-
-    def should_build(self):
-        if self.context.insitepackages(self.name):
-            log.info('Python package already exists in site-packages')
-            return False
-        log.info("%s apparently isn't already in site-packages", self.name)
-        return True
 
     def build_arch(self):
         super().build_arch()

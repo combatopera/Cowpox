@@ -244,25 +244,16 @@ class Recipe(Plugin):
             touch.print(build_dir / '.patched')
 
     def mainbuild(self):
-        if not self.should_build():
-            log.debug("[%s] Already built.", self.name)
-            return
         self.build_arch()
         libs = [p for p in self._get_libraries() if p.name.endswith('.so')]
         if libs:
             cp.print(*libs, self.arch.libs_dir)
-
-    def should_build(self):
-        return not self.builtlibpaths or not all(p.exists() for p in self._get_libraries()) # XXX: Weird logic?
 
     def build_arch(self):
         pass
 
     def postbuild_arch(self):
         pass
-
-    def has_libs(self, *libs):
-        return all(map(self.arch.has_lib, libs))
 
     def _get_libraries(self):
         return {self.get_build_dir() / libpath for libpath in self.builtlibpaths}
