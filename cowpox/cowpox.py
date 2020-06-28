@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from . import etc
-from .android import AndroidProject, APKPath, Assembly, AssetArchive, BulkOK, getapkpath, prepareandroidproject
+from .android import AndroidProject, APKPath, Assembly, AssetArchive, BulkOK
 from .arch import all_archs
 from .boot import Bootstrap
 from .config import Config
@@ -47,7 +47,7 @@ from .context import ContextImpl, GraphImpl, GraphProxy, PipInstallRecipe
 from .graph import GraphInfoImpl
 from .make import Make
 from .mirror import Mirror
-from .platform import installplatform, Platform, PlatformInfo
+from .platform import Platform, PlatformInfo
 from .util import findimpl, Logging
 from argparse import ArgumentParser
 from diapyr import DI, types
@@ -96,17 +96,14 @@ def _main():
         di.add(Context)
         di.add(ContextImpl)
         di.add(di)
-        di.add(getapkpath)
         di.add(GraphImpl)
         di.add(GraphInfoImpl)
         di.add(GraphProxy)
-        di.add(installplatform)
         di.add(Make)
         di.add(Mirror)
         di.add(PipInstallRecipe)
         di.add(Platform)
         di.add(PlatformInfo)
-        di.add(prepareandroidproject)
         di(GraphInfoImpl).configure(di)
         return di(APKPath)
 
