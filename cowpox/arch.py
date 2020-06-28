@@ -38,9 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import Arch, Graph
 from .config import Config
 from .platform import Platform
-from .recipe import Arch, Graph
 from diapyr import types
 from lagoon import find, which
 from multiprocessing import cpu_count

@@ -38,8 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import etc
-from .android import AndroidProject, APKPath, Assembly, AssetArchive
+from . import APKPath, etc
+from .android import AndroidProject, Assembly, AssetArchive
 from .arch import all_archs
 from .boot import Bootstrap
 from .config import Config

@@ -38,11 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import skel
-from .boot import BootstrapOK
+from . import AndroidProjectOK, APKPath, Arch, BootstrapOK, Graph, GraphInfo, skel
 from .config import Config
 from .platform import Platform
-from .recipe import Arch, Graph, GraphInfo
 from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
@@ -66,10 +64,6 @@ def _check_p4a_sign_env(error):
                 log.error("Asking for release but %s is missing--sign will not be passed", key)
             check = False
     return check
-
-class APKPath: pass
-
-class AndroidProjectOK: pass
 
 class Assembly:
 

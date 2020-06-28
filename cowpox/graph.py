@@ -38,9 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import GraphInfo
 from .boot import BootstrapType
 from .config import Config
-from .recipe import GraphInfo, Recipe
+from .recipe import Recipe
 from .util import findimpl, NoSuchPluginException
 from copy import deepcopy
 from diapyr import types

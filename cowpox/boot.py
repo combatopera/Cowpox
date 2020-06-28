@@ -38,10 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import Arch, BootstrapOK, Graph, GraphInfo, SiteOK, SkeletonOK
 from .config import Config
-from .context import SiteOK
 from .make import Make
-from .recipe import Arch, Graph, GraphInfo, Plugin, PluginType
+from .recipe import Plugin, PluginType
 from diapyr import types
 from jproperties import Properties
 from lagoon import cp, find, mv, rm, unzip
@@ -69,10 +69,6 @@ def _copy_files(src_root, dest_root, override):
                 dest_file.mkdirp()
 
 class BootstrapType(PluginType): pass
-
-class SkeletonOK: pass
-
-class BootstrapOK: pass
 
 class Bootstrap(Plugin, metaclass = BootstrapType):
 

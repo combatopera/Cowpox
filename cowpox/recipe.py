@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import Arch, Graph, GraphInfo
 from .boot import Bootstrap
 from .config import Config
 from .mirror import Mirror
@@ -63,12 +64,6 @@ class PluginType(type):
         cls.name = fqmodule[fqmodule.rfind('.') + 1:] # FIXME LATER: Do not override (possibly inherited) explicit name.
 
 class Plugin(metaclass = PluginType): pass
-
-class Graph: pass
-
-class GraphInfo: pass
-
-class Arch: pass
 
 class Recipe(Plugin):
 

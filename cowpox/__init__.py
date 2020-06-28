@@ -42,3 +42,23 @@ from pathlib import Path
 
 Path.mkdirp = lambda self: [self.mkdir(parents = True, exist_ok = True), self][-1]
 Path.pmkdirp = lambda self: [self.parent.mkdirp(), self][-1]
+
+class APKPath: pass
+
+class Arch: pass
+
+class Graph: pass
+
+class GraphInfo: pass
+
+class PlatformOK: pass
+
+class SkeletonOK: pass
+
+class BootstrapOK: pass
+
+class RecipesOK: pass
+
+class SiteOK: pass
+
+class AndroidProjectOK: pass
