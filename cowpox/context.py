@@ -49,6 +49,7 @@ from p4a import Graph
 from p4a.python import GuestPythonRecipe, HostPythonRecipe
 from p4a.recipe import CythonRecipe
 from pathlib import Path
+from pkg_resources import get_distribution
 import logging, os
 
 log = logging.getLogger(__name__)
@@ -78,7 +79,7 @@ class PipInstallRecipe(CythonRecipe):
         virtualenv.print('--python', pythonrecipe.exename, self.venv_path)
         pip = Program.text(self.venv_path / 'bin' / 'pip')
         pip.install._U.print('pip', env = dict(PYTHONPATH = self.python_install_dir)) # XXX: Really?
-        pip.install.print('Cython', env = dict(PYTHONPATH = self.python_install_dir)) # TODO: Use same version as in image.
+        pip.install.print(get_distribution('Cython').as_requirement(), env = dict(PYTHONPATH = self.python_install_dir))
         installenv = self.get_recipe_env()
         installenv['PYTHONPATH'] = os.pathsep.join(map(str, [
             self.venv_path / 'lib' / f"python{pythonrecipe.majminversion}" / 'site-packages',
