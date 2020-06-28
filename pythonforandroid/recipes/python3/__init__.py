@@ -71,8 +71,8 @@ class Python3Recipe(GuestPythonRecipe):
             'ac_cv_file__dev_ptc=no',
             '--without-ensurepip',
             'ac_cv_little_endian_double=yes',
-            '--prefix={prefix}',
-            '--exec-prefix={exec_prefix}',
+            '--prefix=/usr/local',
+            '--exec-prefix=/usr/local',
         ]
         if 'openssl' in self.graphinfo.recipenames:
             configure_args += [f"--with-openssl={self.graph.get_recipe('openssl').get_build_dir()}"]

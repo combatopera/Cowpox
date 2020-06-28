@@ -206,12 +206,10 @@ class GuestPythonRecipe(Recipe):
         assert self.ndk_api >= self.MIN_NDK_API
         recipe_build_dir = self.get_build_dir()
         build_dir = (recipe_build_dir / 'android-build').mkdirp()
-        sys_prefix = '/usr/local'
-        sys_exec_prefix = '/usr/local'
         env = self._set_libs_flags()
         android_build = Program.text(recipe_build_dir / 'config.guess')(cwd = build_dir).strip()
         if not (build_dir / 'config.status').exists():
-            kwargs = dict(android_host = env['HOSTARCH'], android_build = android_build, prefix = sys_prefix, exec_prefix = sys_exec_prefix)
+            kwargs = dict(android_host = env['HOSTARCH'], android_build = android_build)
             configureargs = [a.format(**kwargs) for a in configure_args] # TODO: Use format_obj.
             Program.text(recipe_build_dir / 'configure').print(*configureargs, env = env, cwd = build_dir)
         make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env, cwd = build_dir)
