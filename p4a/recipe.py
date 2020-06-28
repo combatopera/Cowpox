@@ -52,8 +52,9 @@ log = logging.getLogger(__name__)
 
 class BootstrapNDKRecipe(Recipe):
 
-    @types(Bootstrap)
-    def __init(self, bootstrap):
+    @types(Config, Bootstrap)
+    def __init(self, config, bootstrap):
+        self.ndk_dir = Path(config.android_ndk_dir)
         self.jni_dir = bootstrap.build_dir / 'jni'
         self.bootstrap = bootstrap
 
@@ -69,8 +70,10 @@ class BootstrapNDKRecipe(Recipe):
             env['EXTRA_LDLIBS'] += 'm'
         return env
 
+    def ndk_build(self):
+        Program.text(self.ndk_dir / 'ndk-build').print('V=1', env = self.get_recipe_env(), cwd = self.jni_dir)
+
 class NDKRecipe(Recipe):
-    '''A recipe class for any NDK project not included in the bootstrap.'''
 
     @types(Config)
     def __init(self, config):

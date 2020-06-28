@@ -38,11 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox.config import Config
-from diapyr import types
-from lagoon.program import Program
 from p4a.recipe import BootstrapNDKRecipe
-from pathlib import Path
 
 class LibSDL2Recipe(BootstrapNDKRecipe):
 
@@ -52,10 +48,6 @@ class LibSDL2Recipe(BootstrapNDKRecipe):
     dir_name = 'SDL'
     depends = ['sdl2_image', 'sdl2_mixer', 'sdl2_ttf']
 
-    @types(Config)
-    def __init(self, config):
-        self.ndk_dir = Path(config.android_ndk_dir)
-
     def get_recipe_env(self):
         env = self.recipe_env_with_python()
         env['APP_ALLOW_MISSING_DEPS'] = 'true'
@@ -63,5 +55,5 @@ class LibSDL2Recipe(BootstrapNDKRecipe):
 
     def mainbuild(self):
         self.apply_patches()
-        Program.text(self.ndk_dir / 'ndk-build').print('V=1', env = self.get_recipe_env(), cwd = self.jni_dir)
+        self.ndk_build()
         self.install_libraries()
