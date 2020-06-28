@@ -38,13 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Recipe
-from .python import HostPythonRecipe
-from cowpox.boot import Bootstrap
-from cowpox.config import Config
+from .boot import Bootstrap
+from .config import Config
 from diapyr import types
 from lagoon import find
 from lagoon.program import Program
+from p4a import Recipe
+from p4a.python import HostPythonRecipe
 from pathlib import Path
 import logging, os, subprocess
 

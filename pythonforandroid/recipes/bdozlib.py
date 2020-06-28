@@ -39,8 +39,8 @@
 # THE SOFTWARE.
 
 from cowpox.config import Config
+from cowpox.recipe import CythonRecipe
 from diapyr import types
-from p4a.recipe import CythonRecipe
 
 class RecipeImpl(CythonRecipe):
 

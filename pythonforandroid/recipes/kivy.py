@@ -38,8 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox.recipe import CythonRecipe
 from lagoon import cp
-from p4a.recipe import CythonRecipe
 import os
 
 class KivyRecipe(CythonRecipe):

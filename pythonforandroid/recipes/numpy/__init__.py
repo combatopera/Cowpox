@@ -38,8 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox.recipe import CompiledComponentsPythonRecipe
 from multiprocessing import cpu_count
-from p4a.recipe import CompiledComponentsPythonRecipe
 
 class NumpyRecipe(CompiledComponentsPythonRecipe):
 

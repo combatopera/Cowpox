@@ -40,9 +40,9 @@
 
 from cowpox.config import Config
 from cowpox.patch import will_build
+from cowpox.recipe import CythonRecipe
 from diapyr import types
 from lagoon import cp
-from p4a.recipe import CythonRecipe
 from pathlib import Path
 import logging
 
