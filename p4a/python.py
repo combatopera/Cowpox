@@ -100,13 +100,6 @@ class GuestPythonRecipe(Recipe):
 
     MIN_NDK_API = 21
     configure_args = ()
-    '''The configure arguments needed to build the python recipe. Those are
-    used in method :meth:`build_arch` (if not overwritten like python3's
-    recipe does).
-
-    .. note:: This variable should be properly set in subclass.
-    '''
-
     stdlib_dir_blacklist = {
         '__pycache__',
         'test',

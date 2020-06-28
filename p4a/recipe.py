@@ -81,7 +81,6 @@ class NDKRecipe(Recipe):
         return self.get_build_dir() / 'obj' / 'local' / self.arch.name
 
     def build_arch(self):
-        super().build_arch()
         Program.text(self.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={self.arch.name}",
                 env = self.get_recipe_env(), cwd = self.get_build_dir())
 
@@ -169,7 +168,6 @@ class PythonRecipe(Recipe):
         return env
 
     def build_arch(self):
-        super().build_arch()
         self.install_python_package()
 
     def install_python_package(self):
