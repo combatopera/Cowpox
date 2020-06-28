@@ -43,8 +43,8 @@ from .android import AndroidProject, Assembly, AssetArchive
 from .arch import all_archs
 from .boot import Bootstrap
 from .config import Config
-from .context import buildrecipes, GraphImpl, GraphProxy, PipInstallRecipe
-from .graph import GraphInfoImpl
+from .context import buildrecipes, GraphProxy, PipInstallRecipe
+from .graph import GraphImpl, GraphInfoImpl
 from .make import Make
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
