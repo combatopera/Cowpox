@@ -103,7 +103,7 @@ class ContextImpl:
             self.make(recipe.recipebuilddir, recipe.mainbuild)
 
     def build_nonrecipes(self):
-        virtualenv.print(f"--python={self.graph.python_recipe.exename}", self.venv_path)
+        virtualenv.print('--python', self.graph.python_recipe.exename, self.venv_path)
         pip = Program.text(self.venv_path / 'bin' / 'pip')
         pip.install._U.print('pip', env = dict(PYTHONPATH = self.python_install_dir))
         pip.install.print('Cython', env = dict(PYTHONPATH = self.python_install_dir))
