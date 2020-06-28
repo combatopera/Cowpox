@@ -244,8 +244,5 @@ class Recipe(Plugin):
         if libs:
             cp.print(*libs, self.arch.libs_dir)
 
-    def build_arch(self):
-        pass
-
     def _get_libraries(self):
         return {self.get_build_dir() / libpath for libpath in self.builtlibpaths}
