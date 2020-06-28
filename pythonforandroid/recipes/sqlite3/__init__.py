@@ -60,6 +60,6 @@ class Sqlite3Recipe(NDKRecipe):
 
     def mainbuild(self):
         self.apply_patches()
-        self.build_arch()
+        self.ndk_build()
         shutil.copyfile(self.get_build_dir() / 'libs' / self.arch.name / 'libsqlite3.so', self.arch.libs_dir / 'libsqlite3.so')
         self.install_libraries()
