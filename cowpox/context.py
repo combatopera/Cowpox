@@ -72,10 +72,8 @@ class PipInstallRecipe(CythonRecipe):
         self.venv_path = Path(config.venv.path)
         self.python_install_dir = config.python_install_dir
 
-    def get_recipe_env(self):
-        env = super().get_recipe_env()
-        # Make sure our build package dir is available, and the virtualenv
-        # site packages come FIRST (so the proper pip version is used):
+    def pipinstallenv(self):
+        env = self.get_recipe_env()
         env['PYTHONPATH'] = os.pathsep.join(map(str, [
             self.venv_path / 'lib' / f"python{self.graph.python_recipe.majminversion}" / 'site-packages',
             self.python_install_dir,
@@ -105,9 +103,9 @@ class ContextImpl:
     def build_nonrecipes(self):
         virtualenv.print('--python', self.graph.python_recipe.exename, self.venv_path)
         pip = Program.text(self.venv_path / 'bin' / 'pip')
-        pip.install._U.print('pip', env = dict(PYTHONPATH = self.python_install_dir))
-        pip.install.print('Cython', env = dict(PYTHONPATH = self.python_install_dir))
+        pip.install._U.print('pip', env = dict(PYTHONPATH = self.python_install_dir)) # XXX: Really?
+        pip.install.print('Cython', env = dict(PYTHONPATH = self.python_install_dir)) # TODO: Use same version as in image.
         pypinames = self.graphinfo.pypinames
         if pypinames:
-            pip.install._v.__no_deps.print('--target', self.python_install_dir, *pypinames, env = self.pipinstallrecipe.get_recipe_env())
+            pip.install._v.__no_deps.print('--target', self.python_install_dir, *pypinames, env = self.pipinstallrecipe.pipinstallenv())
         self.arch.strip_object_files(self.buildsdir)
