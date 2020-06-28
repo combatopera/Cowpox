@@ -58,11 +58,11 @@ import logging, os
 
 log = logging.getLogger(__name__)
 
-@types(Bootstrap, ContextImpl, Make, this = BulkOK)
-def bulk(bootstrap, context, make):
+@types(Bootstrap, ContextImpl, PipInstallRecipe, Make, this = BulkOK)
+def bulk(bootstrap, context, pipinstallrecipe, make):
     bootstrap.prepare_dirs()
     context.build_recipes()
-    context.build_nonrecipes()
+    pipinstallrecipe.build_nonrecipes()
     make(bootstrap.android_project_dir, bootstrap.run_distribute)
 
 def _inituser(srcpath):
