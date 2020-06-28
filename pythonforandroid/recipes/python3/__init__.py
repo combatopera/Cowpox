@@ -39,8 +39,8 @@
 # THE SOFTWARE.
 
 from cowpox.patch import version_starts_with
+from cowpox.python import GuestPythonRecipe
 from lagoon.program import Program
-from p4a.python import GuestPythonRecipe
 import lagoon
 
 class Python3Recipe(GuestPythonRecipe):

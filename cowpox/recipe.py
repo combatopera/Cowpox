@@ -40,11 +40,11 @@
 
 from .boot import Bootstrap
 from .config import Config
+from .python import HostPythonRecipe
 from diapyr import types
 from lagoon import find
 from lagoon.program import Program
 from p4a import Recipe
-from p4a.python import HostPythonRecipe
 from pathlib import Path
 import logging, os, subprocess
 

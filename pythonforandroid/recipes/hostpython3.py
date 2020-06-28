@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from p4a.python import HostPythonRecipe
+from cowpox.python import HostPythonRecipe
 
 class Hostpython3Recipe(HostPythonRecipe):
 

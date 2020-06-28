@@ -38,14 +38,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Recipe
-from cowpox.config import Config
+from .config import Config
 from diapyr import types
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from lagoon import cp, find, make, mv, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
+from p4a import Recipe
 from pathlib import Path
 from shutil import copy2
 import lagoon, logging, os, re
