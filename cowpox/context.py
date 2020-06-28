@@ -97,18 +97,10 @@ class ContextImpl:
         self.make = make
 
     def build_recipes(self):
-        log.info("Will compile for the following arch: %s", self.arch.name)
-        recipes = self.graph.allrecipes()
-        log.info('Downloading recipes')
-        for recipe in recipes:
+        for recipe in self.graph.allrecipes():
+            log.info("Build recipe: %s", recipe.name)
             recipe.download_if_necessary()
-        log.info("Building all recipes for arch %s", self.arch.name)
-        log.info('Unpacking recipes')
-        for recipe in recipes:
             self.make(recipe.get_build_dir(), recipe.prepare_build_dir)
-        log.info('Building recipes')
-        for recipe in recipes:
-            log.info("Building %s for %s", recipe.name, self.arch.name)
             self.make(recipe.get_build_dir(), recipe.mainbuild)
 
     def build_nonrecipes(self):
