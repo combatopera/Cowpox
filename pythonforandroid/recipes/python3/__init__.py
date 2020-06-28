@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from cowpox.patch import version_starts_with
+from lagoon.program import Program
 from p4a.python import GuestPythonRecipe
 import lagoon
 
@@ -64,7 +65,7 @@ class Python3Recipe(GuestPythonRecipe):
         self.apply_patches()
         configure_args = [
             f"--host={self.arch.command_prefix}",
-            '--build={android_build}',
+            f"--build={Program.text(self.get_build_dir() / 'config.guess')().rstrip()}",
             '--enable-shared',
             '--enable-ipv6',
             'ac_cv_file__dev_ptmx=yes',

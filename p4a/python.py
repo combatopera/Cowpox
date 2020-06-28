@@ -207,9 +207,7 @@ class GuestPythonRecipe(Recipe):
         recipe_build_dir = self.get_build_dir()
         build_dir = (recipe_build_dir / 'android-build').mkdirp()
         env = self._set_libs_flags()
-        android_build = Program.text(recipe_build_dir / 'config.guess')(cwd = build_dir).strip()
-        configureargs = [a.format(android_build = android_build) for a in configure_args] # TODO: Use format_obj.
-        Program.text(recipe_build_dir / 'configure').print(*configureargs, env = env, cwd = build_dir)
+        Program.text(recipe_build_dir / 'configure').print(*configure_args, env = env, cwd = build_dir)
         make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env, cwd = build_dir)
         cp.print(build_dir / 'pyconfig.h', recipe_build_dir / 'Include')
 
