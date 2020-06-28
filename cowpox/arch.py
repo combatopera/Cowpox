@@ -40,10 +40,10 @@
 
 from .config import Config
 from .platform import Platform
+from .recipe import Arch, Graph
 from diapyr import types
 from lagoon import find, which
 from multiprocessing import cpu_count
-from p4a import Arch, Graph
 from pathlib import Path
 import logging, os
 

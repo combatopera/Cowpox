@@ -40,11 +40,11 @@
 
 from .boot import BootstrapType
 from .config import Config
+from .recipe import GraphInfo, Recipe
 from .util import findimpl, NoSuchPluginException
 from copy import deepcopy
 from diapyr import types
 from itertools import product
-from p4a import GraphInfo, Recipe
 import logging
 
 log = logging.getLogger(__name__)

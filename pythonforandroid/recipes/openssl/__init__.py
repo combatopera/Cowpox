@@ -39,9 +39,9 @@
 # THE SOFTWARE.
 
 from cowpox.config import Config
+from cowpox.recipe import Recipe
 from diapyr import types
 from lagoon import make, perl
-from p4a import Recipe
 
 class OpenSSLRecipe(Recipe):
 

@@ -38,10 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox.recipe import Recipe
 from lagoon import autoreconf, make
 from lagoon.program import Program
 from multiprocessing import cpu_count
-from p4a import Recipe
 from pathlib import Path
 import os
 

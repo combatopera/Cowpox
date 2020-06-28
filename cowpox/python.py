@@ -39,13 +39,13 @@
 # THE SOFTWARE.
 
 from .config import Config
+from .recipe import Recipe
 from diapyr import types
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
 from lagoon import cp, find, make, mv, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
-from p4a import Recipe
 from pathlib import Path
 from shutil import copy2
 import lagoon, logging, os, re

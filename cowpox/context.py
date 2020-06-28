@@ -43,12 +43,11 @@ from .config import Config
 from .graph import GraphImpl
 from .platform import Make
 from .python import GuestPythonRecipe, HostPythonRecipe
-from .recipe import CythonRecipe
+from .recipe import CythonRecipe, Graph
 from .util import DIProxy
 from diapyr import types
 from lagoon import virtualenv
 from lagoon.program import Program
-from p4a import Graph
 from pathlib import Path
 from pkg_resources import get_distribution
 import logging, os

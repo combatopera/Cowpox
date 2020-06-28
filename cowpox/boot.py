@@ -41,11 +41,11 @@
 from .config import Config
 from .context import SiteOK
 from .make import Make
+from .recipe import Arch, Graph, GraphInfo, Plugin, PluginType
 from diapyr import types
 from jproperties import Properties
 from lagoon import cp, find, mv, rm, unzip
 from lagoon.program import Program
-from p4a import Arch, Graph, GraphInfo, Plugin, PluginType
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import logging, os, shutil, subprocess

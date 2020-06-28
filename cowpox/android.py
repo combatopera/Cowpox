@@ -42,13 +42,13 @@ from . import skel
 from .boot import BootstrapOK
 from .config import Config
 from .platform import Platform
+from .recipe import Arch, Graph, GraphInfo
 from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
 from jproperties import Properties
 from lagoon import gradle, patch
 from lagoon.program import Program
-from p4a import Arch, Graph, GraphInfo
 from pathlib import Path
 from pkg_resources import resource_filename, resource_stream, resource_string
 from tempfile import TemporaryDirectory
