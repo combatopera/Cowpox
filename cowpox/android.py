@@ -84,7 +84,8 @@ class Assembly:
         self.android_project_dir = Path(config.android.project.dir)
         self.gradleenv = dict(ANDROID_NDK_HOME = config.android_ndk_dir, ANDROID_HOME = config.android_sdk_dir)
 
-    def build_package(self):
+    @types(AndroidProjectOK, this = APKPath)
+    def build_package(self, _):
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.android_project_dir)
         if not self.releasemode:
             mode_sign = mode = 'debug'
@@ -95,10 +96,6 @@ class Assembly:
         shutil.copyfile(self.android_project_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{self.android_project_dir.name}-{mode}.apk", apkpath)
         log.info('Android packaging done!')
         return apkpath
-
-@types(Assembly, AndroidProjectOK, this = APKPath)
-def getapkpath(assembly, _):
-    return assembly.build_package()
 
 class AssetArchive:
 
@@ -179,6 +176,8 @@ def _xmlattr(context, resolvable):
     from xml.sax.saxutils import quoteattr
     return Text(quoteattr(resolvable.resolve(context).cat()))
 
+class BulkOK: pass
+
 class AndroidProject:
 
     @types(Config, Arch, Platform, AssetArchive)
@@ -246,7 +245,8 @@ class AndroidProject:
                 fd.write(data)
             log.info('Patched service/main.py to include applibs')
 
-    def prepare(self):
+    @types(BulkOK, this = AndroidProjectOK)
+    def prepare(self, _):
         self._update_libraries_references()
         self._copy_application_sources()
         with TemporaryDirectory() as env_vars_tarpath:
@@ -350,9 +350,3 @@ class AndroidProject:
                     if e.returncode != 1:
                         raise e
                     log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
-
-class BulkOK: pass
-
-@types(AndroidProject, BulkOK, this = AndroidProjectOK)
-def prepareandroidproject(project, _):
-    project.prepare()

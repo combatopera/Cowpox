@@ -52,6 +52,8 @@ import logging, os, re
 
 log = logging.getLogger(__name__)
 
+class PlatformOK: pass
+
 class PlatformInfo:
 
     @types(Config, Mirror, Make)
@@ -65,6 +67,7 @@ class PlatformInfo:
         self.mirror = mirror
         self.make = make
 
+    @types(this = PlatformOK)
     def install(self):
         self.make(self.platformname)
         self.make(self.sdk_dir, self._install_android_sdk)
@@ -112,12 +115,6 @@ class PlatformInfo:
             path.rename(self.ndk_dir / path.relative_to(rootdir))
         rootdir.rmdir()
         log.info('Android NDK installation done.')
-
-class PlatformOK: pass
-
-@types(PlatformInfo, this = PlatformOK)
-def installplatform(info):
-    info.install()
 
 class Platform:
 
