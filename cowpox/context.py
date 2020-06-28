@@ -109,5 +109,5 @@ class ContextImpl:
         pip.install.print('Cython', env = dict(PYTHONPATH = self.python_install_dir))
         pypinames = self.graphinfo.pypinames
         if pypinames:
-            pip.install._v.__no_deps.print('--target', self.python_install_dir.pmkdirp(), *pypinames, env = self.pipinstallrecipe.get_recipe_env())
+            pip.install._v.__no_deps.print('--target', self.python_install_dir, *pypinames, env = self.pipinstallrecipe.get_recipe_env())
         self.arch.strip_object_files(self.buildsdir)
