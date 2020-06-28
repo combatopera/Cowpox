@@ -47,5 +47,5 @@ class Hostpython3Recipe(HostPythonRecipe):
 
     def mainbuild(self):
         self.apply_patches()
-        self.build_arch()
+        self.build_exe()
         self.install_libraries()

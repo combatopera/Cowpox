@@ -80,7 +80,7 @@ class HostPythonRecipe(Recipe):
     def get_path_to_python(self):
         return self.get_build_dir() / self.build_subdir
 
-    def build_arch(self):
+    def build_exe(self):
         recipe_build_dir = self.get_build_dir()
         build_dir = (recipe_build_dir / self.build_subdir).mkdirp()
         if not (build_dir / 'config.status').exists():
