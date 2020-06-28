@@ -51,7 +51,7 @@ from p4a import Arch, Graph, GraphInfo
 from pathlib import Path
 from pkg_resources import resource_filename, resource_stream, resource_string
 from tempfile import TemporaryDirectory
-import aridity, logging, os, shutil, subprocess, tarfile, time
+import logging, os, shutil, subprocess, tarfile, time
 
 log = logging.getLogger(__name__)
 
@@ -274,8 +274,7 @@ class AndroidProject:
             configChanges.append('keyboardHidden|orientation')
             if self.min_sdk_version >= 13:
                 configChanges.append('screenSize')
-        c = aridity.Context()
-        with Repl(c) as repl:
+        with Repl() as repl:
             repl('" = $(xmlattr)')
             if self.bootstrapname == 'sdl2':
                 repl.printf("url_scheme = %s", url_scheme)
@@ -299,8 +298,7 @@ class AndroidProject:
             repl.printf("configChanges = %s", '|'.join(configChanges))
             repl.printf("redirect %s", self.android_project_dir / 'src' / 'main' / 'AndroidManifest.xml')
             repl.printf("< %s", self.android_project_dir / 'templates' / 'AndroidManifest.xml.aridt')
-        c = aridity.Context()
-        with Repl(c) as repl:
+        with Repl() as repl:
             repl('" = $(groovystr)')
             repl.printf("android_api = %s", self.android_api)
             repl.printf("build_tools_version = %s", self.platform.build_tools_version())
@@ -315,8 +313,7 @@ class AndroidProject:
                 repl.printf("P4A_RELEASE_KEYALIAS_PASSWD = %s", os.environ['P4A_RELEASE_KEYALIAS_PASSWD'])
             repl.printf("redirect %s", self.android_project_dir / 'build.gradle')
             repl.printf("< %s", self.android_project_dir / 'templates' / 'build.gradle.aridt')
-        c = aridity.Context()
-        with Repl(c) as repl:
+        with Repl() as repl:
             repl('& = $(xmltext)')
             repl.printf("app_name = %s", self.title)
             repl.printf("private_version = %s", time.time()) # XXX: Must we use time?
@@ -325,8 +322,7 @@ class AndroidProject:
             repl.printf("redirect %s", (self.res_dir / 'values').mkdirp() / 'strings.xml')
             repl.printf("< %s", self.android_project_dir / 'templates' / 'strings.xml.aridt')
         if self.bootstrapname == 'webview':
-            c = aridity.Context()
-            with Repl(c) as repl:
+            with Repl() as repl:
                 repl.printf("port = %s", self.webview_port)
                 repl.printf("redirect %s", (self.android_project_dir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android').mkdirp() / 'WebViewLoader.java')
                 repl.printf("< %s", self.android_project_dir / 'templates' / 'WebViewLoader.tmpl.java')
