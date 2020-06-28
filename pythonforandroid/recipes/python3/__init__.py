@@ -65,7 +65,7 @@ class Python3Recipe(GuestPythonRecipe):
         self.apply_patches()
         configure_args = [
             f"--host={self.arch.command_prefix}",
-            f"--build={Program.text(self.get_build_dir() / 'config.guess')().rstrip()}",
+            f"--build={Program.text(self.recipebuilddir / 'config.guess')().rstrip()}",
             '--enable-shared',
             '--enable-ipv6',
             'ac_cv_file__dev_ptmx=yes',
@@ -76,6 +76,6 @@ class Python3Recipe(GuestPythonRecipe):
             '--exec-prefix=/usr/local',
         ]
         if 'openssl' in self.graphinfo.recipenames:
-            configure_args += [f"--with-openssl={self.graph.get_recipe('openssl').get_build_dir()}"]
+            configure_args += [f"--with-openssl={self.graph.get_recipe('openssl').recipebuilddir}"]
         self.build_android(configure_args)
         self.install_libraries()

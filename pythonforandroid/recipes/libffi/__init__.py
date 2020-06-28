@@ -55,7 +55,7 @@ class LibffiRecipe(Recipe):
     def mainbuild(self):
         self.apply_patches()
         env = self.get_recipe_env()
-        build_dir = self.get_build_dir()
+        build_dir = self.recipebuilddir
         if not (build_dir / 'configure').exists():
             Program.text(f".{os.sep}autogen.sh").print(env = env, cwd = build_dir)
         autoreconf._vif.print(env = env, cwd = build_dir)
@@ -65,4 +65,4 @@ class LibffiRecipe(Recipe):
         self.install_libraries()
 
     def includeslinkslibs(self):
-        return [[self.get_build_dir() / 'include'], [self.get_build_dir() / '.libs'], ['ffi']]
+        return [[self.recipebuilddir / 'include'], [self.recipebuilddir / '.libs'], ['ffi']]

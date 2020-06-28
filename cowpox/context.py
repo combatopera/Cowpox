@@ -100,8 +100,8 @@ class ContextImpl:
         for recipe in self.graph.allrecipes():
             log.info("Build recipe: %s", recipe.name)
             recipe.download_if_necessary()
-            self.make(recipe.get_build_dir(), recipe.prepare_build_dir)
-            self.make(recipe.get_build_dir(), recipe.mainbuild)
+            self.make(recipe.recipebuilddir, recipe.prepare_build_dir)
+            self.make(recipe.recipebuilddir, recipe.mainbuild)
 
     def build_nonrecipes(self):
         log.info('Installing pure Python modules')

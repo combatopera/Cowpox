@@ -70,7 +70,7 @@ class AndroidRecipe(CythonRecipe):
             'JAVA_NAMESPACE': 'org.kivy.android',
             'JNI_NAMESPACE': 'org/kivy/android',
         }
-        android = self.get_build_dir() / 'android'
+        android = self.recipebuilddir / 'android'
         with (android / 'config.pxi').open('w') as fpxi, (android / 'config.h').open('w') as fh, (android / 'config.py').open('w') as fpy:
             for key, value in config.items():
                 print(f'DEF {key} = {repr(value)}', file = fpxi)

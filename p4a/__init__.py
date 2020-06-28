@@ -130,7 +130,7 @@ class Recipe(Plugin):
 
     def apply_patch(self, relpath):
         log.info("Applying patch %s", relpath)
-        patchexe._t._p1.print('-d', self.get_build_dir(), '-i', self.resourcepath(relpath))
+        patchexe._t._p1.print('-d', self.recipebuilddir, '-i', self.resourcepath(relpath))
 
     @property
     def buildcontainerparent(self):
@@ -139,7 +139,8 @@ class Recipe(Plugin):
     def get_build_container_dir(self):
         return self.buildcontainerparent / self.arch.builddirname()
 
-    def get_build_dir(self):
+    @property
+    def recipebuilddir(self):
         return self.get_build_container_dir() / self.dir_name
 
     def download_if_necessary(self):
@@ -178,7 +179,7 @@ class Recipe(Plugin):
             log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
 
     def prepare_build_dir(self):
-        targetpath = self.get_build_dir()
+        targetpath = self.recipebuilddir
         if self.url is None:
             log.debug("[%s] Skip unpack as no URL is set.", self.name)
             targetpath.mkdir()
@@ -212,13 +213,13 @@ class Recipe(Plugin):
     def get_recipe_env(self):
         env = self.arch.get_env()
         build_platform, = (f"{uname.sysname}-{uname.machine}".lower() for uname in [os.uname()])
-        env['BUILDLIB_PATH'] = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").get_build_dir() / 'native-build' / 'build' / f"lib.{build_platform}-{self.graph.python_recipe.majminversion}"
+        env['BUILDLIB_PATH'] = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").recipebuilddir / 'native-build' / 'build' / f"lib.{build_platform}-{self.graph.python_recipe.majminversion}"
         return env
 
     def apply_patches(self):
         if self.patches:
             log.info("Applying patches for %s[%s]", self.name, self.arch.name)
-            build_dir = self.get_build_dir()
+            build_dir = self.recipebuilddir
             if (build_dir / '.patched').exists():
                 log.info("%s already patched, skipping", self.name)
                 return
@@ -242,4 +243,4 @@ class Recipe(Plugin):
             cp.print(*libs, self.arch.libs_dir)
 
     def _get_libraries(self):
-        return {self.get_build_dir() / libpath for libpath in self.builtlibpaths}
+        return {self.recipebuilddir / libpath for libpath in self.builtlibpaths}

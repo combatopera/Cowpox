@@ -61,8 +61,8 @@ class OpenSSLRecipe(Recipe):
 
     def includeslinkslibs(self):
         return (
-            [self.get_build_dir() / 'include' / p for p in ['.', 'internal', 'openssl']],
-            [self.get_build_dir()],
+            [self.recipebuilddir / 'include' / p for p in ['.', 'internal', 'openssl']],
+            [self.recipebuilddir],
             [f"crypto{self.version}", f"ssl{self.version}"],
         )
 
@@ -90,7 +90,7 @@ class OpenSSLRecipe(Recipe):
     def mainbuild(self):
         self.apply_patches()
         env = self.get_recipe_env()
-        cwd = self.get_build_dir()
+        cwd = self.recipebuilddir
         perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = cwd)
         self.apply_patch('disable-sover.patch')
         make.print('build_libs', env = env, cwd = cwd)
