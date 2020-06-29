@@ -56,6 +56,6 @@ class Sqlite3Recipe(NDKRecipe):
         return [[self.recipebuilddir], [self.get_lib_dir()], ['sqlite3']]
 
     def mainbuild(self):
-        shutil.copyfile(self.resourcepath('Android.mk'), (self.recipebuilddir / 'jni').mkdirp() / 'Android.mk')
+        shutil.copy2(self.resourcepath('Android.mk'), (self.recipebuilddir / 'jni').mkdirp())
         self.ndk_build()
         self.install_libraries([Path('libs', self.arch.name, 'libsqlite3.so')])
