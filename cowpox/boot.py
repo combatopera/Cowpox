@@ -98,12 +98,9 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files(self.bootstrapsdir / 'common' / 'build', self.build_dir, False)
 
-    @types(Make, SiteOK, this = BootstrapOK)
-    def toandroidproject(self, make, _):
-        def target():
-            yield self.android_project_dir # FIXME: Not really.
-            self.run_distribute()
-        make(target)
+    @types(SiteOK, this = BootstrapOK)
+    def toandroidproject(self, _):
+        self.run_distribute()
 
     def distlibs(self):
         shutil.copytree(self.build_dir, self.android_project_dir)
