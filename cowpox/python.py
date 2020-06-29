@@ -94,10 +94,10 @@ class HostPythonRecipe(Recipe):
         exe, = (exe for exe in (self.get_path_to_python() / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
         cp.print(exe, self.python_exe)
 
-    def compileall(self, dirpath):
+    def compileall(self, dirpath, check = True):
         for path in dirpath.rglob('*.py'):
             os.utime(path, (0, 0)) # Determinism.
-        Program.text(self.python_exe)._OO._m.compileall._b._f.print(dirpath)
+        Program.text(self.python_exe)._OO._m.compileall._b._f.print(dirpath, check = check)
 
 class GuestPythonRecipe(Recipe):
 
@@ -223,7 +223,7 @@ class GuestPythonRecipe(Recipe):
         dirn = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.recipebuilddir / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
         self.hostrecipe.compileall(modules_build_dir)
-        self.hostrecipe.compileall(self.recipebuilddir / 'Lib')
+        self.hostrecipe.compileall(self.recipebuilddir / 'Lib', False)
         self.hostrecipe.compileall(self.python_install_dir)
         modules_dir = (dirn / 'modules').mkdirp()
         module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # XXX: Not recursive?
