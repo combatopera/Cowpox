@@ -224,9 +224,9 @@ class GuestPythonRecipe(Recipe):
     def create_python_bundle(self):
         dirn = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.recipebuilddir / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
-        self._compile_python_files(dirn / modules_build_dir)
-        self._compile_python_files(dirn / self.recipebuilddir / 'Lib')
-        self._compile_python_files(dirn / self.python_install_dir)
+        self._compile_python_files(modules_build_dir)
+        self._compile_python_files(self.recipebuilddir / 'Lib')
+        self._compile_python_files(self.python_install_dir)
         modules_dir = (dirn / 'modules').mkdirp()
         module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # XXX: Not recursive?
         log.info("Copy %s files into the bundle", len(module_filens))
