@@ -212,7 +212,7 @@ class Recipe(Plugin):
         touch.print(self.recipebuilddir / '.patched')
 
     def install_libraries(self):
-        libs = [p for p in {self.recipebuilddir / libpath for libpath in self.builtlibpaths} if p.name.endswith('.so')]
+        libs = [self.recipebuilddir / libpath for libpath in self.builtlibpaths]
         if libs:
             cp.print(*libs, self.arch.libs_dir)
 
