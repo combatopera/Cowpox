@@ -65,10 +65,6 @@ class PythonRecipe(Recipe):
     dir. This will make it available to other recipes if
     call_hostpython_via_targetpython is False.
     '''
-
-    install_in_targetpython = True
-    '''If True, installs the module in the targetpython installation dir.
-    This is almost always what you want to do.'''
     depends = [('python2', 'python3')]
     '''
     .. note:: it's important to keep this depends as a class attribute outside
