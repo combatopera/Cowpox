@@ -40,7 +40,6 @@
 
 from cowpox.patch import will_build
 from cowpox.pyrecipe import CythonRecipe
-from types import MappingProxyType
 import logging
 
 log = logging.getLogger(__name__)
@@ -49,7 +48,6 @@ class AndroidRecipe(CythonRecipe):
 
     url = 'src'
     depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
-    config_env = MappingProxyType({}) # XXX: Needed?
 
     def get_recipe_env(self):
         env = super().get_recipe_env()
@@ -79,7 +77,7 @@ class AndroidRecipe(CythonRecipe):
             if is_sdl2:
                 print('JNIEnv *SDL_AndroidGetJNIEnv(void);', file = fh)
                 print('#define SDL_ANDROID_GetJNIEnv SDL_AndroidGetJNIEnv', file = fh)
-        self.config_env = {key: str(value) for key, value in config.items()}
+        self.config_env = {key: str(value) for key, value in config.items()} # XXX: Is this just for install_python_package?
         self.apply_patches()
         self.install_python_package()
         self.install_libraries()
