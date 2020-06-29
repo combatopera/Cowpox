@@ -43,7 +43,6 @@ from lagoon import autoreconf, make
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
-import os
 
 class LibffiRecipe(Recipe):
 
@@ -54,9 +53,9 @@ class LibffiRecipe(Recipe):
         self.apply_patches(['remove-version-info.patch'])
         env = self.get_recipe_env()
         if not (self.recipebuilddir / 'configure').exists():
-            Program.text(f".{os.sep}autogen.sh").print(env = env, cwd = self.recipebuilddir)
+            Program.text(Path('autogen.sh')).print(env = env, cwd = self.recipebuilddir)
         autoreconf._vif.print(env = env, cwd = self.recipebuilddir)
-        Program.text(f".{os.sep}configure").print(
+        Program.text(Path('configure')).print(
                 f"--host={self.arch.command_prefix}", f"--prefix={self.recipebuilddir}", '--disable-builddir', '--enable-shared', env = env, cwd = self.recipebuilddir)
         make.print('-j', cpu_count(), 'libffi.la', env = env, cwd = self.recipebuilddir)
         self.install_libraries([Path('.libs', 'libffi.so')])
