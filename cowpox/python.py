@@ -233,25 +233,24 @@ class GuestPythonRecipe(Recipe):
         for filen in module_filens:
             log.debug(" - copy %s", filen)
             copy2(filen, modules_dir)
-        stdlib_zip = dirn / 'stdlib.zip'
         libdir = self.recipebuilddir / 'Lib'
         stdlib_filens = list(_walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
-        zip.print(stdlib_zip, *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
-        (dirn / 'site-packages').mkdirp()
+        zip.print(dirn / 'stdlib.zip', *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
+        sitepackagesdir = (dirn / 'site-packages').mkdirp()
         installdir = self.python_install_dir.mkdirp()
         filens = list(_walk_valid_filens(installdir, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
         log.info("Copy %s files into the site-packages", len(filens))
         for filen in filens:
             log.debug(" - copy %s", filen)
-            copy2(filen, (dirn / 'site-packages' / filen.relative_to(installdir)).pmkdirp())
+            copy2(filen, (sitepackagesdir / filen.relative_to(installdir)).pmkdirp())
         python_lib_name = f"libpython{self.majminversion}"
         if self.majversion == 3:
             python_lib_name += 'm'
         cp.print(self.recipebuilddir / 'android-build' / f"{python_lib_name}.so", self.android_project_dir / 'libs' / self.arch.name)
         log.info('Renaming .so files to reflect cross-compile')
-        self._reduce_object_file_names(dirn / 'site-packages')
-        return dirn / 'site-packages'
+        self._reduce_object_file_names(sitepackagesdir)
+        return sitepackagesdir
 
     def _reduce_object_file_names(self, dirn):
         """Recursively renames all files named YYY.cpython-...-linux-gnu.so"
