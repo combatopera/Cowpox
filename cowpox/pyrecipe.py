@@ -97,10 +97,7 @@ class PythonRecipe(Recipe):
     @property
     def real_hostpython_location(self):
         host_name = f"host{self.graph.python_recipe.name}"
-        if host_name in {'hostpython2', 'hostpython3'}:
-            return self.graph.get_recipe(host_name).python_exe
-        else:
-            return Path(f"python{self.graph.python_recipe.version}") # FIXME: Surely does not work.
+        return self.graph.get_recipe(host_name).python_exe
 
     @property
     def hostpython_location(self):
