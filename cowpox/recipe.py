@@ -212,12 +212,9 @@ class Recipe(Plugin):
         touch.print(self.recipebuilddir / '.patched')
 
     def install_libraries(self):
-        libs = [p for p in self._get_libraries() if p.name.endswith('.so')]
+        libs = [p for p in {self.recipebuilddir / libpath for libpath in self.builtlibpaths} if p.name.endswith('.so')]
         if libs:
             cp.print(*libs, self.arch.libs_dir)
-
-    def _get_libraries(self):
-        return {self.recipebuilddir / libpath for libpath in self.builtlibpaths}
 
 class BootstrapNDKRecipe(Recipe):
 
