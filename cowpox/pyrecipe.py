@@ -96,8 +96,7 @@ class PythonRecipe(Recipe):
 
     @property
     def real_hostpython_location(self):
-        host_name = f"host{self.graph.python_recipe.name}"
-        return self.graph.get_recipe(host_name).python_exe
+        return self.hostrecipe.python_exe
 
     @property
     def hostpython_location(self):
