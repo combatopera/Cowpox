@@ -38,57 +38,37 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .config import Config
 from diapyr import types
-from pathlib import Path
 import logging, shutil
 
 log = logging.getLogger(__name__)
 
+class UnexpectedYieldException(Exception): pass
+
 class Make:
 
-    cursor = 0
-
-    @types(Config)
-    def __init__(self, config, log = log):
-        self.statepath = Path(config.state.path)
-        if self.statepath.exists():
-            with self.statepath.open() as f:
-                self.targetstrs = f.read().splitlines()
-        else:
-            self.targetstrs = []
+    @types()
+    def __init__(self, log = log):
         self.log = log
 
-    def __call__(self, target, install = None):
-        targetstr = str(target)
-        if install is None:
-            format = "Config %s: %s"
+    def __call__(self, install):
+        g = install()
+        target = next(g)
+        okpath = target / 'OK'
+        if okpath.exists():
+            self.log.info("Already OK: %s", target)
+            return
+        self.log.info("Start build: %s", target)
+        if target.exists():
+            self.log.warning("Delete: %s", target)
+            shutil.rmtree(target)
         else:
-            n = self.targetstrs[:self.cursor].count(targetstr)
-            format = f"Update {n} %s: %s" if n else "Create %s: %s"
-        if self.cursor < len(self.targetstrs):
-            if self.targetstrs[self.cursor] == targetstr:
-                if install is None or target.exists():
-                    self.log.info(format, 'OK', target)
-                    self.cursor += 1
-                    return
-                when = 'AGAIN'
-            else:
-                when = 'FRESH'
-            del self.targetstrs[self.cursor:]
+            target.parent.mkdir(parents = True, exist_ok = True)
+        try:
+            obj = next(g)
+        except StopIteration:
+            pass
         else:
-            when = 'NOW'
-        self.log.info(format, when, target)
-        if install is not None:
-            if not n:
-                if target.exists():
-                    self.log.warning("Delete: %s", target)
-                    shutil.rmtree(target)
-                else:
-                    target.parent.mkdir(parents = True, exist_ok = True)
-            install()
-        self.targetstrs.append(targetstr)
-        with self.statepath.open('w') as f:
-            for t in self.targetstrs:
-                print(t, file = f)
-        self.cursor += 1
+            raise UnexpectedYieldException(obj)
+        okpath.mkdir()
+        self.log.info("Build OK: %s", target)

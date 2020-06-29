@@ -67,12 +67,11 @@ class PlatformInfo:
 
     @types(Make, this = PlatformOK)
     def install(self, make):
-        make(self.platformname)
-        make(self.sdk_dir, self._install_android_sdk)
-        make(self.android_ndk_version)
-        make(self.ndk_dir, self._install_android_ndk)
+        make(self._install_android_sdk)
+        make(self._install_android_ndk)
 
     def _install_android_sdk(self):
+        yield self.sdk_dir
         log.info('Android SDK is missing, downloading')
         archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
         log.info('Unpacking Android SDK')
@@ -103,6 +102,7 @@ class PlatformInfo:
             log.debug("Already have platform: %s", self.platformname)
 
     def _install_android_ndk(self):
+        yield self.ndk_dir
         log.info('Android NDK is missing, downloading')
         archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
         log.info('Unpacking Android NDK')

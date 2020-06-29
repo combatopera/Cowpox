@@ -41,249 +41,109 @@
 from .make import Make
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from types import SimpleNamespace
 from unittest import TestCase
 import shutil
 
-class TestMake(TestCase):
+class I: pass
 
-    maxDiff = None
-    events = 0
+class W: pass
+
+class TestMake(TestCase):
 
     def setUp(self):
         self.logs = []
-        self.tempdir = TemporaryDirectory()
-        try:
-            self.d = Path(self.tempdir.name)
-            self.state = SimpleNamespace(path = self.d / 'yyup')
-        except:
-            self.tempdir.cleanup()
-            raise
-
-    def tearDown(self):
-        self.tempdir.cleanup()
+        self.make = Make(self)
 
     def info(self, *args):
-        self.logs.append(['info', *args])
+        self.logs.extend([I, *args])
 
     def warning(self, *args):
-        self.logs.append(['warn', *args])
+        self.logs.extend([W, *args])
 
-    def _mkdir(self, relpath):
+    def _pop(self):
+        v = self.logs.copy()
+        self.logs.clear()
+        return v
+
+    def test_works(self):
         def install():
-            (self.d / relpath).mkdir()
-            self._update()
-        return install
+            yield target
+            target.mkdir()
+        with TemporaryDirectory() as tempdir:
+            target = Path(tempdir, 'a')
+            self.make(install)
+            self.assertEqual([
+                I, "Start build: %s", target,
+                I, "Build OK: %s", target,
+            ], self._pop())
+            self.make(install)
+            self.assertEqual([
+                I, "Already OK: %s", target,
+            ], self._pop())
+            (target / 'OK').rmdir()
+            self.make(install)
+            self.assertEqual([
+                I, "Start build: %s", target,
+                W, "Delete: %s", target,
+                I, "Build OK: %s", target,
+            ], self._pop())
+            shutil.rmtree(target)
+            self.make(install)
+            self.assertEqual([
+                I, "Start build: %s", target,
+                I, "Build OK: %s", target,
+            ], self._pop())
 
-    def _update(self):
-        self.events += 1
-        self.logs.append(self.events)
+    def test_fasterror(self):
+        class X(Exception): pass
+        def install():
+            yield target
+            raise X
+        with TemporaryDirectory() as tempdir:
+            target = Path(tempdir, 'a')
+            with self.assertRaises(X):
+                self.make(install)
+            self.assertEqual([
+                I, "Start build: %s", target,
+            ], self._pop())
+            with self.assertRaises(X):
+                self.make(install)
+            self.assertEqual([
+                I, "Start build: %s", target,
+            ], self._pop())
 
-    def test_replay(self):
-        m = Make(self, self)
-        m(self.d / 'target1', self._mkdir('target1'))
-        m(self.d / 'target2', self._mkdir('target2'))
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            self.d / 'target2',
-        ])), m.targetstrs)
-        m = Make(self, self)
-        m(self.d / 'target1', self.fail)
-        m(self.d / 'target2', self.fail)
-        m(self.d / 'target3', self._mkdir('target3'))
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target3',
-        ])), m.targetstrs)
-        self.assertEqual([
-            ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 1,
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 2,
-            ['info', "Create %s: %s", 'OK', self.d / 'target1'],
-            ['info', "Create %s: %s", 'OK', self.d / 'target2'],
-            ['info', "Create %s: %s", 'NOW', self.d / 'target3'], 3,
-        ], self.logs)
+    def test_slowerror(self):
+        class X(Exception): pass
+        def install():
+            yield target
+            target.mkdir()
+            raise X
+        with TemporaryDirectory() as tempdir:
+            target = Path(tempdir, 'a')
+            with self.assertRaises(X):
+                self.make(install)
+            self.assertEqual([
+                I, "Start build: %s", target,
+            ], self._pop())
+            with self.assertRaises(X):
+                self.make(install)
+            self.assertEqual([
+                I, "Start build: %s", target,
+                W, "Delete: %s", target,
+            ], self._pop())
 
-    def test_update(self):
-        m = Make(self, self)
-        m(self.d / 'target1', self._mkdir('target1'))
-        m(self.d / 'target2', self._mkdir('target2'))
-        m(self.d / 'target1', self._update)
-        m(self.d / 'target2', self._update)
-        m(self.d / 'target2', self._update)
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target2',
-        ])), m.targetstrs)
-        m = Make(self, self)
-        m(self.d / 'target1', self.fail)
-        m(self.d / 'target2', self.fail)
-        m(self.d / 'target1', self.fail)
-        m(self.d / 'target2', self.fail)
-        m(self.d / 'target2', self.fail)
-        m(self.d / 'target1', self._update)
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target2',
-            self.d / 'target1',
-        ])), m.targetstrs)
-        self.assertEqual([
-            ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 1,
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 2,
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 3,
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target2'], 4,
-            ['info', "Update 2 %s: %s", 'NOW', self.d / 'target2'], 5,
-            ['info', "Create %s: %s", 'OK', self.d / 'target1'],
-            ['info', "Create %s: %s", 'OK', self.d / 'target2'],
-            ['info', "Update 1 %s: %s", 'OK', self.d / 'target1'],
-            ['info', "Update 1 %s: %s", 'OK', self.d / 'target2'],
-            ['info', "Update 2 %s: %s", 'OK', self.d / 'target2'],
-            ['info', "Update 2 %s: %s", 'NOW', self.d / 'target1'], 6,
-        ], self.logs)
-
-    def test_fork(self):
-        m = Make(self, self)
-        m(self.d / 'target1', self._mkdir('target1'))
-        m(self.d / 'target2', self._mkdir('target2'))
-        m(self.d / 'target1', self._update)
-        m(self.d / 'target2', self._update)
-        m(self.d / 'target3', self._mkdir('target3'))
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target3',
-        ])), m.targetstrs)
-        m = Make(self, self)
-        m(self.d / 'target1', self.fail)
-        m(self.d / 'target3', self._mkdir('target3'))
-        m(self.d / 'target2', self._mkdir('target2'))
-        m(self.d / 'target1', self._update)
-        m(self.d / 'target2', self._update)
-        m(self.d / 'target3', self._update)
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            self.d / 'target3',
-            self.d / 'target2',
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target3',
-        ])), m.targetstrs)
-        self.assertEqual([
-            ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 1,
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 2,
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 3,
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target2'], 4,
-            ['info', "Create %s: %s", 'NOW', self.d / 'target3'], 5,
-            ['info', "Create %s: %s", 'OK', self.d / 'target1'],
-            ['info', "Create %s: %s", 'FRESH', self.d / 'target3'], ['warn', "Delete: %s", self.d / 'target3'], 6,
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], ['warn', "Delete: %s", self.d / 'target2'], 7,
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 8,
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target2'], 9,
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target3'], 10,
-        ], self.logs)
-
-    def test_config(self):
-        m = Make(self, self)
-        m(self.d / 'target1', self._mkdir('target1'))
-        m('eranu')
-        m(self.d / 'target2', self._mkdir('target2'))
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            'eranu',
-            self.d / 'target2',
-        ])), m.targetstrs)
-        m = Make(self, self)
-        m(self.d / 'target1', self.fail)
-        m('eranu')
-        m(self.d / 'target2', self.fail)
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            'eranu',
-            self.d / 'target2',
-        ])), m.targetstrs)
-        m = Make(self, self)
-        m(self.d / 'target1', self.fail)
-        m('uvavu')
-        m(self.d / 'target2', self._mkdir('target2'))
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            'uvavu',
-            self.d / 'target2',
-        ])), m.targetstrs)
-        self.assertEqual([
-            ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 1,
-            ['info', "Config %s: %s", 'NOW', 'eranu'],
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 2,
-            ['info', "Create %s: %s", 'OK', self.d / 'target1'],
-            ['info', "Config %s: %s", 'OK', 'eranu'],
-            ['info', "Create %s: %s", 'OK', self.d / 'target2'],
-            ['info', "Create %s: %s", 'OK', self.d / 'target1'],
-            ['info', "Config %s: %s", 'FRESH', 'uvavu'],
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], ['warn', "Delete: %s", self.d / 'target2'], 3,
-        ], self.logs)
-
-    def test_cleaned(self):
-        m = Make(self, self)
-        m(self.d / 'target1', self._mkdir('target1'))
-        m(self.d / 'target2', self._mkdir('target2'))
-        m(self.d / 'target1', self._update)
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target1',
-        ])), m.targetstrs)
-        shutil.rmtree(self.d / 'target1')
-        m = Make(self, self)
-        m(self.d / 'target1', self._mkdir('target1'))
-        m(self.d / 'target2', self._mkdir('target2'))
-        m(self.d / 'target1', self._update)
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target1',
-        ])), m.targetstrs)
-        self.assertEqual([
-            ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 1,
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 2,
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 3,
-            ['info', "Create %s: %s", 'AGAIN', self.d / 'target1'], 4,
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], ['warn', "Delete: %s", self.d / 'target2'], 5,
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 6,
-        ], self.logs)
-
-    def test_cleaned2(self):
-        m = Make(self, self)
-        m(self.d / 'target1', self._mkdir('target1'))
-        m(self.d / 'target2', self._mkdir('target2'))
-        m(self.d / 'target1', self._update)
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target1',
-        ])), m.targetstrs)
-        shutil.rmtree(self.d / 'target2')
-        m = Make(self, self)
-        m(self.d / 'target1', self.fail)
-        m(self.d / 'target2', self._mkdir('target2'))
-        m(self.d / 'target1', self._update)
-        self.assertEqual(list(map(str, [
-            self.d / 'target1',
-            self.d / 'target2',
-            self.d / 'target1',
-        ])), m.targetstrs)
-        self.assertEqual([
-            ['info', "Create %s: %s", 'NOW', self.d / 'target1'], 1,
-            ['info', "Create %s: %s", 'NOW', self.d / 'target2'], 2,
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 3,
-            ['info', "Create %s: %s", 'OK', self.d / 'target1'],
-            ['info', "Create %s: %s", 'AGAIN', self.d / 'target2'], 4,
-            ['info', "Update 1 %s: %s", 'NOW', self.d / 'target1'], 5,
-        ], self.logs)
+    def test_dirnotmade(self):
+        def install():
+            yield target
+        with TemporaryDirectory() as tempdir:
+            target = Path(tempdir, 'a')
+            with self.assertRaises(FileNotFoundError):
+                self.make(install)
+            self.assertEqual([
+                I, "Start build: %s", target,
+            ], self._pop())
+            with self.assertRaises(FileNotFoundError):
+                self.make(install)
+            self.assertEqual([
+                I, "Start build: %s", target,
+            ], self._pop())

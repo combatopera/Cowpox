@@ -94,6 +94,9 @@ class PipInstallRecipe(CythonRecipe):
 def buildrecipes(graph, make, _):
     for recipe in graph.allrecipes():
         log.info("Build recipe: %s", recipe.name)
-        recipe.download_if_necessary()
-        make(recipe.recipebuilddir, recipe.prepare_build_dir)
-        make(recipe.recipebuilddir, recipe.mainbuild)
+        def target():
+            yield recipe.recipebuilddir
+            recipe.download_if_necessary()
+            recipe.prepare_build_dir()
+            recipe.mainbuild()
+        make(target)
