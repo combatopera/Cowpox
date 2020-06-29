@@ -47,4 +47,3 @@ class Hostpython3Recipe(HostPythonRecipe):
 
     def mainbuild(self):
         self.build_exe()
-        self.install_libraries()

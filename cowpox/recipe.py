@@ -45,7 +45,7 @@ from .mirror import Mirror
 from .platform import Platform
 from .util import format_obj, Plugin
 from diapyr import types
-from lagoon import cp, patch as patchexe, tar, touch, unzip
+from lagoon import patch as patchexe, tar, touch, unzip
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import resource_filename
@@ -74,7 +74,6 @@ class Recipe(Plugin):
     packages will NOT be available at build time, but will be added to the
     list of pure-Python packages to install via pip. If you need these packages
     at build time, you must create a recipe.'''
-    builtlibpaths = ()
 
     @classmethod
     def get_opt_depends_in_list(cls, recipenames):
@@ -211,10 +210,9 @@ class Recipe(Plugin):
                 patch = nextpatch
         touch.print(self.recipebuilddir / '.patched')
 
-    def install_libraries(self):
-        libs = [self.recipebuilddir / libpath for libpath in self.builtlibpaths]
-        if libs:
-            cp.print(*libs, self.arch.libs_dir)
+    def install_libraries(self, builtlibpaths):
+        for path in builtlibpaths:
+            shutil.copy2(self.recipebuilddir / path, self.arch.libs_dir)
 
 class BootstrapNDKRecipe(Recipe):
 

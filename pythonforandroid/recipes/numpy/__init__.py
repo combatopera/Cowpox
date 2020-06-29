@@ -61,4 +61,3 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
             'remove_unittest_call.patch',
         ])
         self.install_python_package()
-        self.install_libraries()

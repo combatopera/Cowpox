@@ -49,4 +49,3 @@ class SetuptoolsRecipe(PythonRecipe):
 
     def mainbuild(self):
         self.install_python_package()
-        self.install_libraries()

@@ -55,4 +55,3 @@ class LibSDL2Recipe(BootstrapNDKRecipe):
 
     def mainbuild(self):
         self.ndk_build()
-        self.install_libraries()

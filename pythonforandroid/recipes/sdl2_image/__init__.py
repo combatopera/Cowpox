@@ -48,4 +48,3 @@ class LibSDL2Image(BootstrapNDKRecipe):
 
     def mainbuild(self):
         self.apply_patches(['toggle_jpg_png_webp.patch', 'extra_cflags.patch'])
-        self.install_libraries()

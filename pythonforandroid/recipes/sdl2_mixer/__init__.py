@@ -48,4 +48,3 @@ class LibSDL2Mixer(BootstrapNDKRecipe):
 
     def mainbuild(self):
         self.apply_patches(['toggle_modplug_mikmod_smpeg_ogg.patch'])
-        self.install_libraries()

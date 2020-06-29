@@ -78,4 +78,3 @@ class Python3Recipe(GuestPythonRecipe):
         if 'openssl' in self.graphinfo.recipenames:
             configure_args += [f"--with-openssl={self.graph.get_recipe('openssl').recipebuilddir}"]
         self.build_android(configure_args)
-        self.install_libraries()

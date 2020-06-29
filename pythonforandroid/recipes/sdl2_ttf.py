@@ -47,4 +47,4 @@ class LibSDL2TTF(BootstrapNDKRecipe):
     dir_name = 'SDL2_ttf'
 
     def mainbuild(self):
-        self.install_libraries()
+        pass

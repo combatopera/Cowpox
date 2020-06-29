@@ -48,7 +48,6 @@ class OpenSSLRecipe(Recipe):
     version = '1.1'
     url_version = '1.1.1f'
     url = f"https://www.openssl.org/source/openssl-{url_version}.tar.gz"
-    builtlibpaths = [f"libcrypto{version}.so", f"libssl{version}.so"]
 
     @types(Config)
     def __init(self, config):
@@ -92,4 +91,4 @@ class OpenSSLRecipe(Recipe):
         perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = self.recipebuilddir)
         self.apply_patch('disable-sover.patch')
         make.print('build_libs', env = env, cwd = self.recipebuilddir)
-        self.install_libraries()
+        self.install_libraries([f"libcrypto{self.version}.so", f"libssl{self.version}.so"])

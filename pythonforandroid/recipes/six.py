@@ -48,4 +48,3 @@ class SixRecipe(PythonRecipe): # XXX: Why do we need this?
 
     def mainbuild(self):
         self.install_python_package()
-        self.install_libraries()
