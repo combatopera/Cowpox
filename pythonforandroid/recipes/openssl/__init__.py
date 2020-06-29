@@ -65,7 +65,7 @@ class OpenSSLRecipe(Recipe):
             [f"crypto{self.version}", f"ssl{self.version}"],
         )
 
-    def get_recipe_env(self):
+    def get_recipe_env(self): # XXX: Is this just used below?
         env = super().get_recipe_env()
         env['OPENSSL_VERSION'] = self.version
         env['MAKE'] = 'make'
