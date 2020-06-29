@@ -216,11 +216,10 @@ class GuestPythonRecipe(Recipe):
         return self.recipebuilddir / 'android-build'
 
     def _compile_python_files(self, dirpath):
-        args = ['-b'] if self.name == 'python3' else [] # XXX: Simplify?
         # TODO: Duplicated code.
         for path in dirpath.rglob('*.py'):
             os.utime(path, (0, 0)) # Determinism.
-        Program.text(self.hostrecipe.python_exe)._OO._m.compileall.print(*args, '-f', dirpath, check = False) # XXX: Why not check?
+        Program.text(self.hostrecipe.python_exe)._OO._m.compileall._b._f.print(dirpath)
 
     def create_python_bundle(self):
         dirn = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
