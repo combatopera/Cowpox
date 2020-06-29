@@ -46,11 +46,6 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
     version = '1.18.1'
     url = f"https://pypi.python.org/packages/source/n/numpy/numpy-{version}.zip"
     depends = ['setuptools', 'cython']
-    patches = [
-        'add_libm_explicitly_to_build.patch',
-        'do_not_use_system_libs.patch',
-        'remove_unittest_call.patch',
-    ]
     call_hostpython_via_targetpython = False
 
     def build_compiled_components(self):
@@ -60,6 +55,10 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
         super().rebuild_compiled_components('-j', cpu_count())
 
     def mainbuild(self):
-        self.apply_patches()
+        self.apply_patches([
+            'add_libm_explicitly_to_build.patch',
+            'do_not_use_system_libs.patch',
+            'remove_unittest_call.patch',
+        ])
         self.install_python_package()
         self.install_libraries()

@@ -88,7 +88,6 @@ class OpenSSLRecipe(Recipe):
         return 'linux-armv4'
 
     def mainbuild(self):
-        self.apply_patches()
         env = self.get_recipe_env()
         perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = self.recipebuilddir)
         self.apply_patch('disable-sover.patch')

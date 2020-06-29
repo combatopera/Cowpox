@@ -47,22 +47,22 @@ class Python3Recipe(GuestPythonRecipe):
 
     version = '3.8.1'
     url = f"https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
-    patches = [
-        version_starts_with('3.7', 'py3.7.1_fix-ctypes-util-find-library.patch'),
-        version_starts_with('3.7', 'py3.7.1_fix-zlib-version.patch'),
-        version_starts_with('3.8', 'py3.8.1.patch'),
-    ]
-    if hasattr(lagoon, 'lld'):
-        patches += [
-            version_starts_with('3.7', 'py3.7.1_fix_cortex_a8.patch'),
-            version_starts_with('3.8', 'py3.8.1_fix_cortex_a8.patch'),
-        ]
     depends = ['hostpython3', 'sqlite3', 'openssl', 'libffi']
     opt_depends = ['libbz2', 'liblzma']
     conflicts = ['python2']
 
     def mainbuild(self):
-        self.apply_patches()
+        patches = [
+            version_starts_with('3.7', 'py3.7.1_fix-ctypes-util-find-library.patch'),
+            version_starts_with('3.7', 'py3.7.1_fix-zlib-version.patch'),
+            version_starts_with('3.8', 'py3.8.1.patch'),
+        ]
+        if hasattr(lagoon, 'lld'):
+            patches += [
+                version_starts_with('3.7', 'py3.7.1_fix_cortex_a8.patch'),
+                version_starts_with('3.8', 'py3.8.1_fix_cortex_a8.patch'),
+            ]
+        self.apply_patches(patches)
         configure_args = [
             f"--host={self.arch.command_prefix}",
             f"--build={Program.text(self.recipebuilddir / 'config.guess')().rstrip()}",

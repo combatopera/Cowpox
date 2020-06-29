@@ -46,6 +46,5 @@ class Hostpython3Recipe(HostPythonRecipe):
     conflicts = ['hostpython2']
 
     def mainbuild(self):
-        self.apply_patches()
         self.build_exe()
         self.install_libraries()

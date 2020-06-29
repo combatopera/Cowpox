@@ -53,17 +53,16 @@ class PyjniusRecipe(CythonRecipe):
     version = '1.2.1'
     url = f"https://github.com/kivy/pyjnius/archive/{version}.zip"
     depends = [('genericndkbuild', 'sdl2'), 'six']
-    patches = [
-        will_build('sdl2', 'sdl2_jnienv_getter.patch'),
-        will_build('genericndkbuild', 'genericndkbuild_jnienv_getter.patch'),
-    ]
 
     @types(Config)
     def __init(self, config):
         self.javaclass_dir = Path(config.javaclass_dir)
 
     def mainbuild(self):
-        self.apply_patches()
+        self.apply_patches([
+            will_build('sdl2', 'sdl2_jnienv_getter.patch'),
+            will_build('genericndkbuild', 'genericndkbuild_jnienv_getter.patch'),
+        ])
         self.install_python_package()
         self.install_libraries()
         log.info('Copying pyjnius java class to classes build dir')

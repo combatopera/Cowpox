@@ -45,8 +45,7 @@ class LibSDL2Mixer(BootstrapNDKRecipe):
     version = '2.0.4'
     url = f"https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-{version}.tar.gz"
     dir_name = 'SDL2_mixer'
-    patches = ['toggle_modplug_mikmod_smpeg_ogg.patch']
 
     def mainbuild(self):
-        self.apply_patches()
+        self.apply_patches(['toggle_modplug_mikmod_smpeg_ogg.patch'])
         self.install_libraries()

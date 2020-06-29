@@ -54,6 +54,5 @@ class LibSDL2Recipe(BootstrapNDKRecipe):
         return env
 
     def mainbuild(self):
-        self.apply_patches()
         self.ndk_build()
         self.install_libraries()

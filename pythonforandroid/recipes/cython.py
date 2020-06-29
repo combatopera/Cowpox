@@ -50,6 +50,5 @@ class CythonRecipe(CompiledComponentsPythonRecipe):
     install_in_hostpython = True
 
     def mainbuild(self):
-        self.apply_patches()
         self.install_python_package()
         self.install_libraries()

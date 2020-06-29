@@ -69,7 +69,6 @@ class Recipe(Plugin):
     opt_depends = []
     '''A list of optional dependencies, that must be built before this
     recipe if they are built at all, but whose presence is not essential.'''
-    patches = ()
     python_depends = []
     '''A list of pure-Python packages that this package requires. These
     packages will NOT be available at build time, but will be added to the
@@ -193,25 +192,24 @@ class Recipe(Plugin):
         env['BUILDLIB_PATH'] = self.graph.get_recipe(f"host{self.graph.python_recipe.name}").recipebuilddir / 'native-build' / 'build' / f"lib.{build_platform}-{self.graph.python_recipe.majminversion}"
         return env
 
-    def apply_patches(self):
-        if self.patches:
-            log.info("Applying patches for %s[%s]", self.name, self.arch.name)
-            if (self.recipebuilddir / '.patched').exists():
-                log.info("%s already patched, skipping", self.name)
-                return
-            for patch in self.patches:
-                while True:
-                    try:
-                        acceptrecipe = patch.acceptrecipe
-                    except AttributeError:
-                        self.apply_patch(patch)
-                        break
-                    nextpatch = acceptrecipe(self)
-                    if nextpatch is None:
-                        log.debug("Patch denied: %s", patch)
-                        break
-                    patch = nextpatch
-            touch.print(self.recipebuilddir / '.patched')
+    def apply_patches(self, patches):
+        log.info("Applying patches for %s[%s]", self.name, self.arch.name)
+        if (self.recipebuilddir / '.patched').exists():
+            log.info("%s already patched, skipping", self.name)
+            return
+        for patch in patches:
+            while True:
+                try:
+                    acceptrecipe = patch.acceptrecipe
+                except AttributeError:
+                    self.apply_patch(patch)
+                    break
+                nextpatch = acceptrecipe(self)
+                if nextpatch is None:
+                    log.debug("Patch denied: %s", patch)
+                    break
+                patch = nextpatch
+        touch.print(self.recipebuilddir / '.patched')
 
     def install_libraries(self):
         libs = [p for p in self._get_libraries() if p.name.endswith('.so')]
