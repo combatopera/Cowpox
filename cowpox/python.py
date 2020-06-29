@@ -47,8 +47,7 @@ from lagoon import cp, make, mv, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
-from shutil import copy2
-import lagoon, logging, os, re
+import lagoon, logging, os, re, shutil
 
 log = logging.getLogger(__name__)
 
@@ -232,7 +231,7 @@ class GuestPythonRecipe(Recipe):
         log.info("Copy %s files into the bundle", len(module_filens))
         for filen in module_filens:
             log.debug(" - copy %s", filen)
-            copy2(filen, modules_dir)
+            shutil.copy2(filen, modules_dir)
         libdir = self.recipebuilddir / 'Lib'
         stdlib_filens = list(_walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
@@ -243,7 +242,7 @@ class GuestPythonRecipe(Recipe):
         log.info("Copy %s files into the site-packages", len(filens))
         for filen in filens:
             log.debug(" - copy %s", filen)
-            copy2(filen, (sitepackagesdir / filen.relative_to(installdir)).pmkdirp())
+            shutil.copy2(filen, (sitepackagesdir / filen.relative_to(installdir)).pmkdirp())
         python_lib_name = f"libpython{self.majminversion}"
         if self.majversion == 3:
             python_lib_name += 'm'
