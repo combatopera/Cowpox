@@ -94,14 +94,6 @@ class PythonRecipe(Recipe):
             self.depends = list(set(depends))
         self.hostrecipe = hostrecipe
 
-    @property
-    def real_hostpython_location(self):
-        return self.hostrecipe.python_exe
-
-    @property
-    def hostpython_location(self):
-        return self.hostrecipe.python_exe if self.call_hostpython_via_targetpython else self.real_hostpython_location
-
     def get_recipe_env(self):
         env = super().get_recipe_env()
         env['PYTHONNOUSERSITE'] = '1'
@@ -117,9 +109,9 @@ class PythonRecipe(Recipe):
             if python_name == 'python3':
                 env['LDFLAGS'] += 'm'
             hppath = []
-            hppath.append(self.hostpython_location.parent / 'Lib')
+            hppath.append(self.hostrecipe.python_exe.parent / 'Lib')
             hppath.append(hppath[0] / 'site-packages')
-            builddir = self.hostpython_location.parent / 'build'
+            builddir = self.hostrecipe.python_exe.parent / 'build'
             if builddir.exists():
                 hppath.extend(d for d in builddir.iterdir() if d.is_dir())
             if hppath:
@@ -131,18 +123,18 @@ class PythonRecipe(Recipe):
 
     def install_python_package(self):
         log.info("Installing %s into site-packages", self.name)
-        Program.text(self.hostpython_location).print(
+        Program.text(self.hostrecipe.python_exe).print(
                 'setup.py', 'install', '-O2', f"--root={self.python_install_dir.pmkdirp()}", '--install-lib=.',
                 env = self.get_recipe_env(), cwd = self.recipebuilddir)
         if self.install_in_hostpython:
             self.install_hostpython_package()
 
     def get_hostrecipe_env(self):
-        return dict(os.environ, PYTHONPATH = self.real_hostpython_location.parent / 'Lib' / 'site-packages')
+        return dict(os.environ, PYTHONPATH = self.hostrecipe.python_exe.parent / 'Lib' / 'site-packages')
 
     def install_hostpython_package(self):
         env = self.get_hostrecipe_env()
-        Program.text(self.real_hostpython_location).print('setup.py', 'install', '-O2', f"--root={self.real_hostpython_location.parent}", '--install-lib=Lib/site-packages', env = env, cwd = self.recipebuilddir)
+        Program.text(self.hostrecipe.python_exe).print('setup.py', 'install', '-O2', f"--root={self.hostrecipe.python_exe.parent}", '--install-lib=Lib/site-packages', env = env, cwd = self.recipebuilddir)
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
@@ -154,7 +146,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def build_compiled_components(self, *setup_extra_args):
         log.info("Building compiled components in %s", self.name)
-        hostpython = Program.text(self.hostpython_location).partial(env = self.get_recipe_env(), cwd = self.recipebuilddir)
+        hostpython = Program.text(self.hostrecipe.python_exe).partial(env = self.get_recipe_env(), cwd = self.recipebuilddir)
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
@@ -168,7 +160,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     def rebuild_compiled_components(self, *setup_extra_args):
         env = self.get_hostrecipe_env()
         log.info("Rebuilding compiled components in %s", self.name)
-        hostpython = Program.text(self.real_hostpython_location).partial(env = env, cwd = self.recipebuilddir)
+        hostpython = Program.text(self.hostrecipe.python_exe).partial(env = env, cwd = self.recipebuilddir)
         hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
 
