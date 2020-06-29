@@ -68,7 +68,7 @@ presplash
     full path = $/($(container src) $(presplash path))
     default path = $/($(android project dir) templates kivy-presplash.jpg)
     path = $(default path)
-p4a bootstrap = sdl2
+bootstrap name = sdl2
 requirements +=
     python3
     bdozlib

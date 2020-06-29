@@ -96,7 +96,7 @@ class AssetArchive:
     @types(Config, GraphInfo, Graph)
     def __init__(self, config, graphinfo, graph):
         self.assets_dir = Path(config.android.project.assets.dir)
-        self.WHITELIST_PATTERNS = ['pyconfig.h'] if config.p4a.bootstrap in {'sdl2', 'webview', 'service_only'} else []
+        self.WHITELIST_PATTERNS = ['pyconfig.h'] if config.bootstrap.name in {'sdl2', 'webview', 'service_only'} else []
         self.WHITELIST_PATTERNS.extend(config.android.whitelist.list())
         self.BLACKLIST_PATTERNS = [
             '^*.hg/*',
@@ -108,7 +108,7 @@ class AssetArchive:
             '*.swp',
             '*.py',
         ] + resource_string(__name__, 'blacklist.txt').decode().splitlines()
-        if config.p4a.bootstrap in {'webview', 'service_only'} or 'sqlite3' not in graphinfo.recipenames:
+        if config.bootstrap.name in {'webview', 'service_only'} or 'sqlite3' not in graphinfo.recipenames:
             self.BLACKLIST_PATTERNS += ['sqlite3/*', 'lib-dynload/_sqlite3.so']
         self.graph = graph
 
@@ -175,7 +175,7 @@ class AndroidProject:
         self.android_api = config.android.api
         self.title = config.title
         self.presplash_color = config.android.presplash_color
-        self.bootstrapname = config.p4a.bootstrap # TODO: Use polymorphism.
+        self.bootstrapname = config.bootstrap.name # TODO: Use polymorphism.
         self.android_project_dir = Path(config.android.project.dir)
         self.version = config.version
         self.webview_port = config.webview.port

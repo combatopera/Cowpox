@@ -78,7 +78,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     @types(Config, Graph, Arch, GraphInfo)
     def __init__(self, config, graph, arch, graphinfo):
         self.bootstrapsdir = Path(config.bootstrapsdir)
-        self.bootstrap_dir = self.bootstrapsdir / config.p4a.bootstrap
+        self.bootstrap_dir = self.bootstrapsdir / config.bootstrap.name
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
         self.android_api = config.android.api
