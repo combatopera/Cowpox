@@ -50,7 +50,7 @@ requires +=
     Cython
     diapyr>=14
     jproperties
-    lagoon
+    lagoon>=16
     networkx
     virtualenv
 resource types +=
