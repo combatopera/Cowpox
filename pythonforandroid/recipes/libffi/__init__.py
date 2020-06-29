@@ -48,7 +48,7 @@ import os
 class LibffiRecipe(Recipe):
 
     version = '8fa8837'
-    urlformat = "https://github.com/libffi/libffi/archive/{version}.tar.gz"
+    url = f"https://github.com/libffi/libffi/archive/{version}.tar.gz"
     patches = ['remove-version-info.patch']
     builtlibpaths = [Path('.libs', 'libffi.so')]
 

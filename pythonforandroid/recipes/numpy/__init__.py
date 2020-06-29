@@ -44,7 +44,7 @@ from multiprocessing import cpu_count
 class NumpyRecipe(CompiledComponentsPythonRecipe):
 
     version = '1.18.1'
-    urlformat = "https://pypi.python.org/packages/source/n/numpy/numpy-{version}.zip"
+    url = f"https://pypi.python.org/packages/source/n/numpy/numpy-{version}.zip"
     depends = ['setuptools', 'cython']
     patches = [
         'add_libm_explicitly_to_build.patch',

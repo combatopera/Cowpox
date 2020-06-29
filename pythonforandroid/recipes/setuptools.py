@@ -43,7 +43,7 @@ from cowpox.pyrecipe import PythonRecipe
 class SetuptoolsRecipe(PythonRecipe):
 
     version = '40.9.0'
-    urlformat = "https://pypi.python.org/packages/source/s/setuptools/setuptools-{version}.zip"
+    url = f"https://pypi.python.org/packages/source/s/setuptools/setuptools-{version}.zip"
     call_hostpython_via_targetpython = False
     install_in_hostpython = True
 

@@ -46,7 +46,7 @@ import lagoon
 class Python3Recipe(GuestPythonRecipe):
 
     version = '3.8.1'
-    urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
+    url = f"https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
     patches = [
         version_starts_with('3.7', 'py3.7.1_fix-ctypes-util-find-library.patch'),
         version_starts_with('3.7', 'py3.7.1_fix-zlib-version.patch'),

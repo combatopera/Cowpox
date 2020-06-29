@@ -44,7 +44,7 @@ class CythonRecipe(CompiledComponentsPythonRecipe):
 
     # XXX: Can we use canonical name?
     version = '0.29.15'
-    urlformat = "https://github.com/cython/cython/archive/{version}.tar.gz"
+    url = f"https://github.com/cython/cython/archive/{version}.tar.gz"
     depends = ['setuptools']
     call_hostpython_via_targetpython = False
     install_in_hostpython = True

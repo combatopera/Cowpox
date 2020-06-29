@@ -51,7 +51,7 @@ log = logging.getLogger(__name__)
 class PyjniusRecipe(CythonRecipe):
 
     version = '1.2.1'
-    urlformat = "https://github.com/kivy/pyjnius/archive/{version}.zip"
+    url = f"https://github.com/kivy/pyjnius/archive/{version}.zip"
     depends = [('genericndkbuild', 'sdl2'), 'six']
     patches = [
         will_build('sdl2', 'sdl2_jnienv_getter.patch'),

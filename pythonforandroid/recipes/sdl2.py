@@ -43,7 +43,7 @@ from cowpox.recipe import BootstrapNDKRecipe
 class LibSDL2Recipe(BootstrapNDKRecipe):
 
     version = "2.0.9"
-    urlformat = "https://www.libsdl.org/release/SDL2-{version}.tar.gz"
+    url = f"https://www.libsdl.org/release/SDL2-{version}.tar.gz"
     md5sum = 'f2ecfba915c54f7200f504d8b48a5dfe'
     dir_name = 'SDL'
     depends = ['sdl2_image', 'sdl2_mixer', 'sdl2_ttf']
