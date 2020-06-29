@@ -51,8 +51,6 @@ class Graph: pass
 
 class GraphInfo: pass
 
-class PlatformOK: pass
-
 class SkeletonOK: pass
 
 class BootstrapOK: pass

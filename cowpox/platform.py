@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import PlatformOK
 from .config import Config
 from .make import Make
 from .mirror import Mirror
@@ -52,6 +51,8 @@ from pkg_resources import parse_version
 import logging, os, re
 
 log = logging.getLogger(__name__)
+
+class PlatformOK: pass
 
 class PlatformInfo:
 
