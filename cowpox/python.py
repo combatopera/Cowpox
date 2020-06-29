@@ -43,7 +43,7 @@ from .recipe import Recipe
 from diapyr import types
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
-from lagoon import cp, find, make, mv, zip
+from lagoon import cp, make, mv, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -257,7 +257,7 @@ class GuestPythonRecipe(Recipe):
         to "YYY.so", i.e. removing the erroneous architecture name
         coming from the local system.
         """
-        for filen in map(Path, find(dirn, '-iname', '*.so').splitlines()):
+        for filen in dirn.rglob('*.so'):
             parts = filen.name.split('.')
             if len(parts) > 2:
                 mv.print(filen, filen.parent / f"{parts[0]}.so")
