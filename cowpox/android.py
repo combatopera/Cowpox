@@ -46,7 +46,6 @@ from diapyr import types
 from fnmatch import fnmatch
 from jproperties import Properties
 from lagoon import gradle, patch
-from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import resource_filename, resource_stream, resource_string
 from tempfile import TemporaryDirectory
@@ -128,12 +127,10 @@ class AssetArchive:
             if tfn.exists():
                 tfn.unlink()
         files = []
-        compileall = Program.text(self.graph.host_recipe.python_exe)._OO._m.compileall._b._f
+        hostrecipe = self.graph.host_recipe
         for sd in source_dirs:
             sd = sd.resolve()
-            for path in sd.rglob('*.py'):
-                os.utime(path, (0, 0)) # Determinism.
-            compileall.print(sd)
+            hostrecipe.compileall(sd)
             files.extend([x, x.resolve().relative_to(sd)] for x in self._listfiles(sd) if not self._has(x))
         with tarfile.open(tfn.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             dirs = set()

@@ -94,6 +94,11 @@ class HostPythonRecipe(Recipe):
         exe, = (exe for exe in (self.get_path_to_python() / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
         cp.print(exe, self.python_exe)
 
+    def compileall(self, dirpath):
+        for path in dirpath.rglob('*.py'):
+            os.utime(path, (0, 0)) # Determinism.
+        Program.text(self.python_exe)._OO._m.compileall._b._f.print(dirpath)
+
 class GuestPythonRecipe(Recipe):
 
     MIN_NDK_API = 21
@@ -214,18 +219,12 @@ class GuestPythonRecipe(Recipe):
     def link_root(self):
         return self.recipebuilddir / 'android-build'
 
-    def _compile_python_files(self, dirpath):
-        # TODO: Duplicated code.
-        for path in dirpath.rglob('*.py'):
-            os.utime(path, (0, 0)) # Determinism.
-        Program.text(self.hostrecipe.python_exe)._OO._m.compileall._b._f.print(dirpath)
-
     def create_python_bundle(self):
         dirn = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.recipebuilddir / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
-        self._compile_python_files(modules_build_dir)
-        self._compile_python_files(self.recipebuilddir / 'Lib')
-        self._compile_python_files(self.python_install_dir)
+        self.hostrecipe.compileall(modules_build_dir)
+        self.hostrecipe.compileall(self.recipebuilddir / 'Lib')
+        self.hostrecipe.compileall(self.python_install_dir)
         modules_dir = (dirn / 'modules').mkdirp()
         module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # XXX: Not recursive?
         log.info("Copy %s files into the bundle", len(module_filens))
