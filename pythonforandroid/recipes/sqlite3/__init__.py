@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from cowpox.recipe import NDKRecipe
+from pathlib import Path
 import shutil
 
 class Sqlite3Recipe(NDKRecipe):
