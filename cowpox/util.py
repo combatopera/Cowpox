@@ -42,6 +42,7 @@ from chromalog.log import ColorizingFormatter, ColorizingStreamHandler
 from collections.abc import Mapping
 from diapyr import DI, types
 from importlib import import_module
+from jproperties import Properties
 import logging, networkx as nx
 
 class Logging:
@@ -122,3 +123,10 @@ class DIProxy: # TODO: Migrate to diapyr.
 
     def __getattr__(self, name):
         return getattr(self.di(self.targetclass), name)
+
+def writeproperties(path, **kwargs):
+    p = Properties()
+    for k, v in kwargs.items():
+        p[k] = v
+    with path.open('wb') as f:
+        p.store(f)

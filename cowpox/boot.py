@@ -40,9 +40,8 @@
 
 from . import Arch, BootstrapOK, Graph, GraphInfo, SiteOK, SkeletonOK
 from .config import Config
-from .util import Plugin, PluginType
+from .util import Plugin, PluginType, writeproperties
 from diapyr import types
-from jproperties import Properties
 from lagoon import cp, mv, rm, unzip
 from lagoon.program import Program
 from pathlib import Path
@@ -100,14 +99,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     @types(SiteOK, this = BootstrapOK)
     def toandroidproject(self, _):
         shutil.copytree(self.build_dir, self.android_project_dir)
-        p = Properties()
-        p['target'] = f"android-{self.android_api}"
-        with (self.android_project_dir / 'project.properties').open('wb') as f:
-            p.store(f)
-        p = Properties()
-        p['sdk.dir'] = self.sdk_dir # Required by gradle build.
-        with (self.android_project_dir / 'local.properties').open('wb') as f:
-            p.store(f)
+        writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
+        writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.
         log.info('Copying libs.')
         tgt_dir = (self.android_project_dir / 'libs' / self.arch.name).mkdirp()
         for lib in self.arch.libs_dir.iterdir():
