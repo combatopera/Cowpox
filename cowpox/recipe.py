@@ -43,7 +43,7 @@ from .boot import Bootstrap
 from .config import Config
 from .mirror import Mirror
 from .platform import Platform
-from .util import format_obj, Plugin
+from .util import build_platform, format_obj, Plugin
 from diapyr import types
 from lagoon import patch as patchexe, tar, touch, unzip
 from lagoon.program import Program
@@ -187,7 +187,6 @@ class Recipe(Plugin):
 
     def get_recipe_env(self):
         env = self.arch.get_env()
-        build_platform, = (f"{uname.sysname}-{uname.machine}".lower() for uname in [os.uname()])
         env['BUILDLIB_PATH'] = self.graph.host_recipe.recipebuilddir / 'native-build' / 'build' / f"lib.{build_platform}-{self.graph.python_recipe.majminversion}"
         return env
 

@@ -41,6 +41,7 @@
 from .config import Config
 from .make import Make
 from .mirror import Mirror
+from .util import build_platform
 from diapyr import types
 from distutils.version import LooseVersion
 from jproperties import Properties
@@ -48,7 +49,7 @@ from lagoon import unzip, yes
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import parse_version
-import logging, os, re
+import logging, re
 
 log = logging.getLogger(__name__)
 
@@ -188,7 +189,6 @@ class Platform:
 
     def clang_path(self, arch):
         llvm_dir, = (self.ndk_dir / 'toolchains').glob('llvm*')
-        build_platform, = (f"{uname.sysname}-{uname.machine}".lower() for uname in [os.uname()])
         return llvm_dir / 'prebuilt' / build_platform / 'bin'
 
     def clang_exe(self, arch, with_target = False, plus_plus = False):

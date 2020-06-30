@@ -43,7 +43,9 @@ from collections.abc import Mapping
 from diapyr import DI, types
 from importlib import import_module
 from jproperties import Properties
-import logging, networkx as nx
+import logging, networkx as nx, os
+
+build_platform, = (f"{uname.sysname}-{uname.machine}".lower() for uname in [os.uname()])
 
 class Logging:
 
