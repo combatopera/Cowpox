@@ -214,12 +214,12 @@ class GuestPythonRecipe(Recipe):
         return self.recipebuilddir / 'android-build'
 
     def create_python_bundle(self):
-        dirn = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
+        bundledir = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.recipebuilddir / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
         self.hostrecipe.compileall(modules_build_dir)
         self.hostrecipe.compileall(self.recipebuilddir / 'Lib', False)
         self.hostrecipe.compileall(self.python_install_dir)
-        modules_dir = (dirn / 'modules').mkdirp()
+        modules_dir = (bundledir / 'modules').mkdirp()
         module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # XXX: Not recursive?
         log.info("Copy %s files into the bundle", len(module_filens))
         for filen in module_filens:
@@ -228,8 +228,8 @@ class GuestPythonRecipe(Recipe):
         libdir = self.recipebuilddir / 'Lib'
         stdlib_filens = list(_walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
-        zip.print(dirn / 'stdlib.zip', *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
-        sitepackagesdir = (dirn / 'site-packages').mkdirp()
+        zip.print(bundledir / 'stdlib.zip', *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
+        sitepackagesdir = (bundledir / 'site-packages').mkdirp()
         installdir = self.python_install_dir.mkdirp()
         filens = list(_walk_valid_filens(installdir, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
         log.info("Copy %s files into the site-packages", len(filens))
