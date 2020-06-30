@@ -108,9 +108,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         p['sdk.dir'] = self.sdk_dir # Required by gradle build.
         with (self.android_project_dir / 'local.properties').open('wb') as f:
             p.store(f)
-        log.info("Bootstrap running with arch %s", self.arch.name)
-        log.info('Copying python distribution')
-        log.info('Copying libs')
+        log.info('Copying libs.')
         tgt_dir = (self.android_project_dir / 'libs' / self.arch.name).mkdirp()
         for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
@@ -126,10 +124,10 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
                     if 1 != e.returncode:
                         raise
                     log.warning("Failed to strip: %s", path)
-        log.info("Frying eggs in %s", sitepackages)
+        log.info("Frying eggs in: %s", sitepackages)
         for rd in sitepackages.iterdir():
             if rd.is_dir() and rd.name.endswith('.egg'):
-                log.info("  %s", rd.name)
+                log.debug("Egg: %s", rd.name)
                 files = [f for f in rd.iterdir() if f.name != 'EGG-INFO']
                 if files:
                     mv._t.print(sitepackages, *files)
