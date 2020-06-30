@@ -46,5 +46,4 @@ class SDL2GradleBootstrap(Bootstrap):
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'sdl2'})
 
     def run_distribute(self):
-        self.distlibs()
         self.distribute_javaclasses(dest_dir = Path('src', 'main', 'java'))
