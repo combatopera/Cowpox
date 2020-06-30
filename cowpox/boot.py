@@ -116,10 +116,6 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             cp._a.print(lib, tgt_dir)
         self.run_distribute()
         site_packages_dir = self.graph.python_recipe.create_python_bundle()
-        self._strip_libraries()
-        self._fry_eggs(site_packages_dir)
-
-    def _strip_libraries(self):
         log.info('Stripping libraries')
         strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
         filens = find(self.android_project_dir / '_python_bundle' / '_python_bundle' / 'modules', self.android_project_dir / 'libs', '-name', '*.so').splitlines()
@@ -131,6 +127,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
                 if 1 != e.returncode:
                     raise
                 log.debug("Failed to strip %s", filen)
+        self._fry_eggs(site_packages_dir)
 
     def distribute_javaclasses(self, dest_dir = 'src'):
         log.info('Copying java files')
