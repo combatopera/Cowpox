@@ -229,7 +229,7 @@ class BootstrapNDKRecipe(Recipe):
         env = super().get_recipe_env()
         env['PYTHON_INCLUDE_ROOT'] = self.graph.python_recipe.include_root()
         env['PYTHON_LINK_ROOT'] = self.graph.python_recipe.link_root()
-        env['EXTRA_LDLIBS'] = f" -lpython{self.graph.python_recipe.majminversion}"
+        env['EXTRA_LDLIBS'] = f"-lpython{self.graph.python_recipe.majminversion}"
         if 'python3' in self.graph.python_recipe.name:
             env['EXTRA_LDLIBS'] += 'm'
         return env
