@@ -39,16 +39,12 @@
 # THE SOFTWARE.
 
 from cowpox.boot import Bootstrap
-import logging
-
-log = logging.getLogger(__name__)
 
 class WebViewBootstrap(Bootstrap):
 
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'genericndkbuild'})
 
     def run_distribute(self):
-        log.info("Creating Android project from build and %s bootstrap", self.name)
         self.distlibs()
         self.distribute_aars()
         self.distribute_javaclasses()

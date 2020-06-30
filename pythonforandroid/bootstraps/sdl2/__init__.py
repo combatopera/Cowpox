@@ -40,17 +40,12 @@
 
 from cowpox.boot import Bootstrap
 from pathlib import Path
-import logging
-
-log = logging.getLogger(__name__)
 
 class SDL2GradleBootstrap(Bootstrap):
 
     recipe_depends = list(set(Bootstrap.recipe_depends) | {'sdl2'})
 
     def run_distribute(self):
-        log.info("Creating Android project (%s)", self.name)
-        log.info("Copying SDL2/gradle build for %s", self.arch.name)
         self.distlibs()
         self.distribute_javaclasses(dest_dir = Path('src', 'main', 'java'))
         self.distfinish()
