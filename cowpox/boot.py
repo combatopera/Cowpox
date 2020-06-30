@@ -115,7 +115,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
         self.run_distribute()
-        site_packages_dir = self.graph.python_recipe.create_python_bundle()
+        sitepackages = self.graph.python_recipe.create_python_bundle()
         log.info('Stripping libraries')
         strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
         filens = find(self.android_project_dir / '_python_bundle' / '_python_bundle' / 'modules', self.android_project_dir / 'libs', '-name', '*.so').splitlines()
