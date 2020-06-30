@@ -128,9 +128,6 @@ class ArchImpl(Arch):
             CPPFLAGS = f"""{self.cppflags} -I{self.python_install_dir / 'include' / f"python{self.graph.python_recipe.majminversion}"}""",
         )
 
-    def has_lib(self, lib):
-        return (self.libs_dir / lib).exists()
-
     def strip_object_files(self, root):
         log.info('Stripping object files')
         exec = find.partial(root, '-name', '*.so', '-exec')
