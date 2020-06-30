@@ -147,7 +147,7 @@ class GuestPythonRecipe(Recipe):
         self.majversion = parts[0]
         self.majminversion = '.'.join(map(str, parts[:2]))
         self.exename = f"python{self.majversion}"
-        self.libpythonname = f"libpython{self.majminversion}{'m' if 3 == self.majversion else ''}.so"
+        self.instsoname = f"libpython{self.majminversion}{'m' if 3 == self.majversion else ''}.so"
         self.hostrecipe = hostrecipe
 
     def get_recipe_env(self):
@@ -203,7 +203,7 @@ class GuestPythonRecipe(Recipe):
         build_dir = (self.recipebuilddir / 'android-build').mkdirp()
         env = self._set_libs_flags()
         Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = build_dir)
-        make.print('all', '-j', cpu_count(), f"INSTSONAME={self.libpythonname}", env = env, cwd = build_dir)
+        make.print('all', '-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = build_dir)
         cp.print(build_dir / 'pyconfig.h', self.recipebuilddir / 'Include')
 
     def include_root(self):
@@ -235,7 +235,7 @@ class GuestPythonRecipe(Recipe):
         for filen in filens:
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, (sitepackagesdir / filen.relative_to(installdir)).pmkdirp())
-        cp.print(self.recipebuilddir / 'android-build' / self.libpythonname, self.android_project_dir / 'libs' / self.arch.name)
+        cp.print(self.recipebuilddir / 'android-build' / self.instsoname, self.android_project_dir / 'libs' / self.arch.name)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
         return sitepackagesdir
