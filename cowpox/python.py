@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import Arch, PythonBundle
 from .config import Config
 from .recipe import Recipe
 from diapyr import types
@@ -102,46 +103,13 @@ class HostPythonRecipe(Recipe):
 class GuestPythonRecipe(Recipe):
 
     MIN_NDK_API = 21
-    stdlib_dir_blacklist = {
-        '__pycache__',
-        'test',
-        'tests',
-        'lib2to3',
-        'ensurepip',
-        'idlelib',
-        'tkinter',
-    }
-    '''The directories that we want to omit for our python bundle'''
-
-    stdlib_filen_blacklist = [
-        '*.py',
-        '*.exe',
-        '*.whl',
-    ]
-    '''The file extensions that we want to blacklist for our python bundle'''
-
-    site_packages_dir_blacklist = {
-        '__pycache__',
-        'tests'
-    }
-    '''The directories from site packages dir that we don't want to be included
-    in our python bundle.'''
-
-    site_packages_filen_blacklist = [
-        '*.py'
-    ]
-    '''The file extensions from site packages dir that we don't want to be
-    included in our python bundle.'''
-
     opt_depends = ['sqlite3', 'libffi', 'openssl']
     '''The optional libraries which we would like to get our python linked'''
     zlibversionpattern = re.compile('^#define ZLIB_VERSION "(.+)"$', re.MULTILINE)
 
     @types(Config, HostPythonRecipe)
     def __init(self, config, hostrecipe):
-        self.python_install_dir = Path(config.python_install_dir)
         self.ndk_dir = Path(config.android_ndk_dir)
-        self.android_project_dir = Path(config.android.project.dir)
         self.ndk_api = config.android.ndk_api
         parts = LooseVersion(self.version).version
         self.majversion = parts[0]
@@ -213,10 +181,42 @@ class GuestPythonRecipe(Recipe):
     def link_root(self):
         return self.recipebuilddir / 'android-build'
 
+class PythonBundleImpl(PythonBundle):
+
+    stdlib_dir_blacklist = {
+        '__pycache__',
+        'test',
+        'tests',
+        'lib2to3',
+        'ensurepip',
+        'idlelib',
+        'tkinter',
+    }
+    stdlib_filen_blacklist = [
+        '*.py',
+        '*.exe',
+        '*.whl',
+    ]
+    site_packages_dir_blacklist = {
+        '__pycache__',
+        'tests',
+    }
+    site_packages_filen_blacklist = [
+        '*.py',
+    ]
+
+    @types(Config, Arch, HostPythonRecipe, GuestPythonRecipe)
+    def __init__(self, config, arch, hostrecipe, pythonrecipe):
+        self.python_install_dir = Path(config.python_install_dir)
+        self.android_project_dir = Path(config.android.project.dir)
+        self.arch = arch
+        self.hostrecipe = hostrecipe
+        self.pythonrecipe = pythonrecipe
+
     def create_python_bundle(self):
         bundledir = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
-        modules_build_dir = self.recipebuilddir / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
-        libdir = self.recipebuilddir / 'Lib'
+        modules_build_dir = self.pythonrecipe.recipebuilddir / 'android-build' / 'build' / f"lib.linux{2 if self.pythonrecipe.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.pythonrecipe.majminversion}"
+        libdir = self.pythonrecipe.recipebuilddir / 'Lib'
         # TODO: Avoid mutating what should by now be a finished build.
         self.hostrecipe.compileall(modules_build_dir)
         self.hostrecipe.compileall(libdir, False)
@@ -237,7 +237,7 @@ class GuestPythonRecipe(Recipe):
         for filen in filens:
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, (sitepackagesdir / filen.relative_to(installdir)).pmkdirp())
-        cp.print(self.recipebuilddir / 'android-build' / self.instsoname, self.android_project_dir / 'libs' / self.arch.name)
+        cp.print(self.pythonrecipe.recipebuilddir / 'android-build' / self.pythonrecipe.instsoname, self.android_project_dir / 'libs' / self.arch.name)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
         return sitepackagesdir

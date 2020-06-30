@@ -48,6 +48,7 @@ from .graph import GraphImpl, GraphInfoImpl
 from .make import Make
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
+from .python import PythonBundleImpl
 from .util import findimpl, Logging
 from argparse import ArgumentParser
 from diapyr import DI
@@ -94,6 +95,7 @@ def _main():
         di.add(PipInstallRecipe)
         di.add(Platform)
         di.add(PlatformInfo)
+        di.add(PythonBundleImpl)
         for recipeimpl in di(GraphInfoImpl).recipeimpls():
             di.add(recipeimpl)
         return di(APKPath)

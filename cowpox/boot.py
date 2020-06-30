@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, Graph, GraphInfo, SiteOK, SkeletonOK
+from . import Arch, BootstrapOK, GraphInfo, PythonBundle, SiteOK, SkeletonOK
 from .config import Config
 from .util import Plugin, PluginType, writeproperties
 from diapyr import types
@@ -73,8 +73,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     MIN_TARGET_API = 26
     recipe_depends = ('python2', 'python3'), 'android'
 
-    @types(Config, Graph, Arch, GraphInfo)
-    def __init__(self, config, graph, arch, graphinfo):
+    @types(Config, PythonBundle, Arch, GraphInfo)
+    def __init__(self, config, bundle, arch, graphinfo):
         self.bootstrapsdir = Path(config.bootstrapsdir)
         self.bootstrap_dir = self.bootstrapsdir / config.bootstrap.name
         self.buildsdir = Path(config.buildsdir)
@@ -87,7 +87,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
         self.javaclass_dir = config.javaclass_dir
         self.sdk_dir = config.android_sdk_dir
-        self.graph = graph
+        self.bundle = bundle
         self.arch = arch
         self.graphinfo = graphinfo
 
@@ -106,7 +106,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
         self.run_distribute()
-        sitepackages = self.graph.python_recipe.create_python_bundle()
+        sitepackages = self.bundle.create_python_bundle()
         log.info('Stripping libraries.')
         strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
         for root in self.android_project_dir / '_python_bundle' / '_python_bundle' / 'modules', self.android_project_dir / 'libs':
