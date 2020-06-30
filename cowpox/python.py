@@ -147,6 +147,7 @@ class GuestPythonRecipe(Recipe):
         self.majversion = parts[0]
         self.majminversion = '.'.join(map(str, parts[:2]))
         self.exename = f"python{self.majversion}"
+        self.libpythonname = f"libpython{self.majminversion}{'m' if 3 == self.majversion else ''}.so"
         self.hostrecipe = hostrecipe
 
     def get_recipe_env(self):
@@ -197,20 +198,12 @@ class GuestPythonRecipe(Recipe):
         env['LIBS'] = ' '.join(libs)
         return env
 
-    @property
-    def _libpython(self):
-        '''return the python's library name (with extension)'''
-        py_version = self.majminversion
-        if self.majversion == 3:
-            py_version += 'm'
-        return f"libpython{py_version}.so"
-
     def build_android(self, configure_args):
         assert self.ndk_api >= self.MIN_NDK_API
         build_dir = (self.recipebuilddir / 'android-build').mkdirp()
         env = self._set_libs_flags()
         Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = build_dir)
-        make.print('all', '-j', cpu_count(), f"INSTSONAME={self._libpython}", env = env, cwd = build_dir)
+        make.print('all', '-j', cpu_count(), f"INSTSONAME={self.libpythonname}", env = env, cwd = build_dir)
         cp.print(build_dir / 'pyconfig.h', self.recipebuilddir / 'Include')
 
     def include_root(self):
@@ -242,10 +235,7 @@ class GuestPythonRecipe(Recipe):
         for filen in filens:
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, (sitepackagesdir / filen.relative_to(installdir)).pmkdirp())
-        python_lib_name = f"libpython{self.majminversion}"
-        if self.majversion == 3:
-            python_lib_name += 'm'
-        cp.print(self.recipebuilddir / 'android-build' / f"{python_lib_name}.so", self.android_project_dir / 'libs' / self.arch.name)
+        cp.print(self.recipebuilddir / 'android-build' / self.libpythonname, self.android_project_dir / 'libs' / self.arch.name)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
         return sitepackagesdir
