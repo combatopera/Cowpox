@@ -100,6 +100,9 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     @types(SiteOK, this = BootstrapOK)
     def toandroidproject(self, _):
         self.run_distribute()
+        site_packages_dir = self.graph.python_recipe.create_python_bundle()
+        self._strip_libraries()
+        self._fry_eggs(site_packages_dir)
 
     def distlibs(self):
         shutil.copytree(self.build_dir, self.android_project_dir)
@@ -114,11 +117,6 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         log.info("Bootstrap running with arch %s", self.arch.name)
         log.info('Copying python distribution')
         self._distribute_libs()
-
-    def distfinish(self):
-        site_packages_dir = self.graph.python_recipe.create_python_bundle()
-        self._strip_libraries()
-        self._fry_eggs(site_packages_dir)
 
     def _strip_libraries(self):
         log.info('Stripping libraries')

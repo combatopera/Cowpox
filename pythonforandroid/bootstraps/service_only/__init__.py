@@ -48,4 +48,3 @@ class ServiceOnlyBootstrap(Bootstrap):
         self.distlibs()
         self.distribute_aars()
         self.distribute_javaclasses()
-        self.distfinish()

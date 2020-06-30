@@ -48,4 +48,3 @@ class SDL2GradleBootstrap(Bootstrap):
     def run_distribute(self):
         self.distlibs()
         self.distribute_javaclasses(dest_dir = Path('src', 'main', 'java'))
-        self.distfinish()
