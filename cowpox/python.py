@@ -216,8 +216,10 @@ class GuestPythonRecipe(Recipe):
     def create_python_bundle(self):
         bundledir = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.recipebuilddir / 'android-build' / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
+        libdir = self.recipebuilddir / 'Lib'
+        # TODO: Avoid mutating what should by now be a finished build.
         self.hostrecipe.compileall(modules_build_dir)
-        self.hostrecipe.compileall(self.recipebuilddir / 'Lib', False)
+        self.hostrecipe.compileall(libdir, False)
         self.hostrecipe.compileall(self.python_install_dir)
         modules_dir = (bundledir / 'modules').mkdirp()
         module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # XXX: Not recursive?
@@ -225,7 +227,6 @@ class GuestPythonRecipe(Recipe):
         for filen in module_filens:
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, modules_dir)
-        libdir = self.recipebuilddir / 'Lib'
         stdlib_filens = list(_walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(bundledir / 'stdlib.zip', *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
