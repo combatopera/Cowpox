@@ -42,7 +42,7 @@ from cowpox.boot import Bootstrap
 
 class ServiceOnlyBootstrap(Bootstrap):
 
-    recipe_depends = list(set(Bootstrap.recipe_depends) | {'genericndkbuild'})
+    recipe_depends = {*Bootstrap.recipe_depends, 'genericndkbuild'}
 
     def run_distribute(self):
         self.distribute_aars()
