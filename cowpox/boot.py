@@ -127,7 +127,14 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
                 if 1 != e.returncode:
                     raise
                 log.debug("Failed to strip %s", filen)
-        self._fry_eggs(site_packages_dir)
+        log.info("Frying eggs in %s", sitepackages)
+        for rd in sitepackages.iterdir():
+            if rd.is_dir() and rd.name.endswith('.egg'):
+                log.info("  %s", rd.name)
+                files = [f for f in rd.iterdir() if f.name != 'EGG-INFO']
+                if files:
+                    mv._t.print(sitepackages, *files)
+                rm._rf.print(rd)
 
     def distribute_javaclasses(self, dest_dir = 'src'):
         log.info('Copying java files')
@@ -159,13 +166,3 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             log.debug("  to %s", so_tgt_dir)
             for f in so_src_dir.glob('*.so'):
                 cp._a.print(f, so_tgt_dir)
-
-    def _fry_eggs(self, sitepackages):
-        log.info("Frying eggs in %s", sitepackages)
-        for rd in sitepackages.iterdir():
-            if rd.is_dir() and rd.name.endswith('.egg'):
-                log.info("  %s", rd.name)
-                files = [f for f in rd.iterdir() if f.name != 'EGG-INFO']
-                if files:
-                    mv._t.print(sitepackages, *files)
-                rm._rf.print(rd)
