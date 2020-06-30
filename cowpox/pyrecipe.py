@@ -93,13 +93,10 @@ class PythonRecipe(Recipe):
     def get_recipe_env(self):
         env = super().get_recipe_env()
         env['PYTHONNOUSERSITE'] = '1'
-
         # Set the LANG, this isn't usually important but is a better default
         # as it occasionally matters how Python e.g. reads files
         env['LANG'] = "en_GB.UTF-8"
-
         if not self.call_hostpython_via_targetpython:
-            python_name = self.graph.python_recipe.name
             env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root()}"
             env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root()} -l{self.graph.python_recipe.pylibname}"
             hppath = []
