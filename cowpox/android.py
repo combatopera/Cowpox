@@ -200,7 +200,7 @@ class AndroidProject:
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
-    def _update_libraries_references(self):
+    def _update_libraries_references(self): # XXX: Redundant?
         p = Properties()
         project_fn = self.android_project_dir / 'project.properties'
         with project_fn.open('rb') as f:
