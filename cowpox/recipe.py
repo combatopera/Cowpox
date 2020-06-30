@@ -225,13 +225,11 @@ class BootstrapNDKRecipe(Recipe):
     def get_build_container_dir(self):
         return self.jni_dir
 
-    def recipe_env_with_python(self):
+    def recipe_env_with_python(self): # TODO: Looks like a job for the python recipe.
         env = super().get_recipe_env()
         env['PYTHON_INCLUDE_ROOT'] = self.graph.python_recipe.include_root()
         env['PYTHON_LINK_ROOT'] = self.graph.python_recipe.link_root()
-        env['EXTRA_LDLIBS'] = f"-lpython{self.graph.python_recipe.majminversion}"
-        if 'python3' in self.graph.python_recipe.name:
-            env['EXTRA_LDLIBS'] += 'm'
+        env['EXTRA_LDLIBS'] = f"-l{self.graph.python_recipe.pylibname}"
         return env
 
     def ndk_build(self):

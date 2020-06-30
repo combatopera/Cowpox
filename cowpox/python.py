@@ -147,7 +147,8 @@ class GuestPythonRecipe(Recipe):
         self.majversion = parts[0]
         self.majminversion = '.'.join(map(str, parts[:2]))
         self.exename = f"python{self.majversion}"
-        self.instsoname = f"libpython{self.majminversion}{'m' if 3 == self.majversion else ''}.so"
+        self.pylibname = f"python{self.majminversion}{'m' if 3 == self.majversion else ''}"
+        self.instsoname = f"lib{self.pylibname}.so"
         self.hostrecipe = hostrecipe
 
     def get_recipe_env(self):

@@ -101,9 +101,7 @@ class PythonRecipe(Recipe):
         if not self.call_hostpython_via_targetpython:
             python_name = self.graph.python_recipe.name
             env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root()}"
-            env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root()} -lpython{self.graph.python_recipe.majminversion}"
-            if python_name == 'python3':
-                env['LDFLAGS'] += 'm'
+            env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root()} -l{self.graph.python_recipe.pylibname}"
             hppath = []
             hppath.append(self.hostrecipe.python_exe.parent / 'Lib')
             hppath.append(hppath[0] / 'site-packages')
