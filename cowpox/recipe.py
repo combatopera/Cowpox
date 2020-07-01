@@ -46,7 +46,6 @@ from .platform import Platform
 from .util import build_platform, format_obj, Plugin
 from diapyr import types
 from lagoon import patch as patchexe, tar, touch, unzip
-from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import resource_filename
 from urllib.parse import urlparse
@@ -217,7 +216,6 @@ class BootstrapNDKRecipe(Recipe):
 
     @types(Config, Bootstrap)
     def __init(self, config, bootstrap):
-        self.ndk_dir = Path(config.android_ndk_dir)
         self.jni_dir = bootstrap.build_dir / 'jni'
         self.bootstrap = bootstrap
 
@@ -232,18 +230,16 @@ class BootstrapNDKRecipe(Recipe):
         return env
 
     def ndk_build(self):
-        Program.text(self.ndk_dir / 'ndk-build').print('V=1', env = self.get_recipe_env(), cwd = self.jni_dir)
+        self.platform.ndk_build.print(env = self.get_recipe_env(), cwd = self.jni_dir)
 
 class NDKRecipe(Recipe):
 
     @types(Config)
     def __init(self, config):
-        self.ndk_dir = Path(config.android_ndk_dir)
         self.ndk_api = config.android.ndk_api
 
     def get_lib_dir(self):
         return self.recipebuilddir / 'obj' / 'local' / self.arch.name
 
     def ndk_build(self):
-        Program.text(self.ndk_dir / 'ndk-build').print('V=1', f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={self.arch.name}",
-                env = self.get_recipe_env(), cwd = self.recipebuilddir)
+        self.platform.ndk_build.print(f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={self.arch.name}", env = self.get_recipe_env(), cwd = self.recipebuilddir)

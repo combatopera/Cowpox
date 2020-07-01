@@ -142,6 +142,7 @@ class Platform:
         assert major_version >= self.MIN_NDK_VERSION
         if major_version > self.MAX_NDK_VERSION:
             log.warning('Newer NDKs may not be fully supported by p4a.')
+        self.ndk_build = Program.text(self.ndk_dir / 'ndk-build').partial('V=1')
 
     def build_tools_version(self):
         ignored = {'.DS_Store', '.ds_store'}
