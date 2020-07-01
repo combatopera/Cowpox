@@ -230,7 +230,7 @@ class AndroidProject:
     def prepare(self, _):
         self._update_libraries_references()
         self._copy_application_sources()
-        with TemporaryDirectory() as env_vars_tarpath:
+        with TemporaryDirectory() as env_vars_tarpath: # TODO: Use app_dir.
             env_vars_tarpath = Path(env_vars_tarpath)
             with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:
                 if self.bootstrapname != 'service_only':
@@ -238,9 +238,9 @@ class AndroidProject:
                     print(f"P4A_ORIENTATION={self.orientation}", file = f)
                 print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
             tar_dirs = [env_vars_tarpath, self.app_dir]
-            for python_bundle_dir in (self.android_project_dir / n for n in ['private', '_python_bundle']):
-                if python_bundle_dir.exists():
-                    tar_dirs.append(python_bundle_dir)
+            python_bundle_dir = self.android_project_dir / '_python_bundle'
+            if python_bundle_dir.exists():
+                tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
                 tar_dirs.append(self.android_project_dir / 'webview_includes')
             self.assetarchive.makeprivate(tar_dirs)
