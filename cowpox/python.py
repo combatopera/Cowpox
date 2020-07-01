@@ -79,8 +79,7 @@ class HostPythonRecipe(Recipe):
             if not setup_location.exists():
                 raise Exception('Could not find Setup.dist or Setup in Python build')
         make.print('-j', cpu_count(), '-C', build_dir, cwd = self.recipebuilddir)
-        exe, = (exe for exe in (build_dir / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
-        cp.print(exe, self.python_exe)
+        cp.print(build_dir / 'python', self.python_exe) # XXX: Why?
 
     def compileall(self, dirpath, check = True):
         for path in dirpath.rglob('*.py'):
