@@ -227,7 +227,8 @@ class PythonBundleImpl(PythonBundle):
 
     def create_python_bundle(self):
         bundledir = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
-        modules_build_dir = self.pythonrecipe.recipebuilddir / 'android-build' / 'build' / f"lib.linux{2 if self.pythonrecipe.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.pythonrecipe.majminversion}"
+        androidbuild = self.pythonrecipe.recipebuilddir / 'android-build'
+        modules_build_dir = androidbuild / 'build' / f"lib.linux{2 if self.pythonrecipe.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.pythonrecipe.majminversion}"
         libdir = self.pythonrecipe.recipebuilddir / 'Lib'
         # TODO: Avoid mutating what should by now be a finished build.
         self.hostrecipe.compileall(modules_build_dir)
@@ -251,7 +252,7 @@ class PythonBundleImpl(PythonBundle):
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, (sitepackagesdir / filen.relative_to(installdir)).pmkdirp())
         libsdir = self.android_project_dir / 'libs'
-        cp.print(self.pythonrecipe.recipebuilddir / 'android-build' / self.pythonrecipe.instsoname, libsdir / self.arch.name)
+        cp.print(androidbuild / self.pythonrecipe.instsoname, libsdir / self.arch.name)
         self._strip(libsdir)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
