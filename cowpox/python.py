@@ -68,17 +68,16 @@ class HostPythonRecipe(Recipe):
         return self.recipebuilddir / 'native-build'
 
     def build_exe(self):
-        build_dir = self.nativebuild.mkdirp()
-        if not (build_dir / 'config.status').exists():
-            Program.text(self.recipebuilddir / 'configure').print(cwd = build_dir)
+        if not (self.nativebuild.mkdirp() / 'config.status').exists():
+            Program.text(self.recipebuilddir / 'configure').print(cwd = self.nativebuild)
         setup_dist_location = self.recipebuilddir / 'Modules' / 'Setup.dist'
         if setup_dist_location.exists():
-            cp.print(setup_dist_location, build_dir / 'Modules' / 'Setup')
+            cp.print(setup_dist_location, self.nativebuild / 'Modules' / 'Setup')
         else:
             setup_location = self.recipebuilddir / 'Modules' / 'Setup'
             if not setup_location.exists():
                 raise Exception('Could not find Setup.dist or Setup in Python build')
-        make.print('-j', cpu_count(), '-C', build_dir, cwd = self.recipebuilddir)
+        make.print('-j', cpu_count(), '-C', self.nativebuild, cwd = self.recipebuilddir)
 
     def compileall(self, dirpath, check = True):
         for path in dirpath.rglob('*.py'):
