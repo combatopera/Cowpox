@@ -113,9 +113,10 @@ class PythonRecipe(Recipe):
         return env
 
     def install_python_package(self):
+        # FIXME: One step should do this for all recipes that want it.
         log.info("Installing %s into site-packages", self.name)
         self.hostrecipe.pythonexe.print(
-                'setup.py', 'install', '-O2', f"--root={self.python_install_dir.pmkdirp()}", '--install-lib=.',
+                'setup.py', 'install', '-O2', '--root', self.python_install_dir.pmkdirp(), '--install-lib', '.',
                 env = self.get_recipe_env(), cwd = self.recipebuilddir)
         if self.install_in_hostpython:
             self.install_hostpython_package()
@@ -124,8 +125,10 @@ class PythonRecipe(Recipe):
         return dict(os.environ, PYTHONPATH = self.hostrecipe.nativebuild / 'Lib' / 'site-packages')
 
     def install_hostpython_package(self):
-        env = self.get_hostrecipe_env()
-        self.hostrecipe.pythonexe.print('setup.py', 'install', '-O2', f"--root={self.hostrecipe.nativebuild}", '--install-lib=Lib/site-packages', env = env, cwd = self.recipebuilddir)
+        # FIXME: One step should do this for all recipes that want it.
+        self.hostrecipe.pythonexe.print(
+                'setup.py', 'install', '-O2', '--root', self.hostrecipe.nativebuild, '--install-lib', Path('Lib', 'site-packages'),
+                env = self.get_hostrecipe_env(), cwd = self.recipebuilddir)
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
