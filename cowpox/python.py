@@ -54,7 +54,6 @@ log = logging.getLogger(__name__)
 
 class HostPythonRecipe(Recipe):
 
-    build_subdir = 'native-build'
     urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
 
     @property
@@ -65,7 +64,7 @@ class HostPythonRecipe(Recipe):
         return self.buildcontainerparent / 'desktop'
 
     def get_path_to_python(self):
-        return self.recipebuilddir / self.build_subdir
+        return self.recipebuilddir / 'native-build'
 
     def build_exe(self):
         build_dir = self.get_path_to_python().mkdirp()
