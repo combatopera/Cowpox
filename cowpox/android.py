@@ -242,7 +242,7 @@ class AndroidProject:
             if python_bundle_dir.exists():
                 tar_dirs.append(python_bundle_dir)
             if self.bootstrapname == 'webview':
-                tar_dirs.append(self.android_project_dir / 'webview_includes')
+                tar_dirs.append(self.android_project_dir / 'webview_includes') # TODO: Generalise this.
             self.assetarchive.makeprivate(tar_dirs)
         shutil.copy(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':
