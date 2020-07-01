@@ -45,10 +45,10 @@ from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
 from jproperties import Properties
-from lagoon import gradle, patch
+from lagoon import gradle
 from pathlib import Path
 from pkg_resources import resource_filename, resource_stream, resource_string
-import logging, os, shutil, subprocess, tarfile, time
+import logging, os, shutil, tarfile, time
 
 log = logging.getLogger(__name__)
 
@@ -313,14 +313,3 @@ class AndroidProject:
                 repl.printf("port = %s", self.webview_port)
                 repl.printf("redirect %s", (self.android_project_dir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android').mkdirp() / 'WebViewLoader.java')
                 repl.printf("< %s", self.android_project_dir / 'templates' / 'WebViewLoader.tmpl.java')
-        src_patches = self.android_project_dir / 'src' / 'patches'
-        if src_patches.exists():
-            log.info("Applying Java source code patches...")
-            for patch_path in src_patches.iterdir():
-                log.info("Applying patch: %s", patch_path)
-                try:
-                    patch._N._p1._t._i.print(patch_path, cwd = self.android_project_dir)
-                except subprocess.CalledProcessError as e:
-                    if e.returncode != 1:
-                        raise e
-                    log.warning("Failed to apply patch (exit code 1), assuming it is already applied: %s", patch_path)
