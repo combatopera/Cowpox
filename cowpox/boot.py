@@ -42,11 +42,10 @@ from . import Arch, BootstrapOK, GraphInfo, PythonBundle, SiteOK, SkeletonOK
 from .config import Config
 from .util import Plugin, PluginType, writeproperties
 from diapyr import types
-from lagoon import cp, mv, rm, unzip
-from lagoon.program import Program
+from lagoon import cp, unzip
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import logging, os, shutil, subprocess
+import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
@@ -106,25 +105,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
         self.run_distribute()
-        sitepackages = self.bundle.create_python_bundle()
-        log.info('Stripping libraries.')
-        strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
-        for root in self.android_project_dir / '_python_bundle' / '_python_bundle' / 'modules', self.android_project_dir / 'libs':
-            for path in root.rglob('*.so'):
-                try:
-                    strip.print(path)
-                except subprocess.CalledProcessError as e:
-                    if 1 != e.returncode:
-                        raise
-                    log.warning("Failed to strip: %s", path)
-        log.info("Frying eggs in: %s", sitepackages)
-        for rd in sitepackages.iterdir():
-            if rd.is_dir() and rd.name.endswith('.egg'):
-                log.debug("Egg: %s", rd.name)
-                files = [f for f in rd.iterdir() if f.name != 'EGG-INFO']
-                if files:
-                    mv._t.print(sitepackages, *files)
-                rm._rf.print(rd)
+        self.bundle.create_python_bundle()
 
     def distribute_javaclasses(self, dest_dir = 'src'):
         log.info('Copying java files')

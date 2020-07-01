@@ -44,11 +44,11 @@ from .recipe import Recipe
 from diapyr import types
 from distutils.version import LooseVersion
 from fnmatch import fnmatch
-from lagoon import cp, make, mv, zip
+from lagoon import cp, make, mv, rm, zip
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
-import lagoon, logging, os, re, shutil
+import lagoon, logging, os, re, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -241,7 +241,24 @@ class PythonBundleImpl(PythonBundle):
         cp.print(self.pythonrecipe.recipebuilddir / 'android-build' / self.pythonrecipe.instsoname, self.android_project_dir / 'libs' / self.arch.name)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
-        return sitepackagesdir
+        log.info('Stripping libraries.')
+        strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
+        for root in modules_dir, self.android_project_dir / 'libs':
+            for path in root.rglob('*.so'):
+                try:
+                    strip.print(path)
+                except subprocess.CalledProcessError as e:
+                    if 1 != e.returncode:
+                        raise
+                    log.warning("Failed to strip: %s", path)
+        log.info("Frying eggs in: %s", sitepackagesdir)
+        for rd in sitepackagesdir.iterdir():
+            if rd.is_dir() and rd.name.endswith('.egg'):
+                log.debug("Egg: %s", rd.name)
+                files = [f for f in rd.iterdir() if f.name != 'EGG-INFO']
+                if files:
+                    mv._t.print(sitepackagesdir, *files)
+                rm._rf.print(rd)
 
     def _reduce_object_file_names(self, dirn):
         """Recursively renames all files named YYY.cpython-...-linux-gnu.so"
