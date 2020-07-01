@@ -214,6 +214,17 @@ class PythonBundleImpl(PythonBundle):
         self.hostrecipe = hostrecipe
         self.pythonrecipe = pythonrecipe
 
+    def _strip(self, root):
+        log.info("Stripping libraries in: %s", root)
+        strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
+        for path in root.rglob('*.so'):
+            try:
+                strip.print(path)
+            except subprocess.CalledProcessError as e:
+                if 1 != e.returncode:
+                    raise
+                log.warning("Failed to strip: %s", path)
+
     def create_python_bundle(self):
         bundledir = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
         modules_build_dir = self.pythonrecipe.recipebuilddir / 'android-build' / 'build' / f"lib.linux{2 if self.pythonrecipe.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.pythonrecipe.majminversion}"
@@ -228,6 +239,7 @@ class PythonBundleImpl(PythonBundle):
         for filen in module_filens:
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, modules_dir)
+        self._strip(modules_dir)
         stdlib_filens = list(self._walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(bundledir / 'stdlib.zip', *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
@@ -240,18 +252,9 @@ class PythonBundleImpl(PythonBundle):
             shutil.copy2(filen, (sitepackagesdir / filen.relative_to(installdir)).pmkdirp())
         libsdir = self.android_project_dir / 'libs'
         cp.print(self.pythonrecipe.recipebuilddir / 'android-build' / self.pythonrecipe.instsoname, libsdir / self.arch.name)
+        self._strip(libsdir)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
-        log.info('Stripping libraries.')
-        strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
-        for root in modules_dir, libsdir:
-            for path in root.rglob('*.so'):
-                try:
-                    strip.print(path)
-                except subprocess.CalledProcessError as e:
-                    if 1 != e.returncode:
-                        raise
-                    log.warning("Failed to strip: %s", path)
         log.info("Frying eggs in: %s", sitepackagesdir)
         for rd in sitepackagesdir.iterdir():
             if rd.is_dir() and rd.name.endswith('.egg'):
