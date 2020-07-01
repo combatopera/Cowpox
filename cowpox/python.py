@@ -68,7 +68,7 @@ class HostPythonRecipe(Recipe):
         return self.recipebuilddir / self.build_subdir
 
     def build_exe(self):
-        build_dir = (self.recipebuilddir / self.build_subdir).mkdirp()
+        build_dir = self.get_path_to_python().mkdirp()
         if not (build_dir / 'config.status').exists():
             Program.text(self.recipebuilddir / 'configure').print(cwd = build_dir)
         setup_dist_location = self.recipebuilddir / 'Modules' / 'Setup.dist'
@@ -79,7 +79,7 @@ class HostPythonRecipe(Recipe):
             if not setup_location.exists():
                 raise Exception('Could not find Setup.dist or Setup in Python build')
         make.print('-j', cpu_count(), '-C', build_dir, cwd = self.recipebuilddir)
-        exe, = (exe for exe in (self.get_path_to_python() / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
+        exe, = (exe for exe in (build_dir / exe_name for exe_name in ['python.exe', 'python']) if exe.is_file())
         cp.print(exe, self.python_exe)
 
     def compileall(self, dirpath, check = True):
