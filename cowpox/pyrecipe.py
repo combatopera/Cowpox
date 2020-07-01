@@ -100,9 +100,9 @@ class PythonRecipe(Recipe):
             env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root()}"
             env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root()} -l{self.graph.python_recipe.pylibname}"
             hppath = []
-            hppath.append(self.hostrecipe.python_exe.parent / 'Lib')
+            hppath.append(self.hostrecipe.nativebuild / 'Lib')
             hppath.append(hppath[0] / 'site-packages')
-            builddir = self.hostrecipe.python_exe.parent / 'build'
+            builddir = self.hostrecipe.nativebuild / 'build'
             if builddir.exists():
                 hppath.extend(d for d in builddir.iterdir() if d.is_dir())
             if hppath:
@@ -121,11 +121,11 @@ class PythonRecipe(Recipe):
             self.install_hostpython_package()
 
     def get_hostrecipe_env(self):
-        return dict(os.environ, PYTHONPATH = self.hostrecipe.python_exe.parent / 'Lib' / 'site-packages')
+        return dict(os.environ, PYTHONPATH = self.hostrecipe.nativebuild / 'Lib' / 'site-packages')
 
     def install_hostpython_package(self):
         env = self.get_hostrecipe_env()
-        Program.text(self.hostrecipe.python_exe).print('setup.py', 'install', '-O2', f"--root={self.hostrecipe.python_exe.parent}", '--install-lib=Lib/site-packages', env = env, cwd = self.recipebuilddir)
+        Program.text(self.hostrecipe.python_exe).print('setup.py', 'install', '-O2', f"--root={self.hostrecipe.nativebuild}", '--install-lib=Lib/site-packages', env = env, cwd = self.recipebuilddir)
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
