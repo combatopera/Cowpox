@@ -162,6 +162,9 @@ class GuestPythonRecipe(Recipe):
         Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = self.androidbuild)
         make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
         cp.print(self.androidbuild / 'pyconfig.h', self.include_root())
+        modules_build_dir = self.androidbuild / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
+        self.hostrecipe.compileall(modules_build_dir)
+        self.module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # Recursion not needed.
 
     def include_root(self):
         return self.recipebuilddir / 'Include'
@@ -229,16 +232,13 @@ class PythonBundleImpl(PythonBundle):
 
     def create_python_bundle(self):
         bundledir = (self.app_dir / '_python_bundle').mkdirp()
-        modules_build_dir = self.pythonrecipe.androidbuild / 'build' / f"lib.linux{2 if self.pythonrecipe.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.pythonrecipe.majminversion}"
         libdir = self.pythonrecipe.recipebuilddir / 'Lib'
         # TODO: Avoid mutating what should by now be a finished build.
-        self.hostrecipe.compileall(modules_build_dir)
         self.hostrecipe.compileall(libdir, False)
         self.hostrecipe.compileall(self.python_install_dir)
         modules_dir = (bundledir / 'modules').mkdirp()
-        module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # XXX: Not recursive?
-        log.info("Copy %s files into the bundle", len(module_filens))
-        for filen in module_filens:
+        log.info("Copy %s files into the bundle", len(self.pythonrecipe.module_filens))
+        for filen in self.pythonrecipe.module_filens:
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, modules_dir)
         self._strip(modules_dir)
