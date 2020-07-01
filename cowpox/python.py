@@ -58,16 +58,17 @@ class HostPythonRecipe(Recipe):
 
     @property
     def python_exe(self):
-        return self.get_path_to_python() / f"python{self.version.split('.')[0]}"
+        return self.nativebuild / f"python{self.version.split('.')[0]}"
 
     def get_build_container_dir(self):
         return self.buildcontainerparent / 'desktop'
 
-    def get_path_to_python(self):
+    @property
+    def nativebuild(self):
         return self.recipebuilddir / 'native-build'
 
     def build_exe(self):
-        build_dir = self.get_path_to_python().mkdirp()
+        build_dir = self.nativebuild.mkdirp()
         if not (build_dir / 'config.status').exists():
             Program.text(self.recipebuilddir / 'configure').print(cwd = build_dir)
         setup_dist_location = self.recipebuilddir / 'Modules' / 'Setup.dist'
@@ -108,7 +109,7 @@ class GuestPythonRecipe(Recipe):
         env = os.environ.copy()
         env['HOSTARCH'] = self.arch.command_prefix
         env['CC'] = self.platform.clang_exe(self.arch, with_target = True)
-        env['PATH'] = os.pathsep.join([str(self.hostrecipe.get_path_to_python()), str(self.platform.prebuiltbin(self.arch)), env['PATH']])
+        env['PATH'] = os.pathsep.join([str(self.hostrecipe.nativebuild), str(self.platform.prebuiltbin(self.arch)), env['PATH']])
         env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ndk_api}"
         env['LDFLAGS'] = env.get('LDFLAGS', '')
         if hasattr(lagoon, 'lld'):
