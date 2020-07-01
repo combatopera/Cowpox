@@ -156,7 +156,7 @@ class GuestPythonRecipe(Recipe):
         build_dir = (self.recipebuilddir / 'android-build').mkdirp()
         env = self._set_libs_flags()
         Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = build_dir)
-        make.print('all', '-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = build_dir)
+        make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = build_dir)
         cp.print(build_dir / 'pyconfig.h', self.include_root())
 
     def include_root(self):
