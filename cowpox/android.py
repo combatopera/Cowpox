@@ -48,7 +48,6 @@ from jproperties import Properties
 from lagoon import gradle, patch
 from pathlib import Path
 from pkg_resources import resource_filename, resource_stream, resource_string
-from tempfile import TemporaryDirectory
 import logging, os, shutil, subprocess, tarfile, time
 
 log = logging.getLogger(__name__)
@@ -225,25 +224,23 @@ class AndroidProject:
                 fd.write(b'import sys, os; sys.path = [os.path.join(os.getcwd(),"..", "_applibs")] + sys.path\n')
                 fd.write(data)
             log.info('Patched service/main.py to include applibs')
+        with (self.app_dir / 'p4a_env_vars.txt').open('w') as f:
+            if self.bootstrapname != 'service_only':
+                print(f"P4A_IS_WINDOWED={not self.fullscreen}", file = f)
+                print(f"P4A_ORIENTATION={self.orientation}", file = f)
+            print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
 
     @types(BootstrapOK, this = AndroidProjectOK)
     def prepare(self, _):
         self._update_libraries_references()
         self._copy_application_sources()
-        with TemporaryDirectory() as env_vars_tarpath: # TODO: Use app_dir.
-            env_vars_tarpath = Path(env_vars_tarpath)
-            with (env_vars_tarpath / 'p4a_env_vars.txt').open('w') as f:
-                if self.bootstrapname != 'service_only':
-                    print(f"P4A_IS_WINDOWED={not self.fullscreen}", file = f)
-                    print(f"P4A_ORIENTATION={self.orientation}", file = f)
-                print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
-            tar_dirs = [env_vars_tarpath, self.app_dir]
-            python_bundle_dir = self.android_project_dir / '_python_bundle'
-            if python_bundle_dir.exists():
-                tar_dirs.append(python_bundle_dir)
-            if self.bootstrapname == 'webview':
-                tar_dirs.append(self.android_project_dir / 'webview_includes') # TODO: Generalise this.
-            self.assetarchive.makeprivate(tar_dirs)
+        tar_dirs = [self.app_dir]
+        python_bundle_dir = self.android_project_dir / '_python_bundle'
+        if python_bundle_dir.exists():
+            tar_dirs.append(python_bundle_dir)
+        if self.bootstrapname == 'webview':
+            tar_dirs.append(self.android_project_dir / 'webview_includes') # TODO: Generalise this.
+        self.assetarchive.makeprivate(tar_dirs)
         shutil.copy(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':
             shutil.copy(self.presplash_path, self.res_dir / 'drawable' / 'presplash.jpg')
