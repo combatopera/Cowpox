@@ -151,19 +151,23 @@ class GuestPythonRecipe(Recipe):
         env['LIBS'] = ' '.join(libs)
         return env
 
+    @property
+    def androidbuild(self):
+        return self.recipebuilddir / 'android-build'
+
     def build_android(self, configure_args):
         assert self.ndk_api >= self.MIN_NDK_API
-        build_dir = (self.recipebuilddir / 'android-build').mkdirp()
+        self.androidbuild.mkdirp()
         env = self._set_libs_flags()
-        Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = build_dir)
-        make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = build_dir)
-        cp.print(build_dir / 'pyconfig.h', self.include_root())
+        Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = self.androidbuild)
+        make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
+        cp.print(self.androidbuild / 'pyconfig.h', self.include_root())
 
     def include_root(self):
         return self.recipebuilddir / 'Include'
 
     def link_root(self):
-        return self.recipebuilddir / 'android-build'
+        return self.androidbuild
 
 class PythonBundleImpl(PythonBundle):
 
@@ -225,8 +229,7 @@ class PythonBundleImpl(PythonBundle):
 
     def create_python_bundle(self):
         bundledir = (self.app_dir / '_python_bundle').mkdirp()
-        androidbuild = self.pythonrecipe.recipebuilddir / 'android-build'
-        modules_build_dir = androidbuild / 'build' / f"lib.linux{2 if self.pythonrecipe.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.pythonrecipe.majminversion}"
+        modules_build_dir = self.pythonrecipe.androidbuild / 'build' / f"lib.linux{2 if self.pythonrecipe.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.pythonrecipe.majminversion}"
         libdir = self.pythonrecipe.recipebuilddir / 'Lib'
         # TODO: Avoid mutating what should by now be a finished build.
         self.hostrecipe.compileall(modules_build_dir)
@@ -250,7 +253,7 @@ class PythonBundleImpl(PythonBundle):
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, (sitepackagesdir / filen.relative_to(installdir)).pmkdirp())
         libsdir = self.android_project_dir / 'libs'
-        cp.print(androidbuild / self.pythonrecipe.instsoname, libsdir / self.arch.name)
+        cp.print(self.pythonrecipe.androidbuild / self.pythonrecipe.instsoname, libsdir / self.arch.name)
         self._strip(libsdir)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
