@@ -157,7 +157,7 @@ class GuestPythonRecipe(Recipe):
         env = self._set_libs_flags()
         Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = build_dir)
         make.print('all', '-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = build_dir)
-        cp.print(build_dir / 'pyconfig.h', self.recipebuilddir / 'Include')
+        cp.print(build_dir / 'pyconfig.h', self.include_root())
 
     def include_root(self):
         return self.recipebuilddir / 'Include'
