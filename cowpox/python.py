@@ -238,12 +238,13 @@ class PythonBundleImpl(PythonBundle):
         for filen in filens:
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, (sitepackagesdir / filen.relative_to(installdir)).pmkdirp())
-        cp.print(self.pythonrecipe.recipebuilddir / 'android-build' / self.pythonrecipe.instsoname, self.android_project_dir / 'libs' / self.arch.name)
+        libsdir = self.android_project_dir / 'libs'
+        cp.print(self.pythonrecipe.recipebuilddir / 'android-build' / self.pythonrecipe.instsoname, libsdir / self.arch.name)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
         log.info('Stripping libraries.')
         strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
-        for root in modules_dir, self.android_project_dir / 'libs':
+        for root in modules_dir, libsdir:
             for path in root.rglob('*.so'):
                 try:
                     strip.print(path)
