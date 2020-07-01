@@ -234,7 +234,7 @@ class AndroidProject:
     def prepare(self, _):
         self._update_libraries_references()
         self._copy_application_sources()
-        tar_dirs = [self.app_dir, self.android_project_dir / '_python_bundle']
+        tar_dirs = [self.app_dir]
         if self.bootstrapname == 'webview':
             tar_dirs.append(self.android_project_dir / 'webview_includes') # TODO: Generalise this.
         self.assetarchive.makeprivate(tar_dirs)

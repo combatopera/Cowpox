@@ -210,6 +210,7 @@ class PythonBundleImpl(PythonBundle):
     def __init__(self, config, arch, hostrecipe, pythonrecipe):
         self.python_install_dir = Path(config.python_install_dir)
         self.android_project_dir = Path(config.android.project.dir)
+        self.app_dir = Path(config.app_dir)
         self.arch = arch
         self.hostrecipe = hostrecipe
         self.pythonrecipe = pythonrecipe
@@ -226,7 +227,7 @@ class PythonBundleImpl(PythonBundle):
                 log.warning("Failed to strip: %s", path)
 
     def create_python_bundle(self):
-        bundledir = (self.android_project_dir / '_python_bundle' / '_python_bundle').mkdirp()
+        bundledir = (self.app_dir / '_python_bundle').mkdirp()
         androidbuild = self.pythonrecipe.recipebuilddir / 'android-build'
         modules_build_dir = androidbuild / 'build' / f"lib.linux{2 if self.pythonrecipe.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.pythonrecipe.majminversion}"
         libdir = self.pythonrecipe.recipebuilddir / 'Lib'
