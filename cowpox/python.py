@@ -52,19 +52,6 @@ import lagoon, logging, os, re, shutil
 
 log = logging.getLogger(__name__)
 
-def _walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
-    for dirn, subdirs, filens in os.walk(base_dir):
-        for i in reversed(range(len(subdirs))):
-            subdir = subdirs[i]
-            if subdir in invalid_dir_names:
-                subdirs.pop(i)
-        for filen in filens:
-            for pattern in invalid_file_patterns:
-                if fnmatch(filen, pattern):
-                    break
-            else:
-                yield Path(dirn, filen)
-
 class HostPythonRecipe(Recipe):
 
     build_subdir = 'native-build'
@@ -205,6 +192,20 @@ class PythonBundleImpl(PythonBundle):
         '*.py',
     ]
 
+    @staticmethod
+    def _walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
+        for dirn, subdirs, filens in os.walk(base_dir):
+            for i in reversed(range(len(subdirs))):
+                subdir = subdirs[i]
+                if subdir in invalid_dir_names:
+                    subdirs.pop(i)
+            for filen in filens:
+                for pattern in invalid_file_patterns:
+                    if fnmatch(filen, pattern):
+                        break
+                else:
+                    yield Path(dirn, filen)
+
     @types(Config, Arch, HostPythonRecipe, GuestPythonRecipe)
     def __init__(self, config, arch, hostrecipe, pythonrecipe):
         self.python_install_dir = Path(config.python_install_dir)
@@ -227,12 +228,12 @@ class PythonBundleImpl(PythonBundle):
         for filen in module_filens:
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, modules_dir)
-        stdlib_filens = list(_walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
+        stdlib_filens = list(self._walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(bundledir / 'stdlib.zip', *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
         sitepackagesdir = (bundledir / 'site-packages').mkdirp()
         installdir = self.python_install_dir.mkdirp()
-        filens = list(_walk_valid_filens(installdir, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
+        filens = list(self._walk_valid_filens(installdir, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
         log.info("Copy %s files into the site-packages", len(filens))
         for filen in filens:
             log.debug(" - copy %s", filen)
