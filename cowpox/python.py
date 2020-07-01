@@ -58,7 +58,7 @@ class HostPythonRecipe(Recipe):
 
     @property
     def python_exe(self):
-        return self.nativebuild / f"python{self.version.split('.')[0]}"
+        return self.nativebuild / 'python'
 
     def get_build_container_dir(self):
         return self.buildcontainerparent / 'desktop'
@@ -79,7 +79,6 @@ class HostPythonRecipe(Recipe):
             if not setup_location.exists():
                 raise Exception('Could not find Setup.dist or Setup in Python build')
         make.print('-j', cpu_count(), '-C', build_dir, cwd = self.recipebuilddir)
-        cp.print(build_dir / 'python', self.python_exe) # XXX: Why?
 
     def compileall(self, dirpath, check = True):
         for path in dirpath.rglob('*.py'):
