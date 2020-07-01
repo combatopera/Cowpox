@@ -312,4 +312,4 @@ class AndroidProject:
             with Repl() as repl:
                 repl.printf("port = %s", self.webview_port)
                 repl.printf("redirect %s", (self.android_project_dir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android').mkdirp() / 'WebViewLoader.java')
-                repl.printf("< %s", self.android_project_dir / 'templates' / 'WebViewLoader.tmpl.java')
+                repl.printf("< %s", self.android_project_dir / 'templates' / 'WebViewLoader.java.aridt')
