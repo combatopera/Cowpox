@@ -114,7 +114,7 @@ class PythonRecipe(Recipe):
 
     def install_python_package(self):
         log.info("Installing %s into site-packages", self.name)
-        Program.text(self.hostrecipe.python_exe).print(
+        self.hostrecipe.pythonexe.print(
                 'setup.py', 'install', '-O2', f"--root={self.python_install_dir.pmkdirp()}", '--install-lib=.',
                 env = self.get_recipe_env(), cwd = self.recipebuilddir)
         if self.install_in_hostpython:
@@ -125,7 +125,7 @@ class PythonRecipe(Recipe):
 
     def install_hostpython_package(self):
         env = self.get_hostrecipe_env()
-        Program.text(self.hostrecipe.python_exe).print('setup.py', 'install', '-O2', f"--root={self.hostrecipe.nativebuild}", '--install-lib=Lib/site-packages', env = env, cwd = self.recipebuilddir)
+        self.hostrecipe.pythonexe.print('setup.py', 'install', '-O2', f"--root={self.hostrecipe.nativebuild}", '--install-lib=Lib/site-packages', env = env, cwd = self.recipebuilddir)
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
@@ -137,7 +137,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def build_compiled_components(self, *setup_extra_args):
         log.info("Building compiled components in %s", self.name)
-        hostpython = Program.text(self.hostrecipe.python_exe).partial(env = self.get_recipe_env(), cwd = self.recipebuilddir)
+        hostpython = self.hostrecipe.pythonexe.partial(env = self.get_recipe_env(), cwd = self.recipebuilddir)
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
@@ -151,7 +151,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     def rebuild_compiled_components(self, *setup_extra_args):
         env = self.get_hostrecipe_env()
         log.info("Rebuilding compiled components in %s", self.name)
-        hostpython = Program.text(self.hostrecipe.python_exe).partial(env = env, cwd = self.recipebuilddir)
+        hostpython = self.hostrecipe.pythonexe.partial(env = env, cwd = self.recipebuilddir)
         hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
 
@@ -167,7 +167,7 @@ class CythonRecipe(PythonRecipe):
     def install_python_package(self):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env()
-        hostpython = Program.text(self.hostrecipe.python_exe).partial(env = env, cwd = self.recipebuilddir)
+        hostpython = self.hostrecipe.pythonexe.partial(env = env, cwd = self.recipebuilddir)
         hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False

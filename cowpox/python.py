@@ -57,8 +57,8 @@ class HostPythonRecipe(Recipe):
     urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
 
     @property
-    def python_exe(self):
-        return self.nativebuild / 'python'
+    def pythonexe(self):
+        return Program.text(self.nativebuild / 'python')
 
     def get_build_container_dir(self):
         return self.buildcontainerparent / 'desktop'
@@ -82,7 +82,7 @@ class HostPythonRecipe(Recipe):
     def compileall(self, dirpath, check = True):
         for path in dirpath.rglob('*.py'):
             os.utime(path, (0, 0)) # Determinism.
-        Program.text(self.python_exe)._OO._m.compileall._b._f.print(dirpath, check = check)
+        self.pythonexe._OO._m.compileall._b._f.print(dirpath, check = check)
 
 class GuestPythonRecipe(Recipe):
 
