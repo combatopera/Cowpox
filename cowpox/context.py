@@ -72,7 +72,6 @@ class PipInstallRecipe(CythonRecipe):
     def __init(self, config, hostrecipe):
         self.venv_path = Path(config.venv.path)
         self.bundlepackages = config.python_install_dir
-        self.buildsdir = Path(config.buildsdir)
         self.hostrecipe = hostrecipe
 
     @types(RecipesOK, this = SiteOK)
@@ -90,7 +89,6 @@ class PipInstallRecipe(CythonRecipe):
         if pypinames:
             pip.install._v.__no_deps.print('--target', self.bundlepackages, *pypinames, env = installenv)
         self.hostrecipe.compileall(self.bundlepackages)
-        self.arch.strip_object_files(self.buildsdir) # FIXME: Much too broad.
 
 @types(Graph, Make, SkeletonOK, this = RecipesOK)
 def buildrecipes(graph, make, _):

@@ -96,6 +96,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     @types(SiteOK, this = BootstrapOK)
     def toandroidproject(self, _):
+        self.arch.strip_object_files(self.buildsdir) # XXX: What exactly does this do?
         shutil.copytree(self.build_dir, self.android_project_dir)
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
         writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.
