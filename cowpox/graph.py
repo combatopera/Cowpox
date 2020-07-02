@@ -38,9 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import GraphInfo
+from . import GraphInfo, RecipesOK, SkeletonOK
 from .boot import BootstrapType
 from .config import Config
+from .make import Make
 from .recipe import Recipe
 from .util import findimpl, NoSuchPluginException
 from copy import deepcopy
@@ -202,8 +203,15 @@ class GraphImpl:
     def get_recipe(self, name):
         return self.recipes[name]
 
-    def allrecipes(self):
-        return self.recipes.values()
+    @types(Make, SkeletonOK, this = RecipesOK)
+    def buildrecipes(self, make, _):
+        for recipe in self.recipes.values():
+            log.info("Build recipe: %s", recipe.name)
+            def target():
+                yield recipe.recipebuilddir
+                recipe.prepare()
+                recipe.mainbuild()
+            make(target)
 
 def _get_recipe_order(names, blacklist):
     names = _fix_deplist([([name] if not isinstance(name, (list, tuple)) else name) for name in names])

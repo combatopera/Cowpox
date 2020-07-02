@@ -38,10 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, HostRecipe, RecipesOK, SiteOK, SkeletonOK
+from . import Graph, HostRecipe, RecipesOK, SiteOK
 from .config import Config
 from .graph import GraphImpl
-from .platform import Make
 from .pyrecipe import CythonRecipe
 from .python import GuestPythonRecipe
 from .util import DIProxy
@@ -89,13 +88,3 @@ class PipInstallRecipe(CythonRecipe):
         if pypinames:
             pip.install._v.__no_deps.print('--target', self.bundlepackages, *pypinames, env = installenv)
         self.hostrecipe.compileall(self.bundlepackages)
-
-@types(Graph, Make, SkeletonOK, this = RecipesOK)
-def buildrecipes(graph, make, _):
-    for recipe in graph.allrecipes():
-        log.info("Build recipe: %s", recipe.name)
-        def target():
-            yield recipe.recipebuilddir
-            recipe.prepare()
-            recipe.mainbuild()
-        make(target)

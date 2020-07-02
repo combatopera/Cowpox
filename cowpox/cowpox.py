@@ -44,7 +44,7 @@ from .arch import all_archs
 from .boot import Bootstrap
 from .bundle import PythonBundleImpl
 from .config import Config
-from .context import buildrecipes, GraphProxy, PipInstallRecipe
+from .context import GraphProxy, PipInstallRecipe
 from .graph import GraphImpl, GraphInfoImpl
 from .make import Make
 from .mirror import Mirror
@@ -84,7 +84,6 @@ def _main():
         di.add(AndroidProject)
         di.add(Assembly)
         di.add(AssetArchive)
-        di.add(buildrecipes)
         di.add(config)
         di.add(di)
         di.add(GraphImpl)
