@@ -117,7 +117,7 @@ class PythonBundleImpl(PythonBundle):
                 shutil.copy2(filen, (sitepackagesdir / filen.relative_to(recipe.bundlepackages)).pmkdirp())
         libsdir = self.android_project_dir / 'libs'
         cp.print(self.pythonrecipe.androidbuild / self.pythonrecipe.instsoname, libsdir / self.arch.name)
-        self.arch.striplibs(libsdir)
+        self.arch.striplibs(libsdir / self.arch.name)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
         log.info("Frying eggs in: %s", sitepackagesdir)
