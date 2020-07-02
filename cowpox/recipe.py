@@ -118,23 +118,6 @@ class Recipe(Plugin):
     def recipebuilddir(self):
         return self.get_build_container_dir() / self.dir_name
 
-    def download_if_necessary(self):
-        if self.url is None:
-            log.debug("[%s] Skip download as no URL is set.", self.name)
-            return
-        if not urlparse(self.url).scheme:
-            log.debug("[%s] Skip download as URL is a path.", self.name)
-            return
-        log.info("[%s] Downloading.", self.name)
-        path = self.mirror.download(self.url)
-        if self.md5sum is not None:
-            current_md5 = hashlib.md5(path.read_bytes()).hexdigest()
-            if current_md5 != self.md5sum:
-                log.debug("Generated md5sum: %s", current_md5)
-                log.debug("Expected md5sum: %s", self.md5sum)
-                raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
-            log.debug("[%s] MD5 OK.", self.name)
-
     def _copywithoutbuild(self, frompath, topath):
         try:
             frompath.relative_to(self.projectbuilddir)
@@ -153,7 +136,7 @@ class Recipe(Plugin):
         else:
             log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
 
-    def prepare_build_dir(self):
+    def prepare(self):
         if self.url is None:
             log.debug("[%s] Skip unpack as no URL is set.", self.name)
             self.recipebuilddir.mkdir()
@@ -164,7 +147,15 @@ class Recipe(Plugin):
             # TODO: Copy without .git either.
             self._copywithoutbuild(srcpath if srcpath.is_absolute() else self._extresourcepath(srcpath), self.recipebuilddir)
             return
-        archivepath = self.mirror.getpath(self.url)
+        log.info("[%s] Downloading.", self.name)
+        archivepath = self.mirror.download(self.url)
+        if self.md5sum is not None:
+            current_md5 = hashlib.md5(archivepath.read_bytes()).hexdigest()
+            if current_md5 != self.md5sum:
+                log.debug("Generated md5sum: %s", current_md5)
+                log.debug("Expected md5sum: %s", self.md5sum)
+                raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
+            log.debug("[%s] MD5 OK.", self.name)
         log.info("[%s] Unpack for: %s", self.name, self.arch.name)
         # TODO LATER: Not such a good idea to use parent.
         # TODO LATER: Do not assume single top-level directory in archive.

@@ -96,7 +96,6 @@ def buildrecipes(graph, make, _):
         log.info("Build recipe: %s", recipe.name)
         def target():
             yield recipe.recipebuilddir
-            recipe.download_if_necessary()
-            recipe.prepare_build_dir()
+            recipe.prepare()
             recipe.mainbuild()
         make(target)
