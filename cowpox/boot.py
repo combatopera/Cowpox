@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, GraphInfo, SiteOK, SkeletonOK
+from . import Arch, BootstrapOK, GraphInfo, GuestRecipe, SiteOK, SkeletonOK
 from .config import Config
 from .util import Plugin, PluginType, writeproperties
 from diapyr import types
@@ -94,8 +94,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files(self.bootstrapsdir / 'common' / 'build', self.build_dir, False)
 
-    @types(SiteOK, this = BootstrapOK)
-    def toandroidproject(self, _):
+    @types(GuestRecipe, SiteOK, this = BootstrapOK)
+    def toandroidproject(self, pythonrecipe, _):
         self.arch.strip_object_files(self.buildsdir) # XXX: What exactly does this do?
         shutil.copytree(self.build_dir, self.android_project_dir)
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
@@ -105,6 +105,9 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
         self.run_distribute()
+        libsdir = self.android_project_dir / 'libs'
+        cp.print(pythonrecipe.androidbuild / pythonrecipe.instsoname, libsdir / self.arch.name)
+        self.arch.striplibs(libsdir)
 
     def distribute_javaclasses(self, dest_dir = 'src'):
         log.info('Copying java files')

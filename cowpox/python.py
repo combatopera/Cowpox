@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import HostRecipe
+from . import GuestRecipe, HostRecipe
 from .config import Config
 from .recipe import Recipe
 from diapyr import types
@@ -83,7 +83,7 @@ class HostPythonRecipe(Recipe, HostRecipe): # XXX: Why does this exist at all?
             os.utime(path, (0, 0)) # Determinism.
         self.pythonexe._OO._m.compileall._b._f.print(dirpath, check = check)
 
-class GuestPythonRecipe(Recipe):
+class GuestPythonRecipe(Recipe, GuestRecipe):
 
     MIN_NDK_API = 21
     opt_depends = ['sqlite3', 'libffi', 'openssl']
