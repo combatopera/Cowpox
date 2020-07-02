@@ -107,11 +107,11 @@ class ArchImpl(Arch):
                 '-Wl,-Bsymbolic-functions',
             ),
             PATH = f"{platform.clang_path(self)}{os.pathsep}{os.environ['PATH']}", # XXX: Is clang_path really needed?
-        )
-        self.cppflags = _spjoin(
-            '-DANDROID',
-            f"-D__ANDROID_API__={self.ndk_api}",
-            f"-I{platform.includepath(self)}",
+            CPPFLAGS = _spjoin(
+                '-DANDROID',
+                f"-D__ANDROID_API__={self.ndk_api}",
+                f"-I{platform.includepath(self)}",
+            ),
         )
         self.strip = [platform.prebuiltbin(self) / strip[0], *strip[1:]]
         self.graph = graph
@@ -123,9 +123,7 @@ class ArchImpl(Arch):
         return f"{self.name}__ndk_target_{self.ndk_api}"
 
     def get_env(self):
-        return dict(self.archenv,
-            CPPFLAGS = self.cppflags,
-        )
+        return self.archenv.copy()
 
     def strip_object_files(self, root):
         log.info('Stripping object files')
