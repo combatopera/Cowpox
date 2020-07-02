@@ -175,7 +175,7 @@ class Recipe(Plugin):
         if rootname != self.recipebuilddir.name:
             self.recipebuilddir.with_name(rootname).rename(self.recipebuilddir)
 
-    def maketarget():
+    def maketarget(self):
         yield self.recipebuilddir
         self._prepare()
         self.mainbuild()
