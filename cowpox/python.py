@@ -165,6 +165,8 @@ class GuestPythonRecipe(Recipe):
         modules_build_dir = self.androidbuild / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
         self.hostrecipe.compileall(modules_build_dir)
         self.module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # Recursion not needed.
+        self.stdlibdir = self.recipebuilddir / 'Lib'
+        self.hostrecipe.compileall(self.stdlibdir, False)
 
     def include_root(self):
         return self.recipebuilddir / 'Include'
@@ -232,9 +234,7 @@ class PythonBundleImpl(PythonBundle):
 
     def create_python_bundle(self):
         bundledir = (self.app_dir / '_python_bundle').mkdirp()
-        libdir = self.pythonrecipe.recipebuilddir / 'Lib'
         # TODO: Avoid mutating what should by now be a finished build.
-        self.hostrecipe.compileall(libdir, False)
         self.hostrecipe.compileall(self.python_install_dir)
         modules_dir = (bundledir / 'modules').mkdirp()
         log.info("Copy %s files into the bundle", len(self.pythonrecipe.module_filens))
@@ -242,9 +242,9 @@ class PythonBundleImpl(PythonBundle):
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, modules_dir)
         self._strip(modules_dir)
-        stdlib_filens = list(self._walk_valid_filens(libdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
+        stdlib_filens = list(self._walk_valid_filens(self.pythonrecipe.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
-        zip.print(bundledir / 'stdlib.zip', *(p.relative_to(libdir) for p in stdlib_filens), cwd = libdir)
+        zip.print(bundledir / 'stdlib.zip', *(p.relative_to(self.pythonrecipe.stdlibdir) for p in stdlib_filens), cwd = self.pythonrecipe.stdlibdir)
         sitepackagesdir = (bundledir / 'site-packages').mkdirp()
         installdir = self.python_install_dir.mkdirp()
         filens = list(self._walk_valid_filens(installdir, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
