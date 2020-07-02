@@ -40,6 +40,7 @@
 
 from . import Arch, BootstrapOK, BundleOK, HostRecipe, PythonBundle
 from .config import Config
+from .pyrecipe import PythonRecipe
 from .recipe import Recipe
 from diapyr import types
 from distutils.version import LooseVersion
@@ -212,14 +213,14 @@ class PythonBundleImpl(PythonBundle):
                 else:
                     yield Path(dirn, filen)
 
-    @types(Config, Arch, HostRecipe, GuestPythonRecipe)
-    def __init__(self, config, arch, hostrecipe, pythonrecipe):
-        self.python_install_dir = Path(config.python_install_dir)
+    @types(Config, Arch, HostRecipe, GuestPythonRecipe, [PythonRecipe])
+    def __init__(self, config, arch, hostrecipe, pythonrecipe, recipes):
         self.android_project_dir = Path(config.android.project.dir)
         self.app_dir = Path(config.app_dir)
         self.arch = arch
         self.hostrecipe = hostrecipe
         self.pythonrecipe = pythonrecipe
+        self.recipes = recipes
 
     def _strip(self, root):
         log.info("Stripping libraries in: %s", root)
@@ -235,8 +236,6 @@ class PythonBundleImpl(PythonBundle):
     @types(BootstrapOK, this = BundleOK)
     def create_python_bundle(self, _):
         bundledir = (self.app_dir / '_python_bundle').mkdirp()
-        # TODO: Avoid mutating what should by now be a finished build.
-        self.hostrecipe.compileall(self.python_install_dir)
         modules_dir = (bundledir / 'modules').mkdirp()
         log.info("Copy %s files into the bundle", len(self.pythonrecipe.module_filens))
         for filen in self.pythonrecipe.module_filens:
@@ -247,12 +246,12 @@ class PythonBundleImpl(PythonBundle):
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(bundledir / 'stdlib.zip', *(p.relative_to(self.pythonrecipe.stdlibdir) for p in stdlib_filens), cwd = self.pythonrecipe.stdlibdir)
         sitepackagesdir = (bundledir / 'site-packages').mkdirp()
-        installdir = self.python_install_dir.mkdirp()
-        filens = list(self._walk_valid_filens(installdir, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
-        log.info("Copy %s files into the site-packages", len(filens))
-        for filen in filens:
-            log.debug(" - copy %s", filen)
-            shutil.copy2(filen, (sitepackagesdir / filen.relative_to(installdir)).pmkdirp())
+        for recipe in self.recipes:
+            filens = list(self._walk_valid_filens(recipe.bundlepackages, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
+            log.info("Copy %s files into the site-packages", len(filens))
+            for filen in filens:
+                log.debug(" - copy %s", filen)
+                shutil.copy2(filen, (sitepackagesdir / filen.relative_to(recipe.bundlepackages)).pmkdirp())
         libsdir = self.android_project_dir / 'libs'
         cp.print(self.pythonrecipe.androidbuild / self.pythonrecipe.instsoname, libsdir / self.arch.name)
         self._strip(libsdir)

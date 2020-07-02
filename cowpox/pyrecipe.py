@@ -79,7 +79,6 @@ class PythonRecipe(Recipe):
 
     @types(Config, HostRecipe)
     def __init(self, config, hostrecipe):
-        self.python_install_dir = Path(config.python_install_dir)
         if not any(d for d in {'python2', 'python3', ('python2', 'python3')} if d in self.depends):
             # We ensure here that the recipe depends on python even it overrode
             # `depends`. We only do this if it doesn't already depend on any
@@ -113,11 +112,12 @@ class PythonRecipe(Recipe):
         return env
 
     def install_python_package(self):
-        # FIXME: One step should do this for all recipes that want it.
-        log.info("Installing %s into site-packages", self.name)
+        log.info("Install %s into bundle.", self.name)
+        self.bundlepackages = self.recipebuilddir / 'Cowpox-bundle'
         self.hostrecipe.pythonexe.print(
-                'setup.py', 'install', '-O2', '--root', self.python_install_dir, '--install-lib', '.',
+                'setup.py', 'install', '-O2', '--root', self.bundlepackages, '--install-lib', '.',
                 env = self.get_recipe_env(), cwd = self.recipebuilddir)
+        self.hostrecipe.compileall(self.bundlepackages)
         if self.install_in_hostpython:
             self.install_hostpython_package()
 

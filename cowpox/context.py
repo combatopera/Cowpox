@@ -68,26 +68,28 @@ class GraphProxy(DIProxy, Graph):
 
 class PipInstallRecipe(CythonRecipe):
 
-    @types(Config)
-    def __init(self, config):
+    @types(Config, HostRecipe)
+    def __init(self, config, hostrecipe):
         self.venv_path = Path(config.venv.path)
-        self.python_install_dir = config.python_install_dir
+        self.bundlepackages = config.python_install_dir
         self.buildsdir = Path(config.buildsdir)
+        self.hostrecipe = hostrecipe
 
     @types(RecipesOK, this = SiteOK)
     def buildsite(self, _):
         pythonrecipe = self.graph.python_recipe
         virtualenv.print('--python', pythonrecipe.exename, self.venv_path)
         pip = Program.text(self.venv_path / 'bin' / 'pip')
-        pip.install.print(get_distribution('Cython').as_requirement(), env = dict(PYTHONPATH = self.python_install_dir))
+        pip.install.print(get_distribution('Cython').as_requirement(), env = dict(PYTHONPATH = self.bundlepackages))
         installenv = self.get_recipe_env()
         installenv['PYTHONPATH'] = os.pathsep.join(map(str, [
             self.venv_path / 'lib' / f"python{pythonrecipe.majminversion}" / 'site-packages',
-            self.python_install_dir,
+            self.bundlepackages,
         ]))
         pypinames = self.graphinfo.pypinames
         if pypinames:
-            pip.install._v.__no_deps.print('--target', self.python_install_dir, *pypinames, env = installenv)
+            pip.install._v.__no_deps.print('--target', self.bundlepackages, *pypinames, env = installenv)
+        self.hostrecipe.compileall(self.bundlepackages)
         self.arch.strip_object_files(self.buildsdir) # FIXME: Much too broad.
 
 @types(Graph, Make, SkeletonOK, this = RecipesOK)
