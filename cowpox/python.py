@@ -213,12 +213,11 @@ class PythonBundleImpl(PythonBundle):
                 else:
                     yield Path(dirn, filen)
 
-    @types(Config, Arch, HostRecipe, GuestPythonRecipe, [PythonRecipe])
-    def __init__(self, config, arch, hostrecipe, pythonrecipe, recipes):
+    @types(Config, Arch, GuestPythonRecipe, [PythonRecipe])
+    def __init__(self, config, arch, pythonrecipe, recipes):
         self.android_project_dir = Path(config.android.project.dir)
         self.app_dir = Path(config.app_dir)
         self.arch = arch
-        self.hostrecipe = hostrecipe
         self.pythonrecipe = pythonrecipe
         self.recipes = recipes
 
