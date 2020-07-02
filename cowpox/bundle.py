@@ -45,9 +45,8 @@ from .python import GuestPythonRecipe
 from diapyr import types
 from fnmatch import fnmatch
 from lagoon import cp, mv, rm, zip
-from lagoon.program import Program
 from pathlib import Path
-import logging, os, shutil, subprocess
+import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
@@ -97,17 +96,6 @@ class PythonBundleImpl(PythonBundle):
         self.pythonrecipe = pythonrecipe
         self.recipes = recipes
 
-    def _strip(self, root):
-        log.info("Stripping libraries in: %s", root)
-        strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
-        for path in root.rglob('*.so'):
-            try:
-                strip.print(path)
-            except subprocess.CalledProcessError as e:
-                if 1 != e.returncode:
-                    raise
-                log.warning("Failed to strip: %s", path)
-
     @types(BootstrapOK, this = BundleOK)
     def create_python_bundle(self, _):
         bundledir = (self.app_dir / '_python_bundle').mkdirp()
@@ -116,7 +104,7 @@ class PythonBundleImpl(PythonBundle):
         for filen in self.pythonrecipe.module_filens:
             log.debug(" - copy %s", filen)
             shutil.copy2(filen, modules_dir)
-        self._strip(modules_dir)
+        self.arch.striplibs(modules_dir)
         stdlib_filens = list(self._walk_valid_filens(self.pythonrecipe.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(bundledir / 'stdlib.zip', *(p.relative_to(self.pythonrecipe.stdlibdir) for p in stdlib_filens), cwd = self.pythonrecipe.stdlibdir)
@@ -129,7 +117,7 @@ class PythonBundleImpl(PythonBundle):
                 shutil.copy2(filen, (sitepackagesdir / filen.relative_to(recipe.bundlepackages)).pmkdirp())
         libsdir = self.android_project_dir / 'libs'
         cp.print(self.pythonrecipe.androidbuild / self.pythonrecipe.instsoname, libsdir / self.arch.name)
-        self._strip(libsdir)
+        self.arch.striplibs(libsdir)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
         log.info("Frying eggs in: %s", sitepackagesdir)

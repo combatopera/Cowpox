@@ -43,9 +43,10 @@ from .config import Config
 from .platform import Platform
 from diapyr import types
 from lagoon import find, which
+from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
-import logging, os
+import logging, os, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -130,6 +131,17 @@ class ArchImpl(Arch):
         exec = find.partial(root, '-name', '*.so', '-exec')
         exec.print('echo', '{}', ';')
         exec.print(*self.strip, '{}', ';')
+
+    def striplibs(self, root):
+        log.info("Stripping libraries in: %s", root)
+        strip = Program.text(self.strip[0]).partial(*self.strip[1:])
+        for path in root.rglob('*.so'):
+            try:
+                strip.print(path)
+            except subprocess.CalledProcessError as e:
+                if 1 != e.returncode:
+                    raise
+                log.warning("Failed to strip: %s", path)
 
 class BaseArchARM(ArchImpl):
 
