@@ -74,7 +74,6 @@ class ArchImpl(Arch):
         if self.ndk_api < self.MIN_NDK_API:
             log.warning("NDK API less than %s is not supported", self.MIN_NDK_API)
         self.libs_parent = Path(config.libs_parent)
-        self.python_install_dir = Path(config.python_install_dir)
         self.cflags = _spjoin(
             '-target',
             self.target(),
@@ -125,7 +124,7 @@ class ArchImpl(Arch):
 
     def get_env(self):
         return dict(self.archenv,
-            CPPFLAGS = f"""{self.cppflags} -I{self.python_install_dir / 'include' / f"python{self.graph.python_recipe.majminversion}"}""",
+            CPPFLAGS = self.cppflags,
         )
 
     def strip_object_files(self, root):
