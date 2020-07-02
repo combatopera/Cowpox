@@ -46,8 +46,7 @@ from lagoon import make, perl
 class OpenSSLRecipe(Recipe):
 
     version = '1.1'
-    url_version = '1.1.1f'
-    url = f"https://www.openssl.org/source/openssl-{url_version}.tar.gz"
+    url = 'https://www.openssl.org/source/openssl-1.1.1f.tar.gz'
 
     @types(Config)
     def __init(self, config):
