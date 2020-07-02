@@ -83,6 +83,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             log.warning("Target API %s < %s", self.android_api, self.MIN_TARGET_API)
             log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
         self.android_project_dir = Path(config.android.project.dir)
+        self.android_project_libs = Path(config.android.project.libs)
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
         self.javaclass_dir = config.javaclass_dir
         self.sdk_dir = config.android_sdk_dir
@@ -101,13 +102,12 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
         writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.
         log.info('Copying libs.')
-        tgt_dir = (self.android_project_dir / 'libs' / self.arch.name).mkdirp()
+        tgt_dir = (self.android_project_libs / self.arch.name).mkdirp()
         for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
         self.run_distribute()
-        libsdir = self.android_project_dir / 'libs'
-        cp.print(pythonrecipe.androidbuild / pythonrecipe.instsoname, libsdir / self.arch.name)
-        self.arch.striplibs(libsdir)
+        cp.print(pythonrecipe.androidbuild / pythonrecipe.instsoname, self.android_project_libs / self.arch.name)
+        self.arch.striplibs(self.android_project_libs)
 
     def distribute_javaclasses(self, dest_dir = 'src'):
         log.info('Copying java files')
@@ -127,13 +127,13 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             log.debug("  to %s", temp_dir)
             unzip._o.print(aar, '-d', temp_dir)
             jar_src = Path(temp_dir, 'classes.jar')
-            jar_tgt = (self.android_project_dir / 'libs').mkdirp() / jar_name
+            jar_tgt = self.android_project_libs.mkdirp() / jar_name
             log.debug("copy %s jar", name)
             log.debug("  from %s", jar_src)
             log.debug("  to %s", jar_tgt)
             cp._a.print(jar_src, jar_tgt)
             so_src_dir = Path(temp_dir, 'jni', self.arch.name)
-            so_tgt_dir = (self.android_project_dir / 'libs' / self.arch.name).mkdirp()
+            so_tgt_dir = (self.android_project_libs / self.arch.name).mkdirp()
             log.debug("copy %s .so", name)
             log.debug("  from %s", so_src_dir)
             log.debug("  to %s", so_tgt_dir)
