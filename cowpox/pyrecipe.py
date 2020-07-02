@@ -116,7 +116,7 @@ class PythonRecipe(Recipe):
         # FIXME: One step should do this for all recipes that want it.
         log.info("Installing %s into site-packages", self.name)
         self.hostrecipe.pythonexe.print(
-                'setup.py', 'install', '-O2', '--root', self.python_install_dir.pmkdirp(), '--install-lib', '.',
+                'setup.py', 'install', '-O2', '--root', self.python_install_dir, '--install-lib', '.',
                 env = self.get_recipe_env(), cwd = self.recipebuilddir)
         if self.install_in_hostpython:
             self.install_hostpython_package()
