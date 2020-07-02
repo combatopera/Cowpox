@@ -52,7 +52,7 @@ import lagoon, logging, os, re, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
-class HostPythonRecipe(Recipe, HostRecipe):
+class HostPythonRecipe(Recipe, HostRecipe): # XXX: Why does this exist at all?
 
     urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
 
