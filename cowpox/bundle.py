@@ -40,6 +40,7 @@
 
 from . import Arch, BootstrapOK, BundleOK, PythonBundle
 from .config import Config
+from .make import Make
 from .pyrecipe import PythonRecipe
 from .python import GuestPythonRecipe
 from diapyr import types
@@ -95,8 +96,12 @@ class PythonBundleImpl(PythonBundle):
         self.pythonrecipe = pythonrecipe
         self.recipes = recipes
 
-    @types(BootstrapOK, this = BundleOK)
-    def create_python_bundle(self, _):
+    @types(Make, BootstrapOK, this = BundleOK)
+    def create_python_bundle(self, make, _):
+        make(self._createbundle)
+
+    def _createbundle(self):
+        yield self.bundledir
         modules_dir = (self.bundledir / 'modules').mkdirp()
         log.info("Copy %s files into the bundle", len(self.pythonrecipe.module_filens))
         for filen in self.pythonrecipe.module_filens:
