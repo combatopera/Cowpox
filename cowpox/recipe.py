@@ -208,7 +208,7 @@ class Recipe(Plugin):
                 patch = nextpatch
         touch.print(self.recipebuilddir / '.patched')
 
-    def install_libraries(self, builtlibpaths):
+    def install_libraries(self, builtlibpaths): # TODO: Suck the libs instead.
         for path in builtlibpaths:
             shutil.copy2(self.recipebuilddir / path, self.arch.libs_dir)
 
