@@ -38,18 +38,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, BundleOK, HostRecipe, PythonBundle
+from . import HostRecipe
 from .config import Config
-from .pyrecipe import PythonRecipe
 from .recipe import Recipe
 from diapyr import types
 from distutils.version import LooseVersion
-from fnmatch import fnmatch
-from lagoon import cp, make, mv, rm, zip
+from lagoon import cp, make
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
-import lagoon, logging, os, re, shutil, subprocess
+import lagoon, logging, os, re
 
 log = logging.getLogger(__name__)
 
@@ -174,103 +172,3 @@ class GuestPythonRecipe(Recipe):
 
     def link_root(self):
         return self.androidbuild
-
-class PythonBundleImpl(PythonBundle):
-
-    stdlib_dir_blacklist = {
-        '__pycache__',
-        'test',
-        'tests',
-        'lib2to3',
-        'ensurepip',
-        'idlelib',
-        'tkinter',
-    }
-    stdlib_filen_blacklist = [
-        '*.py',
-        '*.exe',
-        '*.whl',
-    ]
-    site_packages_dir_blacklist = {
-        '__pycache__',
-        'tests',
-    }
-    site_packages_filen_blacklist = [
-        '*.py',
-    ]
-
-    @staticmethod
-    def _walk_valid_filens(base_dir, invalid_dir_names, invalid_file_patterns):
-        for dirn, subdirs, filens in os.walk(base_dir):
-            for i in reversed(range(len(subdirs))):
-                subdir = subdirs[i]
-                if subdir in invalid_dir_names:
-                    subdirs.pop(i)
-            for filen in filens:
-                for pattern in invalid_file_patterns:
-                    if fnmatch(filen, pattern):
-                        break
-                else:
-                    yield Path(dirn, filen)
-
-    @types(Config, Arch, GuestPythonRecipe, [PythonRecipe])
-    def __init__(self, config, arch, pythonrecipe, recipes):
-        self.android_project_dir = Path(config.android.project.dir)
-        self.app_dir = Path(config.app_dir)
-        self.arch = arch
-        self.pythonrecipe = pythonrecipe
-        self.recipes = recipes
-
-    def _strip(self, root):
-        log.info("Stripping libraries in: %s", root)
-        strip = Program.text(self.arch.strip[0]).partial(*self.arch.strip[1:])
-        for path in root.rglob('*.so'):
-            try:
-                strip.print(path)
-            except subprocess.CalledProcessError as e:
-                if 1 != e.returncode:
-                    raise
-                log.warning("Failed to strip: %s", path)
-
-    @types(BootstrapOK, this = BundleOK)
-    def create_python_bundle(self, _):
-        bundledir = (self.app_dir / '_python_bundle').mkdirp()
-        modules_dir = (bundledir / 'modules').mkdirp()
-        log.info("Copy %s files into the bundle", len(self.pythonrecipe.module_filens))
-        for filen in self.pythonrecipe.module_filens:
-            log.debug(" - copy %s", filen)
-            shutil.copy2(filen, modules_dir)
-        self._strip(modules_dir)
-        stdlib_filens = list(self._walk_valid_filens(self.pythonrecipe.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
-        log.info("Zip %s files into the bundle", len(stdlib_filens))
-        zip.print(bundledir / 'stdlib.zip', *(p.relative_to(self.pythonrecipe.stdlibdir) for p in stdlib_filens), cwd = self.pythonrecipe.stdlibdir)
-        sitepackagesdir = (bundledir / 'site-packages').mkdirp()
-        for recipe in self.recipes:
-            filens = list(self._walk_valid_filens(recipe.bundlepackages, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
-            log.info("Copy %s files into the site-packages", len(filens))
-            for filen in filens:
-                log.debug(" - copy %s", filen)
-                shutil.copy2(filen, (sitepackagesdir / filen.relative_to(recipe.bundlepackages)).pmkdirp())
-        libsdir = self.android_project_dir / 'libs'
-        cp.print(self.pythonrecipe.androidbuild / self.pythonrecipe.instsoname, libsdir / self.arch.name)
-        self._strip(libsdir)
-        log.info('Renaming .so files to reflect cross-compile')
-        self._reduce_object_file_names(sitepackagesdir)
-        log.info("Frying eggs in: %s", sitepackagesdir)
-        for rd in sitepackagesdir.iterdir():
-            if rd.is_dir() and rd.name.endswith('.egg'):
-                log.debug("Egg: %s", rd.name)
-                files = [f for f in rd.iterdir() if f.name != 'EGG-INFO']
-                if files:
-                    mv._t.print(sitepackagesdir, *files)
-                rm._rf.print(rd)
-
-    def _reduce_object_file_names(self, dirn):
-        """Recursively renames all files named YYY.cpython-...-linux-gnu.so"
-        to "YYY.so", i.e. removing the erroneous architecture name
-        coming from the local system.
-        """
-        for filen in dirn.rglob('*.so'):
-            parts = filen.name.split('.')
-            if len(parts) > 2:
-                mv.print(filen, filen.parent / f"{parts[0]}.so")
