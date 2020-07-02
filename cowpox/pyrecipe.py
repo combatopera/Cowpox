@@ -46,7 +46,7 @@ from diapyr import types
 from lagoon import find
 from lagoon.program import Program
 from pathlib import Path
-import logging, os, subprocess
+import logging, os, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -114,9 +114,13 @@ class PythonRecipe(Recipe):
     def install_python_package(self):
         log.info("Install %s into bundle.", self.name)
         self.bundlepackages = self.recipebuilddir / 'Cowpox-bundle'
+        rdir = self.bundlepackages / 'r'
         self.hostrecipe.pythonexe.print(
-                'setup.py', 'install', '-O2', '--root', self.bundlepackages, '--install-lib', '.',
+                'setup.py', 'install', '-O2', '--root', rdir, '--install-lib', 'l',
                 env = self.get_recipe_env(), cwd = self.recipebuilddir)
+        for p in (rdir / 'l').iterdir():
+            p.rename(self.bundlepackages / p.name)
+        shutil.rmtree(rdir)
         self.hostrecipe.compileall(self.bundlepackages)
         if self.install_in_hostpython:
             self.install_hostpython_package()
