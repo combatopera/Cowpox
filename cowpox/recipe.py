@@ -136,7 +136,7 @@ class Recipe(Plugin):
         else:
             log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
 
-    def prepare(self):
+    def _prepare(self):
         if self.url is None:
             log.debug("[%s] Skip unpack as no URL is set.", self.name)
             self.recipebuilddir.mkdir()
@@ -174,6 +174,11 @@ class Recipe(Plugin):
             raise Exception(f"Unsupported archive type: {self.url}")
         if rootname != self.recipebuilddir.name:
             self.recipebuilddir.with_name(rootname).rename(self.recipebuilddir)
+
+    def maketarget():
+        yield self.recipebuilddir
+        self._prepare()
+        self.mainbuild()
 
     def get_recipe_env(self):
         env = self.arch.get_env()

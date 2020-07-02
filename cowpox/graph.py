@@ -207,11 +207,7 @@ class GraphImpl:
     def buildrecipes(self, make, _):
         for recipe in self.recipes.values():
             log.info("Build recipe: %s", recipe.name)
-            def target():
-                yield recipe.recipebuilddir
-                recipe.prepare()
-                recipe.mainbuild()
-            make(target)
+            make(recipe.maketarget)
 
 def _get_recipe_order(names, blacklist):
     names = _fix_deplist([([name] if not isinstance(name, (list, tuple)) else name) for name in names])
