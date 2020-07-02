@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import AndroidProjectOK, APKPath, Arch, BootstrapOK, Graph, GraphInfo, skel
+from . import AndroidProjectOK, APKPath, Arch, BundleOK, Graph, GraphInfo, skel
 from .config import Config
 from .platform import Platform
 from aridity import Repl
@@ -230,7 +230,7 @@ class AndroidProject:
                 print(f"P4A_ORIENTATION={self.orientation}", file = f)
             print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
 
-    @types(BootstrapOK, this = AndroidProjectOK)
+    @types(BundleOK, this = AndroidProjectOK)
     def prepare(self, _):
         self._update_libraries_references()
         self._copy_application_sources()

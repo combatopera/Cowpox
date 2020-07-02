@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, PythonBundle
+from . import Arch, BootstrapOK, BundleOK, PythonBundle
 from .config import Config
 from .recipe import Recipe
 from diapyr import types
@@ -232,7 +232,8 @@ class PythonBundleImpl(PythonBundle):
                     raise
                 log.warning("Failed to strip: %s", path)
 
-    def create_python_bundle(self):
+    @types(BootstrapOK, this = BundleOK)
+    def create_python_bundle(self, _):
         bundledir = (self.app_dir / '_python_bundle').mkdirp()
         # TODO: Avoid mutating what should by now be a finished build.
         self.hostrecipe.compileall(self.python_install_dir)
