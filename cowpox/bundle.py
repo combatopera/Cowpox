@@ -90,15 +90,14 @@ class PythonBundleImpl(PythonBundle):
 
     @types(Config, Arch, GuestPythonRecipe, [PythonRecipe])
     def __init__(self, config, arch, pythonrecipe, recipes):
-        self.app_dir = Path(config.app_dir)
+        self.bundledir = Path(config.bundledir)
         self.arch = arch
         self.pythonrecipe = pythonrecipe
         self.recipes = recipes
 
     @types(BootstrapOK, this = BundleOK)
     def create_python_bundle(self, _):
-        bundledir = (self.app_dir / '_python_bundle').mkdirp()
-        modules_dir = (bundledir / 'modules').mkdirp()
+        modules_dir = (self.bundledir / 'modules').mkdirp()
         log.info("Copy %s files into the bundle", len(self.pythonrecipe.module_filens))
         for filen in self.pythonrecipe.module_filens:
             log.debug(" - copy %s", filen)
@@ -106,8 +105,8 @@ class PythonBundleImpl(PythonBundle):
         self.arch.striplibs(modules_dir)
         stdlib_filens = list(self._walk_valid_filens(self.pythonrecipe.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
-        zip.print(bundledir / 'stdlib.zip', *(p.relative_to(self.pythonrecipe.stdlibdir) for p in stdlib_filens), cwd = self.pythonrecipe.stdlibdir)
-        sitepackagesdir = (bundledir / 'site-packages').mkdirp()
+        zip.print(self.bundledir / 'stdlib.zip', *(p.relative_to(self.pythonrecipe.stdlibdir) for p in stdlib_filens), cwd = self.pythonrecipe.stdlibdir)
+        sitepackagesdir = (self.bundledir / 'site-packages').mkdirp()
         for recipe in self.recipes:
             filens = list(self._walk_valid_filens(recipe.bundlepackages, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
             log.info("Copy %s files into the site-packages", len(filens))
