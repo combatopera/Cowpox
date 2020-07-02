@@ -38,12 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, RecipesOK, SiteOK, SkeletonOK
+from . import Graph, HostRecipe, RecipesOK, SiteOK, SkeletonOK
 from .config import Config
 from .graph import GraphImpl
 from .platform import Make
 from .pyrecipe import CythonRecipe
-from .python import GuestPythonRecipe, HostPythonRecipe
+from .python import GuestPythonRecipe
 from .util import DIProxy
 from diapyr import types
 from lagoon import virtualenv
@@ -64,7 +64,7 @@ class GraphProxy(DIProxy, Graph):
 
     @property
     def host_recipe(self):
-        return self.di(HostPythonRecipe)
+        return self.di(HostRecipe)
 
 class PipInstallRecipe(CythonRecipe):
 

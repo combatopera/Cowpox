@@ -53,6 +53,8 @@ class GraphInfo: pass
 
 class PythonBundle: pass
 
+class HostRecipe: pass
+
 class SkeletonOK: pass
 
 class BootstrapOK: pass

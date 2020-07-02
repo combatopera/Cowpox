@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, BundleOK, PythonBundle
+from . import Arch, BootstrapOK, BundleOK, HostRecipe, PythonBundle
 from .config import Config
 from .recipe import Recipe
 from diapyr import types
@@ -52,7 +52,7 @@ import lagoon, logging, os, re, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
-class HostPythonRecipe(Recipe):
+class HostPythonRecipe(Recipe, HostRecipe):
 
     urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
 
@@ -91,7 +91,7 @@ class GuestPythonRecipe(Recipe):
     '''The optional libraries which we would like to get our python linked'''
     zlibversionpattern = re.compile('^#define ZLIB_VERSION "(.+)"$', re.MULTILINE)
 
-    @types(Config, HostPythonRecipe)
+    @types(Config, HostRecipe)
     def __init(self, config, hostrecipe):
         self.ndk_dir = Path(config.android_ndk_dir)
         self.ndk_api = config.android.ndk_api
@@ -212,7 +212,7 @@ class PythonBundleImpl(PythonBundle):
                 else:
                     yield Path(dirn, filen)
 
-    @types(Config, Arch, HostPythonRecipe, GuestPythonRecipe)
+    @types(Config, Arch, HostRecipe, GuestPythonRecipe)
     def __init__(self, config, arch, hostrecipe, pythonrecipe):
         self.python_install_dir = Path(config.python_install_dir)
         self.android_project_dir = Path(config.android.project.dir)

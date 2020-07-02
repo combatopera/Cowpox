@@ -38,9 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import HostRecipe
 from .boot import Bootstrap
 from .config import Config
-from .python import HostPythonRecipe
 from .recipe import Recipe
 from diapyr import types
 from lagoon import find
@@ -77,7 +77,7 @@ class PythonRecipe(Recipe):
                  on python2 or python3 which can break the dependency graph
     '''
 
-    @types(Config, HostPythonRecipe)
+    @types(Config, HostRecipe)
     def __init(self, config, hostrecipe):
         self.python_install_dir = Path(config.python_install_dir)
         if not any(d for d in {'python2', 'python3', ('python2', 'python3')} if d in self.depends):
@@ -162,7 +162,7 @@ class CythonRecipe(PythonRecipe):
 
     call_hostpython_via_targetpython = False
 
-    @types(Config, Bootstrap, HostPythonRecipe)
+    @types(Config, Bootstrap, HostRecipe)
     def __init(self, config, bootstrap, hostrecipe):
         self.bootstrap = bootstrap
         self.hostrecipe = hostrecipe
