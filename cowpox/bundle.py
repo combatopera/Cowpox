@@ -115,8 +115,8 @@ class PythonBundleImpl(PythonBundle):
             for filen in filens:
                 log.debug(" - copy %s", filen)
                 shutil.copy2(filen, (sitepackagesdir / filen.relative_to(recipe.bundlepackages)).pmkdirp())
-        libsdir = self.android_project_dir / 'libs' / self.arch.name
-        cp.print(self.pythonrecipe.androidbuild / self.pythonrecipe.instsoname, libsdir)
+        libsdir = self.android_project_dir / 'libs'
+        cp.print(self.pythonrecipe.androidbuild / self.pythonrecipe.instsoname, libsdir / self.arch.name)
         self.arch.striplibs(libsdir)
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
