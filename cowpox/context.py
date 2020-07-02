@@ -71,7 +71,7 @@ class PipInstallRecipe(CythonRecipe):
     @types(Config, HostRecipe)
     def __init(self, config, hostrecipe):
         self.venv_path = Path(config.venv.path)
-        self.bundlepackages = config.python_install_dir
+        self.bundlepackages = Path(config.python_install_dir)
         self.hostrecipe = hostrecipe
 
     @types(RecipesOK, this = SiteOK)
