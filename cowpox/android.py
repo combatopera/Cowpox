@@ -91,13 +91,12 @@ class Assembly:
 
     @types(Make, AndroidProjectOK, this = APKPath)
     def build_package(self, make, _):
-        make(self._build)
+        def target():
+            yield self.gradlebuilddir
+            gradle.__no_daemon.print(self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
+            log.info('Android packaging done!')
+        make(target)
         return self.gradlebuilddir / 'outputs' / 'apk' / self.mode.division.name / f"{self.android_project_dir.name}-{self.mode.name}.apk"
-
-    def _build(self):
-        yield self.gradlebuilddir
-        gradle.__no_daemon.print(self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
-        log.info('Android packaging done!')
 
 class AssetArchive:
 
