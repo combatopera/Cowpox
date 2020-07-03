@@ -132,3 +132,10 @@ def writeproperties(path, **kwargs):
         p[k] = v
     with path.open('wb') as f:
         p.store(f)
+
+def enum(*lists):
+    def d(cls):
+        for args in lists:
+            setattr(cls, args[0], cls(*args))
+        return cls
+    return d

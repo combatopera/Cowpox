@@ -42,6 +42,7 @@ from . import AndroidProjectOK, APKPath, Arch, BundleOK, Graph, GraphInfo, skel
 from .config import Config
 from .make import Make
 from .platform import Platform
+from .util import enum
 from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
@@ -52,13 +53,6 @@ from pkg_resources import resource_filename, resource_stream, resource_string
 import logging, os, shutil, tarfile, time
 
 log = logging.getLogger(__name__)
-
-def enum(*lists):
-    def d(cls):
-        for args in lists:
-            setattr(cls, args[0], cls(*args))
-        return cls
-    return d
 
 @enum(
     ['debug', 'assembleDebug'],
