@@ -43,7 +43,7 @@ from .boot import Bootstrap
 from .config import Config
 from .recipe import Recipe
 from diapyr import types
-from lagoon import find
+from lagoon import find, python
 from lagoon.program import Program
 from pathlib import Path
 import logging, os, shutil, subprocess
@@ -115,8 +115,7 @@ class PythonRecipe(Recipe):
         log.info("Install %s into bundle.", self.name)
         self.bundlepackages = self.recipebuilddir / 'Cowpox-bundle'
         rdir = self.bundlepackages / 'r'
-        self.hostrecipe.pythonexe.print(
-                'setup.py', 'install', '-O2', '--root', rdir, '--install-lib', 'l',
+        python.print('setup.py', 'install', '-O2', '--root', rdir, '--install-lib', 'l',
                 env = self.get_recipe_env(), cwd = self.recipebuilddir)
         for p in (rdir / 'l').iterdir():
             p.rename(self.bundlepackages / p.name)
@@ -130,8 +129,7 @@ class PythonRecipe(Recipe):
 
     def install_hostpython_package(self):
         # FIXME: One step should do this for all recipes that want it.
-        self.hostrecipe.pythonexe.print(
-                'setup.py', 'install', '-O2', '--root', self.hostrecipe.nativebuild, '--install-lib', Path('Lib', 'site-packages'),
+        python.print('setup.py', 'install', '-O2', '--root', self.hostrecipe.nativebuild, '--install-lib', Path('Lib', 'site-packages'),
                 env = self.get_hostrecipe_env(), cwd = self.recipebuilddir)
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
@@ -144,7 +142,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def build_compiled_components(self, *setup_extra_args):
         log.info("Building compiled components in %s", self.name)
-        hostpython = self.hostrecipe.pythonexe.partial(env = self.get_recipe_env(), cwd = self.recipebuilddir)
+        hostpython = python.partial(env = self.get_recipe_env(), cwd = self.recipebuilddir)
         if self.install_in_hostpython:
             hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
@@ -158,7 +156,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     def rebuild_compiled_components(self, *setup_extra_args):
         env = self.get_hostrecipe_env()
         log.info("Rebuilding compiled components in %s", self.name)
-        hostpython = self.hostrecipe.pythonexe.partial(env = env, cwd = self.recipebuilddir)
+        hostpython = python.partial(env = env, cwd = self.recipebuilddir)
         hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
 
@@ -174,7 +172,7 @@ class CythonRecipe(PythonRecipe):
     def install_python_package(self):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env()
-        hostpython = self.hostrecipe.pythonexe.partial(env = env, cwd = self.recipebuilddir)
+        hostpython = python.partial(env = env, cwd = self.recipebuilddir)
         hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False

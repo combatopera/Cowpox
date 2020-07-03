@@ -43,7 +43,7 @@ from .config import Config
 from .recipe import Recipe
 from diapyr import types
 from distutils.version import LooseVersion
-from lagoon import cp, make
+from lagoon import cp, make, python
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -54,10 +54,6 @@ log = logging.getLogger(__name__)
 class HostPythonRecipe(Recipe, HostRecipe): # XXX: Why does this exist at all?
 
     urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
-
-    @property
-    def pythonexe(self):
-        return Program.text(self.nativebuild / 'python')
 
     def get_build_container_dir(self):
         return self.buildcontainerparent / 'desktop'
@@ -81,7 +77,7 @@ class HostPythonRecipe(Recipe, HostRecipe): # XXX: Why does this exist at all?
     def compileall(self, dirpath, check = True):
         for path in dirpath.rglob('*.py'):
             os.utime(path, (0, 0)) # Determinism.
-        self.pythonexe._OO._m.compileall._b._f.print(dirpath, check = check)
+        python._OO._m.compileall._b._f.print(dirpath, check = check)
 
 class GuestPythonRecipe(Recipe, GuestRecipe):
 
