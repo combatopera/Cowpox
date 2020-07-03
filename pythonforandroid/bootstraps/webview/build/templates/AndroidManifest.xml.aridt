@@ -14,7 +14,7 @@
     />
 
     <!-- Android 2.3.3 -->
-    <uses-sdk android:minSdkVersion=$"$(minSdkVersion) android:targetSdkVersion=$"$(android_api) />
+    <uses-sdk android:minSdkVersion=$"$(minSdkVersion) android:targetSdkVersion=$"$(targetSdkVersion) />
 
     <!-- Allow writing to external storage -->
     <uses-permission android:name="android.permission.INTERNET" />

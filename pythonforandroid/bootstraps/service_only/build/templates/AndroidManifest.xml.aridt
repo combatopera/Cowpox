@@ -14,7 +14,7 @@
     />
 
     <!-- Android 2.3.3 -->
-    <uses-sdk android:minSdkVersion=$"$(minSdkVersion) android:targetSdkVersion=$"$(android_api) />
+    <uses-sdk android:minSdkVersion=$"$(minSdkVersion) android:targetSdkVersion=$"$(targetSdkVersion) />
 
     <!-- Set permissions -->
 $join$map($(permissions) perm $.[

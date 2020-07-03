@@ -287,7 +287,7 @@ class AndroidProject:
                 repl('permissions += android.permission.WAKE_LOCK')
             repl.printf("theme = %s", f"{self.android_apptheme}{'.Fullscreen' if self.fullscreen else ''}")
             repl.printf("wakelock = %s", int(self.wakelock))
-            repl.printf("android_api = %s", self.android_api)
+            repl.printf("targetSdkVersion = %s", self.android_api)
             repl.printf("configChanges = %s", '|'.join(configChanges))
             repl.printf("redirect %s", self.android_project_dir / 'src' / 'main' / 'AndroidManifest.xml')
             repl.printf("< %s", self.android_project_dir / 'templates' / 'AndroidManifest.xml.aridt')
