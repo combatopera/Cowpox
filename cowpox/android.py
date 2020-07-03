@@ -290,10 +290,10 @@ class AndroidProject:
             repl.printf("versionName = %s", self.version)
             if self.sign:
                 repl('signingConfig = release')
-                repl.printf("P4A_RELEASE_KEYSTORE = %s", os.environ['P4A_RELEASE_KEYSTORE']) # TODO: Get from config instead.
-                repl.printf("P4A_RELEASE_KEYALIAS = %s", os.environ['P4A_RELEASE_KEYALIAS'])
-                repl.printf("P4A_RELEASE_KEYSTORE_PASSWD = %s", os.environ['P4A_RELEASE_KEYSTORE_PASSWD'])
-                repl.printf("P4A_RELEASE_KEYALIAS_PASSWD = %s", os.environ['P4A_RELEASE_KEYALIAS_PASSWD'])
+                repl.printf("storeFile = %s", os.environ['P4A_RELEASE_KEYSTORE']) # TODO: Get from config instead.
+                repl.printf("keyAlias = %s", os.environ['P4A_RELEASE_KEYALIAS'])
+                repl.printf("storePassword = %s", os.environ['P4A_RELEASE_KEYSTORE_PASSWD'])
+                repl.printf("keyPassword = %s", os.environ['P4A_RELEASE_KEYALIAS_PASSWD'])
             repl.printf("redirect %s", self.android_project_dir / 'build.gradle')
             repl.printf("< %s", self.android_project_dir / 'templates' / 'build.gradle.aridt')
         with Repl() as repl:
