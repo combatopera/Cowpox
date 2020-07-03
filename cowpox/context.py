@@ -41,6 +41,7 @@
 from . import Graph, HostRecipe, RecipesOK, SiteOK
 from .config import Config
 from .graph import GraphImpl
+from .make import Make
 from .pyrecipe import CythonRecipe
 from .python import GuestPythonRecipe
 from .util import DIProxy
@@ -70,9 +71,14 @@ class PipInstallRecipe(CythonRecipe):
         self.bundlepackages = Path(config.python_install_dir)
         self.hostrecipe = hostrecipe
 
-    @types(RecipesOK, this = SiteOK)
-    def buildsite(self, _):
-        pypinames = self.graphinfo.pypinames
-        if pypinames:
-            pip.install._v.__no_deps.print('--target', self.bundlepackages, *pypinames, env = self.get_recipe_env())
-        self.hostrecipe.compileall(self.bundlepackages)
+    @types(Make, RecipesOK, this = SiteOK)
+    def buildsite(self, make, _):
+        def target():
+            yield self.bundlepackages
+            pypinames = self.graphinfo.pypinames
+            if pypinames:
+                pip.install._v.__no_deps.print('--target', self.bundlepackages, *pypinames, env = self.get_recipe_env())
+                self.hostrecipe.compileall(self.bundlepackages)
+            else:
+                self.bundlepackages.mkdirp()
+        make(target)
