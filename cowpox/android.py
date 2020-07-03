@@ -40,6 +40,7 @@
 
 from . import AndroidProjectOK, APKPath, Arch, BundleOK, Graph, GraphInfo, skel
 from .config import Config
+from .make import Make
 from .platform import Platform
 from aridity import Repl
 from diapyr import types
@@ -74,9 +75,14 @@ class Assembly:
         self.commit = config.commit
         self.android_project_dir = Path(config.android.project.dir)
         self.gradleenv = dict(ANDROID_NDK_HOME = config.android_ndk_dir, ANDROID_HOME = config.android_sdk_dir)
+        self.gradlebuilddir = self.android_project_dir / 'build'
 
-    @types(AndroidProjectOK, this = APKPath)
-    def build_package(self, _):
+    @types(Make, AndroidProjectOK, this = APKPath)
+    def build_package(self, make, _):
+        make(self._build)
+
+    def _build(self):
+        yield self.gradlebuilddir
         gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.android_project_dir)
         if not self.releasemode:
             mode_sign = mode = 'debug'
@@ -84,7 +90,7 @@ class Assembly:
             mode_sign = 'release'
             mode = 'release' if _check_p4a_sign_env(False) else 'release-unsigned'
         log.info('Android packaging done!')
-        return self.android_project_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{self.android_project_dir.name}-{mode}.apk"
+        return self.gradlebuilddir / 'outputs' / 'apk' / mode_sign / f"{self.android_project_dir.name}-{mode}.apk"
 
 class AssetArchive:
 
