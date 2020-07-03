@@ -48,7 +48,7 @@ from jproperties import Properties
 from lagoon import unzip, yes
 from lagoon.program import Program
 from pathlib import Path
-from pkg_resources import parse_version
+from pkg_resources import parse_version # XXX: Why not LooseVersion?
 import logging, re
 
 log = logging.getLogger(__name__)
