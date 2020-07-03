@@ -300,7 +300,7 @@ class AndroidProject:
             repl.printf("versionCode = %s", numeric_version)
             repl.printf("versionName = %s", self.version)
             if self.mode.signing:
-                repl('signingConfig = release')
+                repl('signingConfig name = Cowpox')
                 repl.printf("storeFile = %s", os.environ['P4A_RELEASE_KEYSTORE']) # TODO: Get from config instead.
                 repl.printf("keyAlias = %s", os.environ['P4A_RELEASE_KEYALIAS'])
                 repl.printf("storePassword = %s", os.environ['P4A_RELEASE_KEYSTORE_PASSWD'])

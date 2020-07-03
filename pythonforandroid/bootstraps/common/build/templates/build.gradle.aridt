@@ -71,7 +71,7 @@ android {
         versionName $"$(versionName)
     }$try[$.[
     signingConfigs {
-        $(signingConfig) {
+        $(signingConfig name) {
             storeFile file($"$(storeFile))
             keyAlias $"$(keyAlias)
             storePassword $"$(storePassword)
@@ -80,7 +80,7 @@ android {
     }] $.()]
     buildTypes {
         release {$try[$.(
-            signingConfig signingConfigs.$(signingConfig)) $.()]
+            signingConfig signingConfigs.$(signingConfig name)) $.()]
         }
     }
     compileOptions {
