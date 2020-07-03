@@ -45,7 +45,6 @@ from .recipe import Recipe
 from diapyr import types
 from lagoon import find, python
 from lagoon.program import Program
-from pathlib import Path
 import logging, os, shutil, subprocess
 
 log = logging.getLogger(__name__)
@@ -59,12 +58,6 @@ class PythonRecipe(Recipe):
     to call hostpython from its own build dir, installing the module in
     the right place via arguments to setup.py. However, this may not set
     the environment correctly and so False is not the default.'''
-
-    install_in_hostpython = False
-    '''If True, additionally installs the module in the hostpython build
-    dir. This will make it available to other recipes if
-    call_hostpython_via_targetpython is False.
-    '''
     depends = [('python2', 'python3')]
     '''
     .. note:: it's important to keep this depends as a class attribute outside
@@ -121,16 +114,9 @@ class PythonRecipe(Recipe):
             p.rename(self.bundlepackages / p.name)
         shutil.rmtree(rdir)
         self.hostrecipe.compileall(self.bundlepackages)
-        if self.install_in_hostpython:
-            self.install_hostpython_package()
 
     def get_hostrecipe_env(self):
         return dict(os.environ, PYTHONPATH = self.hostrecipe.nativebuild / 'Lib' / 'site-packages')
-
-    def install_hostpython_package(self):
-        # FIXME: One step should do this for all recipes that want it.
-        python.print('setup.py', 'install', '-O2', '--root', self.hostrecipe.nativebuild, '--install-lib', Path('Lib', 'site-packages'),
-                env = self.get_hostrecipe_env(), cwd = self.recipebuilddir)
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
@@ -143,22 +129,9 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
     def build_compiled_components(self, *setup_extra_args):
         log.info("Building compiled components in %s", self.name)
         hostpython = python.partial(env = self.get_recipe_env(), cwd = self.recipebuilddir)
-        if self.install_in_hostpython:
-            hostpython.print('setup.py', 'clean', '--all')
         hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
         objsdir, = self.recipebuilddir.glob('build/lib.*')
         find.print(objsdir, '-name', '*.o', '-exec', *self.arch.strip, '{}', ';')
-
-    def install_hostpython_package(self):
-        self.rebuild_compiled_components()
-        super().install_hostpython_package()
-
-    def rebuild_compiled_components(self, *setup_extra_args):
-        env = self.get_hostrecipe_env()
-        log.info("Rebuilding compiled components in %s", self.name)
-        hostpython = python.partial(env = env, cwd = self.recipebuilddir)
-        hostpython.print('setup.py', 'clean', '--all')
-        hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
 
 class CythonRecipe(PythonRecipe):
 

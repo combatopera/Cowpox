@@ -47,7 +47,6 @@ class CythonRecipe(CompiledComponentsPythonRecipe):
     url = f"https://github.com/cython/cython/archive/{version}.tar.gz"
     depends = ['setuptools']
     call_hostpython_via_targetpython = False
-    install_in_hostpython = True
 
     def mainbuild(self):
         self.install_python_package()

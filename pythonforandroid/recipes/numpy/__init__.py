@@ -51,9 +51,6 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
     def build_compiled_components(self):
         super().build_compiled_components('-j', cpu_count())
 
-    def rebuild_compiled_components(self):
-        super().rebuild_compiled_components('-j', cpu_count())
-
     def mainbuild(self):
         self.apply_patches([
             'add_libm_explicitly_to_build.patch',
