@@ -45,14 +45,14 @@ name = Cowpox
 licenses += MIT
 MIT path = LICENSE.kivy
 requires +=
-    aridity>=27
-    chromalog
-    Cython
-    diapyr>=14
-    jproperties
-    lagoon>=16
-    networkx
-    virtualenv
+    aridity==27
+    chromalog==1.0.5
+    Cython==0.29.20
+    diapyr==14
+    jproperties==2.1.0
+    lagoon==16
+    networkx==2.4
+    virtualenv==20.0.25
 resource types +=
     patch
     mk

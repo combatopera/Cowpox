@@ -38,19 +38,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-FROM python AS base
+FROM python:3.8.3 AS base
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends apt-utils software-properties-common && \
     wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - && \
     add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends adoptopenjdk-8-hotspot build-essential ccache cmake gettext gradle zip && \
-    pip install --upgrade pip && \
-    pip install pyven && \
+    pip install pip==20.1.1 && \
+    pip install pyven==43 && \
     echo /.pyven/ | tee ~/.gitignore_global && \
     git config --global core.excludesfile ~/.gitignore_global
 WORKDIR /Cowpox
 COPY project.arid .
+# TODO: Install dependencies without egg_info step.
 RUN pipify && \
     python setup.py egg_info && \
     pip install -r Cowpox.egg-info/requires.txt && \
@@ -58,7 +59,7 @@ RUN pipify && \
 
 FROM base AS test
 COPY COPYING LICENSE.kivy .flakesignore ./
-RUN rm setup.py && tests
+RUN rm setup.py && tests # Prepare and cache environment.
 COPY . .
 RUN tests
 
