@@ -42,7 +42,7 @@ from aridimpl.model import Text
 from aridimpl.util import NoSuchPathException
 from aridity import Context, Repl
 
-class Config:
+class Config: # TODO: Migrate to aridity as high-level API.
 
     @classmethod
     def blank(cls):
