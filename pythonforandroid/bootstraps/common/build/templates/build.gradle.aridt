@@ -44,7 +44,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.1.4' // TODO: Upgrade.
     }
 }
 
@@ -53,7 +53,7 @@ allprojects {
         google()
         jcenter()
         flatDir {
-            dirs 'libs'
+            dirs 'libs' // TODO: Unduplicate.
         }
     }
 }
@@ -64,6 +64,7 @@ android {
     compileSdkVersion $(android_api)
     buildToolsVersion $"$(build_tools_version)
     defaultConfig {
+        // XXX: Shouldn't an applicationId be here?
         minSdkVersion $(minSdkVersion)
         targetSdkVersion $(android_api)
         versionCode $(versionCode)
@@ -78,8 +79,6 @@ android {
         }
     }] $.()]
     buildTypes {
-        debug {
-        }
         release {$try[$.(
             signingConfig signingConfigs.$(signingConfig)) $.()]
         }
