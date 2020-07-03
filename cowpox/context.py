@@ -75,6 +75,7 @@ class PipInstallRecipe(CythonRecipe):
 
     @types(RecipesOK, this = SiteOK)
     def buildsite(self, _):
+        # XXX: Why not use image assets?
         pythonrecipe = self.graph.python_recipe
         virtualenv.print('--python', pythonrecipe.exename, self.venv_path)
         pip = Program.text(self.venv_path / 'bin' / 'pip')
