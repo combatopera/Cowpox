@@ -51,15 +51,13 @@ RUN apt-get update && \
     git config --global core.excludesfile ~/.gitignore_global
 WORKDIR /Cowpox
 COPY project.arid .
-# TODO: Install dependencies without egg_info step.
-RUN pipify && \
-    python setup.py egg_info && \
-    pip install -r Cowpox.egg-info/requires.txt && \
+RUN script='from pyven.projectinfo import ProjectInfo; from shlex import quote; print("pip install %s" % " ".join(quote(r) for r in ProjectInfo.seek(".").allrequires()))' && \
+    eval "$(python -c "$script")" && \
     git init
 
 FROM base AS test
 COPY COPYING LICENSE.kivy .flakesignore ./
-RUN rm setup.py && tests # Prepare and cache environment.
+RUN tests # Prepare and cache environment.
 COPY . .
 RUN tests
 
