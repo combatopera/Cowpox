@@ -53,12 +53,28 @@ import logging, os, shutil, tarfile, time
 
 log = logging.getLogger(__name__)
 
+def enum(*lists):
+    def d(cls):
+        for args in lists:
+            setattr(cls, args[0], cls(*args))
+        return cls
+    return d
+
+@enum(
+    ['debug', 'assembleDebug'],
+    ['release', 'assembleRelease'],
+)
 class Division:
 
     def __init__(self, name, goal):
         self.name = name
         self.goal = goal
 
+@enum(
+    ['debug', Division.debug, False],
+    ['release-unsigned', Division.release, False],
+    ['release', Division.release, True],
+)
 class BuildMode:
 
     def __init__(self, name, division, signing):
@@ -66,19 +82,9 @@ class BuildMode:
         self.division = division
         self.signing = signing
 
-divisions = {d.name: d for d in (Division(*args) for args in [
-    ['debug', 'assembleDebug'],
-    ['release', 'assembleRelease'],
-])}
-modes = {m.name: m for m in (BuildMode(*args) for args in [
-    ['debug', divisions['debug'], False],
-    ['release-unsigned', divisions['release'], False],
-    ['release', divisions['release'], True],
-])}
-
 @types(Config, this = BuildMode)
 def getbuildmode(config):
-    return modes[config.build_mode]
+    return getattr(BuildMode, config.build_mode)
 
 class Assembly:
 
