@@ -53,39 +53,50 @@ import logging, os, shutil, tarfile, time
 
 log = logging.getLogger(__name__)
 
-def _check_p4a_sign_env(error):
-    keys = ["KEYALIAS", "KEYSTORE_PASSWD", "KEYSTORE", "KEYALIAS_PASSWD"]
-    check = True
-    for key in keys:
-        key = "P4A_RELEASE_{}".format(key)
-        if key not in os.environ:
-            if error:
-                log.error("Asking for release but %s is missing--sign will not be passed", key)
-            check = False
-    return check
+class Division:
+
+    def __init__(self, name, goal):
+        self.name = name
+        self.goal = goal
+
+class BuildMode:
+
+    def __init__(self, name, division, signing):
+        self.name = name
+        self.division = division
+        self.signing = signing
+
+divisions = {d.name: d for d in (Division(*args) for args in [
+    ['debug', 'assembleDebug'],
+    ['release', 'assembleRelease'],
+])}
+modes = {m.name: m for m in (BuildMode(*args) for args in [
+    ['debug', divisions['debug'], False],
+    ['release-unsigned', divisions['release'], False],
+    ['release', divisions['release'], True],
+])}
+
+@types(Config, this = BuildMode)
+def getbuildmode(config):
+    return modes[config.build_mode]
 
 class Assembly:
 
-    @types(Config, AndroidProjectOK)
-    def __init__(self, config, _):
-        self.releasemode = 'debug' != config.build_mode
+    @types(Config, BuildMode, AndroidProjectOK)
+    def __init__(self, config, mode, _):
         self.android_project_dir = Path(config.android.project.dir)
         self.gradleenv = dict(ANDROID_NDK_HOME = config.android_ndk_dir, ANDROID_HOME = config.android_sdk_dir)
         self.gradlebuilddir = self.android_project_dir / 'build'
+        self.mode = mode
 
     @types(Make, AndroidProjectOK, this = APKPath)
     def build_package(self, make, _):
         make(self._build)
-        if not self.releasemode:
-            mode_sign = mode = 'debug'
-        else:
-            mode_sign = 'release'
-            mode = 'release' if _check_p4a_sign_env(False) else 'release-unsigned'
-        return self.gradlebuilddir / 'outputs' / 'apk' / mode_sign / f"{self.android_project_dir.name}-{mode}.apk"
+        return self.gradlebuilddir / 'outputs' / 'apk' / self.mode.division.name / f"{self.android_project_dir.name}-{self.mode.name}.apk"
 
     def _build(self):
         yield self.gradlebuilddir
-        gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.android_project_dir)
+        gradle.__no_daemon.print(self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
         log.info('Android packaging done!')
 
 class AssetArchive:
@@ -159,8 +170,8 @@ class AssetArchive:
 
 class AndroidProject:
 
-    @types(Config, Arch, Platform, AssetArchive)
-    def __init__(self, config, arch, platform, assetarchive):
+    @types(Config, Arch, Platform, AssetArchive, BuildMode)
+    def __init__(self, config, arch, platform, assetarchive, mode):
         self.ndk_api = config.android.ndk_api
         self.min_sdk_version = config.android.minapi
         if self.ndk_api != self.min_sdk_version:
@@ -185,11 +196,11 @@ class AndroidProject:
         self.orientation = config.orientation
         self.fqpackage = config.package.fq
         self.res_dir = Path(config.android.project.res.dir)
-        self.sign = 'debug' != config.build_mode and _check_p4a_sign_env(True)
         self.config = config
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
+        self.mode = mode
 
     def _numver(self):
         version_code = 0
@@ -288,7 +299,7 @@ class AndroidProject:
             repl.printf("minSdkVersion = %s", self.min_sdk_version)
             repl.printf("versionCode = %s", numeric_version)
             repl.printf("versionName = %s", self.version)
-            if self.sign:
+            if self.mode.signing:
                 repl('signingConfig = release')
                 repl.printf("storeFile = %s", os.environ['P4A_RELEASE_KEYSTORE']) # TODO: Get from config instead.
                 repl.printf("keyAlias = %s", os.environ['P4A_RELEASE_KEYALIAS'])

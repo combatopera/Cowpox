@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from . import APKPath, etc
-from .android import AndroidProject, Assembly, AssetArchive
+from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .boot import Bootstrap
 from .bundle import PythonBundleImpl
@@ -86,6 +86,7 @@ def _main():
         di.add(AssetArchive)
         di.add(config)
         di.add(di)
+        di.add(getbuildmode)
         di.add(GraphImpl)
         di.add(GraphInfoImpl)
         di.add(GraphProxy)
