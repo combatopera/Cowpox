@@ -76,17 +76,17 @@ class Assembly:
     @types(Make, AndroidProjectOK, this = APKPath)
     def build_package(self, make, _):
         make(self._build)
-
-    def _build(self):
-        yield self.gradlebuilddir
-        gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.android_project_dir)
         if not self.releasemode:
             mode_sign = mode = 'debug'
         else:
             mode_sign = 'release'
             mode = 'release' if _check_p4a_sign_env(False) else 'release-unsigned'
-        log.info('Android packaging done!')
         return self.gradlebuilddir / 'outputs' / 'apk' / mode_sign / f"{self.android_project_dir.name}-{mode}.apk"
+
+    def _build(self):
+        yield self.gradlebuilddir
+        gradle.__no_daemon.print('assembleRelease' if self.releasemode else 'assembleDebug', env = self.gradleenv, cwd = self.android_project_dir)
+        log.info('Android packaging done!')
 
 class AssetArchive:
 
