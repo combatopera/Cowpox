@@ -61,12 +61,12 @@ allprojects {
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion $(android_api)
+    compileSdkVersion $(compileSdkVersion)
     buildToolsVersion $"$(buildToolsVersion)
     defaultConfig {
         // XXX: Shouldn't an applicationId be here?
         minSdkVersion $(minSdkVersion)
-        targetSdkVersion $(android_api)
+        targetSdkVersion $(targetSdkVersion)
         versionCode $(versionCode)
         versionName $"$(versionName)
     }$try[$.[

@@ -293,7 +293,8 @@ class AndroidProject:
             repl.printf("< %s", self.android_project_dir / 'templates' / 'AndroidManifest.xml.aridt')
         with Repl() as repl:
             repl('" = $(groovystr)')
-            repl.printf("android_api = %s", self.android_api)
+            repl.printf("compileSdkVersion = %s", self.android_api)
+            repl.printf("targetSdkVersion = %s", self.android_api)
             repl.printf("buildToolsVersion = %s", self.platform.build_tools_version())
             repl.printf("minSdkVersion = %s", self.min_sdk_version)
             repl.printf("versionCode = %s", numeric_version)
