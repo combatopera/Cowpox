@@ -38,21 +38,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from aridimpl.model import Function, Text
+from aridimpl.model import Text
 from aridimpl.util import NoSuchPathException
 from aridity import Context, Repl
-from lagoon import git
-
-def _githash(context, pathresolvable):
-    return Text(git.rev_parse.__short.HEAD(cwd = pathresolvable.resolve(context).cat()).rstrip())
 
 class Config:
 
     @classmethod
     def blank(cls):
-        context = Context()
-        context['githash',] = Function(_githash)
-        return cls(context, [])
+        return cls(Context(), [])
 
     def __init__(self, context, prefix):
         self._context = context

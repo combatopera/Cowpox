@@ -68,11 +68,7 @@ class Assembly:
 
     @types(Config, AndroidProjectOK)
     def __init__(self, config, _):
-        self.arch = config.android.arch
-        self.dist_name = config.package.name
         self.releasemode = 'debug' != config.build_mode
-        self.version = config.version
-        self.commit = config.commit
         self.android_project_dir = Path(config.android.project.dir)
         self.gradleenv = dict(ANDROID_NDK_HOME = config.android_ndk_dir, ANDROID_HOME = config.android_sdk_dir)
         self.gradlebuilddir = self.android_project_dir / 'build'

@@ -81,7 +81,6 @@ build_mode = debug
 orientation = portrait
 title = $(project name)
 version = $.(0.1)
-commit = $githash$(container src)
 fullscreen = false
 log path = $/($(build dir) Cowpox.log)
 build dir = $/($(container src) build)
