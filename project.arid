@@ -52,7 +52,6 @@ requires +=
     jproperties==2.1.0
     lagoon==16
     networkx==2.4
-    virtualenv==20.0.25
 resource types +=
     patch
     mk

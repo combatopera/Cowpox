@@ -45,11 +45,9 @@ from .pyrecipe import CythonRecipe
 from .python import GuestPythonRecipe
 from .util import DIProxy
 from diapyr import types
-from lagoon import virtualenv
-from lagoon.program import Program
+from lagoon import pip
 from pathlib import Path
-from pkg_resources import get_distribution
-import logging, os
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -69,23 +67,12 @@ class PipInstallRecipe(CythonRecipe):
 
     @types(Config, HostRecipe)
     def __init(self, config, hostrecipe):
-        self.venv_path = Path(config.venv.path)
         self.bundlepackages = Path(config.python_install_dir)
         self.hostrecipe = hostrecipe
 
     @types(RecipesOK, this = SiteOK)
     def buildsite(self, _):
-        # XXX: Why not use image assets?
-        pythonrecipe = self.graph.python_recipe
-        virtualenv.print('--python', pythonrecipe.exename, self.venv_path)
-        pip = Program.text(self.venv_path / 'bin' / 'pip')
-        pip.install.print(get_distribution('Cython').as_requirement(), env = dict(PYTHONPATH = self.bundlepackages))
-        installenv = self.get_recipe_env()
-        installenv['PYTHONPATH'] = os.pathsep.join(map(str, [
-            self.venv_path / 'lib' / f"python{pythonrecipe.majminversion}" / 'site-packages',
-            self.bundlepackages,
-        ]))
         pypinames = self.graphinfo.pypinames
         if pypinames:
-            pip.install._v.__no_deps.print('--target', self.bundlepackages, *pypinames, env = installenv)
+            pip.install._v.__no_deps.print('--target', self.bundlepackages, *pypinames, env = self.get_recipe_env())
         self.hostrecipe.compileall(self.bundlepackages)
