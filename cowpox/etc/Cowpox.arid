@@ -84,7 +84,6 @@ version = $.(0.1)
 commit = $githash$(container src)
 fullscreen = false
 log path = $/($(build dir) Cowpox.log)
-apk dir = $(build dir)
 build dir = $/($(container src) build)
 main name = main
 mirror path = $/($(build dir) mirror)

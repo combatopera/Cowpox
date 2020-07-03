@@ -97,7 +97,7 @@ def _main():
         di.add(PythonBundleImpl)
         for recipeimpl in di(GraphInfoImpl).recipeimpls():
             di.add(recipeimpl)
-        return di(APKPath)
+        return di(APKPath).relative_to(config.container.src)
 
 def main_Cowpox():
     try:

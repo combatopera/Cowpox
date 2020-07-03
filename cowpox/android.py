@@ -72,7 +72,6 @@ class Assembly:
         self.releasemode = 'debug' != config.build_mode
         self.version = config.version
         self.commit = config.commit
-        self.apkdir = Path(config.apk.dir)
         self.android_project_dir = Path(config.android.project.dir)
         self.gradleenv = dict(ANDROID_NDK_HOME = config.android_ndk_dir, ANDROID_HOME = config.android_sdk_dir)
 
@@ -84,10 +83,8 @@ class Assembly:
         else:
             mode_sign = 'release'
             mode = 'release' if _check_p4a_sign_env(False) else 'release-unsigned'
-        apkpath = self.apkdir / f"{self.dist_name}-{self.version}-{self.commit}-{self.arch}-{mode}.apk"
-        shutil.copyfile(self.android_project_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{self.android_project_dir.name}-{mode}.apk", apkpath)
         log.info('Android packaging done!')
-        return apkpath
+        return self.android_project_dir / 'build' / 'outputs' / 'apk' / mode_sign / f"{self.android_project_dir.name}-{mode}.apk"
 
 class AssetArchive:
 
