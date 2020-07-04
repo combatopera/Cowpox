@@ -74,8 +74,8 @@ def _main():
     args = parser.parse_args()
     _inituser(args.srcpath)
     config = Config.blank()
-    config.puttext('container', 'src', text = str(args.srcpath))
-    config.puttext('pyven', 'support', text = resource_filename(etc.__name__, 'pyven.arid'))
+    config.put('container', 'src', text = str(args.srcpath))
+    config.put('pyven', 'support', text = resource_filename(etc.__name__, 'pyven.arid'))
     config.load(resource_filename(etc.__name__, 'root.arid'))
     config = config.Cowpox
     logging.setpath(Path(config.log.path))
