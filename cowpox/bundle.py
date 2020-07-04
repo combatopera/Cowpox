@@ -113,6 +113,7 @@ class PythonBundleImpl(PythonBundle):
         zip.print(self.bundledir / 'stdlib.zip', *(p.relative_to(self.pythonrecipe.stdlibdir) for p in stdlib_filens), cwd = self.pythonrecipe.stdlibdir)
         sitepackagesdir = (self.bundledir / 'site-packages').mkdirp()
         for recipe in self.recipes:
+            # TODO: Get bundlepackages from a result object coming out of every recipe.
             filens = list(self._walk_valid_filens(recipe.bundlepackages, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
             log.info("Copy %s files into the site-packages", len(filens))
             for filen in filens:
