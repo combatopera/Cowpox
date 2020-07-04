@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, RecipesOK, SiteOK
+from . import Graph, SiteOK
 from .config import Config
 from .container import compileall
 from .graph import GraphImpl
@@ -67,8 +67,8 @@ class PipInstallRecipe(CythonRecipe):
     def __init(self, config):
         self.bundlepackages = Path(config.python_install_dir)
 
-    @types(Make, RecipesOK, this = SiteOK)
-    def buildsite(self, make, _):
+    @types(Make, this = SiteOK)
+    def buildsite(self, make):
         def target():
             yield self.bundlepackages
             pypinames = self.graphinfo.pypinames
