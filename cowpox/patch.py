@@ -48,8 +48,5 @@ class Predicate:
         if self.predicate(recipe):
             return self.patch
 
-def will_build(recipe_name, patch):
-    return Predicate(lambda r: recipe_name in r.graphinfo.recipenames, patch)
-
 def version_starts_with(version, patch):
     return Predicate(lambda r: r.version.startswith(version), patch)

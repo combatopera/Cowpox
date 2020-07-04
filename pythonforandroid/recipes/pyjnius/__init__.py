@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from cowpox.config import Config
-from cowpox.patch import will_build
 from cowpox.pyrecipe import CythonRecipe
 from diapyr import types
 from lagoon import cp
@@ -59,10 +58,12 @@ class PyjniusRecipe(CythonRecipe):
         self.javaclass_dir = Path(config.javaclass_dir)
 
     def mainbuild(self):
-        self.apply_patches([
-            will_build('sdl2', 'sdl2_jnienv_getter.patch'),
-            will_build('genericndkbuild', 'genericndkbuild_jnienv_getter.patch'),
-        ])
+        patches = []
+        if 'sdl2' in self.graphinfo.recipenames:
+            patches.append('sdl2_jnienv_getter.patch')
+        if 'genericndkbuild' in self.graphinfo.recipenames:
+            patches.append('genericndkbuild_jnienv_getter.patch')
+        self.apply_patches(patches)
         self.install_python_package()
         log.info('Copying pyjnius java class to classes build dir')
         cp._a.print(self.recipebuilddir / 'jnius' / 'src' / 'org', self.javaclass_dir.mkdirp())
