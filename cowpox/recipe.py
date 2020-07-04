@@ -181,9 +181,7 @@ class Recipe(Plugin):
         self.mainbuild()
 
     def get_recipe_env(self):
-        env = self.arch.get_env()
-        env['BUILDLIB_PATH'] = self.graph.host_recipe.recipebuilddir / 'native-build' / 'build' / f"lib.{build_platform}-{self.graph.python_recipe.majminversion}"
-        return env
+        return self.arch.get_env()
 
     def apply_patches(self, patches):
         log.info("Applying patches for %s[%s]", self.name, self.arch.name)
