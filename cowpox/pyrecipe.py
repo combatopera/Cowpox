@@ -116,9 +116,6 @@ class PythonRecipe(Recipe):
         shutil.rmtree(rdir)
         compileall(self.bundlepackages)
 
-    def get_hostrecipe_env(self):
-        return dict(os.environ, PYTHONPATH = self.hostrecipe.nativebuild / 'Lib' / 'site-packages')
-
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
     def install_python_package(self):
