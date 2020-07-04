@@ -70,7 +70,7 @@ class PipInstallRecipe(CythonRecipe):
     @types(Make, this = SiteOK)
     def buildsite(self, make):
         def target():
-            yield self.bundlepackages
+            yield self.bundlepackages # FIXME: Rebuild when requirements change.
             pypinames = self.graphinfo.pypinames
             if pypinames:
                 pip.install._v.__no_deps.print('--target', self.bundlepackages, *pypinames, env = self.get_recipe_env())
