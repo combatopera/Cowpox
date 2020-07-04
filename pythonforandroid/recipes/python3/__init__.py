@@ -38,30 +38,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox.patch import version_starts_with
 from cowpox.python import GuestPythonRecipe
 from lagoon.program import Program
 import lagoon
 
 class Python3Recipe(GuestPythonRecipe):
 
-    version = '3.8.1'
+    version = '3.8.1' # XXX: Should this match container version?
     url = f"https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
     depends = ['sqlite3', 'openssl', 'libffi']
     opt_depends = ['libbz2', 'liblzma']
 
     def mainbuild(self):
-        patches = [
-            version_starts_with('3.7', 'py3.7.1_fix-ctypes-util-find-library.patch'),
-            version_starts_with('3.7', 'py3.7.1_fix-zlib-version.patch'),
-            version_starts_with('3.8', 'py3.8.1.patch'),
-        ]
+        self.apply_patch('py3.8.1.patch')
         if hasattr(lagoon, 'lld'):
-            patches += [
-                version_starts_with('3.7', 'py3.7.1_fix_cortex_a8.patch'),
-                version_starts_with('3.8', 'py3.8.1_fix_cortex_a8.patch'),
-            ]
-        self.apply_patches(patches)
+            self.apply_patch('py3.8.1_fix_cortex_a8.patch')
         configure_args = [
             f"--host={self.arch.command_prefix}",
             f"--build={Program.text(self.recipebuilddir / 'config.guess')().rstrip()}",
