@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import GuestRecipe, HostRecipe
+from . import GuestRecipe
 from .config import Config
 from .container import compileall
 from .recipe import Recipe
@@ -52,7 +52,7 @@ import lagoon, logging, os, re
 
 log = logging.getLogger(__name__)
 
-class HostPythonRecipe(Recipe, HostRecipe): # XXX: Why does this exist at all?
+class HostPythonRecipe(Recipe): # XXX: Why does this exist at all?
 
     urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
 
