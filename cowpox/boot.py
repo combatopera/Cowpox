@@ -115,7 +115,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     def distribute_aars(self):
         log.info('Unpacking aars')
-        for aar in (self.buildsdir / 'aars' / self.package_name).glob('*.aar'):
+        for aar in (self.buildsdir / 'aars' / self.package_name).glob('*.aar'): # TODO LATER: Configure these a different way.
             self._unpack_aar(aar)
 
     def _unpack_aar(self, aar):
