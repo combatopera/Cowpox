@@ -73,7 +73,7 @@ class Config: # TODO: Migrate to aridity as high-level API.
     def put(self, *path, function = undefined, text = undefined):
         # TODO LATER: In theory we could add multiple types.
         factory, = (partial(t, v) for t, v in [[Function, function], [Text, text]] if v is not undefined)
-        self._context[tuple(*self._prefix, *path)] = factory()
+        self._context[tuple([*self._prefix, *path])] = factory()
 
     def _localcontext(self):
         return self._context.resolved(*self._prefix)
