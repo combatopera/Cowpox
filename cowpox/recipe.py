@@ -43,7 +43,7 @@ from .boot import Bootstrap
 from .config import Config
 from .mirror import Mirror
 from .platform import Platform
-from .util import build_platform, format_obj, Plugin
+from .util import format_obj, Plugin
 from diapyr import types
 from lagoon import patch as patchexe, tar, touch, unzip
 from pathlib import Path

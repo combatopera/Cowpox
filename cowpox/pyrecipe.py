@@ -121,16 +121,13 @@ class PythonRecipe(Recipe):
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
-    build_cmd = 'build_ext'
-
     def install_python_package(self):
         self.build_compiled_components()
         super().install_python_package()
 
     def build_compiled_components(self, *setup_extra_args):
         log.info("Building compiled components in %s", self.name)
-        hostpython = python.partial(env = self.get_recipe_env(), cwd = self.recipebuilddir)
-        hostpython.print('setup.py', self.build_cmd, '-v', *setup_extra_args)
+        python.print('setup.py', 'build_ext', '-v', *setup_extra_args, env = self.get_recipe_env(), cwd = self.recipebuilddir)
         objsdir, = self.recipebuilddir.glob('build/lib.*')
         find.print(objsdir, '-name', '*.o', '-exec', *self.arch.strip, '{}', ';')
 
@@ -145,11 +142,9 @@ class CythonRecipe(PythonRecipe):
     def install_python_package(self):
         log.info("Cythonizing anything necessary in %s", self.name)
         env = self.get_recipe_env()
-        hostpython = python.partial(env = env, cwd = self.recipebuilddir)
-        hostpython._c.print('import sys; print(sys.path)')
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False
-        setup = hostpython.partial('setup.py', 'build_ext')._v
+        setup = python.partial('setup.py', 'build_ext', env = env, cwd = self.recipebuilddir)._v
         try:
             setup.print()
         except subprocess.CalledProcessError as e:

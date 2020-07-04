@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, HostRecipe, RecipesOK, SiteOK
+from . import Graph, RecipesOK, SiteOK
 from .config import Config
 from .container import compileall
 from .graph import GraphImpl
