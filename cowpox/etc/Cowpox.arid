@@ -40,7 +40,7 @@
 
 RECOMMENDED_NDK_VERSION = 19b
 SDK accept licenses = false
-package name = Cowpox-project
+package name = Cowpox_project
 android
     ndk = $(RECOMMENDED_NDK_VERSION)
     api = 27
