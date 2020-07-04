@@ -105,6 +105,8 @@ class PythonRecipe(Recipe):
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
+    call_hostpython_via_targetpython = False
+
     def install_python_package(self):
         self.build_compiled_components()
         super().install_python_package()

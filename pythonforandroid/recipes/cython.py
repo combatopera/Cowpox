@@ -46,7 +46,6 @@ class CythonRecipe(CompiledComponentsPythonRecipe):
     version = '0.29.15' # XXX: Use same version as image?
     url = f"https://github.com/cython/cython/archive/{version}.tar.gz"
     depends = ['setuptools']
-    call_hostpython_via_targetpython = False
 
     def mainbuild(self):
         self.install_python_package()
