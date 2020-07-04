@@ -52,7 +52,7 @@ from .platform import Platform, PlatformInfo
 from .util import findimpl, Logging
 from argparse import ArgumentParser
 from diapyr import DI
-from lagoon import groupadd, useradd
+from lagoon import groupadd, python, useradd
 from pathlib import Path
 from pkg_resources import resource_filename
 import logging, os
@@ -67,6 +67,15 @@ def _inituser(srcpath):
     os.setuid(uid)
     del os.environ['HOME'] # XXX: Why is it set in the first place?
 
+def _egginforequires(context, pathresolvable):
+    projectpath = Path(pathresolvable.resolve(context).cat())
+    python.print('setup.py', 'egg_info', cwd = projectpath)
+    egginfodir, = projectpath.glob('*.egg-info')
+    requires = Config(context.createchild(islist = True), [])
+    for r in (egginfodir / 'requires.txt').read_text().splitlines():
+        requires.put(r, text = r)
+    return requires._context
+
 def _main():
     logging = Logging()
     parser = ArgumentParser()
@@ -76,6 +85,7 @@ def _main():
     config = Config.blank()
     config.put('container', 'src', text = str(args.srcpath))
     config.put('pyven', 'support', text = resource_filename(etc.__name__, 'pyven.arid'))
+    config.put('egg-info-requires', function = _egginforequires)
     config.load(resource_filename(etc.__name__, 'root.arid'))
     config = config.Cowpox
     logging.setpath(Path(config.log.path))
