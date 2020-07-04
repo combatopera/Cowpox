@@ -79,6 +79,7 @@ orientation = portrait
 version = $.(0.1)
 fullscreen = false
 log path = $/($(build dir) Cowpox.log)
+: TODO: All Cowpox assets should go in dedicated subdirectory.
 build dir = $/($(container src) build)
 main name = main
 mirror path = $/($(build dir) mirror)
