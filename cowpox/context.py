@@ -61,10 +61,6 @@ class GraphProxy(DIProxy, Graph):
     def python_recipe(self):
         return self.di(GuestPythonRecipe)
 
-    @property
-    def host_recipe(self):
-        return self.di(HostRecipe)
-
 class PipInstallRecipe(CythonRecipe):
 
     @types(Config)
