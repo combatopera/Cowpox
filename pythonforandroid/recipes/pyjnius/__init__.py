@@ -58,12 +58,10 @@ class PyjniusRecipe(CythonRecipe):
         self.javaclass_dir = Path(config.javaclass_dir)
 
     def mainbuild(self):
-        patches = []
         if 'sdl2' in self.graphinfo.recipenames:
-            patches.append('sdl2_jnienv_getter.patch')
+            self.apply_patch('sdl2_jnienv_getter.patch')
         if 'genericndkbuild' in self.graphinfo.recipenames:
-            patches.append('genericndkbuild_jnienv_getter.patch')
-        self.apply_patches(patches)
+            self.apply_patch('genericndkbuild_jnienv_getter.patch')
         self.install_python_package()
         log.info('Copying pyjnius java class to classes build dir')
         cp._a.print(self.recipebuilddir / 'jnius' / 'src' / 'org', self.javaclass_dir.mkdirp())
