@@ -64,7 +64,6 @@ class AndroidRecipe(CythonRecipe):
         config = {
             'BOOTSTRAP': 'sdl2' if is_sdl2 else bootstrap_name,
             'IS_SDL2': int(is_sdl2),
-            'PY2': int(bool(will_build('python2', True).acceptrecipe(self))),
             'JAVA_NAMESPACE': 'org.kivy.android',
             'JNI_NAMESPACE': 'org/kivy/android',
         }
