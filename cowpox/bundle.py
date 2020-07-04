@@ -105,7 +105,6 @@ class PythonBundleImpl(PythonBundle):
         modules_dir = (self.bundledir / 'modules').mkdirp()
         log.info("Copy %s files into the bundle", len(self.pythonrecipe.module_filens))
         for filen in self.pythonrecipe.module_filens:
-            log.debug(" - copy %s", filen)
             shutil.copy2(filen, modules_dir)
         self.arch.striplibs(modules_dir)
         stdlib_filens = list(self._walk_valid_filens(self.pythonrecipe.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
@@ -117,7 +116,6 @@ class PythonBundleImpl(PythonBundle):
             filens = list(self._walk_valid_filens(recipe.bundlepackages, self.site_packages_dir_blacklist, self.site_packages_filen_blacklist))
             log.info("Copy %s files into the site-packages", len(filens))
             for filen in filens:
-                log.debug(" - copy %s", filen)
                 shutil.copy2(filen, (sitepackagesdir / filen.relative_to(recipe.bundlepackages)).pmkdirp())
         log.info('Renaming .so files to reflect cross-compile')
         self._reduce_object_file_names(sitepackagesdir)
