@@ -72,10 +72,7 @@ presplash
     default path = $/($(android project dir) templates kivy-presplash.jpg)
     path = $(default path)
 bootstrap name = sdl2
-requirements +=
-    python3
-    bdozlib
-    $*$(pyven project requires)
+requirements = $(pyven project requires)
 package
     domain = org.test
     fq = $lower($(domain).$(name))
