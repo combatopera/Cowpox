@@ -52,29 +52,6 @@ import lagoon, logging, os, re
 
 log = logging.getLogger(__name__)
 
-class HostPythonRecipe(Recipe): # XXX: Why does this exist at all?
-
-    urlformat = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
-
-    def get_build_container_dir(self):
-        return self.buildcontainerparent / 'desktop'
-
-    @property
-    def nativebuild(self):
-        return self.recipebuilddir / 'native-build'
-
-    def build_exe(self):
-        if not (self.nativebuild.mkdirp() / 'config.status').exists():
-            Program.text(self.recipebuilddir / 'configure').print(cwd = self.nativebuild)
-        setup_dist_location = self.recipebuilddir / 'Modules' / 'Setup.dist'
-        if setup_dist_location.exists():
-            cp.print(setup_dist_location, self.nativebuild / 'Modules' / 'Setup')
-        else:
-            setup_location = self.recipebuilddir / 'Modules' / 'Setup'
-            if not setup_location.exists():
-                raise Exception('Could not find Setup.dist or Setup in Python build')
-        make.print('-j', cpu_count(), '-C', self.nativebuild, cwd = self.recipebuilddir)
-
 class GuestPythonRecipe(Recipe, GuestRecipe):
 
     MIN_NDK_API = 21
