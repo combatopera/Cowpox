@@ -72,10 +72,7 @@ presplash
     path = $(default path)
 bootstrap name = sdl2
 requirements = $(pyven project requires)
-package
-    domain = org.test
-    name = Cowpox_project
-    fq = $lower($(domain).$(name))
+package name = Cowpox-project
 build_mode = debug
 orientation = portrait
 version = $.(0.1)
