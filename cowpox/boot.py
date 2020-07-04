@@ -70,7 +70,7 @@ class BootstrapType(PluginType): pass
 class Bootstrap(Plugin, metaclass = BootstrapType):
 
     MIN_TARGET_API = 26
-    recipe_depends = ('python2', 'python3'), 'android'
+    recipe_depends = 'python3', 'android'
 
     @types(Config, Arch, GraphInfo)
     def __init__(self, config, arch, graphinfo):

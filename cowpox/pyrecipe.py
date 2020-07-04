@@ -51,28 +51,14 @@ log = logging.getLogger(__name__)
 
 class PythonRecipe(Recipe):
 
-    depends = [('python2', 'python3')]
-    '''
-    .. note:: it's important to keep this depends as a class attribute outside
-              `__init__` because sometimes we only initialize the class, so the
-              `__init__` call won't be called and the deps would be missing
-              (which breaks the dependency graph computation)
+    depends = ['python3']
 
-    .. warning:: don't forget to call `super().__init__()` in any recipe's
-                 `__init__`, or otherwise it may not be ensured that it depends
-                 on python2 or python3 which can break the dependency graph
-    '''
-
-    @types(Config)
-    def __init(self, config):
-        if not any(d for d in {'python2', 'python3', ('python2', 'python3')} if d in self.depends):
-            # We ensure here that the recipe depends on python even it overrode
-            # `depends`. We only do this if it doesn't already depend on any
-            # python, since some recipes intentionally don't depend on/work
-            # with all python variants
+    @types()
+    def __init(self):
+        if 'python3' not in self.depends:
             depends = self.depends
-            depends.append(('python2', 'python3'))
-            self.depends = list(set(depends))
+            depends.append('python3')
+            self.depends = list(set(depends)) # XXX: Can we error instead?
 
     def get_recipe_env(self):
         env = super().get_recipe_env()

@@ -290,8 +290,7 @@ int main(int argc, char *argv[]) {
     ret = 1;
     PyErr_Print(); /* This exits with the right code if SystemExit. */
     PyObject *f = PySys_GetObject("stdout");
-    if (PyFile_WriteString(
-            "\n", f)) /* python2 used Py_FlushLine, but this no longer exists */
+    if (PyFile_WriteString("\n", f))
       PyErr_Clear();
   }
 

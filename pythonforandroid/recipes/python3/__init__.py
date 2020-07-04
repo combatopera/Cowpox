@@ -49,7 +49,6 @@ class Python3Recipe(GuestPythonRecipe):
     url = f"https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
     depends = ['sqlite3', 'openssl', 'libffi']
     opt_depends = ['libbz2', 'liblzma']
-    conflicts = ['python2']
 
     def mainbuild(self):
         patches = [
