@@ -178,7 +178,7 @@ class AndroidProject:
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
         self.app_dir = Path(config.app_dir)
         self.android_api = config.android.api
-        self.title = config.title
+        self.app_name = config.android.app_name
         self.presplash_color = config.android.presplash_color
         self.bootstrapname = config.bootstrap.name # TODO: Use polymorphism.
         self.android_project_dir = Path(config.android.project.dir)
@@ -309,7 +309,7 @@ class AndroidProject:
             repl.printf("< %s", self.android_project_dir / 'templates' / 'build.gradle.aridt')
         with Repl() as repl:
             repl('& = $(xmltext)')
-            repl.printf("app_name = %s", self.title)
+            repl.printf("app_name = %s", self.app_name)
             repl.printf("private_version = %s", time.time()) # XXX: Must we use time?
             repl.printf("presplash_color = %s", self.presplash_color)
             repl.printf("urlScheme = %s", url_scheme)
