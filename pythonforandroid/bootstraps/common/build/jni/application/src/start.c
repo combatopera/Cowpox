@@ -39,18 +39,12 @@ static PyMethodDef AndroidEmbedMethods[] = {
     {"log", androidembed_log, METH_VARARGS, "Log on android platform"},
     {NULL, NULL, 0, NULL}};
 
-#if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef androidembed = {PyModuleDef_HEAD_INIT, "androidembed",
                                           "", -1, AndroidEmbedMethods};
 
 PyMODINIT_FUNC initandroidembed(void) {
   return PyModule_Create(&androidembed);
 }
-#else
-PyMODINIT_FUNC initandroidembed(void) {
-  (void)Py_InitModule("androidembed", AndroidEmbedMethods);
-}
-#endif
 
 int dir_exists(char *filename) {
   struct stat st;
@@ -144,21 +138,12 @@ int main(int argc, char *argv[]) {
   LOGP(env_argument);
   chdir(env_argument);
 
-#if PY_MAJOR_VERSION < 3
-  Py_NoSiteFlag=1;
-#endif
 
-#if PY_MAJOR_VERSION < 3
-  Py_SetProgramName("android_python");
-#else
   Py_SetProgramName(L"android_python");
-#endif
 
-#if PY_MAJOR_VERSION >= 3
   /* our logging module for android
    */
   PyImport_AppendInittab("androidembed", initandroidembed);
-#endif
 
   LOGP("Preparing to initialize python");
 
@@ -177,10 +162,8 @@ int main(int argc, char *argv[]) {
     LOGP("calculated paths to be...");
     LOGP(paths);
 
-    #if PY_MAJOR_VERSION >= 3
         wchar_t *wchar_paths = Py_DecodeLocale(paths, NULL);
         Py_SetPath(wchar_paths);
-    #endif
 
         LOGP("set wchar paths...");
   } else {
@@ -190,15 +173,6 @@ int main(int argc, char *argv[]) {
 
   Py_Initialize();
 
-#if PY_MAJOR_VERSION < 3
-  // Can't Py_SetPath in python2 but we can set PySys_SetPath, which must
-  // be applied after Py_Initialize rather than before like Py_SetPath
-  #if PY_MICRO_VERSION >= 15
-    // Only for python native-build
-    PySys_SetPath(paths);
-  #endif
-  PySys_SetArgv(argc, argv);
-#endif
 
   LOGP("Initialized python");
 
@@ -207,9 +181,6 @@ int main(int argc, char *argv[]) {
   LOGP("AND: Init threads");
   PyEval_InitThreads();
 
-#if PY_MAJOR_VERSION < 3
-  initandroidembed();
-#endif
 
   PyRun_SimpleString("import androidembed\nandroidembed.log('testing python "
                      "print redirection')");
@@ -252,9 +223,6 @@ int main(int argc, char *argv[]) {
       "print('os.environ is', os.environ)\n"
       "print('Android kivy bootstrap done. __name__ is', __name__)");
 
-#if PY_MAJOR_VERSION < 3
-  PyRun_SimpleString("import site; print site.getsitepackages()\n");
-#endif
 
   LOGP("AND: Ran string");
 
@@ -265,11 +233,7 @@ int main(int argc, char *argv[]) {
   /* Get the entrypoint, search the .pyo then .py
    */
   char *dot = strrchr(env_entrypoint, '.');
-#if PY_MAJOR_VERSION > 2
   char *ext = ".pyc";
-#else
-  char *ext = ".pyo";
-#endif
   if (dot <= 0) {
     LOGP("Invalid entrypoint, abort.");
     return -1;
@@ -295,11 +259,7 @@ int main(int argc, char *argv[]) {
     /* if .py is passed, check the pyo version first */
     strcpy(entrypoint, env_entrypoint);
     entrypoint[strlen(env_entrypoint) + 1] = '\0';
-#if PY_MAJOR_VERSION > 2
     entrypoint[strlen(env_entrypoint)] = 'c';
-#else
-    entrypoint[strlen(env_entrypoint)] = 'o';
-#endif
     if (!file_exists(entrypoint)) {
       /* fallback on pure python version */
       if (!file_exists(env_entrypoint)) {
@@ -355,15 +315,10 @@ int main(int argc, char *argv[]) {
   /* This should never actually be reached, but we'll leave the clean-up
    * here just to be safe.
    */
-#if PY_MAJOR_VERSION < 3
-  Py_Finalize();
-  LOGP("Unexpectedly reached Py_FinalizeEx(), but was successful.");
-#else
   if (Py_FinalizeEx() != 0)  // properly check success on Python 3
     LOGP("Unexpectedly reached Py_FinalizeEx(), and got error!");
   else
     LOGP("Unexpectedly reached Py_FinalizeEx(), but was successful.");
-#endif
 
   return ret;
 }
