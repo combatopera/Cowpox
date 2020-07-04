@@ -51,13 +51,6 @@ log = logging.getLogger(__name__)
 
 class PythonRecipe(Recipe):
 
-    call_hostpython_via_targetpython = True
-    '''If True, tries to install the module using the hostpython binary
-    copied to the target (normally arm) python build dir. However, this
-    will fail if the module tries to import e.g. _io.so. Set this to False
-    to call hostpython from its own build dir, installing the module in
-    the right place via arguments to setup.py. However, this may not set
-    the environment correctly and so False is not the default.'''
     depends = [('python2', 'python3')]
     '''
     .. note:: it's important to keep this depends as a class attribute outside
@@ -87,9 +80,8 @@ class PythonRecipe(Recipe):
         # Set the LANG, this isn't usually important but is a better default
         # as it occasionally matters how Python e.g. reads files
         env['LANG'] = "en_GB.UTF-8"
-        if not self.call_hostpython_via_targetpython:
-            env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root()}"
-            env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root()} -l{self.graph.python_recipe.pylibname}"
+        env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root()}"
+        env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root()} -l{self.graph.python_recipe.pylibname}"
         return env
 
     def install_python_package(self):
@@ -105,8 +97,6 @@ class PythonRecipe(Recipe):
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
-    call_hostpython_via_targetpython = False
-
     def install_python_package(self):
         self.build_compiled_components()
         super().install_python_package()
@@ -118,8 +108,6 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         find.print(objsdir, '-name', '*.o', '-exec', *self.arch.strip, '{}', ';')
 
 class CythonRecipe(PythonRecipe):
-
-    call_hostpython_via_targetpython = False
 
     @types(Config, Bootstrap)
     def __init(self, config, bootstrap):
