@@ -40,6 +40,7 @@
 
 from . import AndroidProjectOK, APKPath, Arch, BundleOK, Graph, GraphInfo, skel
 from .config import Config
+from .container import compileall
 from .make import Make
 from .platform import Platform
 from .util import enum
@@ -135,10 +136,9 @@ class AssetArchive:
             if tfn.exists():
                 tfn.unlink()
         files = []
-        hostrecipe = self.graph.host_recipe
         for sd in source_dirs:
             sd = sd.resolve()
-            hostrecipe.compileall(sd)
+            compileall(sd)
             files.extend([x, x.resolve().relative_to(sd)] for x in self._listfiles(sd) if not self._has(x))
         with tarfile.open(tfn.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             dirs = set()

@@ -40,10 +40,11 @@
 
 from . import GuestRecipe, HostRecipe
 from .config import Config
+from .container import compileall
 from .recipe import Recipe
 from diapyr import types
 from distutils.version import LooseVersion
-from lagoon import cp, make, python
+from lagoon import cp, make
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -73,11 +74,6 @@ class HostPythonRecipe(Recipe, HostRecipe): # XXX: Why does this exist at all?
             if not setup_location.exists():
                 raise Exception('Could not find Setup.dist or Setup in Python build')
         make.print('-j', cpu_count(), '-C', self.nativebuild, cwd = self.recipebuilddir)
-
-    def compileall(self, dirpath, check = True):
-        for path in dirpath.rglob('*.py'):
-            os.utime(path, (0, 0)) # Determinism.
-        python._OO._m.compileall._b._f.print(dirpath, check = check)
 
 class GuestPythonRecipe(Recipe, GuestRecipe):
 
@@ -158,10 +154,10 @@ class GuestPythonRecipe(Recipe, GuestRecipe):
         make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
         cp.print(self.androidbuild / 'pyconfig.h', self.include_root())
         modules_build_dir = self.androidbuild / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
-        self.hostrecipe.compileall(modules_build_dir)
+        compileall(modules_build_dir)
         self.module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # Recursion not needed.
         self.stdlibdir = self.recipebuilddir / 'Lib'
-        self.hostrecipe.compileall(self.stdlibdir, False)
+        compileall(self.stdlibdir, False)
 
     def include_root(self):
         return self.recipebuilddir / 'Include'

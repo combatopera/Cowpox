@@ -38,47 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, HostRecipe, RecipesOK, SiteOK
-from .config import Config
-from .container import compileall
-from .graph import GraphImpl
-from .make import Make
-from .pyrecipe import CythonRecipe
-from .python import GuestPythonRecipe
-from .util import DIProxy
-from diapyr import types
-from lagoon import pip
-from pathlib import Path
-import logging
+from lagoon import python
+import os
 
-log = logging.getLogger(__name__)
-
-class GraphProxy(DIProxy, Graph):
-
-    targetclass = GraphImpl
-
-    @property
-    def python_recipe(self):
-        return self.di(GuestPythonRecipe)
-
-    @property
-    def host_recipe(self):
-        return self.di(HostRecipe)
-
-class PipInstallRecipe(CythonRecipe):
-
-    @types(Config)
-    def __init(self, config):
-        self.bundlepackages = Path(config.python_install_dir)
-
-    @types(Make, RecipesOK, this = SiteOK)
-    def buildsite(self, make, _):
-        def target():
-            yield self.bundlepackages
-            pypinames = self.graphinfo.pypinames
-            if pypinames:
-                pip.install._v.__no_deps.print('--target', self.bundlepackages, *pypinames, env = self.get_recipe_env())
-                compileall(self.bundlepackages)
-            else:
-                self.bundlepackages.mkdirp()
-        make(target)
+def compileall(dirpath, check = True):
+    for path in dirpath.rglob('*.py'):
+        os.utime(path, (0, 0)) # Determinism.
+    python._OO._m.compileall._b._f.print(dirpath, check = check)

@@ -41,6 +41,7 @@
 from . import HostRecipe
 from .boot import Bootstrap
 from .config import Config
+from .container import compileall
 from .recipe import Recipe
 from diapyr import types
 from lagoon import find, python
@@ -113,7 +114,7 @@ class PythonRecipe(Recipe):
         for p in (rdir / 'l').iterdir():
             p.rename(self.bundlepackages / p.name)
         shutil.rmtree(rdir)
-        self.hostrecipe.compileall(self.bundlepackages)
+        compileall(self.bundlepackages)
 
     def get_hostrecipe_env(self):
         return dict(os.environ, PYTHONPATH = self.hostrecipe.nativebuild / 'Lib' / 'site-packages')
@@ -137,10 +138,9 @@ class CythonRecipe(PythonRecipe):
 
     call_hostpython_via_targetpython = False
 
-    @types(Config, Bootstrap, HostRecipe)
-    def __init(self, config, bootstrap, hostrecipe):
+    @types(Config, Bootstrap)
+    def __init(self, config, bootstrap):
         self.bootstrap = bootstrap
-        self.hostrecipe = hostrecipe
 
     def install_python_package(self):
         log.info("Cythonizing anything necessary in %s", self.name)
