@@ -80,6 +80,7 @@ public class PythonUtil {
         libsList.add("SDL2_ttf");
         addLibraryIfExists(libsList, "ssl.*", libsDir);
         addLibraryIfExists(libsList, "crypto.*", libsDir);
+        // TODO: Do not guess which lib we have.
         libsList.add("python3.5m");
         libsList.add("python3.6m");
         libsList.add("python3.7m");
