@@ -39,13 +39,13 @@
 : THE SOFTWARE.
 
 RECOMMENDED_NDK_VERSION = 19b
+SDK accept licenses = false
 android
     ndk = $(RECOMMENDED_NDK_VERSION)
     api = 27
     platform = android-$(api)
     minapi = 21
     arch = armeabi-v7a
-    accept_sdk_license = false
     skip_update = false
     ndk_api = $(minapi)
     whitelist := $list()

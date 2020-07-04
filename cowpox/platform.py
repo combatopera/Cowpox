@@ -61,7 +61,7 @@ class PlatformInfo:
     def __init__(self, config, mirror):
         self.sdk_dir = Path(config.android_sdk_dir)
         self.skip_update = config.android.skip_update
-        self.acceptlicense = config.android.accept_sdk_license
+        self.accept_licenses = config.SDK.accept.licenses
         self.platformname = config.android.platform
         self.ndk_dir = Path(config.android_ndk_dir)
         self.android_ndk_version = config.android.ndk
@@ -84,7 +84,7 @@ class PlatformInfo:
             return
         log.info('Install/update SDK platform tools.')
         sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
-        if self.acceptlicense:
+        if self.accept_licenses:
             with yes.bg(check = False) as yesproc:
                 sdkmanager.__licenses.print(stdin = yesproc.stdout)
         sdkmanager.tools.platform_tools.print()
