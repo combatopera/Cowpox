@@ -99,3 +99,4 @@ javaclass_dir = $/($(buildsdir) javaclasses $(package name))
 python_install_dir = $/($(buildsdir) Cowpox-bundle)
 bootstrapsdir = $/($(container extroot) pythonforandroid bootstraps)
 webview port = 5000
+use lld = false

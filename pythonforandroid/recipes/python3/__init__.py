@@ -38,9 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox.config import Config
 from cowpox.python import GuestPythonRecipe
+from diapyr import types
 from lagoon.program import Program
-import lagoon
 
 class Python3Recipe(GuestPythonRecipe):
 
@@ -49,9 +50,13 @@ class Python3Recipe(GuestPythonRecipe):
     depends = ['sqlite3', 'openssl', 'libffi']
     opt_depends = ['libbz2', 'liblzma']
 
+    @types(Config)
+    def __init(self, config):
+        self.use_lld = config.use.lld
+
     def mainbuild(self):
         self.apply_patch('py3.8.1.patch')
-        if hasattr(lagoon, 'lld'):
+        if self.use_lld:
             self.apply_patch('py3.8.1_fix_cortex_a8.patch')
         configure_args = [
             f"--host={self.arch.command_prefix}",

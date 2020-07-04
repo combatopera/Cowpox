@@ -48,7 +48,7 @@ from lagoon import cp, make
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
-import lagoon, logging, os, re
+import logging, os, re
 
 log = logging.getLogger(__name__)
 
@@ -63,6 +63,7 @@ class GuestPythonRecipe(Recipe, GuestRecipe):
     def __init(self, config):
         self.ndk_dir = Path(config.android_ndk_dir)
         self.ndk_api = config.android.ndk_api
+        self.use_lld = config.use.lld
         parts = LooseVersion(self.version).version
         self.majversion = parts[0]
         self.majminversion = '.'.join(map(str, parts[:2]))
@@ -77,12 +78,12 @@ class GuestPythonRecipe(Recipe, GuestRecipe):
         env['PATH'] = os.pathsep.join([str(self.platform.prebuiltbin(self.arch)), env['PATH']]) # XXX: Why prepend?
         env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ndk_api}"
         env['LDFLAGS'] = env.get('LDFLAGS', '')
-        if hasattr(lagoon, 'lld'):
+        if self.use_lld:
             # Note: The -L. is to fix a bug in python 3.7.
             # https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234409
             env['LDFLAGS'] += ' -L. -fuse-ld=lld'
         else:
-            log.warning('lld not found, linking without it. Consider installing lld if linker errors occur.')
+            log.warning('lld not enabled, linking without it. Consider installing lld if linker errors occur.')
         return env
 
     def _set_libs_flags(self):
