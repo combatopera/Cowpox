@@ -40,7 +40,6 @@
 
 RECOMMENDED_NDK_VERSION = 19b
 SDK accept licenses = false
-package name = Cowpox_project
 android
     ndk = $(RECOMMENDED_NDK_VERSION)
     api = 27
@@ -75,6 +74,7 @@ bootstrap name = sdl2
 requirements = $(pyven project requires)
 package
     domain = org.test
+    name = Cowpox_project
     fq = $lower($(domain).$(name))
 build_mode = debug
 orientation = portrait
