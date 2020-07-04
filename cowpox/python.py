@@ -82,8 +82,8 @@ class GuestPythonRecipe(Recipe, GuestRecipe):
     '''The optional libraries which we would like to get our python linked'''
     zlibversionpattern = re.compile('^#define ZLIB_VERSION "(.+)"$', re.MULTILINE)
 
-    @types(Config, HostRecipe)
-    def __init(self, config, hostrecipe):
+    @types(Config)
+    def __init(self, config):
         self.ndk_dir = Path(config.android_ndk_dir)
         self.ndk_api = config.android.ndk_api
         parts = LooseVersion(self.version).version
@@ -92,13 +92,12 @@ class GuestPythonRecipe(Recipe, GuestRecipe):
         self.exename = f"python{self.majversion}"
         self.pylibname = f"python{self.majminversion}{'m' if 3 == self.majversion else ''}"
         self.instsoname = f"lib{self.pylibname}.so"
-        self.hostrecipe = hostrecipe
 
     def get_recipe_env(self):
         env = os.environ.copy()
         env['HOSTARCH'] = self.arch.command_prefix
         env['CC'] = self.platform.clang_exe(self.arch, with_target = True)
-        env['PATH'] = os.pathsep.join([str(self.hostrecipe.nativebuild), str(self.platform.prebuiltbin(self.arch)), env['PATH']])
+        env['PATH'] = os.pathsep.join([str(self.platform.prebuiltbin(self.arch)), env['PATH']]) # XXX: Why prepend?
         env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ndk_api}"
         env['LDFLAGS'] = env.get('LDFLAGS', '')
         if hasattr(lagoon, 'lld'):
