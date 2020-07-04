@@ -58,7 +58,7 @@ android
         assets dir = $/($(project dir) src main assets)
         res dir = $/($(project dir) src main res)
         libs = $/($(dir) libs)
-    app_name = $(project name)
+    app_name = $(pyven project name)
 sdl2
     launchMode = singleTask
     activity name = org.kivy.android.PythonActivity
@@ -74,7 +74,7 @@ bootstrap name = sdl2
 requirements +=
     python3
     bdozlib
-    $*$(project requires)
+    $*$(pyven project requires)
 package
     domain = org.test
     fq = $lower($(domain).$(name))
