@@ -38,59 +38,6 @@
 : OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 : THE SOFTWARE.
 
-RECOMMENDED_NDK_VERSION = 19b
-SDK
-    dir = $/($(build dir) SDK)
-    accept licenses = false
-NDK dir = $/($(build dir) NDK)
-android
-    ndk = $(RECOMMENDED_NDK_VERSION)
-    api = 27
-    platform = android-$(api)
-    minapi = 21
-    arch = armeabi-v7a
-    skip_update = false
-    ndk_api = $(minapi)
-    whitelist := $list()
-    permissions := $list()
-    apptheme = @android:style/Theme.NoTitleBar
-    wakelock = false
-    presplash_color = #000000
-    project
-        dir = $/($(storage_dir) dists $(package name)__$(android arch))
-        assets dir = $/($(project dir) src main assets)
-        res dir = $/($(project dir) src main res)
-        libs = $/($(dir) libs)
-sdl2
-    launchMode = singleTask
-    activity name = org.kivy.android.PythonActivity
-icon
-    full path = $/($(container src) $(icon path))
-    default path = $/($(android project dir) templates kivy-icon.png)
-    path = $(default path)
-presplash
-    full path = $/($(container src) $(presplash path))
-    default path = $/($(android project dir) templates kivy-presplash.jpg)
-    path = $(default path)
-bootstrap name = sdl2
-package name = Cowpox-project
-build_mode = debug
-orientation = portrait
-version = $.(0.1)
-fullscreen = false
-log path = $/($(build dir) Cowpox.log)
-build dir = $/($(container src) build)
-main name = main
-mirror path = $/($(build dir) mirror)
-app_dir = $/($(build dir) app)
-bundledir = $/($(app_dir) _python_bundle)
-storage_dir = $/($(build dir) platform build-$(android arch))
-buildsdir = $/($(storage_dir) build)
-other_builds = $/($(buildsdir) other_builds)
-bootstrap_builds = $/($(buildsdir) bootstrap_builds)
-libs_parent = $/($(buildsdir) libs_collections $(package name))
-javaclass_dir = $/($(buildsdir) javaclasses $(package name))
-python_install_dir = $/($(build dir) Cowpox-bundle)
-bootstrapsdir = $/($(container extroot) pythonforandroid bootstraps)
-webview port = 5000
-use lld = false
+pyven project . $/($(container src) project.arid)
+android app_name = $(pyven project name)
+requirements = $(pyven project requires)
