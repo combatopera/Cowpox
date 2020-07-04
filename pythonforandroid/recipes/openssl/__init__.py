@@ -50,7 +50,7 @@ class OpenSSLRecipe(Recipe):
 
     @types(Config)
     def __init(self, config):
-        self.ndk_dir = config.android_ndk_dir
+        self.ndk_dir = config.NDK.dir
         self.ndk_api = config.android.ndk_api
 
     @property

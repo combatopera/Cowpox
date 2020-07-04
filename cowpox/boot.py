@@ -86,7 +86,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.android_project_libs = Path(config.android.project.libs)
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
         self.javaclass_dir = config.javaclass_dir
-        self.sdk_dir = config.android_sdk_dir
+        self.sdk_dir = config.SDK.dir
         self.arch = arch
         self.graphinfo = graphinfo
 

@@ -39,7 +39,10 @@
 : THE SOFTWARE.
 
 RECOMMENDED_NDK_VERSION = 19b
-SDK accept licenses = false
+SDK
+    dir = $/($(build dir) SDK)
+    accept licenses = false
+NDK dir = $/($(build dir) NDK)
 android
     ndk = $(RECOMMENDED_NDK_VERSION)
     api = 27
@@ -81,8 +84,6 @@ log path = $/($(build dir) Cowpox.log)
 build dir = $/($(container src) build)
 main name = main
 mirror path = $/($(build dir) mirror)
-android_sdk_dir = $/($(build dir) android-sdk)
-android_ndk_dir = $/($(build dir) android-ndk-r$(android ndk))
 app_dir = $/($(build dir) app)
 bundledir = $/($(app_dir) _python_bundle)
 storage_dir = $/($(build dir) platform build-$(android arch))

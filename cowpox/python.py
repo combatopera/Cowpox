@@ -61,7 +61,7 @@ class GuestPythonRecipe(Recipe, GuestRecipe):
 
     @types(Config)
     def __init(self, config):
-        self.ndk_dir = Path(config.android_ndk_dir)
+        self.ndk_dir = Path(config.NDK.dir)
         self.ndk_api = config.android.ndk_api
         self.use_lld = config.use.lld
         parts = LooseVersion(self.version).version
