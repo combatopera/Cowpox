@@ -119,7 +119,6 @@ public class PythonActivity extends Activity {
          * have a compiled version or not.
         */
         List<String> entryPoints = new ArrayList<String>();
-        entryPoints.add("main.pyo");  // python 2 compiled files
         entryPoints.add("main.pyc");  // python 3 compiled files
 		for (String value : entryPoints) {
             File mainFile = new File(search_dir + "/" + value);
