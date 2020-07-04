@@ -96,7 +96,7 @@ class PythonBundleImpl(PythonBundle):
         self.pythonrecipe = pythonrecipe
         self.recipes = recipes
 
-    @types(Make, BootstrapOK, this = BundleOK)
+    @types(Make, BootstrapOK, this = BundleOK) # XXX: Does this really depend on BootstrapOK?
     def create_python_bundle(self, make, _):
         make(self._createbundle)
 

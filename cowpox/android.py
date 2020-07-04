@@ -239,7 +239,7 @@ class AndroidProject:
                 print(f"P4A_ORIENTATION={self.orientation}", file = f)
             print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
 
-    @types(BundleOK, this = AndroidProjectOK)
+    @types(BundleOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
     def prepare(self, _):
         self._update_libraries_references()
         self._copy_application_sources()
