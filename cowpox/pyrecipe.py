@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import HostRecipe
 from .boot import Bootstrap
 from .config import Config
 from .container import compileall
@@ -46,7 +45,7 @@ from .recipe import Recipe
 from diapyr import types
 from lagoon import find, python
 from lagoon.program import Program
-import logging, os, shutil, subprocess
+import logging, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
@@ -71,8 +70,8 @@ class PythonRecipe(Recipe):
                  on python2 or python3 which can break the dependency graph
     '''
 
-    @types(Config, HostRecipe)
-    def __init(self, config, hostrecipe):
+    @types(Config)
+    def __init(self, config):
         if not any(d for d in {'python2', 'python3', ('python2', 'python3')} if d in self.depends):
             # We ensure here that the recipe depends on python even it overrode
             # `depends`. We only do this if it doesn't already depend on any
@@ -81,7 +80,6 @@ class PythonRecipe(Recipe):
             depends = self.depends
             depends.append(('python2', 'python3'))
             self.depends = list(set(depends))
-        self.hostrecipe = hostrecipe
 
     def get_recipe_env(self):
         env = super().get_recipe_env()
@@ -92,17 +90,6 @@ class PythonRecipe(Recipe):
         if not self.call_hostpython_via_targetpython:
             env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root()}"
             env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root()} -l{self.graph.python_recipe.pylibname}"
-            hppath = []
-            hppath.append(self.hostrecipe.nativebuild / 'Lib')
-            hppath.append(hppath[0] / 'site-packages')
-            builddir = self.hostrecipe.nativebuild / 'build'
-            if builddir.exists():
-                hppath.extend(d for d in builddir.iterdir() if d.is_dir())
-            if hppath:
-                if 'PYTHONPATH' in env:
-                    env['PYTHONPATH'] = os.pathsep.join(map(str, [*hppath, env['PYTHONPATH']]))
-                else:
-                    env['PYTHONPATH'] = os.pathsep.join(map(str, hppath))
         return env
 
     def install_python_package(self):
