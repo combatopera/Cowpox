@@ -95,7 +95,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
         _copy_files(self.bootstrapsdir / 'common' / 'build', self.build_dir, False)
 
-    @types(GuestRecipe, SiteOK, this = BootstrapOK)
+    @types(GuestRecipe, SiteOK, this = BootstrapOK) # XXX: What does this really depend on?
     def toandroidproject(self, pythonrecipe, _):
         self.arch.strip_object_files(self.buildsdir) # XXX: What exactly does this do?
         shutil.copytree(self.build_dir, self.android_project_dir) # FIXME: Next thing to make incremental.
