@@ -69,6 +69,7 @@ class PlatformInfo:
 
     @types(Make, this = PlatformOK)
     def install(self, make):
+        # FIXME: Reinstall if config changed.
         make(self._install_android_sdk)
         make(self._install_android_ndk)
 
