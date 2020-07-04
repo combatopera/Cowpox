@@ -55,6 +55,7 @@ from diapyr import DI
 from lagoon import groupadd, python, useradd
 from pathlib import Path
 from pkg_resources import resource_filename
+from tempfile import TemporaryDirectory
 import logging, os
 
 log = logging.getLogger(__name__)
@@ -68,12 +69,12 @@ def _inituser(srcpath):
     del os.environ['HOME'] # XXX: Why is it set in the first place?
 
 def _egginforequires(context, pathresolvable):
-    projectpath = Path(pathresolvable.resolve(context).cat())
-    python.print('setup.py', 'egg_info', cwd = projectpath)
-    egginfodir, = projectpath.glob('*.egg-info')
     requires = Config(context.createchild(islist = True), [])
-    for r in (egginfodir / 'requires.txt').read_text().splitlines():
-        requires.put(r, text = r)
+    with TemporaryDirectory() as tempdir:
+        python.print('setup.py', 'egg_info', '-e', tempdir, cwd = pathresolvable.resolve(context).cat())
+        egginfodir, = Path(tempdir).glob('*.egg-info')
+        for r in (egginfodir / 'requires.txt').read_text().splitlines():
+            requires.put(r, text = r)
     return requires._context
 
 def _main():
