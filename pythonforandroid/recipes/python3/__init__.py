@@ -55,9 +55,9 @@ class Python3Recipe(GuestPythonRecipe):
         self.use_lld = config.use.lld
 
     def mainbuild(self):
-        self.apply_patch('py3.8.1.patch')
+        self.apply_patches('py3.8.1.patch')
         if self.use_lld:
-            self.apply_patch('py3.8.1_fix_cortex_a8.patch')
+            self.apply_patches('py3.8.1_fix_cortex_a8.patch')
         configure_args = [
             f"--host={self.arch.command_prefix}",
             f"--build={Program.text(self.recipebuilddir / 'config.guess')().rstrip()}",

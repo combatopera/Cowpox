@@ -51,9 +51,9 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
         super().build_compiled_components('-j', cpu_count())
 
     def mainbuild(self):
-        self.apply_patches([
+        self.apply_patches(
             'add_libm_explicitly_to_build.patch',
             'do_not_use_system_libs.patch',
             'remove_unittest_call.patch',
-        ])
+        )
         self.install_python_package()

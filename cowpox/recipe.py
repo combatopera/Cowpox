@@ -45,7 +45,7 @@ from .mirror import Mirror
 from .platform import Platform
 from .util import format_obj, Plugin
 from diapyr import types
-from lagoon import patch as patchexe, tar, touch, unzip
+from lagoon import patch, tar, unzip
 from pathlib import Path
 from pkg_resources import resource_filename
 from urllib.parse import urlparse
@@ -103,9 +103,10 @@ class Recipe(Plugin):
     def _extresourcepath(self, relpath):
         return Path(self.extroot, *self.__module__.split('.'), relpath)
 
-    def apply_patch(self, relpath):
-        log.info("Applying patch %s", relpath)
-        patchexe._t._p1.print('-d', self.recipebuilddir, '-i', self.resourcepath(relpath))
+    def apply_patches(self, *relpaths):
+        for relpath in relpaths:
+            log.info("Apply patch: %s", relpath)
+            patch._t._p1.print('-d', self.recipebuilddir, '-i', self.resourcepath(relpath))
 
     @property
     def buildcontainerparent(self):
@@ -182,25 +183,6 @@ class Recipe(Plugin):
 
     def get_recipe_env(self):
         return self.arch.get_env()
-
-    def apply_patches(self, patches):
-        log.info("Applying patches for %s[%s]", self.name, self.arch.name)
-        if (self.recipebuilddir / '.patched').exists():
-            log.info("%s already patched, skipping", self.name)
-            return
-        for patch in patches:
-            while True:
-                try:
-                    acceptrecipe = patch.acceptrecipe
-                except AttributeError:
-                    self.apply_patch(patch)
-                    break
-                nextpatch = acceptrecipe(self)
-                if nextpatch is None:
-                    log.debug("Patch denied: %s", patch)
-                    break
-                patch = nextpatch
-        touch.print(self.recipebuilddir / '.patched')
 
     def install_libraries(self, builtlibpaths): # TODO: Suck the libs instead.
         for path in builtlibpaths:

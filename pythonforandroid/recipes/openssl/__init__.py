@@ -88,6 +88,6 @@ class OpenSSLRecipe(Recipe):
     def mainbuild(self):
         env = self.get_recipe_env()
         perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = self.recipebuilddir)
-        self.apply_patch('disable-sover.patch')
+        self.apply_patches('disable-sover.patch')
         make.print('build_libs', env = env, cwd = self.recipebuilddir)
         self.install_libraries([f"libcrypto{self.version}.so", f"libssl{self.version}.so"])

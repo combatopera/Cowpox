@@ -47,4 +47,4 @@ class LibSDL2Image(BootstrapNDKRecipe):
     dir_name = 'SDL2_image'
 
     def mainbuild(self):
-        self.apply_patches(['toggle_jpg_png_webp.patch', 'extra_cflags.patch'])
+        self.apply_patches('toggle_jpg_png_webp.patch', 'extra_cflags.patch')

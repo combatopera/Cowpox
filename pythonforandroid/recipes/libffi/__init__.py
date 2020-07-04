@@ -50,7 +50,7 @@ class LibffiRecipe(Recipe):
     url = f"https://github.com/libffi/libffi/archive/{version}.tar.gz"
 
     def mainbuild(self):
-        self.apply_patches(['remove-version-info.patch'])
+        self.apply_patches('remove-version-info.patch')
         env = self.get_recipe_env()
         if not (self.recipebuilddir / 'configure').exists():
             Program.text(Path('autogen.sh')).print(env = env, cwd = self.recipebuilddir)
