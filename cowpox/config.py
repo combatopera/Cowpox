@@ -68,7 +68,7 @@ class Config: # TODO: Migrate to aridity as high-level API.
             return type(self)(self._context, path)
 
     def puttext(self, *path, text):
-        self._context[path] = Text(text)
+        self._context[tuple(*self._prefix, *path)] = Text(text)
 
     def _localcontext(self):
         return self._context.resolved(*self._prefix)
