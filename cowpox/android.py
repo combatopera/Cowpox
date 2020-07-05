@@ -137,8 +137,7 @@ class AssetArchive:
                 tfn.unlink()
         files = []
         for sd in source_dirs:
-            sd = sd.resolve()
-            compileall(sd)
+            compileall(sd) # FIXME: Should be part of source directory build.
             files.extend([x, x.resolve().relative_to(sd)] for x in self._listfiles(sd) if not self._has(x))
         with tarfile.open(tfn.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             dirs = set()
