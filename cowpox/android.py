@@ -249,18 +249,18 @@ class AndroidProject:
         url_scheme = 'kivy'
         configChanges = ['keyboardHidden', 'orientation']
         if self.bootstrapname != 'service_only':
-            configChanges.append('mcc|mnc|locale|touchscreen|keyboard|navigation|screenLayout|fontScale|uiMode')
+            configChanges += ['mcc', 'mnc', 'locale', 'touchscreen', 'keyboard', 'navigation', 'screenLayout', 'fontScale', 'uiMode']
             if self.min_sdk_version >= 8:
-                configChanges.append('uiMode')
+                configChanges += ['uiMode']
             if self.min_sdk_version >= 13:
-                configChanges.append('screenSize|smallestScreenSize')
+                configChanges += ['screenSize', 'smallestScreenSize']
             if self.min_sdk_version >= 17:
-                configChanges.append('layoutDirection')
+                configChanges += ['layoutDirection']
             if self.min_sdk_version >= 24:
-                configChanges.append('density')
+                configChanges += ['density']
         else:
             if self.min_sdk_version >= 13:
-                configChanges.append('screenSize')
+                configChanges += ['screenSize']
         with Repl() as repl:
             repl('" = $(xmlattr)')
             if self.bootstrapname == 'sdl2':
