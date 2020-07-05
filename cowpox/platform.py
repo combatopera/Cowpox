@@ -168,7 +168,7 @@ class Platform:
             p.load(f)
         return LooseVersion(p['Pkg.Revision'].data).version
 
-    def toolchain_version(self, arch):
+    def toolchain_version(self, arch): # TODO: Do not execute twice.
         prefix = f"{arch.toolchain_prefix}-"
         toolchain_path = self.ndk_dir / 'toolchains'
         if not toolchain_path.is_dir():
