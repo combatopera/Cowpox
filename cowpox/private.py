@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, PrivateOK, PythonBundle, skel
+from . import Arch, BootstrapOK, PrivateOK, skel
 from .config import Config
 from .container import compileall
 from .make import Make
@@ -53,7 +53,7 @@ import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
-class PythonBundleImpl(PythonBundle):
+class PythonBundleImpl:
 
     # TODO: Test excludes not thorough enough.
     stdlib_dir_blacklist = {

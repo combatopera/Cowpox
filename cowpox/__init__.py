@@ -51,8 +51,6 @@ class Graph: pass
 
 class GraphInfo: pass
 
-class PythonBundle: pass
-
 class GuestRecipe: pass
 
 class SkeletonOK: pass
