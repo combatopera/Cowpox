@@ -203,12 +203,9 @@ class AndroidProject:
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
-    @types(Make, PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
-    def prepare(self, make, _):
-        make(self._prepare) # FIXME: This deletes a lot.
-
-    def _prepare(self):
-        yield self.android_project_dir
+    @types(PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
+    def prepare(self, _):
+        # FIXME: Use Make (which currently deletes a lot).
         self.assetarchive.makeprivate()
         shutil.copy2(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':
