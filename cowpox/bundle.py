@@ -38,8 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, BundleOK, PythonBundle
+from . import Arch, BootstrapOK, BundleOK, PythonBundle, skel
 from .config import Config
+from .container import compileall
 from .make import Make
 from .pyrecipe import PythonRecipe
 from .python import GuestPythonRecipe
@@ -47,6 +48,7 @@ from diapyr import types
 from fnmatch import fnmatch
 from lagoon import mv, rm, zip
 from pathlib import Path
+from pkg_resources import resource_filename, resource_stream
 import logging, os, shutil
 
 log = logging.getLogger(__name__)
@@ -92,6 +94,7 @@ class PythonBundleImpl(PythonBundle):
 
     @types(Config, Arch, GuestPythonRecipe, [PythonRecipe])
     def __init__(self, config, arch, pythonrecipe, recipes):
+        self.private_dir = Path(config.private.dir)
         self.bundle_dir = Path(config.bundle.dir)
         self.arch = arch
         self.pythonrecipe = pythonrecipe
@@ -102,7 +105,8 @@ class PythonBundleImpl(PythonBundle):
         make(self._createbundle)
 
     def _createbundle(self):
-        yield self.bundle_dir
+        yield self.private_dir
+        self._copy_application_sources()
         modules_dir = (self.bundle_dir / 'modules').mkdirp()
         log.info("Copy %s files into the bundle", len(self.pythonrecipe.module_filens))
         for filen in self.pythonrecipe.module_filens:
@@ -128,6 +132,27 @@ class PythonBundleImpl(PythonBundle):
                 if files:
                     mv._t.print(sitepackagesdir, *files)
                 rm._rf.print(rd)
+
+    def _copy_application_sources(self):
+        topath = self.private_dir.mkdirp() / 'main.py'
+        log.debug("Create: %s", topath)
+        self.config.processtemplate(resource_filename(skel.__name__, 'main.py.aridt'), topath)
+        with resource_stream(skel.__name__, 'sitecustomize.py') as f, (self.private_dir / 'sitecustomize.py').open('wb') as g:
+            shutil.copyfileobj(f, g)
+        main_py = self.private_dir / 'service' / 'main.py'
+        if main_py.exists(): # XXX: Why would it?
+            with open(main_py, 'rb') as fd:
+                data = fd.read()
+            with open(main_py, 'wb') as fd:
+                fd.write(b'import sys, os; sys.path = [os.path.join(os.getcwd(),"..", "_applibs")] + sys.path\n')
+                fd.write(data)
+            log.info('Patched service/main.py to include applibs')
+        with (self.private_dir / 'p4a_env_vars.txt').open('w') as f:
+            if self.bootstrapname != 'service_only':
+                print(f"P4A_IS_WINDOWED={not self.fullscreen}", file = f)
+                print(f"P4A_ORIENTATION={self.orientation}", file = f)
+            print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
+        compileall(self.private_dir)
 
     def _reduce_object_file_names(self, dirn):
         """Recursively renames all files named YYY.cpython-...-linux-gnu.so"

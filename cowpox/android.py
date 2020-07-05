@@ -38,10 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import AndroidProjectOK, APKPath, Arch, BundleOK, Graph, GraphInfo, skel
+from . import AndroidProjectOK, APKPath, Arch, BundleOK, Graph, GraphInfo
 from .boot import Bootstrap
 from .config import Config
-from .container import compileall
 from .make import Make
 from .platform import Platform
 from .util import enum
@@ -50,7 +49,7 @@ from diapyr import types
 from fnmatch import fnmatch
 from lagoon import gradle
 from pathlib import Path
-from pkg_resources import resource_filename, resource_stream, resource_string
+from pkg_resources import resource_string
 import logging, os, shutil, tarfile, time
 
 log = logging.getLogger(__name__)
@@ -173,7 +172,6 @@ class AndroidProject:
         if self.ndk_api != self.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
-        self.private_dir = Path(config.private.dir)
         self.android_api = config.android.api
         self.app_name = config.android.app_name
         self.presplash_color = config.android.presplash_color
@@ -206,30 +204,8 @@ class AndroidProject:
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
-    def _copy_application_sources(self):
-        topath = self.private_dir.mkdirp() / 'main.py'
-        log.debug("Create: %s", topath)
-        self.config.processtemplate(resource_filename(skel.__name__, 'main.py.aridt'), topath)
-        with resource_stream(skel.__name__, 'sitecustomize.py') as f, (self.private_dir / 'sitecustomize.py').open('wb') as g:
-            shutil.copyfileobj(f, g)
-        main_py = self.private_dir / 'service' / 'main.py'
-        if main_py.exists(): # XXX: Why would it?
-            with open(main_py, 'rb') as fd:
-                data = fd.read()
-            with open(main_py, 'wb') as fd:
-                fd.write(b'import sys, os; sys.path = [os.path.join(os.getcwd(),"..", "_applibs")] + sys.path\n')
-                fd.write(data)
-            log.info('Patched service/main.py to include applibs')
-        with (self.private_dir / 'p4a_env_vars.txt').open('w') as f:
-            if self.bootstrapname != 'service_only':
-                print(f"P4A_IS_WINDOWED={not self.fullscreen}", file = f)
-                print(f"P4A_ORIENTATION={self.orientation}", file = f)
-            print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
-        compileall(self.private_dir)
-
     @types(BundleOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
     def prepare(self, _):
-        self._copy_application_sources()
         self.assetarchive.makeprivate()
         shutil.copy(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':
