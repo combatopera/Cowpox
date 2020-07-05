@@ -207,9 +207,9 @@ class AndroidProject:
     @types(PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
     def prepare(self, _):
         self.assetarchive.makeprivate()
-        shutil.copy(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
+        shutil.copy2(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':
-            shutil.copy(self.presplash_path, self.res_dir / 'drawable' / 'presplash.jpg')
+            shutil.copy2(self.presplash_path, self.res_dir / 'drawable' / 'presplash.jpg')
         numeric_version = self._numver()
         configChanges = ['keyboardHidden', 'orientation']
         if self.bootstrapname != 'service_only':
