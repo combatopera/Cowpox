@@ -132,9 +132,9 @@ class AssetArchive:
         return not match_filename(self.WHITELIST_PATTERNS) and match_filename(self.BLACKLIST_PATTERNS)
 
     def makeprivate(self, source_dirs):
-        for tfn in (self.assets_dir / n for n in ['public.mp3', 'private.mp3']):
-            if tfn.exists():
-                tfn.unlink()
+        tfn = self.assets_dir / 'private.mp3'
+        if tfn.exists():
+            tfn.unlink()
         files = []
         for sd in source_dirs:
             files.extend([x, x.resolve().relative_to(sd)] for x in self._listfiles(sd) if not self._has(x))
