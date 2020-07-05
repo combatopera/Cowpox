@@ -108,10 +108,10 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         log.info('Copying libs.')
         mergetree(self.arch.libs_dir, self.android_project_libs / self.arch.name)
         self._distribute_aars()
-        for javasrc in javasrcs:
-            self._distribute_javaclasses(javasrc.javasrc)
         cp.print(interpreterrecipe.androidbuild / interpreterrecipe.instsoname, self.android_project_libs / self.arch.name)
         self.arch.striplibs(self.android_project_libs)
+        for javasrc in javasrcs:
+            self._distribute_javaclasses(javasrc.javasrc)
 
     def _distribute_javaclasses(self, javaclass_dir):
         log.info("Copying java files from: %s", javaclass_dir)
