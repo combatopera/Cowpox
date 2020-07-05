@@ -176,7 +176,7 @@ class AndroidProject:
         if self.ndk_api != self.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
-        self.app_dir = Path(config.app_dir)
+        self.private_dir = Path(config.private.dir)
         self.android_api = config.android.api
         self.app_name = config.android.app_name
         self.presplash_color = config.android.presplash_color
@@ -220,12 +220,12 @@ class AndroidProject:
         log.debug('project.properties updated')
 
     def _copy_application_sources(self):
-        topath = self.app_dir.mkdirp() / 'main.py'
+        topath = self.private_dir.mkdirp() / 'main.py'
         log.debug("Create: %s", topath)
         self.config.processtemplate(resource_filename(skel.__name__, 'main.py.aridt'), topath)
-        with resource_stream(skel.__name__, 'sitecustomize.py') as f, (self.app_dir / 'sitecustomize.py').open('wb') as g:
+        with resource_stream(skel.__name__, 'sitecustomize.py') as f, (self.private_dir / 'sitecustomize.py').open('wb') as g:
             shutil.copyfileobj(f, g)
-        main_py = self.app_dir / 'service' / 'main.py'
+        main_py = self.private_dir / 'service' / 'main.py'
         if main_py.exists(): # XXX: Why would it?
             with open(main_py, 'rb') as fd:
                 data = fd.read()
@@ -233,7 +233,7 @@ class AndroidProject:
                 fd.write(b'import sys, os; sys.path = [os.path.join(os.getcwd(),"..", "_applibs")] + sys.path\n')
                 fd.write(data)
             log.info('Patched service/main.py to include applibs')
-        with (self.app_dir / 'p4a_env_vars.txt').open('w') as f:
+        with (self.private_dir / 'p4a_env_vars.txt').open('w') as f:
             if self.bootstrapname != 'service_only':
                 print(f"P4A_IS_WINDOWED={not self.fullscreen}", file = f)
                 print(f"P4A_ORIENTATION={self.orientation}", file = f)
@@ -243,7 +243,7 @@ class AndroidProject:
     def prepare(self, _):
         self._update_libraries_references()
         self._copy_application_sources()
-        tar_dirs = [self.app_dir]
+        tar_dirs = [self.private_dir]
         if self.bootstrapname == 'webview':
             tar_dirs.append(self.android_project_dir / 'webview_includes') # TODO: Generalise this.
         self.assetarchive.makeprivate(tar_dirs)
