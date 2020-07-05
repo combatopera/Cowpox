@@ -148,7 +148,7 @@ class AssetArchive:
             tardirs = {Path('.')}
             for sd in self.sourcedirs:
                 if sd.exists():
-                    for self._listfiles(sd):
+                    for path in self._listfiles(sd):
                         relpath = path.relative_to(sd)
                         mkdirp(relpath.parent)
                         tf.add(path, relpath)
