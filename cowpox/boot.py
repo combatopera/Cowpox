@@ -40,7 +40,7 @@
 
 from . import Arch, BootstrapOK, GraphInfo, InterpreterRecipe, JavaSrc, RecipesOK, PipInstallOK, SkeletonOK
 from .config import Config
-from .util import Plugin, PluginType, writeproperties
+from .util import mergetree, Plugin, PluginType, writeproperties
 from diapyr import types
 from lagoon import cp, unzip
 from pathlib import Path
@@ -64,13 +64,6 @@ def _copy_files(src_root, dest_root, override):
                     shutil.copy(src_file, dest_file)
             else:
                 dest_file.mkdirp()
-
-def mergetree(src, dst):
-    for path in src.rglob('*'):
-        if path.is_file():
-            dstpath = dst / path.relative_to(src)
-            assert not dstpath.is_dir()
-            shutil.copy2(path, dstpath.pmkdirp())
 
 class BootstrapType(PluginType): pass
 

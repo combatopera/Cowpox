@@ -43,7 +43,7 @@ from collections.abc import Mapping
 from diapyr import DI, types
 from importlib import import_module
 from jproperties import Properties
-import logging, networkx as nx, os
+import logging, networkx as nx, os, shutil
 
 build_platform, = (f"{uname.sysname}-{uname.machine}".lower() for uname in [os.uname()])
 
@@ -139,3 +139,10 @@ def enum(*lists):
             setattr(cls, args[0], cls(*args))
         return cls
     return d
+
+def mergetree(src, dst):
+    for path in src.rglob('*'):
+        if path.is_file():
+            dstpath = dst / path.relative_to(src)
+            assert not dstpath.is_dir()
+            shutil.copy2(path, dstpath.pmkdirp())
