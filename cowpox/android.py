@@ -156,8 +156,9 @@ class AssetArchive:
     def _listfiles(self, dirpath):
         subdirs = []
         for path in dirpath.iterdir():
-            if path.is_file() and self._accept(path):
-                yield path
+            if path.is_file():
+                if self._accept(path):
+                    yield path
             else:
                 subdirs.append(path)
         for subdir in subdirs:
