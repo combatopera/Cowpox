@@ -173,6 +173,7 @@ class AndroidProject:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
         self.private_dir = Path(config.private.dir)
+        self.bootstrap_private_dir = Path(config.bootstrap.private.dir)
         self.android_api = config.android.api
         self.app_name = config.android.app_name
         self.presplash_color = config.android.presplash_color
@@ -241,8 +242,8 @@ class AndroidProject:
         self._update_libraries_references()
         self._copy_application_sources()
         tar_dirs = [self.private_dir]
-        if self.bootstrapname == 'webview':
-            tar_dirs.append(self.android_project_dir / 'private') # TODO: Generalise this.
+        if self.bootstrap_private_dir.exists():
+            tar_dirs.append(self.bootstrap_private_dir)
         self.assetarchive.makeprivate(tar_dirs)
         shutil.copy(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':

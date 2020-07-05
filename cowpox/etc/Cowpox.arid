@@ -76,6 +76,7 @@ bootstrap
     name = sdl2
     dir = $/($(bootstrapsdir) $(name) build)
     common name = common
+    private dir = $/($(bootstrap dir) private)
 package name = Cowpox-project
 build_mode = debug
 orientation = portrait
