@@ -38,12 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, PrivateOK, skel
+from . import Arch, BootstrapOK, InterpreterRecipe, PrivateOK, skel
 from .config import Config
 from .container import compileall
 from .make import Make
 from .pyrecipe import PythonRecipe
-from .python import GuestPythonRecipe
 from diapyr import types
 from fnmatch import fnmatch
 from lagoon import mv, rm, zip
@@ -92,12 +91,12 @@ class Private:
                 else:
                     yield Path(dirn, filen)
 
-    @types(Config, Arch, GuestPythonRecipe, [PythonRecipe])
-    def __init__(self, config, arch, pythonrecipe, recipes):
+    @types(Config, Arch, InterpreterRecipe, [PythonRecipe])
+    def __init__(self, config, arch, interpreterrecipe, recipes):
         self.private_dir = Path(config.private.dir)
         self.bundle_dir = Path(config.bundle.dir)
         self.arch = arch
-        self.pythonrecipe = pythonrecipe
+        self.interpreterrecipe = interpreterrecipe
         self.recipes = recipes
 
     @types(Make, BootstrapOK, this = PrivateOK) # XXX: Does this really depend on BootstrapOK?
@@ -108,13 +107,13 @@ class Private:
         yield self.private_dir
         self._copy_application_sources()
         modules_dir = (self.bundle_dir / 'modules').mkdirp()
-        log.info("Copy %s files into the bundle", len(self.pythonrecipe.module_filens))
-        for filen in self.pythonrecipe.module_filens:
+        log.info("Copy %s files into the bundle", len(self.interpreterrecipe.module_filens))
+        for filen in self.interpreterrecipe.module_filens:
             shutil.copy2(filen, modules_dir)
         self.arch.striplibs(modules_dir)
-        stdlib_filens = list(self._walk_valid_filens(self.pythonrecipe.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
+        stdlib_filens = list(self._walk_valid_filens(self.interpreterrecipe.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
-        zip.print(self.bundle_dir / 'stdlib.zip', *(p.relative_to(self.pythonrecipe.stdlibdir) for p in stdlib_filens), cwd = self.pythonrecipe.stdlibdir)
+        zip.print(self.bundle_dir / 'stdlib.zip', *(p.relative_to(self.interpreterrecipe.stdlibdir) for p in stdlib_filens), cwd = self.interpreterrecipe.stdlibdir)
         sitepackagesdir = (self.bundle_dir / 'site-packages').mkdirp()
         for recipe in self.recipes:
             # TODO: Get bundlepackages from a result object coming out of every recipe.
