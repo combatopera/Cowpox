@@ -95,6 +95,11 @@ class Private:
     def __init__(self, config, arch, interpreterrecipe, recipes):
         self.private_dir = Path(config.private.dir)
         self.bundle_dir = Path(config.bundle.dir)
+        self.bootstrap_name = config.bootstrap.name
+        self.fullscreen = config.fullscreen
+        self.orientation = config.orientation
+        self.minsdkversion = config.android.minSdkVersion
+        self.config = config
         self.arch = arch
         self.interpreterrecipe = interpreterrecipe
         self.recipes = recipes
@@ -147,10 +152,10 @@ class Private:
                 fd.write(data)
             log.info('Patched service/main.py to include applibs')
         with (self.private_dir / 'p4a_env_vars.txt').open('w') as f:
-            if self.bootstrapname != 'service_only':
+            if self.bootstrap_name != 'service_only':
                 print(f"P4A_IS_WINDOWED={not self.fullscreen}", file = f)
                 print(f"P4A_ORIENTATION={self.orientation}", file = f)
-            print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
+            print(f"P4A_MINSDK={self.minsdkversion}", file = f)
         compileall(self.private_dir)
 
     def _reduce_object_file_names(self, dirn):
