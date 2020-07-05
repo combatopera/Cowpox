@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, SiteOK
+from . import Graph, PipInstallOK
 from .config import Config
 from .container import compileall
 from .graph import GraphImpl
@@ -60,7 +60,7 @@ class PipInstallRecipe(CythonRecipe):
     def __init(self, config):
         self.bundlepackages = Path(config.python_install_dir)
 
-    @types(Make, this = SiteOK)
+    @types(Make, this = PipInstallOK)
     def buildsite(self, make):
         def target():
             yield self.bundlepackages # FIXME: Rebuild when requirements change.

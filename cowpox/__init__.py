@@ -59,7 +59,7 @@ class BootstrapOK: pass
 
 class RecipesOK: pass
 
-class SiteOK: pass
+class PipInstallOK: pass
 
 class AndroidProjectOK: pass
 
