@@ -68,7 +68,7 @@ class Config: # TODO: Migrate to aridity as high-level API.
         try:
             return obj.value # TODO: Does not work for all kinds of scalar.
         except AttributeError:
-            # FIXME: Not keeping obj means things get resolved multiple times.
+            # FIXME: Not keeping obj means things get resolved multiple times, or perhaps resolvable not lazy enough.
             return type(self)(self._context, path)
 
     def put(self, *path, function = undefined, text = undefined):
