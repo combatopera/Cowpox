@@ -96,8 +96,8 @@ class Private:
         self.private_dir = Path(config.private.dir)
         self.bundle_dir = Path(config.bundle.dir)
         self.bootstrap_name = config.bootstrap.name
-        self.fullscreen = config.fullscreen
-        self.orientation = config.orientation
+        self.fullscreen = config.android.fullscreen
+        self.orientation = config.android.orientation
         self.minsdkversion = config.android.minSdkVersion
         self.config = config
         self.arch = arch

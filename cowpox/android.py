@@ -186,11 +186,10 @@ class AndroidProject:
         self.wakelock = config.android.wakelock
         self.permissions = config.android.permissions.list()
         self.android_apptheme = config.android.apptheme
-        self.fullscreen = config.fullscreen
-        self.orientation = config.orientation
+        self.fullscreen = config.android.fullscreen
+        self.orientation = config.android.orientation
         self.package = config.android.package
         self.res_dir = Path(config.android.project.res.dir)
-        self.config = config
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive

@@ -61,6 +61,8 @@ android
         assets dir = $/($(project dir) src main assets)
         res dir = $/($(project dir) src main res)
         libs = $/($(dir) libs)
+    fullscreen = false
+    orientation = portrait
 sdl2
     launchMode = singleTask
     activity name = org.kivy.android.PythonActivity
@@ -79,9 +81,7 @@ bootstrap
     private dir = $/($(bootstrap dir) private)
 package name = Cowpox-project
 build_mode = debug
-orientation = portrait
 version = $.(0.1)
-fullscreen = false
 log path = $/($(build dir) Cowpox.log)
 : TODO: All Cowpox assets should go in dedicated subdirectory.
 build dir = $/($(container src) build)
