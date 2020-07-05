@@ -169,7 +169,7 @@ class AndroidProject:
     @types(Config, Arch, Platform, AssetArchive, BuildMode)
     def __init__(self, config, arch, platform, assetarchive, mode):
         self.ndk_api = config.android.ndk_api
-        self.min_sdk_version = config.android.minapi
+        self.min_sdk_version = config.android.minSdkVersion
         if self.ndk_api != self.min_sdk_version:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')

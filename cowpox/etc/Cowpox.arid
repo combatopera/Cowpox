@@ -47,10 +47,10 @@ android
     ndk = $(RECOMMENDED_NDK_VERSION)
     api = 27
     platform = android-$(api)
-    minapi = 21
+    minSdkVersion = 21
     arch = armeabi-v7a
     skip_update = false
-    ndk_api = $(minapi)
+    ndk_api = $(minSdkVersion)
     whitelist := $list()
     permissions := $list()
     apptheme = @android:style/Theme.NoTitleBar
