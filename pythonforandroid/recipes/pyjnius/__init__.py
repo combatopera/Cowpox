@@ -64,4 +64,4 @@ class PyjniusRecipe(CythonRecipe):
             self.apply_patches('genericndkbuild_jnienv_getter.patch')
         self.install_python_package()
         log.info('Copying pyjnius java class to classes build dir')
-        cp._a.print(self.recipebuilddir / 'jnius' / 'src' / 'org', self.javaclass_dir.mkdirp())
+        cp._a.print(self.recipebuilddir / 'jnius' / 'src' / 'org', self.javaclass_dir.mkdirp()) # FIXME: Broken.
