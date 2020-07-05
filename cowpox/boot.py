@@ -111,11 +111,11 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
         self._distribute_aars()
-        self.run_distribute()
+        self._distribute_javaclasses()
         cp.print(interpreterrecipe.androidbuild / interpreterrecipe.instsoname, self.android_project_libs / self.arch.name)
         self.arch.striplibs(self.android_project_libs)
 
-    def distribute_javaclasses(self):
+    def _distribute_javaclasses(self):
         log.info('Copying java files')
         cp._a.print(self.javaclass_dir, (self.android_project_dir / 'src' / 'main' / 'java').mkdirp())
 

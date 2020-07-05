@@ -43,6 +43,3 @@ from cowpox.boot import Bootstrap
 class WebViewBootstrap(Bootstrap):
 
     recipe_depends = {*Bootstrap.recipe_depends, 'genericndkbuild'}
-
-    def run_distribute(self):
-        self.distribute_javaclasses()
