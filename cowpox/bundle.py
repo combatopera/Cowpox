@@ -58,16 +58,16 @@ class PipInstallRecipe(CythonRecipe):
 
     @types(Config)
     def __init(self, config):
-        self.bundlepackages = Path(config.python_install_dir)
+        self.pip_install_dir = Path(config.pip.install.dir)
 
     @types(Make, this = PipInstallOK)
     def buildsite(self, make):
         def target():
-            yield self.bundlepackages # FIXME: Rebuild when requirements change.
+            yield self.pip_install_dir # FIXME: Rebuild when requirements change.
             pypinames = self.graphinfo.pypinames
             if pypinames:
-                pip.install._v.__no_deps.print('--target', self.bundlepackages, *pypinames, env = self.get_recipe_env())
-                compileall(self.bundlepackages)
+                pip.install._v.__no_deps.print('--target', self.pip_install_dir, *pypinames, env = self.get_recipe_env())
+                compileall(self.pip_install_dir)
             else:
-                self.bundlepackages.mkdirp()
+                self.pip_install_dir.mkdirp()
         make(target)
