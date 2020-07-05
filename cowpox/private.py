@@ -53,7 +53,7 @@ import logging, os, shutil
 
 log = logging.getLogger(__name__)
 
-class PythonBundleImpl:
+class Private:
 
     # TODO: Test excludes not thorough enough.
     stdlib_dir_blacklist = {
