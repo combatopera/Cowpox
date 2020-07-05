@@ -45,5 +45,4 @@ class WebViewBootstrap(Bootstrap):
     recipe_depends = {*Bootstrap.recipe_depends, 'genericndkbuild'}
 
     def run_distribute(self):
-        self.distribute_aars()
         self.distribute_javaclasses()

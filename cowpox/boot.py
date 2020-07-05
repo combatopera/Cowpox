@@ -110,6 +110,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         tgt_dir = (self.android_project_libs / self.arch.name).mkdirp()
         for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
+        self._distribute_aars()
         self.run_distribute()
         cp.print(interpreterrecipe.androidbuild / interpreterrecipe.instsoname, self.android_project_libs / self.arch.name)
         self.arch.striplibs(self.android_project_libs)
@@ -118,7 +119,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         log.info('Copying java files')
         cp._a.print(self.javaclass_dir, (self.android_project_dir / dest_dir).mkdirp())
 
-    def distribute_aars(self):
+    def _distribute_aars(self):
         log.info('Unpacking aars')
         for aar in (self.buildsdir / 'aars' / self.package_name).glob('*.aar'): # TODO LATER: Configure these a different way.
             self._unpack_aar(aar)
