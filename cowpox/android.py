@@ -264,7 +264,6 @@ class AndroidProject:
         with Repl() as repl:
             repl('" = $(xmlattr)')
             if self.bootstrapname == 'sdl2':
-                repl.printf("url_scheme = %s", url_scheme)
                 repl.printf("launchMode = %s", self.sdl2_launchMode)
                 repl.printf("activity name = %s", self.sdl2_activity_name)
             if self.bootstrapname != 'service_only':
