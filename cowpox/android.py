@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from . import AndroidProjectOK, APKPath, Arch, BundleOK, Graph, GraphInfo, skel
+from .boot import Bootstrap
 from .config import Config
 from .container import compileall
 from .make import Make
@@ -166,8 +167,8 @@ class AssetArchive:
 
 class AndroidProject:
 
-    @types(Config, Arch, Platform, AssetArchive, BuildMode)
-    def __init__(self, config, arch, platform, assetarchive, mode):
+    @types(Config, Arch, Platform, AssetArchive, BuildMode, Bootstrap)
+    def __init__(self, config, arch, platform, assetarchive, mode, bootstrap):
         self.ndk_api = config.android.ndk_api
         self.min_sdk_version = config.android.minSdkVersion
         if self.ndk_api != self.min_sdk_version:
@@ -197,6 +198,7 @@ class AndroidProject:
         self.platform = platform
         self.assetarchive = assetarchive
         self.mode = mode
+        self.bootstrap = bootstrap
 
     def _numver(self):
         version_code = 0
@@ -282,7 +284,7 @@ class AndroidProject:
             repl.printf("targetSdkVersion = %s", self.android_api)
             repl.printf("configChanges = %s", '|'.join(configChanges))
             repl.printf("redirect %s", self.android_project_dir / 'src' / 'main' / 'AndroidManifest.xml')
-            repl.printf("< %s", self.android_project_dir / 'templates' / 'AndroidManifest.xml.aridt')
+            repl.printf("< %s", self.bootstrap.templatepath('AndroidManifest.xml.aridt'))
         with Repl() as repl:
             repl('" = $(groovystr)')
             repl.printf("compileSdkVersion = %s", self.android_api)
@@ -298,7 +300,7 @@ class AndroidProject:
                 repl.printf("storePassword = %s", os.environ['P4A_RELEASE_KEYSTORE_PASSWD'])
                 repl.printf("keyPassword = %s", os.environ['P4A_RELEASE_KEYALIAS_PASSWD'])
             repl.printf("redirect %s", self.android_project_dir / 'build.gradle')
-            repl.printf("< %s", self.android_project_dir / 'templates' / 'build.gradle.aridt')
+            repl.printf("< %s", self.bootstrap.templatepath('build.gradle.aridt'))
         with Repl() as repl:
             repl('& = $(xmltext)')
             repl.printf("app_name = %s", self.app_name)
@@ -306,9 +308,9 @@ class AndroidProject:
             repl.printf("presplash_color = %s", self.presplash_color)
             repl('urlScheme = kivy')
             repl.printf("redirect %s", (self.res_dir / 'values').mkdirp() / 'strings.xml')
-            repl.printf("< %s", self.android_project_dir / 'templates' / 'strings.xml.aridt')
+            repl.printf("< %s", self.bootstrap.templatepath('strings.xml.aridt'))
         if self.bootstrapname == 'webview':
             with Repl() as repl:
                 repl.printf("port = %s", self.webview_port)
                 repl.printf("redirect %s", (self.android_project_dir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android').mkdirp() / 'WebViewLoader.java')
-                repl.printf("< %s", self.android_project_dir / 'templates' / 'WebViewLoader.java.aridt')
+                repl.printf("< %s", self.bootstrap.templatepath('WebViewLoader.java.aridt'))

@@ -90,6 +90,11 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.arch = arch
         self.graphinfo = graphinfo
 
+    def templatepath(self, relpath):
+        relpath = Path('templates', relpath)
+        path = self.bootstrap_dir / relpath
+        return path if path.exists() else self.common_dir / relpath
+
     @types(this = SkeletonOK)
     def prepare_dirs(self):
         _copy_files(self.bootstrap_dir, self.build_dir, True)
