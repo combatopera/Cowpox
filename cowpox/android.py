@@ -103,6 +103,7 @@ class AssetArchive:
 
     @types(Config, GraphInfo, Graph)
     def __init__(self, config, graphinfo, graph):
+        self.sourcedirs = [Path(d) for d in [config.private.dir, config.bootstrap.private.dir]]
         self.tarpath = Path(config.android.project.assets.dir, 'private.mp3')
         self.WHITELIST_PATTERNS = ['pyconfig.h'] if config.bootstrap.name in {'sdl2', 'webview', 'service_only'} else []
         self.WHITELIST_PATTERNS.extend(config.android.whitelist.list())
@@ -131,7 +132,7 @@ class AssetArchive:
                     return True
         return match_filename(self.WHITELIST_PATTERNS) or not match_filename(self.BLACKLIST_PATTERNS)
 
-    def makeprivate(self, source_dirs):
+    def makeprivate(self):
         if self.tarpath.exists():
             self.tarpath.unlink()
         def mkdirp(relpath):
@@ -145,7 +146,7 @@ class AssetArchive:
             tardirs.add(relpath)
         with tarfile.open(self.tarpath.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             tardirs = {Path('.')}
-            for sd in source_dirs:
+            for sd in self.sourcedirs:
                 if sd.exists():
                     for self._listfiles(sd):
                         relpath = path.relative_to(sd)
@@ -172,7 +173,6 @@ class AndroidProject:
             log.warning("--minsdk argument does not match the api that is compiled against. Only proceed if you know what you are doing, otherwise use --minsdk=%s or recompile against api %s", self.ndk_api, self.min_sdk_version)
             raise Exception('You must pass --allow-minsdk-ndkapi-mismatch to build with --minsdk different to the target NDK api from the build step')
         self.private_dir = Path(config.private.dir)
-        self.bootstrap_private_dir = Path(config.bootstrap.private.dir)
         self.android_api = config.android.api
         self.app_name = config.android.app_name
         self.presplash_color = config.android.presplash_color
@@ -240,7 +240,7 @@ class AndroidProject:
     def prepare(self, _):
         self._update_libraries_references()
         self._copy_application_sources()
-        self.assetarchive.makeprivate([self.private_dir, self.bootstrap_private_dir])
+        self.assetarchive.makeprivate()
         shutil.copy(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':
             shutil.copy(self.presplash_path, self.res_dir / 'drawable' / 'presplash.jpg')
