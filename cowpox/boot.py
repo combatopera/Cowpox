@@ -65,6 +65,13 @@ def _copy_files(src_root, dest_root, override):
             else:
                 dest_file.mkdirp()
 
+def mergetree(src, dst):
+    for path in src.rglob('*'):
+        if path.is_file():
+            dstpath = dst / path.relative_to(src)
+            assert not dstpath.is_dir()
+            shutil.copy2(path, dstpath.pmkdirp())
+
 class BootstrapType(PluginType): pass
 
 class Bootstrap(Plugin, metaclass = BootstrapType):
@@ -106,9 +113,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
         writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.
         log.info('Copying libs.')
-        tgt_dir = (self.android_project_libs / self.arch.name).mkdirp()
-        for lib in self.arch.libs_dir.iterdir():
-            cp._a.print(lib, tgt_dir)
+        mergetree(self.arch.libs_dir, self.android_project_libs / self.arch.name)
         self._distribute_aars()
         for javasrc in javasrcs:
             self._distribute_javaclasses(javasrc.javasrc)
@@ -117,10 +122,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     def _distribute_javaclasses(self, javaclass_dir):
         log.info("Copying java files from: %s", javaclass_dir)
-        destdir = self.android_project_dir / 'src' / 'main' / 'java'
-        for path in javaclass_dir.rglob('*'):
-            if path.is_file():
-                shutil.copy2(path, (destdir / path.relative_to(javaclass_dir)).pmkdirp())
+        mergetree(javaclass_dir, self.android_project_dir / 'src' / 'main' / 'java')
 
     def _distribute_aars(self):
         log.info('Unpacking aars')
