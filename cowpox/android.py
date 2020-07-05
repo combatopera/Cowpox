@@ -103,7 +103,7 @@ class AssetArchive:
 
     @types(Config, GraphInfo, Graph)
     def __init__(self, config, graphinfo, graph):
-        self.assets_dir = Path(config.android.project.assets.dir)
+        self.tarpath = Path(config.android.project.assets.dir, 'private.mp3')
         self.WHITELIST_PATTERNS = ['pyconfig.h'] if config.bootstrap.name in {'sdl2', 'webview', 'service_only'} else []
         self.WHITELIST_PATTERNS.extend(config.android.whitelist.list())
         self.BLACKLIST_PATTERNS = [
@@ -132,13 +132,12 @@ class AssetArchive:
         return not match_filename(self.WHITELIST_PATTERNS) and match_filename(self.BLACKLIST_PATTERNS)
 
     def makeprivate(self, source_dirs):
-        tfn = self.assets_dir / 'private.mp3'
-        if tfn.exists():
-            tfn.unlink()
+        if self.tarpath.exists():
+            self.tarpath.unlink()
         files = []
         for sd in source_dirs:
             files.extend([x, x.resolve().relative_to(sd)] for x in self._listfiles(sd) if not self._has(x))
-        with tarfile.open(tfn.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
+        with tarfile.open(self.tarpath.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             dirs = set()
             for fn, afn in files:
                 dn = afn.parent
