@@ -137,7 +137,6 @@ class AssetArchive:
                 tfn.unlink()
         files = []
         for sd in source_dirs:
-            compileall(sd) # FIXME: Should be part of source directory build.
             files.extend([x, x.resolve().relative_to(sd)] for x in self._listfiles(sd) if not self._has(x))
         with tarfile.open(tfn.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             dirs = set()
@@ -237,6 +236,7 @@ class AndroidProject:
                 print(f"P4A_IS_WINDOWED={not self.fullscreen}", file = f)
                 print(f"P4A_ORIENTATION={self.orientation}", file = f)
             print(f"P4A_MINSDK={self.min_sdk_version}", file = f)
+        compileall(self.private_dir)
 
     @types(BundleOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
     def prepare(self, _):
