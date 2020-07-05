@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import AndroidProjectOK, APKPath, Arch, BundleOK, Graph, GraphInfo
+from . import AndroidProjectOK, APKPath, Arch, PrivateOK, Graph, GraphInfo
 from .boot import Bootstrap
 from .config import Config
 from .make import Make
@@ -204,7 +204,7 @@ class AndroidProject:
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
-    @types(BundleOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
+    @types(PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
     def prepare(self, _):
         self.assetarchive.makeprivate()
         shutil.copy(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')

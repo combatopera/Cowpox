@@ -65,4 +65,4 @@ class SiteOK: pass
 
 class AndroidProjectOK: pass
 
-class BundleOK: pass
+class PrivateOK: pass
