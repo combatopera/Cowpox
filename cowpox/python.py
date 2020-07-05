@@ -65,10 +65,8 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe):
         self.ndk_api = config.android.ndk_api
         self.use_lld = config.use.lld
         parts = LooseVersion(self.version).version
-        self.majversion = parts[0]
         self.majminversion = '.'.join(map(str, parts[:2]))
-        self.exename = f"python{self.majversion}"
-        self.pylibname = f"python{self.majminversion}{'m' if 3 == self.majversion else ''}"
+        self.pylibname = f"python{self.majminversion}m"
         self.instsoname = f"lib{self.pylibname}.so"
 
     def get_recipe_env(self):

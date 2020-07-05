@@ -45,7 +45,6 @@ from .container import compileall
 from .recipe import Recipe
 from diapyr import types
 from lagoon import find, python
-from lagoon.program import Program
 import logging, shutil, subprocess
 
 log = logging.getLogger(__name__)
@@ -93,7 +92,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         log.info("Building compiled components in %s", self.name)
         python.print('setup.py', 'build_ext', '-v', *setup_extra_args, env = self.get_recipe_env(), cwd = self.recipebuilddir)
         objsdir, = self.recipebuilddir.glob('build/lib.*')
-        find.print(objsdir, '-name', '*.o', '-exec', *self.arch.strip, '{}', ';')
+        find.print(objsdir, '-name', '*.o', '-exec', *self.arch.strip, '{}', ';') # TODO: Use rglob.
 
 class CythonRecipe(PythonRecipe):
 
@@ -130,7 +129,7 @@ class CythonRecipe(PythonRecipe):
         elif 'PYTHONPATH' in cyenv:
             del cyenv['PYTHONPATH']
         cyenv.pop('PYTHONNOUSERSITE', None)
-        Program.text(self.graph.python_recipe.exename).print('-m', 'Cython.Build.Cythonize', filename, env = cyenv)
+        python.print('-m', 'Cython.Build.Cythonize', filename, env = cyenv)
 
     def cythonize_build(self, env, build_dir):
         log.info('Running cython where appropriate')
