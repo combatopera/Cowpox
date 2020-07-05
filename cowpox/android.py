@@ -84,6 +84,7 @@ class Assembly:
 
     @types(Config, BuildMode, AndroidProjectOK)
     def __init__(self, config, mode, _):
+        self.android_project_dir = Path(config.android.project.dir)
         self.gradleenv = dict(ANDROID_HOME = config.SDK.dir, ANDROID_NDK_HOME = config.NDK.dir)
         self.gradle_builddir = Path(config.gradle.buildDir)
         self.mode = mode
