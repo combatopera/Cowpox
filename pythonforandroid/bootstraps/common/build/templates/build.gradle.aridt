@@ -59,6 +59,7 @@ allprojects {
 }
 
 apply plugin: 'com.android.application'
+buildDir = $"$(buildDir)
 
 android {
     compileSdkVersion $(compileSdkVersion) // TODO: Quoting a number should result in a number literal.

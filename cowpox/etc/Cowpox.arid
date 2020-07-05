@@ -100,3 +100,4 @@ bootstrapsdir = $/($(container extroot) pythonforandroid bootstraps)
 webview port = 5000
 use lld = false
 requirements += $*$egg-info-requires$(container src)
+gradle buildDir = $/($(build dir) Cowpox-build)

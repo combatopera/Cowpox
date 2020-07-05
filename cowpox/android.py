@@ -84,19 +84,18 @@ class Assembly:
 
     @types(Config, BuildMode, AndroidProjectOK)
     def __init__(self, config, mode, _):
-        self.android_project_dir = Path(config.android.project.dir)
         self.gradleenv = dict(ANDROID_HOME = config.SDK.dir, ANDROID_NDK_HOME = config.NDK.dir)
-        self.gradlebuilddir = self.android_project_dir / 'build'
+        self.gradle_builddir = Path(config.gradle.buildDir)
         self.mode = mode
 
     @types(Make, AndroidProjectOK, this = APKPath)
     def build_package(self, make, _):
         def target():
-            yield self.gradlebuilddir
+            yield self.gradle_builddir
             gradle.__no_daemon.print(self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
             log.info('Android packaging done!')
         make(target)
-        return self.gradlebuilddir / 'outputs' / 'apk' / self.mode.division.name / f"{self.android_project_dir.name}-{self.mode.name}.apk"
+        return self.gradle_builddir / 'outputs' / 'apk' / self.mode.division.name / f"{self.android_project_dir.name}-{self.mode.name}.apk"
 
 class AssetArchive:
 
@@ -190,6 +189,7 @@ class AndroidProject:
         self.orientation = config.android.orientation
         self.package = config.android.package
         self.res_dir = Path(config.android.project.res.dir)
+        self.gradle_builddir = config.gradle.buildDir
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
@@ -262,6 +262,7 @@ class AndroidProject:
                 repl.printf("keyAlias = %s", os.environ['P4A_RELEASE_KEYALIAS'])
                 repl.printf("storePassword = %s", os.environ['P4A_RELEASE_KEYSTORE_PASSWD'])
                 repl.printf("keyPassword = %s", os.environ['P4A_RELEASE_KEYALIAS_PASSWD'])
+            repl.printf("buildDir = %s", self.gradle_builddir)
             repl.printf("redirect %s", self.android_project_dir / 'build.gradle')
             repl.printf("< %s", self.bootstrap.templatepath('build.gradle.aridt'))
         with Repl() as repl:
