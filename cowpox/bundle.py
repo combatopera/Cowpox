@@ -71,3 +71,7 @@ class PipInstallRecipe(CythonRecipe):
             else:
                 self.pip_install_dir.mkdirp()
         make(target)
+
+    @property
+    def bundlepackages(self):
+        return self.pip_install_dir
