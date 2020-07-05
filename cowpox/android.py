@@ -205,7 +205,7 @@ class AndroidProject:
 
     @types(Make, PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
     def prepare(self, make, _):
-        make(self._prepare)
+        make(self._prepare) # FIXME: This deletes a lot.
 
     def _prepare(self):
         yield self.android_project_dir
