@@ -146,11 +146,12 @@ class AssetArchive:
         with tarfile.open(self.tarpath.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             tardirs = {Path('.')}
             for sd in source_dirs:
-                for self._listfiles(sd):
-                    if self._accept(path)):
-                        relpath = path.relative_to(sd)
-                        mkdirp(relpath.parent)
-                        tf.add(path, relpath)
+                if sd.exists():
+                    for self._listfiles(sd):
+                        if self._accept(path)):
+                            relpath = path.relative_to(sd)
+                            mkdirp(relpath.parent)
+                            tf.add(path, relpath)
 
     @classmethod
     def _listfiles(cls, dirpath):
@@ -241,10 +242,7 @@ class AndroidProject:
     def prepare(self, _):
         self._update_libraries_references()
         self._copy_application_sources()
-        tar_dirs = [self.private_dir]
-        if self.bootstrap_private_dir.exists():
-            tar_dirs.append(self.bootstrap_private_dir)
-        self.assetarchive.makeprivate(tar_dirs)
+        self.assetarchive.makeprivate([self.private_dir, self.bootstrap_private_dir])
         shutil.copy(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':
             shutil.copy(self.presplash_path, self.res_dir / 'drawable' / 'presplash.jpg')
