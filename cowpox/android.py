@@ -155,14 +155,14 @@ class AssetArchive:
                 tf.add(fn, afn)
 
     @classmethod
-    def _listfiles(cls, d):
-        subdirlist = []
-        for fn in d.iterdir():
-            if fn.is_file():
-                yield fn
+    def _listfiles(cls, dirpath):
+        subdirs = []
+        for path in dirpath.iterdir():
+            if path.is_file():
+                yield path
             else:
-                subdirlist.append(fn)
-        for subdir in subdirlist:
+                subdirs.append(path)
+        for subdir in subdirs:
             yield from cls._listfiles(subdir)
 
 class AndroidProject:
