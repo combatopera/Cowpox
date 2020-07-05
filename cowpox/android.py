@@ -246,7 +246,6 @@ class AndroidProject:
         if self.bootstrapname != 'service_only':
             shutil.copy(self.presplash_path, self.res_dir / 'drawable' / 'presplash.jpg')
         numeric_version = self._numver()
-        url_scheme = 'kivy'
         configChanges = ['keyboardHidden', 'orientation']
         if self.bootstrapname != 'service_only':
             configChanges += ['mcc', 'mnc', 'locale', 'touchscreen', 'keyboard', 'navigation', 'screenLayout', 'fontScale', 'uiMode']
@@ -305,7 +304,7 @@ class AndroidProject:
             repl.printf("app_name = %s", self.app_name)
             repl.printf("private_version = %s", time.time()) # XXX: Must we use time?
             repl.printf("presplash_color = %s", self.presplash_color)
-            repl.printf("urlScheme = %s", url_scheme)
+            repl('urlScheme = kivy')
             repl.printf("redirect %s", (self.res_dir / 'values').mkdirp() / 'strings.xml')
             repl.printf("< %s", self.android_project_dir / 'templates' / 'strings.xml.aridt')
         if self.bootstrapname == 'webview':
