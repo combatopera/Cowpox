@@ -48,7 +48,6 @@ from .util import enum
 from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
-from jproperties import Properties
 from lagoon import gradle
 from pathlib import Path
 from pkg_resources import resource_filename, resource_stream, resource_string
@@ -207,17 +206,6 @@ class AndroidProject:
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
-    def _update_libraries_references(self): # XXX: Redundant?
-        p = Properties()
-        project_fn = self.android_project_dir / 'project.properties'
-        with project_fn.open('rb') as f:
-            p.load(f)
-        for key in [k for k in p if k.startswith('android.library.reference.')]:
-            del p[key]
-        with project_fn.open('wb') as f:
-            p.store(f)
-        log.debug('project.properties updated')
-
     def _copy_application_sources(self):
         topath = self.private_dir.mkdirp() / 'main.py'
         log.debug("Create: %s", topath)
@@ -241,7 +229,6 @@ class AndroidProject:
 
     @types(BundleOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
     def prepare(self, _):
-        self._update_libraries_references()
         self._copy_application_sources()
         self.assetarchive.makeprivate()
         shutil.copy(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
