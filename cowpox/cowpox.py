@@ -69,6 +69,7 @@ def _inituser(srcpath):
     del os.environ['HOME'] # XXX: Why is it set in the first place?
 
 def _egginforequires(context, pathresolvable):
+    # TODO LATER: This isn't lazy enough, which I suspect is the reason for multiple eval in high level API.
     requires = Config(context.createchild(islist = True), [])
     with TemporaryDirectory() as tempdir:
         python.print('setup.py', 'egg_info', '-e', tempdir, cwd = pathresolvable.resolve(context).cat())
