@@ -247,9 +247,9 @@ class AndroidProject:
             shutil.copy(self.presplash_path, self.res_dir / 'drawable' / 'presplash.jpg')
         numeric_version = self._numver()
         url_scheme = 'kivy'
-        configChanges = []
+        configChanges = ['keyboardHidden', 'orientation']
         if self.bootstrapname != 'service_only':
-            configChanges.append('mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode')
+            configChanges.append('mcc|mnc|locale|touchscreen|keyboard|navigation|screenLayout|fontScale|uiMode')
             if self.min_sdk_version >= 8:
                 configChanges.append('uiMode')
             if self.min_sdk_version >= 13:
@@ -259,7 +259,6 @@ class AndroidProject:
             if self.min_sdk_version >= 24:
                 configChanges.append('density')
         else:
-            configChanges.append('keyboardHidden|orientation')
             if self.min_sdk_version >= 13:
                 configChanges.append('screenSize')
         with Repl() as repl:
