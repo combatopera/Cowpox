@@ -137,20 +137,19 @@ class AssetArchive:
         files = []
         for sd in source_dirs:
             files.extend([path, path.relative_to(sd)] for path in self._listfiles(sd) if self._accept(path))
+        def mkdirp(relpath):
+            if relpath in tardirs:
+                return
+            mkdirp(relpath.parent)
+            info = tarfile.TarInfo(str(relpath))
+            info.type = tarfile.DIRTYPE
+            info.mode |= 0o111
+            tf.addfile(info)
+            tardirs.add(relpath)
         with tarfile.open(self.tarpath.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
-            tardirs = set()
+            tardirs = {Path('.')}
             for path, relpath in files:
-                dn = relpath.parent
-                if dn not in tardirs:
-                    d = Path('.')
-                    for component in dn.parent, dn.name:
-                        d /= component
-                        if d != Path('.') and d not in tardirs:
-                            tardirs.add(d)
-                            tinfo = tarfile.TarInfo(str(d))
-                            tinfo.type = tarfile.DIRTYPE
-                            tinfo.mode |= 0o111
-                            tf.addfile(tinfo)
+                mkdirp(relpath.parent)
                 tf.add(path, relpath)
 
     @classmethod
