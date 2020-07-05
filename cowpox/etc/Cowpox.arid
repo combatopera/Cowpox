@@ -57,7 +57,7 @@ android
     wakelock = false
     presplash_color = #000000
     project
-        dir = $/($(storage_dir) dists $(package name)__$(android arch))
+        dir = $/($(build dir) $(package name))
         assets dir = $/($(project dir) src main assets)
         res dir = $/($(project dir) src main res)
         libs = $/($(dir) libs)
