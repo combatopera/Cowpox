@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from . import InterpreterRecipe
 from .boot import Bootstrap
 from .config import Config
 from .container import compileall
@@ -53,12 +54,13 @@ class PythonRecipe(Recipe):
 
     depends = ['python3']
 
-    @types()
-    def __init(self):
+    @types(InterpreterRecipe)
+    def __init(self, interpreterrecipe):
         if 'python3' not in self.depends:
             depends = self.depends
             depends.append('python3')
             self.depends = list(set(depends)) # XXX: Can we error instead?
+        self.interpreterrecipe = interpreterrecipe
 
     def get_recipe_env(self):
         env = super().get_recipe_env()
@@ -66,8 +68,8 @@ class PythonRecipe(Recipe):
         # Set the LANG, this isn't usually important but is a better default
         # as it occasionally matters how Python e.g. reads files
         env['LANG'] = "en_GB.UTF-8"
-        env['CFLAGS'] += f" -I{self.graph.python_recipe.include_root()}"
-        env['LDFLAGS'] += f" -L{self.graph.python_recipe.link_root()} -l{self.graph.python_recipe.pylibname}"
+        env['CFLAGS'] += f" -I{self.interpreterrecipe.include_root()}"
+        env['LDFLAGS'] += f" -L{self.interpreterrecipe.link_root()} -l{self.interpreterrecipe.pylibname}"
         return env
 
     def install_python_package(self):

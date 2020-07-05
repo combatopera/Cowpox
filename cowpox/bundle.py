@@ -44,7 +44,6 @@ from .container import compileall
 from .graph import GraphImpl
 from .make import Make
 from .pyrecipe import CythonRecipe
-from .python import GuestPythonRecipe
 from .util import DIProxy
 from diapyr import types
 from lagoon import pip
@@ -53,13 +52,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-class GraphProxy(DIProxy, Graph):
-
-    targetclass = GraphImpl
-
-    @property
-    def python_recipe(self):
-        return self.di(GuestPythonRecipe)
+class GraphProxy(DIProxy, Graph): targetclass = GraphImpl
 
 class PipInstallRecipe(CythonRecipe):
 
