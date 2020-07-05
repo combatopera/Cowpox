@@ -148,21 +148,19 @@ class AssetArchive:
             for sd in source_dirs:
                 if sd.exists():
                     for self._listfiles(sd):
-                        if self._accept(path)):
-                            relpath = path.relative_to(sd)
-                            mkdirp(relpath.parent)
-                            tf.add(path, relpath)
+                        relpath = path.relative_to(sd)
+                        mkdirp(relpath.parent)
+                        tf.add(path, relpath)
 
-    @classmethod
-    def _listfiles(cls, dirpath):
+    def _listfiles(self, dirpath):
         subdirs = []
         for path in dirpath.iterdir():
-            if path.is_file():
+            if path.is_file() and self._accept(path):
                 yield path
             else:
                 subdirs.append(path)
         for subdir in subdirs:
-            yield from cls._listfiles(subdir)
+            yield from self._listfiles(subdir)
 
 class AndroidProject:
 
