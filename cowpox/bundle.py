@@ -53,6 +53,7 @@ log = logging.getLogger(__name__)
 
 class PythonBundleImpl(PythonBundle):
 
+    # TODO: Test excludes not thorough enough.
     stdlib_dir_blacklist = {
         '__pycache__',
         'test',
