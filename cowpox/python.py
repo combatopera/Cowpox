@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import GuestRecipe
+from . import InterpreterRecipe
 from .config import Config
 from .container import compileall
 from .recipe import Recipe
@@ -52,7 +52,7 @@ import logging, os, re
 
 log = logging.getLogger(__name__)
 
-class GuestPythonRecipe(Recipe, GuestRecipe):
+class GuestPythonRecipe(Recipe, InterpreterRecipe):
 
     MIN_NDK_API = 21
     opt_depends = ['sqlite3', 'libffi', 'openssl']

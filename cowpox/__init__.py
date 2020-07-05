@@ -51,7 +51,7 @@ class Graph: pass
 
 class GraphInfo: pass
 
-class GuestRecipe: pass
+class InterpreterRecipe: pass
 
 class SkeletonOK: pass
 
