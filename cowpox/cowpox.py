@@ -42,13 +42,13 @@ from . import APKPath, etc
 from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .boot import Bootstrap
-from .bundle import PythonBundleImpl
 from .config import Config
 from .context import GraphProxy, PipInstallRecipe
 from .graph import GraphImpl, GraphInfoImpl
 from .make import Make
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
+from .private import PythonBundleImpl
 from .util import findimpl, Logging
 from argparse import ArgumentParser
 from diapyr import DI
