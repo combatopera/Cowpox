@@ -75,6 +75,7 @@ presplash
 bootstrap
     name = sdl2
     dir = $/($(bootstrapsdir) $(name) build)
+    common name = common
 package name = Cowpox-project
 build_mode = debug
 orientation = portrait
