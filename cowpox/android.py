@@ -120,14 +120,14 @@ class AssetArchive:
             self.BLACKLIST_PATTERNS += ['sqlite3/*', 'lib-dynload/_sqlite3.so']
         self.graph = graph
 
-    def _has(self, name):
+    def _has(self, path):
         def match_filename(pattern_list):
             for pattern in pattern_list:
                 if pattern.startswith('^'):
                     pattern = pattern[1:]
                 else:
                     pattern = '*/' + pattern
-                if fnmatch(name, pattern):
+                if fnmatch(path, pattern):
                     return True
         return not match_filename(self.WHITELIST_PATTERNS) and match_filename(self.BLACKLIST_PATTERNS)
 
@@ -136,7 +136,7 @@ class AssetArchive:
             self.tarpath.unlink()
         files = []
         for sd in source_dirs:
-            files.extend([x, x.resolve().relative_to(sd)] for x in self._listfiles(sd) if not self._has(x))
+            files.extend([path, path.resolve().relative_to(sd)] for path in self._listfiles(sd) if not self._has(path))
         with tarfile.open(self.tarpath.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             dirs = set()
             for fn, afn in files:
