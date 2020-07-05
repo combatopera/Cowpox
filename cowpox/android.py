@@ -134,9 +134,6 @@ class AssetArchive:
     def makeprivate(self, source_dirs):
         if self.tarpath.exists():
             self.tarpath.unlink()
-        files = []
-        for sd in source_dirs:
-            files.extend([path, path.relative_to(sd)] for path in self._listfiles(sd) if self._accept(path))
         def mkdirp(relpath):
             if relpath in tardirs:
                 return
@@ -148,9 +145,12 @@ class AssetArchive:
             tardirs.add(relpath)
         with tarfile.open(self.tarpath.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             tardirs = {Path('.')}
-            for path, relpath in files:
-                mkdirp(relpath.parent)
-                tf.add(path, relpath)
+            for sd in source_dirs:
+                for self._listfiles(sd):
+                    if self._accept(path)):
+                        relpath = path.relative_to(sd)
+                        mkdirp(relpath.parent)
+                        tf.add(path, relpath)
 
     @classmethod
     def _listfiles(cls, dirpath):
