@@ -72,7 +72,9 @@ presplash
     full path = $/($(container src) $(presplash path))
     default path = $/($(android project dir) templates kivy-presplash.jpg)
     path = $(default path)
-bootstrap name = sdl2
+bootstrap
+    name = sdl2
+    dir = $/($(bootstrapsdir) $(name) build)
 package name = Cowpox-project
 build_mode = debug
 orientation = portrait

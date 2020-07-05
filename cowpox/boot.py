@@ -75,7 +75,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     @types(Config, Arch, GraphInfo)
     def __init__(self, config, arch, graphinfo):
         self.bootstrapsdir = Path(config.bootstrapsdir)
-        self.bootstrap_dir = self.bootstrapsdir / config.bootstrap.name
+        self.bootstrap_dir = Path(config.bootstrap.dir)
         self.buildsdir = Path(config.buildsdir)
         self.package_name = config.package.name
         self.android_api = config.android.api
@@ -92,7 +92,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     @types(this = SkeletonOK)
     def prepare_dirs(self):
-        _copy_files(self.bootstrap_dir / 'build', self.build_dir, True)
+        _copy_files(self.bootstrap_dir, self.build_dir, True)
         _copy_files(self.bootstrapsdir / 'common' / 'build', self.build_dir, False)
 
     @types(GuestRecipe, RecipesOK, SiteOK, this = BootstrapOK) # XXX: What does this really depend on?
