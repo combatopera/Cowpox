@@ -101,7 +101,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         _copy_files(self.common_dir, self.build_dir, False)
 
     @types(InterpreterRecipe, RecipesOK, SiteOK, this = BootstrapOK) # XXX: What does this really depend on?
-    def toandroidproject(self, pythonrecipe, *_):
+    def toandroidproject(self, interpreterrecipe, *_):
         self.arch.strip_object_files(self.buildsdir) # XXX: What exactly does this do?
         shutil.copytree(self.build_dir, self.android_project_dir) # FIXME: Next thing to make incremental.
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
@@ -111,7 +111,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
         self.run_distribute()
-        cp.print(pythonrecipe.androidbuild / pythonrecipe.instsoname, self.android_project_libs / self.arch.name)
+        cp.print(interpreterrecipe.androidbuild / interpreterrecipe.instsoname, self.android_project_libs / self.arch.name)
         self.arch.striplibs(self.android_project_libs)
 
     def distribute_javaclasses(self, dest_dir = 'src'):
