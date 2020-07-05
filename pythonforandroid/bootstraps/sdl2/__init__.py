@@ -39,11 +39,10 @@
 # THE SOFTWARE.
 
 from cowpox.boot import Bootstrap
-from pathlib import Path
 
 class SDL2GradleBootstrap(Bootstrap):
 
     recipe_depends = {*Bootstrap.recipe_depends, 'sdl2'}
 
     def run_distribute(self):
-        self.distribute_javaclasses(dest_dir = Path('src', 'main', 'java'))
+        self.distribute_javaclasses()
