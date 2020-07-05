@@ -38,24 +38,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox.config import Config
+from cowpox import JavaSrc
 from cowpox.pyrecipe import CythonRecipe
-from diapyr import types
-from lagoon import cp
-from pathlib import Path
-import logging
 
-log = logging.getLogger(__name__)
-
-class PyjniusRecipe(CythonRecipe):
+class PyjniusRecipe(CythonRecipe, JavaSrc):
 
     version = '1.2.1'
     url = f"https://github.com/kivy/pyjnius/archive/{version}.zip"
     depends = [('genericndkbuild', 'sdl2'), 'six']
-
-    @types(Config)
-    def __init(self, config):
-        self.javaclass_dir = Path(config.javaclass_dir)
 
     def mainbuild(self):
         if 'sdl2' in self.graphinfo.recipenames:
@@ -63,5 +53,4 @@ class PyjniusRecipe(CythonRecipe):
         if 'genericndkbuild' in self.graphinfo.recipenames:
             self.apply_patches('genericndkbuild_jnienv_getter.patch')
         self.install_python_package()
-        log.info('Copying pyjnius java class to classes build dir')
-        cp._a.print(self.recipebuilddir / 'jnius' / 'src' / 'org', self.javaclass_dir.mkdirp()) # FIXME: Broken.
+        self.javasrc = self.recipebuilddir / 'jnius' / 'src'

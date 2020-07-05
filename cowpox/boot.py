@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, GraphInfo, InterpreterRecipe, RecipesOK, PipInstallOK, SkeletonOK
+from . import Arch, BootstrapOK, GraphInfo, InterpreterRecipe, JavaSrc, RecipesOK, PipInstallOK, SkeletonOK
 from .config import Config
 from .util import Plugin, PluginType, writeproperties
 from diapyr import types
@@ -85,7 +85,6 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.android_project_dir = Path(config.android.project.dir)
         self.android_project_libs = Path(config.android.project.libs)
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
-        self.javaclass_dir = config.javaclass_dir
         self.sdk_dir = config.SDK.dir
         self.arch = arch
         self.graphinfo = graphinfo
@@ -100,8 +99,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         _copy_files(self.bootstrap_dir, self.build_dir, True)
         _copy_files(self.common_dir, self.build_dir, False)
 
-    @types(InterpreterRecipe, RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
-    def toandroidproject(self, interpreterrecipe, *_):
+    @types(InterpreterRecipe, [JavaSrc], RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
+    def toandroidproject(self, interpreterrecipe, javasrcs, *_):
         self.arch.strip_object_files(self.buildsdir) # XXX: What exactly does this do?
         shutil.copytree(self.build_dir, self.android_project_dir) # FIXME: Next thing to make incremental.
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
@@ -111,13 +110,17 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         for lib in self.arch.libs_dir.iterdir():
             cp._a.print(lib, tgt_dir)
         self._distribute_aars()
-        self._distribute_javaclasses()
+        for javasrc in javasrcs:
+            self._distribute_javaclasses(javasrc.javasrc)
         cp.print(interpreterrecipe.androidbuild / interpreterrecipe.instsoname, self.android_project_libs / self.arch.name)
         self.arch.striplibs(self.android_project_libs)
 
-    def _distribute_javaclasses(self):
-        log.info('Copying java files')
-        cp._a.print(self.javaclass_dir, (self.android_project_dir / 'src' / 'main' / 'java').mkdirp())
+    def _distribute_javaclasses(self, javaclass_dir):
+        log.info("Copying java files from: %s", javaclass_dir)
+        destdir = self.android_project_dir / 'src' / 'main' / 'java'
+        for path in javaclass_dir.rglob('*'):
+            if path.is_file():
+                shutil.copy2(path, (destdir / path.relative_to(javaclass_dir)).pmkdirp())
 
     def _distribute_aars(self):
         log.info('Unpacking aars')

@@ -53,6 +53,8 @@ class GraphInfo: pass
 
 class InterpreterRecipe: pass
 
+class JavaSrc: pass
+
 class SkeletonOK: pass
 
 class BootstrapOK: pass
