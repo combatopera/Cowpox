@@ -85,11 +85,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7 // XXX: Why?
         targetCompatibility JavaVersion.VERSION_1_7
     }
-    sourceSets {
-        main {
-            jniLibs.srcDir 'libs' // TODO: Unduplicate.
-        }
-    }
 }
 
 dependencies {

@@ -60,7 +60,7 @@ android
         dir = $/($(build dir) $(package name))
         assets dir = $/($(project dir) src main assets)
         res dir = $/($(project dir) src main res)
-        libs = $/($(dir) libs)
+        libs = $/($(dir) src main jniLibs)
     fullscreen = false
     orientation = portrait
 sdl2
