@@ -242,7 +242,6 @@ class AndroidProject:
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
         writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.
         log.info('Copying libs.')
-        mergetree(self.bootstrap.build_dir / 'libs', self.android_project_libs)
         archlibs = (self.android_project_libs / self.arch.name).mkdirp()
         mergetree(self.arch.libs_dir, archlibs)
         self._distribute_aars()

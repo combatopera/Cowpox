@@ -38,15 +38,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox import Arch, LibRepo
+from cowpox.boot import Bootstrap
 from cowpox.recipe import BootstrapNDKRecipe
+from diapyr import types
 
-class LibSDL2Recipe(BootstrapNDKRecipe):
+class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo):
 
     version = "2.0.9"
     url = f"https://www.libsdl.org/release/SDL2-{version}.tar.gz"
     md5sum = 'f2ecfba915c54f7200f504d8b48a5dfe'
     dir_name = 'SDL'
     depends = ['sdl2_image', 'sdl2_mixer', 'sdl2_ttf']
+
+    @types(Arch, Bootstrap)
+    def __init(self, arch, bootstrap):
+        self.archlibs = bootstrap.build_dir / 'libs' / arch.name
 
     def get_recipe_env(self):
         env = self.recipe_env_with_python()
@@ -55,3 +62,4 @@ class LibSDL2Recipe(BootstrapNDKRecipe):
 
     def mainbuild(self):
         self.ndk_build()
+        self.builtlibpaths = sorted(self.archlibs.iterdir())
