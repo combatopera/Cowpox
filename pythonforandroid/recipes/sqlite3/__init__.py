@@ -38,11 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox import LibRepo
 from cowpox.recipe import NDKRecipe
 from pathlib import Path
 import shutil
 
-class Sqlite3Recipe(NDKRecipe):
+class Sqlite3Recipe(NDKRecipe, LibRepo):
 
     version = '3.15.1'
     url = 'https://www.sqlite.org/2016/sqlite-amalgamation-3150100.zip'
@@ -58,4 +59,4 @@ class Sqlite3Recipe(NDKRecipe):
     def mainbuild(self):
         shutil.copy2(self.resourcepath('Android.mk'), (self.recipebuilddir / 'jni').mkdirp())
         self.ndk_build()
-        self.install_libraries([Path('libs', self.arch.name, 'libsqlite3.so')])
+        self.builtlibpaths = [Path('libs', self.arch.name, 'libsqlite3.so')]

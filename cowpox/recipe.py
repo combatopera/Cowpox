@@ -184,10 +184,6 @@ class Recipe(Plugin):
     def get_recipe_env(self):
         return self.arch.get_env()
 
-    def install_libraries(self, builtlibpaths): # TODO: Suck the libs instead.
-        for path in builtlibpaths:
-            shutil.copy2(self.recipebuilddir / path, self.arch.libs_dir)
-
 class BootstrapNDKRecipe(Recipe):
 
     @types(Config, Bootstrap, InterpreterRecipe)

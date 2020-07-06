@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, GraphInfo, InterpreterRecipe, JavaSrc, RecipesOK, PipInstallOK, SkeletonOK
+from . import Arch, BootstrapOK, GraphInfo, InterpreterRecipe, JavaSrc, LibRepo, RecipesOK, PipInstallOK, SkeletonOK
 from .config import Config
 from .util import mergetree, Plugin, PluginType, writeproperties
 from diapyr import types
@@ -99,17 +99,20 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         _copy_files(self.bootstrap_dir, self.build_dir, True)
         _copy_files(self.common_dir, self.build_dir, False)
 
-    @types(InterpreterRecipe, [JavaSrc], RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
-    def toandroidproject(self, interpreterrecipe, javasrcs, *_):
+    @types(InterpreterRecipe, [JavaSrc], [LibRepo], RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
+    def toandroidproject(self, interpreterrecipe, javasrcs, librepos, *_):
         self.arch.strip_object_files(self.buildsdir) # XXX: What exactly does this do?
         shutil.copytree(self.build_dir, self.android_project_dir) # FIXME: Next thing to make incremental.
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
         writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.
         log.info('Copying libs.')
         mergetree(self.build_dir / 'libs', self.android_project_libs)
-        mergetree(self.arch.libs_dir, self.android_project_libs / self.arch.name)
+        archlibs = (self.android_project_libs / self.arch.name).mkdirp()
+        mergetree(self.arch.libs_dir, archlibs)
         self._distribute_aars()
-        shutil.copy2(interpreterrecipe.androidbuild / interpreterrecipe.instsoname, (self.android_project_libs / self.arch.name).mkdirp())
+        for librepo in librepos:
+            for builtlibpath in librepo.builtlibpaths:
+                shutil.copy2(librepo.recipebuilddir / builtlibpath, archlibs)
         self.arch.striplibs(self.android_project_libs)
         for javasrc in javasrcs:
             self._distribute_javaclasses(javasrc.javasrc)

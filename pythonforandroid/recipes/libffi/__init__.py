@@ -38,13 +38,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox import LibRepo
 from cowpox.recipe import Recipe
 from lagoon import autoreconf, make
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
 
-class LibffiRecipe(Recipe):
+class LibffiRecipe(Recipe, LibRepo):
 
     version = '8fa8837'
     url = f"https://github.com/libffi/libffi/archive/{version}.tar.gz"
@@ -58,7 +59,7 @@ class LibffiRecipe(Recipe):
         Program.text(Path('configure')).print(
                 f"--host={self.arch.command_prefix}", f"--prefix={self.recipebuilddir}", '--disable-builddir', '--enable-shared', env = env, cwd = self.recipebuilddir)
         make.print('-j', cpu_count(), 'libffi.la', env = env, cwd = self.recipebuilddir)
-        self.install_libraries([Path('.libs', 'libffi.so')])
+        self.builtlibpaths = [Path('.libs', 'libffi.so')]
 
     def includeslinkslibs(self):
         return [[self.recipebuilddir / 'include'], [self.recipebuilddir / '.libs'], ['ffi']]

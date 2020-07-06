@@ -38,12 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox import LibRepo
 from cowpox.config import Config
 from cowpox.recipe import Recipe
 from diapyr import types
 from lagoon import make, perl
 
-class OpenSSLRecipe(Recipe):
+class OpenSSLRecipe(Recipe, LibRepo):
 
     version = '1.1'
     url = 'https://www.openssl.org/source/openssl-1.1.1f.tar.gz'
@@ -90,4 +91,4 @@ class OpenSSLRecipe(Recipe):
         perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = self.recipebuilddir)
         self.apply_patches('disable-sover.patch')
         make.print('build_libs', env = env, cwd = self.recipebuilddir)
-        self.install_libraries([f"libcrypto{self.version}.so", f"libssl{self.version}.so"])
+        self.builtlibpaths = [f"libcrypto{self.version}.so", f"libssl{self.version}.so"]
