@@ -71,12 +71,11 @@ class PythonRecipe(Recipe):
         env['LDFLAGS'] += f" -L{self.interpreterrecipe.link_root()} -l{self.interpreterrecipe.pylibname}"
         return env
 
-    def install_python_package(self):
+    def install_python_package(self, env):
         log.info("Install %s into bundle.", self.name)
         self.bundlepackages = self.recipebuilddir / 'Cowpox-bundle'
         rdir = self.bundlepackages / 'r'
-        python.print('setup.py', 'install', '-O2', '--root', rdir, '--install-lib', 'l',
-                env = self.get_recipe_env(), cwd = self.recipebuilddir)
+        python.print('setup.py', 'install', '-O2', '--root', rdir, '--install-lib', 'l', env = env, cwd = self.recipebuilddir)
         for p in (rdir / 'l').iterdir():
             p.rename(self.bundlepackages / p.name)
         shutil.rmtree(rdir)
@@ -84,9 +83,9 @@ class PythonRecipe(Recipe):
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
-    def install_python_package(self):
+    def install_python_package(self, env):
         self.build_compiled_components()
-        super().install_python_package()
+        super().install_python_package(env)
 
     def build_compiled_components(self, *setup_extra_args):
         log.info("Building compiled components in %s", self.name)
@@ -100,11 +99,11 @@ class CythonRecipe(PythonRecipe):
     def __init(self, config, bootstrap):
         self.bootstrap = bootstrap
 
-    def install_python_package(self):
+    def install_python_package(self, env):
         log.info("Cythonizing anything necessary in %s", self.name)
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False
-        build_ext = python.partial('setup.py', 'build_ext', env = self.get_recipe_env(), cwd = self.recipebuilddir)._v
+        build_ext = python.partial('setup.py', 'build_ext', env = env, cwd = self.recipebuilddir)._v
         try:
             build_ext.print()
         except subprocess.CalledProcessError as e:
@@ -119,7 +118,7 @@ class CythonRecipe(PythonRecipe):
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
         self.arch.strip_object_files(self.recipebuilddir)
-        super().install_python_package()
+        super().install_python_package(env)
 
     def cythonize_build(self):
         log.info('Running Cython where appropriate.')

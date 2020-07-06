@@ -56,4 +56,4 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
             'do_not_use_system_libs.patch',
             'remove_unittest_call.patch',
         )
-        self.install_python_package()
+        self.install_python_package(self.get_recipe_env())

@@ -51,4 +51,4 @@ class RecipeImpl(CythonRecipe):
         self.url = config.container.src
 
     def mainbuild(self):
-        self.install_python_package()
+        self.install_python_package(self.get_recipe_env())

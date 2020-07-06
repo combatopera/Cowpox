@@ -76,4 +76,4 @@ class AndroidRecipe(CythonRecipe):
                 print('JNIEnv *SDL_AndroidGetJNIEnv(void);', file = fh)
                 print('#define SDL_ANDROID_GetJNIEnv SDL_AndroidGetJNIEnv', file = fh)
         self.config_env = {key: str(value) for key, value in config.items()} # XXX: Is this just for install_python_package?
-        self.install_python_package()
+        self.install_python_package(self.get_recipe_env())

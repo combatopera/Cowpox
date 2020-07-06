@@ -48,4 +48,4 @@ class CythonRecipe(CompiledComponentsPythonRecipe):
     depends = ['setuptools']
 
     def mainbuild(self):
-        self.install_python_package()
+        self.install_python_package(self.get_recipe_env())
