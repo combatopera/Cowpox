@@ -38,12 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import AndroidProjectOK, APKPath, Arch, PrivateOK, Graph, GraphInfo
+from . import AndroidProjectOK, APKPath, Arch, Graph, GraphInfo, JavaSrc, PrivateOK
 from .boot import Bootstrap
 from .config import Config
 from .make import Make
 from .platform import Platform
-from .util import enum
+from .util import enum, mergetree
 from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
@@ -204,9 +204,12 @@ class AndroidProject:
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
-    @types(PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
-    def prepare(self, _):
+    @types([JavaSrc], PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
+    def prepare(self, javasrcs, _):
         # FIXME: Use Make (which currently deletes a lot).
+        for javasrc in javasrcs:
+            log.info("Copying java files from: %s", javasrc.javasrc)
+            mergetree(javasrc.javasrc, self.android_project_dir / 'src' / 'main' / 'java')
         self.assetarchive.makeprivate()
         shutil.copy2(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':

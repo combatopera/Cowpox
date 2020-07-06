@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, GraphInfo, InterpreterRecipe, JavaSrc, LibRepo, RecipesOK, PipInstallOK, SkeletonOK
+from . import Arch, BootstrapOK, GraphInfo, InterpreterRecipe, LibRepo, RecipesOK, PipInstallOK, SkeletonOK
 from .config import Config
 from .util import mergetree, Plugin, PluginType, writeproperties
 from diapyr import types
@@ -99,8 +99,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         _copy_files(self.bootstrap_dir, self.build_dir, True)
         _copy_files(self.common_dir, self.build_dir, False)
 
-    @types(InterpreterRecipe, [JavaSrc], [LibRepo], RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
-    def toandroidproject(self, interpreterrecipe, javasrcs, librepos, *_):
+    @types(InterpreterRecipe, [LibRepo], RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
+    def toandroidproject(self, interpreterrecipe, librepos, *_):
         self.arch.strip_object_files(self.buildsdir) # XXX: What exactly does this do?
         shutil.copytree(self.build_dir, self.android_project_dir) # FIXME: Next thing to make incremental.
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
@@ -114,9 +114,6 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             for builtlibpath in librepo.builtlibpaths:
                 shutil.copy2(librepo.recipebuilddir / builtlibpath, archlibs)
         self.arch.striplibs(self.android_project_libs)
-        for javasrc in javasrcs:
-            log.info("Copying java files from: %s", javasrc.javasrc)
-            mergetree(javasrc.javasrc, self.android_project_dir / 'src' / 'main' / 'java')
 
     def _distribute_aars(self):
         log.info('Unpacking aars')
