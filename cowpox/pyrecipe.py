@@ -114,7 +114,7 @@ class CythonRecipe(PythonRecipe):
             log.info("%s first build failed (as expected)", self.name)
             manually_cythonise = True
         if manually_cythonise:
-            self.cythonize_build(env, self.recipebuilddir)
+            self.cythonize_build(env)
             build_ext.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
@@ -131,9 +131,9 @@ class CythonRecipe(PythonRecipe):
         cyenv.pop('PYTHONNOUSERSITE', None)
         python.print('-m', 'Cython.Build.Cythonize', filename, env = cyenv)
 
-    def cythonize_build(self, env, build_dir):
+    def cythonize_build(self, env):
         log.info('Running cython where appropriate')
-        for filename in build_dir.rglob('*.pyx'):
+        for filename in self.recipebuilddir.rglob('*.pyx'):
             self.cythonize_file(env, filename)
 
     def get_recipe_env(self):
