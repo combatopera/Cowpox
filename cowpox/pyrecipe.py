@@ -111,7 +111,7 @@ class CythonRecipe(PythonRecipe):
             log.info("%s first build failed (as expected)", self.name)
             manually_cythonise = True
         if manually_cythonise:
-            self.cythonize_build()
+            self.cythonize_build(env)
             log.info('Start build again.')
             build_ext.print()
         else:
@@ -119,9 +119,9 @@ class CythonRecipe(PythonRecipe):
         self.arch.strip_object_files(self.recipebuilddir)
         super().install_python_package(env)
 
-    def cythonize_build(self):
+    def cythonize_build(self, env):
         log.info('Running Cython where appropriate.')
-        env = self.get_recipe_env()
+        env = env.copy()
         if 'CYTHONPATH' in env:
             env['PYTHONPATH'] = env['CYTHONPATH']
         elif 'PYTHONPATH' in env:
