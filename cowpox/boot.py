@@ -40,7 +40,7 @@
 
 from . import Arch, BootstrapOK, GraphInfo, InterpreterRecipe, RecipesOK, PipInstallOK, SkeletonOK
 from .config import Config
-from .util import Plugin, PluginType, writeproperties
+from .util import Plugin, PluginType
 from diapyr import types
 from pathlib import Path
 import logging, os, shutil
@@ -75,13 +75,12 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.common_dir = Path(config.bootstrap.common.dir)
         self.bootstrap_dir = Path(config.bootstrap.dir)
         self.buildsdir = Path(config.buildsdir)
-        self.android_api = config.android.api
-        if self.android_api < self.MIN_TARGET_API:
-            log.warning("Target API %s < %s", self.android_api, self.MIN_TARGET_API)
+        android_api = config.android.api
+        if android_api < self.MIN_TARGET_API:
+            log.warning("Target API %s < %s", android_api, self.MIN_TARGET_API)
             log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
         self.android_project_dir = Path(config.android.project.dir)
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
-        self.sdk_dir = config.SDK.dir
         self.arch = arch
         self.graphinfo = graphinfo
 
@@ -99,5 +98,3 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     def toandroidproject(self, interpreterrecipe, *_):
         self.arch.strip_object_files(self.buildsdir) # XXX: What exactly does this do?
         shutil.copytree(self.build_dir, self.android_project_dir) # FIXME: Next thing to make incremental.
-        writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
-        writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.

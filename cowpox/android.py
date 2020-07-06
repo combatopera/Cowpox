@@ -43,7 +43,7 @@ from .boot import Bootstrap
 from .config import Config
 from .make import Make
 from .platform import Platform
-from .util import enum, mergetree
+from .util import enum, mergetree, writeproperties
 from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
@@ -194,6 +194,7 @@ class AndroidProject:
         self.res_dir = Path(config.android.project.res.dir)
         self.gradle_builddir = config.gradle.buildDir
         self.package_name = config.package.name
+        self.sdk_dir = config.SDK.dir
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
@@ -237,6 +238,8 @@ class AndroidProject:
     @types([JavaSrc], [LibRepo], PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
     def prepare(self, javasrcs, librepos, _):
         # FIXME: Use Make (which currently deletes a lot).
+        writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
+        writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.
         log.info('Copying libs.')
         mergetree(self.bootstrap.build_dir / 'libs', self.android_project_libs)
         archlibs = (self.android_project_libs / self.arch.name).mkdirp()
