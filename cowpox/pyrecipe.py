@@ -138,7 +138,7 @@ class CythonRecipe(PythonRecipe):
 
     def get_recipe_env(self):
         env = super().get_recipe_env()
-        env['LDFLAGS'] += f" -L{self.arch.libs_dir} -L{self.bootstrap.build_dir / 'obj' / 'local' / self.arch.name}"
+        env['LDFLAGS'] += f" -L{self.bootstrap.build_dir / 'obj' / 'local' / self.arch.name}"
         env['LDSHARED'] = env['CC'] + ' -shared'
         env['LIBLINK'] = 'NOTNONE'
         env['NDKPLATFORM'] = self.platform.ndk_platform(self.arch)

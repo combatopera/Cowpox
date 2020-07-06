@@ -74,20 +74,18 @@ class ArchImpl(Arch):
         assert self.ndk_api <= android_api
         if self.ndk_api < self.MIN_NDK_API:
             log.warning("NDK API less than %s is not supported", self.MIN_NDK_API)
-        self.libs_parent = Path(config.libs_parent)
         self.cflags = _spjoin(
             '-target',
             self.target(),
             '-fomit-frame-pointer',
             *self.arch_cflags,
         )
-        self.libs_dir = (self.libs_parent / self.name).mkdirp() # XXX: Obsolete?
         self.cc = _spjoin(self.ccachepath, platform.clang_exe(self), self.cflags)
         strip = f"{self.command_prefix}-strip", '--strip-unneeded'
         self.archenv = dict(self.staticenv,
             CFLAGS = self.cflags,
             CXXFLAGS = self.cflags,
-            LDFLAGS = f"-L{self.libs_dir}",
+            LDFLAGS = '', # TODO: Env object.
             CC = self.cc,
             CXX = _spjoin(self.ccachepath, platform.clang_exe(self, plus_plus = True), self.cflags),
             AR = f"{self.command_prefix}-ar",
