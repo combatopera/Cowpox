@@ -70,7 +70,7 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
         self.instsoname = f"lib{self.pylibname}.so"
 
     def get_recipe_env(self):
-        env = os.environ.copy()
+        env = os.environ.copy() # TODO: Probably redundant.
         env['HOSTARCH'] = self.arch.command_prefix
         env['CC'] = self.platform.clang_exe(self.arch, with_target = True)
         env['PATH'] = os.pathsep.join([str(self.platform.prebuiltbin(self.arch)), env['PATH']]) # XXX: Why prepend?
