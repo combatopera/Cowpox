@@ -45,7 +45,6 @@ from diapyr import types
 from lagoon import find, which
 from lagoon.program import Program
 from multiprocessing import cpu_count
-from pathlib import Path
 import logging, os, subprocess
 
 log = logging.getLogger(__name__)
