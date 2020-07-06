@@ -195,7 +195,7 @@ class BootstrapNDKRecipe(Recipe):
         return self.jni_dir
 
     def recipe_env_with_python(self): # TODO: Looks like a job for the python recipe.
-        env = super().get_recipe_env()
+        env = self.arch.env.copy()
         env['PYTHON_INCLUDE_ROOT'] = self.interpreterrecipe.include_root()
         env['PYTHON_LINK_ROOT'] = self.interpreterrecipe.link_root()
         env['EXTRA_LDLIBS'] = f"-l{self.interpreterrecipe.pylibname}"
