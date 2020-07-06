@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import AndroidProjectOK, APKPath, Arch, Graph, GraphInfo, JavaSrc, PrivateOK
+from . import AndroidProjectOK, APKPath, Arch, Graph, GraphInfo, JavaSrc, LibRepo, PrivateOK
 from .boot import Bootstrap
 from .config import Config
 from .make import Make
@@ -47,9 +47,10 @@ from .util import enum, mergetree
 from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
-from lagoon import gradle
+from lagoon import cp, gradle, unzip
 from pathlib import Path
 from pkg_resources import resource_string
+from tempfile import TemporaryDirectory
 import logging, os, shutil, tarfile, time
 
 log = logging.getLogger(__name__)
@@ -177,6 +178,7 @@ class AndroidProject:
         self.presplash_color = config.android.presplash_color
         self.bootstrapname = config.bootstrap.name # TODO: Use polymorphism.
         self.android_project_dir = Path(config.android.project.dir)
+        self.android_project_libs = Path(config.android.project.jniLibs)
         self.version = config.version
         self.webview_port = config.webview.port
         self.sdl2_launchMode = config.sdl2.launchMode
@@ -191,6 +193,7 @@ class AndroidProject:
         self.package = config.android.package
         self.res_dir = Path(config.android.project.res.dir)
         self.gradle_builddir = config.gradle.buildDir
+        self.package_name = config.package.name
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
@@ -204,9 +207,45 @@ class AndroidProject:
             version_code += int(i)
         return f"{self.arch.numver}{self.min_sdk_version}{version_code}"
 
-    @types([JavaSrc], PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
-    def prepare(self, javasrcs, _):
+    def _distribute_aars(self):
+        log.info('Unpacking aars')
+        for aar in (self.buildsdir / 'aars' / self.package_name).glob('*.aar'): # TODO LATER: Configure these a different way.
+            self._unpack_aar(aar)
+
+    def _unpack_aar(self, aar):
+        with TemporaryDirectory() as temp_dir:
+            name = os.path.splitext(aar.name)[0]
+            jar_name = f"{name}.jar"
+            log.info("unpack %s aar", name)
+            log.debug("  from %s", aar)
+            log.debug("  to %s", temp_dir)
+            unzip._o.print(aar, '-d', temp_dir)
+            jar_src = Path(temp_dir, 'classes.jar')
+            jar_tgt = self.android_project_libs.mkdirp() / jar_name
+            log.debug("copy %s jar", name)
+            log.debug("  from %s", jar_src)
+            log.debug("  to %s", jar_tgt)
+            cp._a.print(jar_src, jar_tgt)
+            so_src_dir = Path(temp_dir, 'jni', self.arch.name)
+            so_tgt_dir = (self.android_project_libs / self.arch.name).mkdirp()
+            log.debug("copy %s .so", name)
+            log.debug("  from %s", so_src_dir)
+            log.debug("  to %s", so_tgt_dir)
+            for f in so_src_dir.glob('*.so'):
+                cp._a.print(f, so_tgt_dir)
+
+    @types([JavaSrc], [LibRepo], PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
+    def prepare(self, javasrcs, librepos, _):
         # FIXME: Use Make (which currently deletes a lot).
+        log.info('Copying libs.')
+        mergetree(self.bootstrap.build_dir / 'libs', self.android_project_libs)
+        archlibs = (self.android_project_libs / self.arch.name).mkdirp()
+        mergetree(self.arch.libs_dir, archlibs)
+        self._distribute_aars()
+        for librepo in librepos:
+            for builtlibpath in librepo.builtlibpaths:
+                shutil.copy2(librepo.recipebuilddir / builtlibpath, archlibs)
+        self.arch.striplibs(self.android_project_libs)
         for javasrc in javasrcs:
             log.info("Copying java files from: %s", javasrc.javasrc)
             mergetree(javasrc.javasrc, self.android_project_dir / 'src' / 'main' / 'java')
