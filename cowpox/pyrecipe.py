@@ -128,9 +128,9 @@ class CythonRecipe(PythonRecipe):
         elif 'PYTHONPATH' in env:
             del env['PYTHONPATH']
         env.pop('PYTHONNOUSERSITE', None)
-        for path in self.pyxpaths():
-            log.debug("Cythonize: %s", path)
-            python.print('-m', 'Cython.Build.Cythonize', path, env = env)
+        paths = list(self.pyxpaths())
+        log.debug("Cythonize: %s", paths)
+        python.print('-m', 'Cython.Build.Cythonize', *paths, env = env)
 
     def pyxpaths(self):
         return self.recipebuilddir.rglob('*.pyx')
