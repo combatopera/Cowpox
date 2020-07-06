@@ -49,7 +49,7 @@ class Sqlite3Recipe(NDKRecipe, LibRepo):
     url = 'https://www.sqlite.org/2016/sqlite-amalgamation-3150100.zip'
 
     def get_recipe_env(self):
-        env = super().get_recipe_env()
+        env = self.arch.env.copy()
         env['NDK_PROJECT_PATH'] = str(self.recipebuilddir)
         return env
 
