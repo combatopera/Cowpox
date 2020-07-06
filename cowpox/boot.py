@@ -40,28 +40,12 @@
 
 from . import Arch, BootstrapOK, GraphInfo, InterpreterRecipe, RecipesOK, PipInstallOK, SkeletonOK
 from .config import Config
-from .util import Plugin, PluginType
+from .util import mergetree, Plugin, PluginType
 from diapyr import types
 from pathlib import Path
-import logging, os, shutil
+import logging, shutil
 
 log = logging.getLogger(__name__)
-
-def _copy_files(src_root, dest_root, override):
-    for root, dirnames, filenames in os.walk(src_root):
-        root = Path(root)
-        subdir = root.relative_to(src_root)
-        for filename in filenames:
-            dest_dir = (dest_root / subdir).mkdirp()
-            src_file = root / filename
-            dest_file = dest_dir / filename
-            if src_file.is_file():
-                if override and dest_file.exists():
-                    dest_file.unlink()
-                if not dest_file.exists():
-                    shutil.copy(src_file, dest_file)
-            else:
-                dest_file.mkdirp()
 
 class BootstrapType(PluginType): pass
 
@@ -91,8 +75,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     @types(this = SkeletonOK)
     def prepare_dirs(self):
-        _copy_files(self.bootstrap_dir, self.build_dir, True)
-        _copy_files(self.common_dir, self.build_dir, False)
+        mergetree(self.bootstrap_dir, self.build_dir)
+        mergetree(self.common_dir, self.build_dir, True)
 
     @types(InterpreterRecipe, RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
     def toandroidproject(self, interpreterrecipe, *_):
