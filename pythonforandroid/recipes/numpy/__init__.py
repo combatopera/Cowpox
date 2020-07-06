@@ -46,9 +46,7 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
     version = '1.18.1'
     url = f"https://pypi.python.org/packages/source/n/numpy/numpy-{version}.zip"
     depends = ['setuptools', 'cython']
-
-    def build_compiled_components(self):
-        super().build_compiled_components('-j', cpu_count())
+    build_ext_args = '-j', cpu_count()
 
     def mainbuild(self):
         self.apply_patches(

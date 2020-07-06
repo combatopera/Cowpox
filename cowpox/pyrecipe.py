@@ -83,13 +83,15 @@ class PythonRecipe(Recipe):
 
 class CompiledComponentsPythonRecipe(PythonRecipe):
 
+    build_ext_args = ()
+
     def install_python_package(self, env):
         self.build_compiled_components()
         super().install_python_package(env)
 
-    def build_compiled_components(self, *setup_extra_args):
+    def build_compiled_components(self):
         log.info("Building compiled components in %s", self.name)
-        python.print('setup.py', 'build_ext', '-v', *setup_extra_args, env = self.get_recipe_env(), cwd = self.recipebuilddir)
+        python.print('setup.py', 'build_ext', '-v', *self.build_ext_args, env = self.get_recipe_env(), cwd = self.recipebuilddir)
         objsdir, = self.recipebuilddir.glob('build/lib.*')
         find.print(objsdir, '-name', '*.o', '-exec', *self.arch.strip, '{}', ';') # TODO: Use rglob.
 
