@@ -195,6 +195,7 @@ class AndroidProject:
         self.gradle_builddir = config.gradle.buildDir
         self.package_name = config.package.name
         self.sdk_dir = config.SDK.dir
+        self.buildsdir = Path(config.buildsdir)
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
