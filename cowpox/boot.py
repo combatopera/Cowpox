@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, GraphInfo, InterpreterRecipe, RecipesOK, PipInstallOK, SkeletonOK
+from . import Arch, BootstrapOK, GraphInfo, RecipesOK, PipInstallOK, SkeletonOK
 from .config import Config
 from .util import mergetree, Plugin, PluginType
 from diapyr import types
@@ -78,7 +78,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         mergetree(self.bootstrap_dir, self.build_dir)
         mergetree(self.common_dir, self.build_dir, True)
 
-    @types(InterpreterRecipe, RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
-    def toandroidproject(self, interpreterrecipe, *_):
+    @types(RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
+    def toandroidproject(self, *_):
         self.arch.strip_object_files(self.buildsdir) # XXX: What exactly does this do?
         shutil.copytree(self.build_dir, self.android_project_dir) # FIXME: Next thing to make incremental.
