@@ -114,6 +114,7 @@ class CythonRecipe(PythonRecipe):
             manually_cythonise = True
         if manually_cythonise:
             self.cythonize_build()
+            log.info('Start build again.')
             build_ext.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
