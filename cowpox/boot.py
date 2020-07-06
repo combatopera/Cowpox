@@ -115,11 +115,8 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
                 shutil.copy2(librepo.recipebuilddir / builtlibpath, archlibs)
         self.arch.striplibs(self.android_project_libs)
         for javasrc in javasrcs:
-            self._distribute_javaclasses(javasrc.javasrc)
-
-    def _distribute_javaclasses(self, javaclass_dir):
-        log.info("Copying java files from: %s", javaclass_dir)
-        mergetree(javaclass_dir, self.android_project_dir / 'src' / 'main' / 'java')
+            log.info("Copying java files from: %s", javasrc.javasrc)
+            mergetree(javasrc.javasrc, self.android_project_dir / 'src' / 'main' / 'java')
 
     def _distribute_aars(self):
         log.info('Unpacking aars')
