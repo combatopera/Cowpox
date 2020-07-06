@@ -105,9 +105,9 @@ class CythonRecipe(PythonRecipe):
         env = self.get_recipe_env()
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False
-        setup = python.partial('setup.py', 'build_ext', env = env, cwd = self.recipebuilddir)._v
+        build_ext = python.partial('setup.py', 'build_ext', env = env, cwd = self.recipebuilddir)._v
         try:
-            setup.print()
+            build_ext.print()
         except subprocess.CalledProcessError as e:
             if 1 != e.returncode:
                 raise
@@ -115,7 +115,7 @@ class CythonRecipe(PythonRecipe):
             manually_cythonise = True
         if manually_cythonise:
             self.cythonize_build(env, self.recipebuilddir)
-            setup.print()
+            build_ext.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
         self.arch.strip_object_files(self.recipebuilddir)
