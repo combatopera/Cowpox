@@ -120,21 +120,24 @@ class CythonRecipe(PythonRecipe):
         self.arch.strip_object_files(self.recipebuilddir)
         super().install_python_package()
 
-    def cythonize_file(self, env, filename):
-        log.info("Cythonize %s", filename)
+    def cythonize_file(self, env, path):
+        log.info("Cythonize %s", path)
         cyenv = env.copy()
         if 'CYTHONPATH' in cyenv:
             cyenv['PYTHONPATH'] = cyenv['CYTHONPATH']
         elif 'PYTHONPATH' in cyenv:
             del cyenv['PYTHONPATH']
         cyenv.pop('PYTHONNOUSERSITE', None)
-        python.print('-m', 'Cython.Build.Cythonize', filename, env = cyenv)
+        python.print('-m', 'Cython.Build.Cythonize', path, env = cyenv)
 
     def cythonize_build(self):
         log.info('Running cython where appropriate')
         env = self.get_recipe_env()
-        for filename in self.recipebuilddir.rglob('*.pyx'):
-            self.cythonize_file(env, filename)
+        for path in self.pyxpaths():
+            self.cythonize_file(env, path)
+
+    def pyxpaths(self):
+        return self.recipebuilddir.rglob('*.pyx')
 
     def get_recipe_env(self):
         env = super().get_recipe_env()

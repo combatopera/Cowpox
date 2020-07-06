@@ -56,9 +56,10 @@ class KivyRecipe(CythonRecipe):
             for dirn in recipebuilddir.glob('build/lib.*'):
                 cp._r.print(kivyinclude, dirn / 'kivy')
 
-    def cythonize_file(self, env, filename):
-        if filename.name not in {'window_x11.pyx'}:
-            super().cythonize_file(env, filename)
+    def pyxpaths(self):
+        for path in super().pyxpaths():
+            if path.name != 'window_x11.pyx':
+                yield path
 
     def get_recipe_env(self):
         env = super().get_recipe_env()
