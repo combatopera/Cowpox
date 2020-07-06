@@ -82,7 +82,7 @@ class ArchImpl(Arch):
         )
         self.cc = _spjoin(self.ccachepath, platform.clang_exe(self), self.cflags)
         strip = f"{self.command_prefix}-strip", '--strip-unneeded'
-        self.archenv = dict(self.staticenv,
+        self.env = dict(self.staticenv,
             CFLAGS = self.cflags,
             CXXFLAGS = self.cflags,
             LDFLAGS = '', # TODO: Env object.
@@ -120,9 +120,6 @@ class ArchImpl(Arch):
 
     def builddirname(self):
         return f"{self.name}__ndk_target_{self.ndk_api}"
-
-    def get_env(self):
-        return self.archenv.copy()
 
     def strip_object_files(self, root):
         log.info('Stripping object files')

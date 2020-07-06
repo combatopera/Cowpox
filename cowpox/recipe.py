@@ -182,7 +182,7 @@ class Recipe(Plugin):
         self.mainbuild()
 
     def get_recipe_env(self):
-        return self.arch.get_env()
+        return self.arch.env.copy()
 
 class BootstrapNDKRecipe(Recipe):
 
