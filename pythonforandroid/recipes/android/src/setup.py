@@ -41,7 +41,7 @@
 from distutils.core import setup, Extension
 import os
 
-library_dirs = ['libs/' + os.environ['ARCH']]
+library_dirs = ['libs/' + os.environ['ARCH']] # XXX: What does this do?
 lib_dict = {
     'sdl2': ['SDL2', 'SDL2_image', 'SDL2_mixer', 'SDL2_ttf']
 }
