@@ -62,7 +62,7 @@ class PythonRecipe(Recipe):
         self.interpreterrecipe = interpreterrecipe
 
     def get_recipe_env(self):
-        env = super().get_recipe_env()
+        env = self.arch.env.copy()
         env['PYTHONNOUSERSITE'] = '1'
         # Set the LANG, this isn't usually important but is a better default
         # as it occasionally matters how Python e.g. reads files

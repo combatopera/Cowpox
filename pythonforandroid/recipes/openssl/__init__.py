@@ -66,7 +66,7 @@ class OpenSSLRecipe(Recipe, LibRepo):
         )
 
     def get_recipe_env(self): # XXX: Is this just used below?
-        env = super().get_recipe_env()
+        env = self.arch.env.copy()
         env['OPENSSL_VERSION'] = self.version
         env['MAKE'] = 'make'
         env['ANDROID_NDK'] = self.ndk_dir
