@@ -51,9 +51,9 @@ class KivyRecipe(CythonRecipe):
 
     def cythonize_build(self):
         super().cythonize_build()
-        kivyinclude = recipebuilddir / 'kivy' / 'include'
+        kivyinclude = self.recipebuilddir / 'kivy' / 'include'
         if kivyinclude.exists():
-            for dirn in recipebuilddir.glob('build/lib.*'):
+            for dirn in self.recipebuilddir.glob('build/lib.*'):
                 cp._r.print(kivyinclude, dirn / 'kivy')
 
     def pyxpaths(self):
