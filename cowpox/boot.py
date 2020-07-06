@@ -106,6 +106,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
         writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.
         log.info('Copying libs.')
+        mergetree(self.build_dir / 'libs', self.android_project_libs)
         mergetree(self.arch.libs_dir, self.android_project_libs / self.arch.name)
         self._distribute_aars()
         shutil.copy2(interpreterrecipe.androidbuild / interpreterrecipe.instsoname, (self.android_project_libs / self.arch.name).mkdirp())
