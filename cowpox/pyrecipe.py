@@ -123,15 +123,14 @@ class CythonRecipe(PythonRecipe):
     def cythonize_build(self):
         log.info('Running Cython where appropriate.')
         env = self.get_recipe_env()
+        if 'CYTHONPATH' in env:
+            env['PYTHONPATH'] = env['CYTHONPATH']
+        elif 'PYTHONPATH' in env:
+            del env['PYTHONPATH']
+        env.pop('PYTHONNOUSERSITE', None)
         for path in self.pyxpaths():
             log.debug("Cythonize: %s", path)
-            cyenv = env.copy()
-            if 'CYTHONPATH' in cyenv:
-                cyenv['PYTHONPATH'] = cyenv['CYTHONPATH']
-            elif 'PYTHONPATH' in cyenv:
-                del cyenv['PYTHONPATH']
-            cyenv.pop('PYTHONNOUSERSITE', None)
-            python.print('-m', 'Cython.Build.Cythonize', path, env = cyenv)
+            python.print('-m', 'Cython.Build.Cythonize', path, env = env)
 
     def pyxpaths(self):
         return self.recipebuilddir.rglob('*.pyx')
