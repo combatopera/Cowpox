@@ -61,5 +61,5 @@ class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo):
         return env
 
     def mainbuild(self):
-        self.ndk_build()
+        self.ndk_build(self.get_recipe_env())
         self.builtlibpaths = sorted(self.archlibs.iterdir())

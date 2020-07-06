@@ -201,8 +201,8 @@ class BootstrapNDKRecipe(Recipe):
         env['EXTRA_LDLIBS'] = f"-l{self.interpreterrecipe.pylibname}"
         return env
 
-    def ndk_build(self):
-        self.platform.ndk_build.print(env = self.get_recipe_env(), cwd = self.jni_dir)
+    def ndk_build(self, env):
+        self.platform.ndk_build.print(env = env, cwd = self.jni_dir)
 
 class NDKRecipe(Recipe):
 
