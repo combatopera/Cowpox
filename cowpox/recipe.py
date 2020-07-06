@@ -186,10 +186,9 @@ class Recipe(Plugin):
 
 class BootstrapNDKRecipe(Recipe):
 
-    @types(Config, Bootstrap, InterpreterRecipe)
-    def __init(self, config, bootstrap, interpreterrecipe):
+    @types(Bootstrap, InterpreterRecipe)
+    def __init(self, bootstrap, interpreterrecipe):
         self.jni_dir = bootstrap.build_dir / 'jni'
-        self.bootstrap = bootstrap
         self.interpreterrecipe = interpreterrecipe
 
     def get_build_container_dir(self):
