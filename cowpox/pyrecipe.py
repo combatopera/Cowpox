@@ -102,10 +102,9 @@ class CythonRecipe(PythonRecipe):
 
     def install_python_package(self):
         log.info("Cythonizing anything necessary in %s", self.name)
-        env = self.get_recipe_env()
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False
-        build_ext = python.partial('setup.py', 'build_ext', env = env, cwd = self.recipebuilddir)._v
+        build_ext = python.partial('setup.py', 'build_ext', env = self.get_recipe_env(), cwd = self.recipebuilddir)._v
         try:
             build_ext.print()
         except subprocess.CalledProcessError as e:
@@ -114,7 +113,7 @@ class CythonRecipe(PythonRecipe):
             log.info("%s first build failed (as expected)", self.name)
             manually_cythonise = True
         if manually_cythonise:
-            self.cythonize_build(env)
+            self.cythonize_build()
             build_ext.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
@@ -131,8 +130,9 @@ class CythonRecipe(PythonRecipe):
         cyenv.pop('PYTHONNOUSERSITE', None)
         python.print('-m', 'Cython.Build.Cythonize', filename, env = cyenv)
 
-    def cythonize_build(self, env):
+    def cythonize_build(self):
         log.info('Running cython where appropriate')
+        env = self.get_recipe_env()
         for filename in self.recipebuilddir.rglob('*.pyx'):
             self.cythonize_file(env, filename)
 

@@ -49,8 +49,8 @@ class KivyRecipe(CythonRecipe):
     depends = ['sdl2', 'pyjnius', 'setuptools']
     python_depends = ['certifi']
 
-    def cythonize_build(self, env):
-        super().cythonize_build(env)
+    def cythonize_build(self):
+        super().cythonize_build()
         kivyinclude = recipebuilddir / 'kivy' / 'include'
         if kivyinclude.exists():
             for dirn in recipebuilddir.glob('build/lib.*'):
