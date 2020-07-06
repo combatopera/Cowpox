@@ -66,7 +66,6 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.android_project_dir = Path(config.android.project.dir)
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
         self.arch = arch
-        self.graphinfo = graphinfo
 
     def templatepath(self, relpath):
         relpath = Path('templates', relpath)
