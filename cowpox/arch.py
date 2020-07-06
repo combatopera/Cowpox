@@ -81,7 +81,7 @@ class ArchImpl(Arch):
             '-fomit-frame-pointer',
             *self.arch_cflags,
         )
-        self.libs_dir = (self.libs_parent / self.name).mkdirp()
+        self.libs_dir = (self.libs_parent / self.name).mkdirp() # XXX: Obsolete?
         self.cc = _spjoin(self.ccachepath, platform.clang_exe(self), self.cflags)
         strip = f"{self.command_prefix}-strip", '--strip-unneeded'
         self.archenv = dict(self.staticenv,
