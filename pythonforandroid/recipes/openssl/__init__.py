@@ -54,10 +54,6 @@ class OpenSSLRecipe(Recipe, LibRepo):
         self.ndk_dir = config.NDK.dir
         self.ndk_api = config.android.ndk_api
 
-    @property
-    def dir_name(self):
-        return f"{self.name}{self.version}" # XXX: Why?
-
     def includeslinkslibs(self):
         return (
             [self.recipebuilddir / 'include' / p for p in ['.', 'internal', 'openssl']],
