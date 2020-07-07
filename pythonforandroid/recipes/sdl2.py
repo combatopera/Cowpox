@@ -57,11 +57,10 @@ class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo):
     @types(Config, Arch, Bootstrap)
     def __init(self, config, arch, bootstrap):
         self.jnicontrib = Contrib(Path(config.bootstrap.dir, 'jni'), Path(config.bootstrap.common.dir, 'jni'))
-        self.archlibs = bootstrap.build_dir / 'libs' / arch.name
 
     def mainbuild(self):
         self.jnicontrib.mergeinto(self.jni_dir)
         env = self.recipe_env_with_python()
         env['APP_ALLOW_MISSING_DEPS'] = 'true'
         self.ndk_build(env)
-        self.builtlibpaths = sorted(self.archlibs.iterdir())
+        self.builtlibpaths = sorted((self.jni_dir.parent / 'libs' / arch.name).iterdir())
