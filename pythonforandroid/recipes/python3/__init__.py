@@ -45,14 +45,16 @@ from lagoon.program import Program
 
 class Python3Recipe(GuestPythonRecipe):
 
+    from .openssl import OpenSSLRecipe
     version = '3.8.1' # XXX: Should this match container version?
     url = f"https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
     depends = ['sqlite3', 'openssl', 'libffi']
     opt_depends = ['libbz2', 'liblzma']
 
-    @types(Config)
-    def __init(self, config):
+    @types(Config, OpenSSLRecipe)
+    def __init(self, config, openssl = None):
         self.use_lld = config.use.lld
+        self.openssl = openssl
 
     def mainbuild(self):
         self.apply_patches('py3.8.1.patch')
@@ -70,6 +72,6 @@ class Python3Recipe(GuestPythonRecipe):
             '--prefix=/usr/local',
             '--exec-prefix=/usr/local',
         ]
-        if 'openssl' in self.graphinfo.recipenames:
-            configure_args += [f"--with-openssl={self.graph.get_recipe('openssl').recipebuilddir}"]
+        if self.openssl is not None:
+            configure_args += [f"--with-openssl={self.openssl.recipebuilddir}"]
         self.build_android(configure_args)
