@@ -59,8 +59,6 @@ class LibRepo: pass
 
 class SkeletonOK: pass
 
-class BootstrapOK: pass
-
 class RecipesOK: pass
 
 class PipInstallOK: pass

@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, InterpreterRecipe, PrivateOK, skel
+from . import Arch, InterpreterRecipe, PipInstallOK, PrivateOK, RecipesOK, skel
 from .config import Config
 from .container import compileall
 from .make import Make
@@ -104,8 +104,8 @@ class Private:
         self.interpreterrecipe = interpreterrecipe
         self.recipes = recipes
 
-    @types(Make, BootstrapOK, this = PrivateOK) # XXX: Does this really depend on BootstrapOK?
-    def create_python_bundle(self, make, _):
+    @types(Make, PipInstallOK, RecipesOK, this = PrivateOK) # XXX: Does this really depend on all that?
+    def create_python_bundle(self, make, *_):
         make(self._createbundle)
 
     def _createbundle(self):

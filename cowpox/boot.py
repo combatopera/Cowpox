@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import BootstrapOK, GraphInfo, RecipesOK, PipInstallOK, SkeletonOK
+from . import GraphInfo, SkeletonOK
 from .config import Config
 from .util import Contrib, Plugin, PluginType
 from diapyr import types
@@ -70,7 +70,3 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     @types(this = SkeletonOK)
     def prepare_dirs(self):
         Contrib(self.bootstrap_dir / 'jni', self.common_dir / 'jni').mergeinto(self.build_dir / 'jni')
-
-    @types(RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
-    def toandroidproject(self, *_):
-        pass
