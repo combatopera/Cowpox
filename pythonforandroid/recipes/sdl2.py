@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox import Arch, LibRepo
+from cowpox import LibRepo
 from cowpox.boot import Bootstrap
 from cowpox.config import Config
 from cowpox.recipe import BootstrapNDKRecipe
@@ -54,8 +54,8 @@ class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo):
     dir_name = 'SDL'
     depends = ['sdl2_image', 'sdl2_mixer', 'sdl2_ttf']
 
-    @types(Config, Arch, Bootstrap)
-    def __init(self, config, arch, bootstrap):
+    @types(Config, Bootstrap)
+    def __init(self, config, bootstrap):
         self.jnicontrib = Contrib(Path(config.bootstrap.dir, 'jni'), Path(config.bootstrap.common.dir, 'jni'))
 
     def mainbuild(self):
@@ -63,4 +63,4 @@ class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo):
         env = self.recipe_env_with_python()
         env['APP_ALLOW_MISSING_DEPS'] = 'true'
         self.ndk_build(env)
-        self.builtlibpaths = sorted((self.jni_dir.parent / 'libs' / arch.name).iterdir())
+        self.builtlibpaths = sorted((self.jni_dir.parent / 'libs' / self.arch.name).iterdir())
