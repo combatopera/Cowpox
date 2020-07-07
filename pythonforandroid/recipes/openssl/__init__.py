@@ -65,13 +65,6 @@ class OpenSSLRecipe(Recipe, LibRepo):
             [f"crypto{self.version}", f"ssl{self.version}"],
         )
 
-    def get_recipe_env(self): # XXX: Is this just used below?
-        env = self.arch.env.copy()
-        env['OPENSSL_VERSION'] = self.version
-        env['MAKE'] = 'make'
-        env['ANDROID_NDK'] = self.ndk_dir
-        return env
-
     def _select_build_arch(self):
         aname = self.arch.name
         if 'arm64' in aname:
@@ -87,7 +80,10 @@ class OpenSSLRecipe(Recipe, LibRepo):
         return 'linux-armv4'
 
     def mainbuild(self):
-        env = self.get_recipe_env()
+        env = self.arch.env.copy()
+        env['OPENSSL_VERSION'] = self.version
+        env['MAKE'] = 'make'
+        env['ANDROID_NDK'] = self.ndk_dir
         perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = self.recipebuilddir)
         self.apply_patches('disable-sover.patch')
         make.print('build_libs', env = env, cwd = self.recipebuilddir)

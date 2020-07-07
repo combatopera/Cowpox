@@ -55,11 +55,8 @@ class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo):
     def __init(self, arch, bootstrap):
         self.archlibs = bootstrap.build_dir / 'libs' / arch.name
 
-    def get_recipe_env(self):
+    def mainbuild(self):
         env = self.recipe_env_with_python()
         env['APP_ALLOW_MISSING_DEPS'] = 'true'
-        return env
-
-    def mainbuild(self):
-        self.ndk_build(self.get_recipe_env())
+        self.ndk_build(env)
         self.builtlibpaths = sorted(self.archlibs.iterdir())

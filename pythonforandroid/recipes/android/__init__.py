@@ -48,11 +48,6 @@ class AndroidRecipe(CythonRecipe):
     url = 'src'
     depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
 
-    def get_recipe_env(self):
-        env = super().get_recipe_env()
-        env.update(self.config_env)
-        return env
-
     def mainbuild(self):
         bootstrap_name = self.bootstrap.name
         is_sdl2 = bootstrap_name in {'sdl2', 'sdl2python3', 'sdl2_gradle'}
@@ -67,13 +62,14 @@ class AndroidRecipe(CythonRecipe):
             'JNI_NAMESPACE': 'org/kivy/android',
         }
         android = self.recipebuilddir / 'android'
+        env = self.get_recipe_env()
         with (android / 'config.pxi').open('w') as fpxi, (android / 'config.h').open('w') as fh, (android / 'config.py').open('w') as fpy:
             for key, value in config.items():
                 print(f'DEF {key} = {repr(value)}', file = fpxi)
                 print(f'{key} = {repr(value)}', file = fpy)
                 print(f"""#define {key} {value if isinstance(value, int) else f'"{value}"'}""", file = fh)
+                env[key] = str(value)
             if is_sdl2:
                 print('JNIEnv *SDL_AndroidGetJNIEnv(void);', file = fh)
                 print('#define SDL_ANDROID_GetJNIEnv SDL_AndroidGetJNIEnv', file = fh)
-        self.config_env = {key: str(value) for key, value in config.items()} # XXX: Is this just for install_python_package?
-        self.install_python_package(self.get_recipe_env())
+        self.install_python_package(env)

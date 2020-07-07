@@ -69,7 +69,7 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
         self.pylibname = f"python{self.majminversion}m"
         self.instsoname = f"lib{self.pylibname}.so"
 
-    def get_recipe_env(self):
+    def _set_libs_flags(self):
         env = os.environ.copy() # TODO: Probably redundant.
         env['HOSTARCH'] = self.arch.command_prefix
         env['CC'] = self.platform.clang_exe(self.arch, with_target = True)
@@ -82,10 +82,6 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
             env['LDFLAGS'] += ' -L. -fuse-ld=lld'
         else:
             log.warning('lld not enabled, linking without it. Consider installing lld if linker errors occur.')
-        return env
-
-    def _set_libs_flags(self):
-        env = self.get_recipe_env()
         def aslist(key):
             return [env[key]] if key in env else []
         cppflags = aslist('CPPFLAGS')

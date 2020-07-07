@@ -48,15 +48,12 @@ class Sqlite3Recipe(NDKRecipe, LibRepo):
     version = '3.15.1'
     url = 'https://www.sqlite.org/2016/sqlite-amalgamation-3150100.zip'
 
-    def get_recipe_env(self):
-        env = self.arch.env.copy()
-        env['NDK_PROJECT_PATH'] = str(self.recipebuilddir)
-        return env
-
     def includeslinkslibs(self):
         return [[self.recipebuilddir], [self.get_lib_dir()], ['sqlite3']]
 
     def mainbuild(self):
         shutil.copy2(self.resourcepath('Android.mk'), (self.recipebuilddir / 'jni').mkdirp())
-        self.ndk_build(self.get_recipe_env())
+        env = self.arch.env.copy()
+        env['NDK_PROJECT_PATH'] = str(self.recipebuilddir)
+        self.ndk_build(env)
         self.builtlibpaths = [Path('libs', self.arch.name, 'libsqlite3.so')]

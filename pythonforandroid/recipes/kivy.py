@@ -61,8 +61,8 @@ class KivyRecipe(CythonRecipe):
             if path.name != 'window_x11.pyx':
                 yield path
 
-    def get_recipe_env(self):
-        env = super().get_recipe_env()
+    def mainbuild(self):
+        env = self.get_recipe_env()
         if 'sdl2' in self.graphinfo.recipenames:
             env['USE_SDL2'] = '1'
             env['KIVY_SPLIT_EXAMPLES'] = '1'
@@ -72,7 +72,4 @@ class KivyRecipe(CythonRecipe):
                 self.bootstrap.build_dir / 'jni' / 'SDL2_mixer',
                 self.bootstrap.build_dir / 'jni' / 'SDL2_ttf',
             ]))
-        return env
-
-    def mainbuild(self):
-        self.install_python_package(self.get_recipe_env())
+        self.install_python_package(env)
