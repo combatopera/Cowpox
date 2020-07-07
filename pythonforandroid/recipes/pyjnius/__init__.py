@@ -40,6 +40,7 @@
 
 from cowpox import JavaSrc
 from cowpox.pyrecipe import CythonRecipe
+from cowpox.util import Contrib
 
 class PyjniusRecipe(CythonRecipe, JavaSrc):
 
@@ -53,4 +54,4 @@ class PyjniusRecipe(CythonRecipe, JavaSrc):
         if 'genericndkbuild' in self.graphinfo.recipenames:
             self.apply_patches('genericndkbuild_jnienv_getter.patch')
         self.install_python_package()
-        self.javasrc = self.recipebuilddir / 'jnius' / 'src'
+        self.javasrc = Contrib(self.recipebuilddir / 'jnius' / 'src')

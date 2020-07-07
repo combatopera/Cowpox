@@ -40,7 +40,7 @@
 
 from . import Arch, BootstrapOK, GraphInfo, RecipesOK, PipInstallOK, SkeletonOK
 from .config import Config
-from .util import mergetrees, Plugin, PluginType
+from .util import Contrib, Plugin, PluginType
 from diapyr import types
 from pathlib import Path
 import logging, shutil
@@ -74,7 +74,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     @types(this = SkeletonOK)
     def prepare_dirs(self):
-        mergetrees(self.build_dir, self.bootstrap_dir, self.common_dir)
+        Contrib(self.bootstrap_dir, self.common_dir).mergeinto(self.build_dir)
 
     @types(RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
     def toandroidproject(self, *_):

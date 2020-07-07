@@ -140,12 +140,17 @@ def enum(*lists):
         return cls
     return d
 
-def mergetrees(dst, *srcs):
-    for relpath in sorted({path.relative_to(src) for src in srcs for path in src.rglob('*') if path.is_file()}):
-        for src in srcs:
-            path = src / relpath
-            if path.is_file():
-                dstpath = dst / relpath
-                assert not dstpath.is_dir()
-                shutil.copy2(path, dstpath.pmkdirp())
-                break
+class Contrib:
+
+    def __init__(self, *srcdirs):
+        self.srcdirs = srcdirs
+
+    def mergeinto(self, dst):
+        for relpath in sorted({path.relative_to(src) for src in self.srcdirs for path in src.rglob('*') if path.is_file()}):
+            for src in self.srcdirs:
+                path = src / relpath
+                if path.is_file():
+                    dstpath = dst / relpath
+                    assert not dstpath.is_dir()
+                    shutil.copy2(path, dstpath.pmkdirp())
+                    break
