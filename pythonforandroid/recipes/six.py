@@ -47,4 +47,4 @@ class SixRecipe(PythonRecipe): # XXX: Why do we need this?
     depends = ['setuptools']
 
     def mainbuild(self):
-        self.install_python_package(self.get_recipe_env())
+        self.install_python_package()

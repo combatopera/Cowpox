@@ -71,7 +71,9 @@ class PythonRecipe(Recipe):
         env['LDFLAGS'] += f" -L{self.interpreterrecipe.link_root()} -l{self.interpreterrecipe.pylibname}"
         return env
 
-    def install_python_package(self, env):
+    def install_python_package(self, env = None):
+        if env is None:
+            env = self.get_recipe_env()
         log.info("Install %s into bundle.", self.name)
         self.bundlepackages = self.recipebuilddir / 'Cowpox-bundle'
         rdir = self.bundlepackages / 'r'
@@ -85,7 +87,9 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
     build_ext_args = ()
 
-    def install_python_package(self, env):
+    def install_python_package(self, env = None):
+        if env is None:
+            env = self.get_recipe_env()
         log.info("Building compiled components in %s", self.name)
         python.print('setup.py', 'build_ext', '-v', *self.build_ext_args, env = env, cwd = self.recipebuilddir)
         objsdir, = self.recipebuilddir.glob('build/lib.*')
@@ -98,7 +102,9 @@ class CythonRecipe(PythonRecipe):
     def __init(self, config, bootstrap):
         self.bootstrap = bootstrap
 
-    def install_python_package(self, env):
+    def install_python_package(self, env = None):
+        if env is None:
+            env = self.get_recipe_env()
         log.info("Cythonizing anything necessary in %s", self.name)
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False

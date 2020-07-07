@@ -46,4 +46,4 @@ class SetuptoolsRecipe(PythonRecipe):
     url = f"https://pypi.python.org/packages/source/s/setuptools/setuptools-{version}.zip"
 
     def mainbuild(self):
-        self.install_python_package(self.get_recipe_env())
+        self.install_python_package()

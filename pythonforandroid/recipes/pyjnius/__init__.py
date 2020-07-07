@@ -52,5 +52,5 @@ class PyjniusRecipe(CythonRecipe, JavaSrc):
             self.apply_patches('sdl2_jnienv_getter.patch')
         if 'genericndkbuild' in self.graphinfo.recipenames:
             self.apply_patches('genericndkbuild_jnienv_getter.patch')
-        self.install_python_package(self.get_recipe_env())
+        self.install_python_package()
         self.javasrc = self.recipebuilddir / 'jnius' / 'src'
