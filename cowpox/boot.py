@@ -74,7 +74,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     @types(this = SkeletonOK)
     def prepare_dirs(self):
-        Contrib(self.bootstrap_dir, self.common_dir).mergeinto(self.build_dir)
+        Contrib(self.bootstrap_dir.parent / 'jni', self.common_dir.parent / 'jni').mergeinto(self.build_dir / 'jni')
 
     @types(RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
     def toandroidproject(self, *_):
