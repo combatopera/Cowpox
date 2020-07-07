@@ -56,8 +56,6 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     @types(Config, GraphInfo)
     def __init__(self, config, graphinfo):
-        self.common_dir = Path(config.bootstrap.common.dir)
-        self.bootstrap_dir = Path(config.bootstrap.dir)
         android_api = config.android.api
         if android_api < self.MIN_TARGET_API:
             log.warning("Target API %s < %s", android_api, self.MIN_TARGET_API)
