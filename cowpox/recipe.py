@@ -176,7 +176,7 @@ class Recipe(Plugin):
             self.recipebuilddir.with_name(rootname).rename(self.recipebuilddir)
 
     def maketarget(self):
-        yield self.recipebuilddir
+        yield self.recipebuilddir # FIXME: Does not cover SDL artifacts.
         self._prepare()
         self.mainbuild()
         self.arch.strip_object_files(self.striproot())
