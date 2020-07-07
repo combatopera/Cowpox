@@ -188,6 +188,7 @@ class AndroidProject:
         self.sdk_dir = config.SDK.dir
         self.buildsdir = Path(config.buildsdir)
         self.srccontrib = Contrib(Path(config.bootstrap.dir, 'src'), Path(config.bootstrap.common.dir, 'src'))
+        self.templates = Contrib(Path(config.bootstrap.dir, 'templates'), Path(config.bootstrap.common.dir, 'templates'))
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
@@ -285,7 +286,7 @@ class AndroidProject:
             repl.printf("targetSdkVersion = %s", self.android_api)
             repl.printf("configChanges = %s", '|'.join(configChanges))
             repl.printf("redirect %s", self.android_project_dir / 'src' / 'main' / 'AndroidManifest.xml')
-            repl.printf("< %s", self.bootstrap.templatepath('AndroidManifest.xml.aridt'))
+            repl.printf("< %s", self.templates.resolve('AndroidManifest.xml.aridt'))
         with Repl() as repl:
             repl('" = $(groovystr)')
             repl.printf("compileSdkVersion = %s", self.android_api)
@@ -302,7 +303,7 @@ class AndroidProject:
                 repl.printf("keyPassword = %s", os.environ['P4A_RELEASE_KEYALIAS_PASSWD'])
             repl.printf("buildDir = %s", self.gradle_builddir)
             repl.printf("redirect %s", self.android_project_dir / 'build.gradle')
-            repl.printf("< %s", self.bootstrap.templatepath('build.gradle.aridt'))
+            repl.printf("< %s", self.templates.resolve('build.gradle.aridt'))
         with Repl() as repl:
             repl('& = $(xmltext)')
             repl.printf("app_name = %s", self.app_name)
@@ -310,9 +311,9 @@ class AndroidProject:
             repl.printf("presplash_color = %s", self.presplash_color)
             repl('urlScheme = kivy')
             repl.printf("redirect %s", (self.res_dir / 'values').mkdirp() / 'strings.xml')
-            repl.printf("< %s", self.bootstrap.templatepath('strings.xml.aridt'))
+            repl.printf("< %s", self.templates.resolve('strings.xml.aridt'))
         if self.bootstrapname == 'webview':
             with Repl() as repl:
                 repl.printf("port = %s", self.webview_port)
                 repl.printf("redirect %s", (self.android_project_dir / 'src' / 'main' / 'java' / 'org' / 'kivy' / 'android').mkdirp() / 'WebViewLoader.java')
-                repl.printf("< %s", self.bootstrap.templatepath('WebViewLoader.java.aridt'))
+                repl.printf("< %s", self.templates.resolve('WebViewLoader.java.aridt'))

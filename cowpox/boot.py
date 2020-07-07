@@ -64,9 +64,6 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
 
-    def templatepath(self, relpath):
-        return Contrib(self.bootstrap_dir / 'templates', self.common_dir / 'templates').resolve(relpath)
-
     @types(this = SkeletonOK)
     def prepare_dirs(self):
         Contrib(self.bootstrap_dir / 'jni', self.common_dir / 'jni').mergeinto(self.build_dir / 'jni')
