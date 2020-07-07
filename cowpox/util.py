@@ -140,10 +140,12 @@ def enum(*lists):
         return cls
     return d
 
-def mergetree(src, dst, recessive = False):
-    for path in src.rglob('*'):
-        if path.is_file():
-            dstpath = dst / path.relative_to(src)
-            assert not dstpath.is_dir()
-            if not (recessive and dstpath.exists()):
+def mergetrees(dst, *srcs):
+    for relpath in sorted({path.relative_to(src) for src in srcs for path in src.rglob('*') if path.is_file()}):
+        for src in srcs:
+            path = src / relpath
+            if path.is_file():
+                dstpath = dst / relpath
+                assert not dstpath.is_dir()
                 shutil.copy2(path, dstpath.pmkdirp())
+                break

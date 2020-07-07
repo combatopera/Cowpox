@@ -43,7 +43,7 @@ from .boot import Bootstrap
 from .config import Config
 from .make import Make
 from .platform import Platform
-from .util import enum, mergetree, writeproperties
+from .util import enum, mergetrees, writeproperties
 from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
@@ -250,7 +250,7 @@ class AndroidProject:
         self.arch.striplibs(self.android_project_libs)
         for javasrc in javasrcs:
             log.info("Copying java files from: %s", javasrc.javasrc)
-            mergetree(javasrc.javasrc, self.android_project_dir / 'src' / 'main' / 'java')
+            mergetrees(self.android_project_dir / 'src' / 'main' / 'java', javasrc.javasrc)
         self.assetarchive.makeprivate()
         shutil.copy2(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':
