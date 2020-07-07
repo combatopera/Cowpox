@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .sdl2 import LibSDL2Recipe
 from cowpox.pyrecipe import CythonRecipe
 from diapyr import types
 from lagoon import cp
@@ -46,6 +45,7 @@ import os
 
 class KivyRecipe(CythonRecipe):
 
+    from .sdl2 import LibSDL2Recipe
     version = '1.11.1'
     url = f"https://github.com/kivy/kivy/archive/{version}.zip"
     depends = ['sdl2', 'pyjnius', 'setuptools']
