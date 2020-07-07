@@ -145,12 +145,16 @@ class Contrib:
     def __init__(self, *srcdirs):
         self.srcdirs = srcdirs
 
-    def mergeinto(self, dst):
+    def filepaths(self):
         for relpath in sorted({path.relative_to(src) for src in self.srcdirs for path in src.rglob('*') if path.is_file()}):
             for src in self.srcdirs:
                 path = src / relpath
                 if path.is_file():
-                    dstpath = dst / relpath
-                    assert not dstpath.is_dir()
-                    shutil.copy2(path, dstpath.pmkdirp())
-                    break
+                    yield path, relpath
+                    break # Skip remaining srcdirs.
+
+    def mergeinto(self, dst):
+        for path, relpath in self.filepaths():
+            dstpath = dst / relpath
+            assert not dstpath.is_dir()
+            shutil.copy2(path, dstpath.pmkdirp())

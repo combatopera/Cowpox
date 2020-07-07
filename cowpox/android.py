@@ -43,7 +43,7 @@ from .boot import Bootstrap
 from .config import Config
 from .make import Make
 from .platform import Platform
-from .util import enum, writeproperties
+from .util import Contrib, enum, writeproperties
 from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
@@ -103,7 +103,10 @@ class AssetArchive:
 
     @types(Config, GraphInfo, Graph)
     def __init__(self, config, graphinfo, graph):
-        self.sourcedirs = [Path(d) for d in [config.private.dir, config.bootstrap.private.dir]] # FIXME LATER: The latter should incorporate common.
+        self.contribs = [
+            Contrib(config.private.dir),
+            Contrib(config.bootstrap.private.dir, config.bootstrap.common.private.dir),
+        ]
         self.tarpath = Path(config.android.project.assets.dir, 'private.mp3')
         self.WHITELIST_PATTERNS = ['pyconfig.h'] if config.bootstrap.name in {'sdl2', 'webview', 'service_only'} else []
         self.WHITELIST_PATTERNS.extend(config.android.whitelist.list())
@@ -146,23 +149,11 @@ class AssetArchive:
             tardirs.add(relpath)
         with tarfile.open(self.tarpath.pmkdirp(), 'w:gz', format = tarfile.USTAR_FORMAT) as tf:
             tardirs = {Path('.')}
-            for sd in self.sourcedirs:
-                if sd.exists():
-                    for path in self._listfiles(sd):
-                        relpath = path.relative_to(sd)
+            for contrib in self.contribs:
+                for path, relpath in contrib.filepaths():
+                    if self._accept(path):
                         mkdirp(relpath.parent)
                         tf.add(path, relpath)
-
-    def _listfiles(self, dirpath):
-        subdirs = []
-        for path in dirpath.iterdir():
-            if path.is_file():
-                if self._accept(path):
-                    yield path
-            else:
-                subdirs.append(path)
-        for subdir in subdirs:
-            yield from self._listfiles(subdir)
 
 class AndroidProject:
 
