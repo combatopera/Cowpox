@@ -69,12 +69,12 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     def templatepath(self, relpath):
         relpath = Path('templates', relpath)
-        path = self.bootstrap_dir.parent / relpath
-        return path if path.exists() else self.common_dir.parent / relpath
+        path = self.bootstrap_dir / relpath
+        return path if path.exists() else self.common_dir / relpath
 
     @types(this = SkeletonOK)
     def prepare_dirs(self):
-        Contrib(self.bootstrap_dir.parent / 'jni', self.common_dir.parent / 'jni').mergeinto(self.build_dir / 'jni')
+        Contrib(self.bootstrap_dir / 'jni', self.common_dir / 'jni').mergeinto(self.build_dir / 'jni')
 
     @types(RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
     def toandroidproject(self, *_):

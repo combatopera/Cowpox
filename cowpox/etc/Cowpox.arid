@@ -76,7 +76,7 @@ presplash
     path = $(default path)
 bootstrap
     name = sdl2
-    dir = $/($(bootstrapsdir) $(name) build)
+    dir = $/($(bootstrapsdir) $(name))
     common name = common
 package name = Cowpox-project
 build_mode = debug

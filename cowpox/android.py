@@ -105,7 +105,7 @@ class AssetArchive:
     def __init__(self, config, graphinfo, graph):
         self.contribs = [
             Contrib(Path(config.private.dir)),
-            Contrib(Path(config.bootstrap.dir).parent / 'private', Path(config.bootstrap.common.dir).parent / 'private'),
+            Contrib(Path(config.bootstrap.dir, 'private'), Path(config.bootstrap.common.dir, 'private')),
         ]
         self.tarpath = Path(config.android.project.assets.dir, 'private.mp3')
         self.WHITELIST_PATTERNS = ['pyconfig.h'] if config.bootstrap.name in {'sdl2', 'webview', 'service_only'} else []
@@ -187,7 +187,7 @@ class AndroidProject:
         self.package_name = config.package.name
         self.sdk_dir = config.SDK.dir
         self.buildsdir = Path(config.buildsdir)
-        self.srccontrib = Contrib(Path(config.bootstrap.dir).parent / 'src', Path(config.bootstrap.common.dir).parent / 'src')
+        self.srccontrib = Contrib(Path(config.bootstrap.dir, 'src'), Path(config.bootstrap.common.dir, 'src'))
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
