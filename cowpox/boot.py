@@ -43,7 +43,7 @@ from .config import Config
 from .util import Contrib, Plugin, PluginType
 from diapyr import types
 from pathlib import Path
-import logging, shutil
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -79,4 +79,3 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     @types(RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
     def toandroidproject(self, *_):
         self.arch.strip_object_files(self.buildsdir) # XXX: What exactly does this do?
-        shutil.copytree(self.build_dir, self.android_project_dir) # FIXME: Next thing to make incremental.

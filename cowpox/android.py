@@ -187,6 +187,7 @@ class AndroidProject:
         self.package_name = config.package.name
         self.sdk_dir = config.SDK.dir
         self.buildsdir = Path(config.buildsdir)
+        self.srccontrib = Contrib(Path(config.bootstrap.dir).parent / 'src', Path(config.bootstrap.common.dir).parent / 'src')
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive
@@ -230,6 +231,7 @@ class AndroidProject:
     @types([JavaSrc], [LibRepo], PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
     def prepare(self, javasrcs, librepos, _):
         # FIXME: Use Make (which currently deletes a lot).
+        self.srccontrib.mergeinto(self.android_project_dir / 'src')
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
         writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.
         log.info('Copying libs.')
