@@ -52,7 +52,7 @@ class LibffiRecipe(Recipe, LibRepo):
 
     def mainbuild(self):
         self.apply_patches('remove-version-info.patch')
-        env = self.get_recipe_env()
+        env = self.arch.env
         if not (self.recipebuilddir / 'configure').exists():
             Program.text(Path('autogen.sh')).print(env = env, cwd = self.recipebuilddir)
         autoreconf._vif.print(env = env, cwd = self.recipebuilddir)
