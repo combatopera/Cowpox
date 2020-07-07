@@ -68,9 +68,7 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
         self.arch = arch
 
     def templatepath(self, relpath):
-        relpath = Path('templates', relpath)
-        path = self.bootstrap_dir / relpath
-        return path if path.exists() else self.common_dir / relpath
+        return Contrib(self.bootstrap_dir / 'templates', self.common_dir / 'templates').resolve(relpath)
 
     @types(this = SkeletonOK)
     def prepare_dirs(self):

@@ -147,11 +147,13 @@ class Contrib:
 
     def filepaths(self):
         for relpath in sorted({path.relative_to(src) for src in self.srcdirs for path in src.rglob('*') if path.is_file()}):
-            for src in self.srcdirs:
-                path = src / relpath
-                if path.is_file():
-                    yield path, relpath
-                    break # Skip remaining srcdirs.
+            yield self.resolve(relpath), relpath
+
+    def resolve(self, relpath):
+        for src in self.srcdirs:
+            path = src / relpath
+            if path.is_file():
+                return path
 
     def mergeinto(self, dst):
         for path, relpath in self.filepaths():
