@@ -108,12 +108,8 @@ class Recipe(Plugin):
             log.info("Apply patch: %s", relpath)
             patch._t._p1.print('-d', self.recipebuilddir, '-i', self.resourcepath(relpath))
 
-    @property
-    def buildcontainerparent(self):
-        return self.other_builds / self.graphinfo.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)])
-
     def get_build_container_dir(self):
-        return self.buildcontainerparent / self.arch.builddirname()
+        return self.other_builds / self.graphinfo.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / self.arch.builddirname()
 
     @property
     def recipebuilddir(self):
