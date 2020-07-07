@@ -38,7 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .sdl2 import LibSDL2Recipe
 from cowpox.pyrecipe import CythonRecipe
+from diapyr import types
 from lagoon import cp
 import os
 
@@ -48,6 +50,10 @@ class KivyRecipe(CythonRecipe):
     url = f"https://github.com/kivy/kivy/archive/{version}.zip"
     depends = ['sdl2', 'pyjnius', 'setuptools']
     python_depends = ['certifi']
+
+    @types(LibSDL2Recipe)
+    def __init(self, sdl2 = None):
+        self.sdl2 = sdl2
 
     def cythonize_build(self, env):
         super().cythonize_build(env)
@@ -63,13 +69,13 @@ class KivyRecipe(CythonRecipe):
 
     def mainbuild(self):
         env = self.get_recipe_env()
-        if 'sdl2' in self.graphinfo.recipenames:
+        if self.sdl2 is not None:
             env['USE_SDL2'] = '1'
             env['KIVY_SPLIT_EXAMPLES'] = '1'
             env['KIVY_SDL2_PATH'] = os.pathsep.join(map(str, [
-                self.bootstrap.build_dir / 'jni' / 'SDL' / 'include',
-                self.bootstrap.build_dir / 'jni' / 'SDL2_image',
-                self.bootstrap.build_dir / 'jni' / 'SDL2_mixer',
-                self.bootstrap.build_dir / 'jni' / 'SDL2_ttf',
+                self.sdl2.jni_dir / 'SDL' / 'include',
+                self.sdl2.jni_dir / 'SDL2_image',
+                self.sdl2.jni_dir / 'SDL2_mixer',
+                self.sdl2.jni_dir / 'SDL2_ttf',
             ]))
         self.install_python_package(env)
