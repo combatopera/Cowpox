@@ -57,8 +57,6 @@ class JavaSrc: pass
 
 class LibRepo: pass
 
-class SkeletonOK: pass
-
 class RecipesOK: pass
 
 class PipInstallOK: pass

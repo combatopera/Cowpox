@@ -38,9 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import GraphInfo, SkeletonOK
+from . import GraphInfo
 from .config import Config
-from .util import Contrib, Plugin, PluginType
+from .util import Plugin, PluginType
 from diapyr import types
 from pathlib import Path
 import logging
@@ -63,7 +63,3 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
             log.warning("Target API %s < %s", android_api, self.MIN_TARGET_API)
             log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
-
-    @types(this = SkeletonOK)
-    def prepare_dirs(self):
-        Contrib(self.bootstrap_dir / 'jni', self.common_dir / 'jni').mergeinto(self.build_dir / 'jni')
