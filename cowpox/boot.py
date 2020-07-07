@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, BootstrapOK, GraphInfo, RecipesOK, PipInstallOK, SkeletonOK
+from . import BootstrapOK, GraphInfo, RecipesOK, PipInstallOK, SkeletonOK
 from .config import Config
 from .util import Contrib, Plugin, PluginType
 from diapyr import types
@@ -54,17 +54,15 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
     MIN_TARGET_API = 26
     recipe_depends = 'python3', 'android'
 
-    @types(Config, Arch, GraphInfo)
-    def __init__(self, config, arch, graphinfo):
+    @types(Config, GraphInfo)
+    def __init__(self, config, graphinfo):
         self.common_dir = Path(config.bootstrap.common.dir)
         self.bootstrap_dir = Path(config.bootstrap.dir)
-        self.buildsdir = Path(config.buildsdir)
         android_api = config.android.api
         if android_api < self.MIN_TARGET_API:
             log.warning("Target API %s < %s", android_api, self.MIN_TARGET_API)
             log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
-        self.arch = arch
 
     def templatepath(self, relpath):
         return Contrib(self.bootstrap_dir / 'templates', self.common_dir / 'templates').resolve(relpath)
@@ -75,4 +73,4 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     @types(RecipesOK, PipInstallOK, this = BootstrapOK) # XXX: What does this really depend on?
     def toandroidproject(self, *_):
-        self.arch.strip_object_files(self.buildsdir) # XXX: What exactly does this do?
+        pass
