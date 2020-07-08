@@ -39,13 +39,13 @@
 # THE SOFTWARE.
 
 from diapyr import types
-import logging, shutil
+import json, logging, shutil
 
 log = logging.getLogger(__name__)
 
 class UnexpectedYieldException(Exception): pass
 
-class Make: # FIXME: Rebuild when a dependency was (re)built.
+class Make:
 
     @types()
     def __init__(self, log = log):
@@ -53,22 +53,33 @@ class Make: # FIXME: Rebuild when a dependency was (re)built.
 
     def __call__(self, install):
         g = install()
-        target = next(g)
-        okpath = target / 'OK'
+        target, *dependencies = next(g)
+        infodir = target / '.Cowpox'
+        depspath = infodir / 'dependencies.json'
+        okpath = infodir / 'OK'
         if okpath.exists():
-            self.log.info("[%s] Already OK.", target)
-            return
-        self.log.info("[%s] Start build.", target)
-        if target.exists():
-            self.log.warning("[%s] Delete.", target)
+            with depspath.open() as f:
+                okdeps = json.load(f)
+            if okdeps == dependencies:
+                self.log.info("[%s] Already OK.", target)
+                return
+            self.log.info("[%s] Rebuild due to changed dependencies.", target)
             shutil.rmtree(target)
         else:
-            target.parent.mkdir(parents = True, exist_ok = True)
+            self.log.info("[%s] Start build.", target)
+            if target.exists():
+                self.log.warning("[%s] Delete.", target)
+                shutil.rmtree(target)
+            else:
+                target.pmkdirp()
         try:
             obj = next(g)
         except StopIteration:
             pass
         else:
             raise UnexpectedYieldException(obj)
+        infodir.mkdir()
+        with depspath.open('w') as f:
+            json.dump(dependencies, f, indent = 4)
         okpath.mkdir()
         self.log.info("[%s] Build OK.", target)

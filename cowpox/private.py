@@ -109,7 +109,7 @@ class Private:
         make(self._createbundle)
 
     def _createbundle(self):
-        yield self.private_dir
+        yield self.private_dir,
         self._copy_application_sources()
         modules_dir = (self.bundle_dir / 'modules').mkdirp()
         log.info("Copy %s files into the bundle", len(self.interpreter.module_filens))

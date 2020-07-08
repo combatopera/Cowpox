@@ -92,7 +92,7 @@ class Assembly:
     @types(Make, AndroidProjectOK, this = APKPath)
     def build_package(self, make, _):
         def target():
-            yield self.gradle_builddir
+            yield self.gradle_builddir,
             gradle.__no_daemon.print(self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
             log.info('Android packaging done!')
         make(target)

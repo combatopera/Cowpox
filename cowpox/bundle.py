@@ -63,7 +63,7 @@ class PipInstallRecipe(CythonRecipe):
     @types(Make, GraphInfo, this = PipInstallOK)
     def buildsite(self, make, graphinfo):
         def target():
-            yield self.pip_install_dir # FIXME: Rebuild when requirements change.
+            yield self.pip_install_dir, # FIXME: Rebuild when requirements change.
             pypinames = graphinfo.pypinames
             if pypinames:
                 pip.install._v.__no_deps.print('--target', self.pip_install_dir, *pypinames, env = self.get_recipe_env())

@@ -67,7 +67,7 @@ class TestMake(TestCase):
 
     def test_works(self):
         def install():
-            yield target
+            yield target,
             target.mkdir()
         with TemporaryDirectory() as tempdir:
             target = Path(tempdir, 'a')
@@ -80,7 +80,7 @@ class TestMake(TestCase):
             self.assertEqual([
                 I, "[%s] Already OK.", target,
             ], self._pop())
-            (target / 'OK').rmdir()
+            (target / '.Cowpox' / 'OK').rmdir()
             self.make(install)
             self.assertEqual([
                 I, "[%s] Start build.", target,
@@ -94,10 +94,33 @@ class TestMake(TestCase):
                 I, "[%s] Build OK.", target,
             ], self._pop())
 
+    def test_config(self):
+        def install():
+            yield target, config
+            target.mkdir()
+        with TemporaryDirectory() as tempdir:
+            target = Path(tempdir, 'a')
+            config = 100
+            self.make(install)
+            self.assertEqual([
+                I, "[%s] Start build.", target,
+                I, "[%s] Build OK.", target,
+            ], self._pop())
+            self.make(install)
+            self.assertEqual([
+                I, "[%s] Already OK.", target,
+            ], self._pop())
+            config = 101
+            self.make(install)
+            self.assertEqual([
+                I, "[%s] Rebuild due to changed dependencies.", target,
+                I, "[%s] Build OK.", target,
+            ], self._pop())
+
     def test_fasterror(self):
         class X(Exception): pass
         def install():
-            yield target
+            yield target,
             raise X
         with TemporaryDirectory() as tempdir:
             target = Path(tempdir, 'a')
@@ -115,7 +138,7 @@ class TestMake(TestCase):
     def test_slowerror(self):
         class X(Exception): pass
         def install():
-            yield target
+            yield target,
             target.mkdir()
             raise X
         with TemporaryDirectory() as tempdir:
@@ -134,7 +157,7 @@ class TestMake(TestCase):
 
     def test_dirnotmade(self):
         def install():
-            yield target
+            yield target,
         with TemporaryDirectory() as tempdir:
             target = Path(tempdir, 'a')
             with self.assertRaises(FileNotFoundError):
