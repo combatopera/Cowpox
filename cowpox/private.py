@@ -104,7 +104,7 @@ class Private:
         self.interpreter = interpreter
         self.recipes = recipes
 
-    @types(Make, PipInstallOK, RecipesOK, this = PrivateMemo) # XXX: Does this really depend on all that?
+    @types(Make, PipInstallOK, RecipesOK, this = PrivateMemo)
     def create_python_bundle(self, make, *_):
         return make(self._createbundle)
 
