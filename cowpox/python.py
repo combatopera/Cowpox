@@ -60,7 +60,7 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
     zlibversionpattern = re.compile('^#define ZLIB_VERSION "(.+)"$', re.MULTILINE)
 
     @types(Config, Graph, GraphInfo)
-    def __init(self, config, graph):
+    def __init(self, config, graph, graphinfo):
         self.ndk_dir = Path(config.NDK.dir)
         self.ndk_api = config.android.ndk_api
         self.use_lld = config.use.lld
