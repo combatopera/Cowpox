@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from diapyr import types
+from uuid import uuid4
 import json, logging, shutil
 
 log = logging.getLogger(__name__)
@@ -55,14 +56,14 @@ class Make:
         g = install()
         target, *dependencies = next(g)
         infodir = target / '.Cowpox'
-        depspath = infodir / 'dependencies.json'
+        infopath = infodir / 'info.json'
         okpath = infodir / 'OK'
         if okpath.exists():
-            with depspath.open() as f:
-                okdeps = json.load(f)
-            if okdeps == dependencies:
+            with infopath.open() as f:
+                info = json.load(f)
+            if info['dependencies'] == dependencies:
                 self.log.info("[%s] Already OK.", target)
-                return
+                return info['uuid']
             self.log.info("[%s] Rebuild due to changed dependencies.", target)
             shutil.rmtree(target)
         else:
@@ -78,8 +79,10 @@ class Make:
             pass
         else:
             raise UnexpectedYieldException(obj)
+        uuid = str(uuid4())
         infodir.mkdir()
-        with depspath.open('w') as f:
-            json.dump(dependencies, f, indent = 4)
+        with infopath.open('w') as f:
+            json.dump(dict(dependencies = dependencies, uuid = uuid), f, indent = 4)
         okpath.mkdir()
         self.log.info("[%s] Build OK.", target)
+        return uuid

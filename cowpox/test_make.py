@@ -71,24 +71,25 @@ class TestMake(TestCase):
             target.mkdir()
         with TemporaryDirectory() as tempdir:
             target = Path(tempdir, 'a')
-            self.make(install)
+            uuid = self.make(install)
             self.assertEqual([
                 I, "[%s] Start build.", target,
                 I, "[%s] Build OK.", target,
             ], self._pop())
-            self.make(install)
+            self.assertEqual(uuid, self.make(install))
             self.assertEqual([
                 I, "[%s] Already OK.", target,
             ], self._pop())
             (target / '.Cowpox' / 'OK').rmdir()
-            self.make(install)
+            olduuid, uuid = uuid, self.make(install)
+            self.assertNotEqual(olduuid, uuid)
             self.assertEqual([
                 I, "[%s] Start build.", target,
                 W, "[%s] Delete.", target,
                 I, "[%s] Build OK.", target,
             ], self._pop())
             shutil.rmtree(target)
-            self.make(install)
+            self.assertNotEqual(uuid, self.make(install))
             self.assertEqual([
                 I, "[%s] Start build.", target,
                 I, "[%s] Build OK.", target,
@@ -101,17 +102,17 @@ class TestMake(TestCase):
         with TemporaryDirectory() as tempdir:
             target = Path(tempdir, 'a')
             config = 100
-            self.make(install)
+            uuid = self.make(install)
             self.assertEqual([
                 I, "[%s] Start build.", target,
                 I, "[%s] Build OK.", target,
             ], self._pop())
-            self.make(install)
+            self.assertEqual(uuid, self.make(install))
             self.assertEqual([
                 I, "[%s] Already OK.", target,
             ], self._pop())
             config = 101
-            self.make(install)
+            self.assertNotEqual(uuid, self.make(install))
             self.assertEqual([
                 I, "[%s] Rebuild due to changed dependencies.", target,
                 I, "[%s] Build OK.", target,
