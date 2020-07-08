@@ -41,6 +41,7 @@
 from cowpox import GraphInfo, JavaSrc
 from cowpox.pyrecipe import CythonRecipe
 from cowpox.util import Contrib
+from diapyr import types
 
 class PyjniusRecipe(CythonRecipe, JavaSrc):
 
