@@ -83,6 +83,7 @@ class Make:
         infodir.mkdir()
         with infopath.open('w') as f:
             json.dump(dict(dependencies = dependencies, uuid = uuid), f, indent = 4)
+            print(file = f)
         okpath.mkdir()
         self.log.info("[%s] Build OK.", target)
         return uuid
