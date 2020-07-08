@@ -51,13 +51,8 @@ class BootstrapType(PluginType): pass
 
 class Bootstrap(Plugin, metaclass = BootstrapType):
 
-    MIN_TARGET_API = 26
     recipe_depends = 'python3', 'android'
 
     @types(Config, GraphInfo)
     def __init__(self, config, graphinfo):
-        android_api = config.android.api
-        if android_api < self.MIN_TARGET_API:
-            log.warning("Target API %s < %s", android_api, self.MIN_TARGET_API)
-            log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
         self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))

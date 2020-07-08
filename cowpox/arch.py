@@ -63,12 +63,16 @@ class ArchImpl(Arch):
         **{k: v for k, v in os.environ.items() if k.startswith('CCACHE_')},
     )
     minbadapi = float('inf')
+    MIN_TARGET_API = 26
     MIN_NDK_API = 21
 
     @types(Config, Platform, Graph)
     def __init__(self, config, platform, graph):
         android_api = config.android.api
         assert android_api < self.minbadapi
+        if android_api < self.MIN_TARGET_API:
+            log.warning("Target API %s < %s", android_api, self.MIN_TARGET_API)
+            log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
         self.ndk_api = config.android.ndk_api
         assert self.ndk_api <= android_api
         if self.ndk_api < self.MIN_NDK_API:
