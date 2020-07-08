@@ -82,10 +82,6 @@ class Recipe(Plugin):
     def url(self):
         return format_obj(self.urlformat, self)
 
-    @property
-    def dir_name(self):
-        return self.name
-
     @types(Config, Platform, Graph, Mirror, Arch, GraphInfo)
     def __init__(self, config, platform, graph, mirror, arch, graphinfo):
         self.other_builds = Path(config.other_builds)
