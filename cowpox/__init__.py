@@ -63,6 +63,6 @@ class RecipesOK: pass
 
 class PipInstallOK: pass
 
-class AndroidProjectOK: pass
+class AndroidProjectMemo: pass
 
 class PrivateMemo: pass

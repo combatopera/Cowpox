@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import AndroidProjectOK, APKPath, Arch, GraphInfo, JavaSrc, LibRepo, PrivateMemo
+from . import AndroidProjectMemo, APKPath, Arch, GraphInfo, JavaSrc, LibRepo, PrivateMemo
 from .config import Config
 from .make import Make
 from .platform import Platform
@@ -89,10 +89,10 @@ class Assembly:
         self.gradle_builddir = Path(config.gradle.buildDir)
         self.mode = mode
 
-    @types(Make, AndroidProjectOK, this = APKPath)
-    def build_package(self, make, _):
+    @types(Make, AndroidProjectMemo, this = APKPath)
+    def build_package(self, make, projectmemo):
         def target():
-            yield self.gradle_builddir,
+            yield self.gradle_builddir, projectmemo
             gradle.__no_daemon.print(self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
             log.info('Android packaging done!')
         make(target)
@@ -226,9 +226,9 @@ class AndroidProject:
             for f in so_src_dir.glob('*.so'):
                 cp._a.print(f, so_tgt_dir)
 
-    @types(Make, [JavaSrc], [LibRepo], PrivateMemo, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
+    @types(Make, [JavaSrc], [LibRepo], PrivateMemo, this = AndroidProjectMemo) # XXX: Surely this depends on a few things, logically?
     def prepare(self, make, javasrcs, librepos, privatememo):
-        make(lambda: self._prepare(javasrcs, librepos, privatememo))
+        return make(lambda: self._prepare(javasrcs, librepos, privatememo))
 
     def _prepare(self, javasrcs, librepos, privatememo):
         yield self.android_project_dir, privatememo
