@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from cowpox import LibRepo, ObjRepo
-from cowpox.boot import Bootstrap
 from cowpox.config import Config
 from cowpox.recipe import BootstrapNDKRecipe
 from cowpox.util import Contrib
@@ -52,8 +51,8 @@ class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo, ObjRepo):
     url = None
     depends = 'sdl2_core', 'sdl2_image', 'sdl2_mixer', 'sdl2_ttf'
 
-    @types(Config, Bootstrap, [LibSDL2Module])
-    def __init(self, config, bootstrap, modules):
+    @types(Config, [LibSDL2Module])
+    def __init(self, config, modules):
         self.jnicontrib = Contrib(Path(config.bootstrap.dir, 'jni'), Path(config.bootstrap.common.dir, 'jni'))
         self.modules = modules
 
