@@ -65,4 +65,4 @@ class PipInstallOK: pass
 
 class AndroidProjectOK: pass
 
-class PrivateOK: pass
+class PrivateMemo: pass

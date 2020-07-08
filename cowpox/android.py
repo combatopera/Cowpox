@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import AndroidProjectOK, APKPath, Arch, GraphInfo, JavaSrc, LibRepo, PrivateOK
+from . import AndroidProjectOK, APKPath, Arch, GraphInfo, JavaSrc, LibRepo, PrivateMemo
 from .config import Config
 from .make import Make
 from .platform import Platform
@@ -226,12 +226,12 @@ class AndroidProject:
             for f in so_src_dir.glob('*.so'):
                 cp._a.print(f, so_tgt_dir)
 
-    @types(Make, [JavaSrc], [LibRepo], PrivateOK, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
-    def prepare(self, make, javasrcs, librepos, _):
-        make(lambda: self._prepare(javasrcs, librepos))
+    @types(Make, [JavaSrc], [LibRepo], PrivateMemo, this = AndroidProjectOK) # XXX: Surely this depends on a few things, logically?
+    def prepare(self, make, javasrcs, librepos, privatememo):
+        make(lambda: self._prepare(javasrcs, librepos, privatememo))
 
-    def _prepare(self, javasrcs, librepos):
-        yield self.android_project_dir
+    def _prepare(self, javasrcs, librepos, privatememo):
+        yield self.android_project_dir, privatememo
         self.srccontrib.mergeinto(self.android_project_dir / 'src')
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
         writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.
