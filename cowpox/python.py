@@ -136,3 +136,10 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
 
     def link_root(self):
         return self.androidbuild
+
+    def recipe_env_with_python(self):
+        env = self.arch.env.copy()
+        env['PYTHON_INCLUDE_ROOT'] = self.include_root()
+        env['PYTHON_LINK_ROOT'] = self.link_root()
+        env['EXTRA_LDLIBS'] = f"-l{self.pylibname}"
+        return env

@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, Graph, GraphInfo, InterpreterRecipe
+from . import Arch, Graph, GraphInfo
 from .config import Config
 from .mirror import Mirror
 from .platform import Platform
@@ -168,20 +168,9 @@ class Recipe(Plugin):
 
 class BootstrapNDKRecipe(Recipe):
 
-    @types(InterpreterRecipe)
-    def __init(self, interpreterrecipe):
-        self.interpreterrecipe = interpreterrecipe
-
     @property
     def jni_dir(self):
         return self.recipebuilddir / 'jni'
-
-    def recipe_env_with_python(self): # TODO: Looks like a job for the python recipe.
-        env = self.arch.env.copy()
-        env['PYTHON_INCLUDE_ROOT'] = self.interpreterrecipe.include_root()
-        env['PYTHON_LINK_ROOT'] = self.interpreterrecipe.link_root()
-        env['EXTRA_LDLIBS'] = f"-l{self.interpreterrecipe.pylibname}"
-        return env
 
     def ndk_build(self, env):
         self.platform.ndk_build.print(env = env, cwd = self.jni_dir)
