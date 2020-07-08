@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from . import AndroidProjectOK, APKPath, Arch, Graph, GraphInfo, JavaSrc, LibRepo, PrivateOK
-from .boot import Bootstrap
 from .config import Config
 from .make import Make
 from .platform import Platform
@@ -157,8 +156,8 @@ class AssetArchive:
 
 class AndroidProject:
 
-    @types(Config, Arch, Platform, AssetArchive, BuildMode, Bootstrap)
-    def __init__(self, config, arch, platform, assetarchive, mode, bootstrap):
+    @types(Config, Arch, Platform, AssetArchive, BuildMode)
+    def __init__(self, config, arch, platform, assetarchive, mode):
         ndk_api = config.android.ndk_api
         self.min_sdk_version = config.android.minSdkVersion
         if ndk_api != self.min_sdk_version:
@@ -193,7 +192,6 @@ class AndroidProject:
         self.platform = platform
         self.assetarchive = assetarchive
         self.mode = mode
-        self.bootstrap = bootstrap
 
     def _numver(self):
         version_code = 0
