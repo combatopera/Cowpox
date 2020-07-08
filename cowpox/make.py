@@ -45,7 +45,7 @@ log = logging.getLogger(__name__)
 
 class UnexpectedYieldException(Exception): pass
 
-class Make:
+class Make: # FIXME: Rebuild when a dependency was (re)built.
 
     @types()
     def __init__(self, log = log):
