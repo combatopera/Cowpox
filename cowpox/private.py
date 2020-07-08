@@ -92,7 +92,7 @@ class Private:
                     yield Path(dirn, filen)
 
     @types(Config, Arch, InterpreterRecipe, [PythonRecipe])
-    def __init__(self, config, arch, interpreterrecipe, recipes):
+    def __init__(self, config, arch, interpreter, recipes):
         self.private_dir = Path(config.private.dir)
         self.bundle_dir = Path(config.bundle.dir)
         self.bootstrap_name = config.bootstrap.name
@@ -101,7 +101,7 @@ class Private:
         self.minsdkversion = config.android.minSdkVersion
         self.config = config
         self.arch = arch
-        self.interpreterrecipe = interpreterrecipe
+        self.interpreter = interpreter
         self.recipes = recipes
 
     @types(Make, PipInstallOK, RecipesOK, this = PrivateOK) # XXX: Does this really depend on all that?
@@ -112,13 +112,13 @@ class Private:
         yield self.private_dir
         self._copy_application_sources()
         modules_dir = (self.bundle_dir / 'modules').mkdirp()
-        log.info("Copy %s files into the bundle", len(self.interpreterrecipe.module_filens))
-        for filen in self.interpreterrecipe.module_filens:
+        log.info("Copy %s files into the bundle", len(self.interpreter.module_filens))
+        for filen in self.interpreter.module_filens:
             shutil.copy2(filen, modules_dir)
         self.arch.striplibs(modules_dir)
-        stdlib_filens = list(self._walk_valid_filens(self.interpreterrecipe.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
+        stdlib_filens = list(self._walk_valid_filens(self.interpreter.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
-        zip.print(self.bundle_dir / 'stdlib.zip', *(p.relative_to(self.interpreterrecipe.stdlibdir) for p in stdlib_filens), cwd = self.interpreterrecipe.stdlibdir)
+        zip.print(self.bundle_dir / 'stdlib.zip', *(p.relative_to(self.interpreter.stdlibdir) for p in stdlib_filens), cwd = self.interpreter.stdlibdir)
         sitepackagesdir = (self.bundle_dir / 'site-packages').mkdirp()
         for recipe in self.recipes:
             # TODO: Get bundlepackages from a result object coming out of every recipe.
