@@ -108,12 +108,9 @@ class Recipe(Plugin):
             log.info("Apply patch: %s", relpath)
             patch._t._p1.print('-d', self.recipebuilddir, '-i', self.resourcepath(relpath))
 
-    def striproot(self):
-        return self.other_builds / self.graphinfo.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)])
-
     @property
     def recipebuilddir(self):
-        return self.other_builds / self.graphinfo.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / self.arch.builddirname() / self.dir_name
+        return self.other_builds / self.graphinfo.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)])
 
     def _copywithoutbuild(self, frompath, topath):
         try:
@@ -176,7 +173,7 @@ class Recipe(Plugin):
         yield self.recipebuilddir
         self._prepare()
         self.mainbuild()
-        self.arch.strip_object_files(self.striproot())
+        self.arch.strip_object_files(self.recipebuilddir)
 
 class BootstrapNDKRecipe(Recipe):
 
@@ -184,9 +181,6 @@ class BootstrapNDKRecipe(Recipe):
     def __init(self, bootstrap, interpreterrecipe):
         self.jni_dir = bootstrap.build_dir / 'jni'
         self.interpreterrecipe = interpreterrecipe
-
-    def striproot(self):
-        return self.jni_dir.parent
 
     @property
     def recipebuilddir(self):
