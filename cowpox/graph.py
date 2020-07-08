@@ -175,16 +175,6 @@ class GraphInfoImpl(GraphInfo):
         log.info("Recipe build order is %s", self.recipenames)
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
 
-    def check_recipe_choices(self, name, depends):
-        recipenames = []
-        for recipe in depends:
-            if isinstance(recipe, (tuple, list)):
-                for alternative in recipe:
-                    if alternative in self.recipenames:
-                        recipenames.append(alternative)
-                        break
-        return '-'.join([name, *sorted(recipenames)])
-
     def recipeimpls(self):
         for name in self.recipenames:
             yield _recipeimpl(name)

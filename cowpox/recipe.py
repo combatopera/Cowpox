@@ -80,7 +80,7 @@ class Recipe(Plugin):
 
     @types(Config, Platform, Graph, Mirror, Arch, GraphInfo)
     def __init__(self, config, platform, graph, mirror, arch, graphinfo):
-        self.other_builds = Path(config.other_builds)
+        self.builds_dir = Path(config.builds.dir)
         self.projectbuilddir = Path(config.build.dir)
         self.extroot = Path(config.container.extroot)
         self.platform = platform
@@ -102,7 +102,7 @@ class Recipe(Plugin):
 
     @property
     def recipebuilddir(self):
-        return self.other_builds / self.graphinfo.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)])
+        return self.builds_dir / self.name
 
     def _copywithoutbuild(self, frompath, topath):
         try:

@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import GraphInfo
 from .config import Config
 from .util import Plugin, PluginType
 from diapyr import types
@@ -53,6 +52,6 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     recipe_depends = 'python3', 'android'
 
-    @types(Config, GraphInfo)
-    def __init__(self, config, graphinfo):
-        self.build_dir = Path(config.bootstrap_builds, graphinfo.check_recipe_choices(self.name, self.recipe_depends))
+    @types(Config)
+    def __init__(self, config):
+        self.build_dir = Path(config.builds.dir, self.name)
