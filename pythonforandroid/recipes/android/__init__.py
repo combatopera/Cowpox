@@ -38,7 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from cowpox.config import Config
 from cowpox.pyrecipe import CythonRecipe
+from diapyr import types
 import logging
 
 log = logging.getLogger(__name__)
@@ -48,15 +50,18 @@ class AndroidRecipe(CythonRecipe):
     url = 'src'
     depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
 
+    @types(Config)
+    def __init(self, config):
+        self.bootstrap_name = config.bootstrap.name
+
     def mainbuild(self):
-        bootstrap_name = self.bootstrap.name
-        is_sdl2 = bootstrap_name in {'sdl2', 'sdl2python3', 'sdl2_gradle'}
-        is_webview = bootstrap_name == 'webview'
-        is_service_only = bootstrap_name == 'service_only'
+        is_sdl2 = self.bootstrap_name in {'sdl2', 'sdl2python3', 'sdl2_gradle'}
+        is_webview = self.bootstrap_name == 'webview'
+        is_service_only = self.bootstrap_name == 'service_only'
         if not (is_sdl2 or is_webview or is_service_only):
-            raise Exception("unsupported bootstrap for android recipe: %s" % bootstrap_name)
+            raise Exception("unsupported bootstrap for android recipe: %s" % self.bootstrap_name)
         config = {
-            'BOOTSTRAP': 'sdl2' if is_sdl2 else bootstrap_name,
+            'BOOTSTRAP': 'sdl2' if is_sdl2 else self.bootstrap_name,
             'IS_SDL2': int(is_sdl2),
             'JAVA_NAMESPACE': 'org.kivy.android',
             'JNI_NAMESPACE': 'org/kivy/android',
