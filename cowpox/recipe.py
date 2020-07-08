@@ -111,12 +111,9 @@ class Recipe(Plugin):
     def striproot(self):
         return self.other_builds / self.graphinfo.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)])
 
-    def get_build_container_dir(self):
-        return self.other_builds / self.graphinfo.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / self.arch.builddirname()
-
     @property
     def recipebuilddir(self):
-        return self.get_build_container_dir() / self.dir_name
+        return self.other_builds / self.graphinfo.check_recipe_choices(self.name, [*self.depends, *([d] for d in self.opt_depends)]) / self.arch.builddirname() / self.dir_name
 
     def _copywithoutbuild(self, frompath, topath):
         try:
@@ -191,8 +188,9 @@ class BootstrapNDKRecipe(Recipe):
     def striproot(self):
         return self.jni_dir.parent
 
-    def get_build_container_dir(self):
-        return self.jni_dir
+    @property
+    def recipebuilddir(self):
+        return self.jni_dir / self.dir_name
 
     def recipe_env_with_python(self): # TODO: Looks like a job for the python recipe.
         env = self.arch.env.copy()
