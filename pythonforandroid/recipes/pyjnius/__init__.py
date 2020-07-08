@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox import JavaSrc
+from cowpox import GraphInfo, JavaSrc
 from cowpox.pyrecipe import CythonRecipe
 from cowpox.util import Contrib
 
@@ -47,6 +47,10 @@ class PyjniusRecipe(CythonRecipe, JavaSrc):
     version = '1.2.1'
     url = f"https://github.com/kivy/pyjnius/archive/{version}.zip"
     depends = [('genericndkbuild', 'sdl2'), 'six']
+
+    @types(GraphInfo)
+    def __init(self, graphinfo):
+        self.graphinfo = graphinfo
 
     def mainbuild(self):
         if 'sdl2' in self.graphinfo.recipenames:
