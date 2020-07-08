@@ -38,8 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import InterpreterRecipe
-from .boot import Bootstrap
+from . import InterpreterRecipe, ObjRepo
 from .config import Config
 from .container import compileall
 from .recipe import Recipe
@@ -98,9 +97,9 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
 class CythonRecipe(PythonRecipe):
 
-    @types(Config, Bootstrap)
-    def __init(self, config, bootstrap):
-        self.bootstrap = bootstrap
+    @types(Config, [ObjRepo])
+    def __init(self, config, objrepos):
+        self.objrepos = objrepos
 
     def install_python_package(self, env = None):
         if env is None:
@@ -142,7 +141,8 @@ class CythonRecipe(PythonRecipe):
 
     def get_recipe_env(self):
         env = super().get_recipe_env()
-        env['LDFLAGS'] += f" -L{self.bootstrap.build_dir / 'obj' / 'local' / self.arch.name}"
+        for objrepo in self.objrepos:
+            env['LDFLAGS'] += f" -L{objrepo.recipebuilddir / 'obj' / 'local' / self.arch.name}"
         env['LDSHARED'] = env['CC'] + ' -shared'
         env['LIBLINK'] = 'NOTNONE'
         env['NDKPLATFORM'] = self.platform.ndk_platform(self.arch)

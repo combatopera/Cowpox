@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox import LibRepo
+from cowpox import LibRepo, ObjRepo
 from cowpox.boot import Bootstrap
 from cowpox.config import Config
 from cowpox.recipe import BootstrapNDKRecipe
@@ -46,7 +46,7 @@ from cowpox.util import Contrib
 from diapyr import types
 from pathlib import Path
 
-class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo):
+class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo, ObjRepo):
 
     from .module import LibSDL2Module
     url = None
