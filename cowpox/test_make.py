@@ -73,25 +73,25 @@ class TestMake(TestCase):
             target = Path(tempdir, 'a')
             self.make(install)
             self.assertEqual([
-                I, "Start build: %s", target,
-                I, "Build OK: %s", target,
+                I, "[%s] Start build.", target,
+                I, "[%s] Build OK.", target,
             ], self._pop())
             self.make(install)
             self.assertEqual([
-                I, "Already OK: %s", target,
+                I, "[%s] Already OK.", target,
             ], self._pop())
             (target / 'OK').rmdir()
             self.make(install)
             self.assertEqual([
-                I, "Start build: %s", target,
-                W, "Delete: %s", target,
-                I, "Build OK: %s", target,
+                I, "[%s] Start build.", target,
+                W, "[%s] Delete.", target,
+                I, "[%s] Build OK.", target,
             ], self._pop())
             shutil.rmtree(target)
             self.make(install)
             self.assertEqual([
-                I, "Start build: %s", target,
-                I, "Build OK: %s", target,
+                I, "[%s] Start build.", target,
+                I, "[%s] Build OK.", target,
             ], self._pop())
 
     def test_fasterror(self):
@@ -104,12 +104,12 @@ class TestMake(TestCase):
             with self.assertRaises(X):
                 self.make(install)
             self.assertEqual([
-                I, "Start build: %s", target,
+                I, "[%s] Start build.", target,
             ], self._pop())
             with self.assertRaises(X):
                 self.make(install)
             self.assertEqual([
-                I, "Start build: %s", target,
+                I, "[%s] Start build.", target,
             ], self._pop())
 
     def test_slowerror(self):
@@ -123,13 +123,13 @@ class TestMake(TestCase):
             with self.assertRaises(X):
                 self.make(install)
             self.assertEqual([
-                I, "Start build: %s", target,
+                I, "[%s] Start build.", target,
             ], self._pop())
             with self.assertRaises(X):
                 self.make(install)
             self.assertEqual([
-                I, "Start build: %s", target,
-                W, "Delete: %s", target,
+                I, "[%s] Start build.", target,
+                W, "[%s] Delete.", target,
             ], self._pop())
 
     def test_dirnotmade(self):
@@ -140,10 +140,10 @@ class TestMake(TestCase):
             with self.assertRaises(FileNotFoundError):
                 self.make(install)
             self.assertEqual([
-                I, "Start build: %s", target,
+                I, "[%s] Start build.", target,
             ], self._pop())
             with self.assertRaises(FileNotFoundError):
                 self.make(install)
             self.assertEqual([
-                I, "Start build: %s", target,
+                I, "[%s] Start build.", target,
             ], self._pop())

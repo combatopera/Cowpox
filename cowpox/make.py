@@ -56,11 +56,11 @@ class Make: # FIXME: Rebuild when a dependency was (re)built.
         target = next(g)
         okpath = target / 'OK'
         if okpath.exists():
-            self.log.info("Already OK: %s", target)
+            self.log.info("[%s] Already OK.", target)
             return
-        self.log.info("Start build: %s", target)
+        self.log.info("[%s] Start build.", target)
         if target.exists():
-            self.log.warning("Delete: %s", target)
+            self.log.warning("[%s] Delete.", target)
             shutil.rmtree(target)
         else:
             target.parent.mkdir(parents = True, exist_ok = True)
@@ -71,4 +71,4 @@ class Make: # FIXME: Rebuild when a dependency was (re)built.
         else:
             raise UnexpectedYieldException(obj)
         okpath.mkdir()
-        self.log.info("Build OK: %s", target)
+        self.log.info("[%s] Build OK.", target)
