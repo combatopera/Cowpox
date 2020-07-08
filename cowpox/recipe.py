@@ -168,14 +168,13 @@ class Recipe(Plugin):
 
 class BootstrapNDKRecipe(Recipe):
 
-    @types(Config, InterpreterRecipe)
-    def __init(self, config, interpreterrecipe):
-        self.jni_dir = Path(config.builds.dir, config.bootstrap.name, 'jni')
+    @types(InterpreterRecipe)
+    def __init(self, interpreterrecipe):
         self.interpreterrecipe = interpreterrecipe
 
     @property
-    def recipebuilddir(self):
-        return self.jni_dir.parent
+    def jni_dir(self):
+        return self.recipebuilddir / 'jni'
 
     def recipe_env_with_python(self): # TODO: Looks like a job for the python recipe.
         env = self.arch.env.copy()
