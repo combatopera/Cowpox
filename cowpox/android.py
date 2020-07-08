@@ -185,7 +185,7 @@ class AndroidProject:
         self.gradle_builddir = config.gradle.buildDir
         self.package_name = config.package.name
         self.sdk_dir = config.SDK.dir
-        self.buildsdir = Path(config.buildsdir)
+        self.aar_dir = Path(config.aar.dir)
         self.srccontrib = Contrib(Path(config.bootstrap.dir, 'src'), Path(config.bootstrap.common.dir, 'src'))
         self.templates = Contrib(Path(config.bootstrap.dir, 'templates'), Path(config.bootstrap.common.dir, 'templates'))
         self.arch = arch
@@ -202,7 +202,7 @@ class AndroidProject:
 
     def _distribute_aars(self):
         log.info('Unpacking aars')
-        for aar in (self.buildsdir / 'aars' / self.package_name).glob('*.aar'): # TODO LATER: Configure these a different way.
+        for aar in self.aar_dir.glob('*.aar'):
             self._unpack_aar(aar)
 
     def _unpack_aar(self, aar):

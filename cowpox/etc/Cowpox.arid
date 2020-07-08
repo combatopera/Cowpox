@@ -98,3 +98,4 @@ webview port = 5000
 use lld = false
 requirements += $*$egg-info-requires$(container src)
 gradle buildDir = $/($(build dir) Cowpox-build)
+aar dir = $/($(container src) aars)
