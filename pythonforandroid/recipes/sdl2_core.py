@@ -38,30 +38,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox import LibRepo
-from cowpox.boot import Bootstrap
-from cowpox.config import Config
-from cowpox.recipe import BootstrapNDKRecipe
-from cowpox.util import Contrib
-from diapyr import types
-from pathlib import Path
+from .sdl2.module import LibSDL2Module
 
-class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo):
+class LibSDL2Core(LibSDL2Module):
 
-    from .module import LibSDL2Module
-    url = None
-    depends = 'sdl2_core', 'sdl2_image', 'sdl2_mixer', 'sdl2_ttf'
-
-    @types(Config, Bootstrap, [LibSDL2Module])
-    def __init(self, config, bootstrap, modules):
-        self.jnicontrib = Contrib(Path(config.bootstrap.dir, 'jni'), Path(config.bootstrap.common.dir, 'jni'))
-        self.modules = modules
+    version = '2.0.9'
+    url = f"https://www.libsdl.org/release/SDL2-{version}.tar.gz"
+    md5sum = 'f2ecfba915c54f7200f504d8b48a5dfe'
+    dir_name = 'SDL'
 
     def mainbuild(self):
-        for module in self.modules:
-            module.installmodule(self.jni_dir)
-        self.jnicontrib.mergeinto(self.jni_dir)
-        env = self.recipe_env_with_python()
-        env['APP_ALLOW_MISSING_DEPS'] = 'true'
-        self.ndk_build(env)
-        self.builtlibpaths = sorted((self.jni_dir.parent / 'libs' / self.arch.name).iterdir())
+        pass

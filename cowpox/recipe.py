@@ -173,7 +173,7 @@ class Recipe(Plugin):
             self.recipebuilddir.with_name(rootname).rename(self.recipebuilddir)
 
     def maketarget(self):
-        yield self.recipebuilddir # FIXME: Does not cover SDL artifacts.
+        yield self.recipebuilddir
         self._prepare()
         self.mainbuild()
         self.arch.strip_object_files(self.striproot())
@@ -190,7 +190,7 @@ class BootstrapNDKRecipe(Recipe):
 
     @property
     def recipebuilddir(self):
-        return self.jni_dir / self.dir_name
+        return self.jni_dir.parent
 
     def recipe_env_with_python(self): # TODO: Looks like a job for the python recipe.
         env = self.arch.env.copy()
