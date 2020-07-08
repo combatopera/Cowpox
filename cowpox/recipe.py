@@ -159,7 +159,7 @@ class Recipe(Plugin):
             self.recipebuilddir.with_name(rootname).rename(self.recipebuilddir)
 
     def maketarget(self):
-        yield self.recipebuilddir,
+        yield self.recipebuilddir, self.platform.memo
         self._prepare()
         self.mainbuild()
         self.arch.strip_object_files(self.recipebuilddir)

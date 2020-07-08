@@ -53,7 +53,7 @@ import logging, re
 
 log = logging.getLogger(__name__)
 
-class PlatformOK: pass
+class PlatformMemo: pass
 
 class PlatformInfo:
 
@@ -67,10 +67,9 @@ class PlatformInfo:
         self.android_ndk_version = config.android.ndk
         self.mirror = mirror
 
-    @types(Make, this = PlatformOK)
+    @types(Make, this = PlatformMemo)
     def install(self, make):
-        make(self._install_android_sdk)
-        make(self._install_android_ndk)
+        return [make(self._install_android_sdk), make(self._install_android_ndk)]
 
     def _install_android_sdk(self):
         yield self.sdk_dir, self.skip_update, self.platformname
@@ -126,8 +125,8 @@ class Platform:
         minor = version[1]
         return f"{version[0]}{chr(ord('a') + minor) if minor else ''}"
 
-    @types(Config, PlatformOK)
-    def __init__(self, config, _):
+    @types(Config, PlatformMemo)
+    def __init__(self, config, memo):
         self.sdk_dir = Path(config.SDK.dir)
         self.ndk_dir = Path(config.NDK.dir)
         self.ndk_api = config.android.ndk_api
@@ -143,6 +142,7 @@ class Platform:
         if major_version > self.MAX_NDK_VERSION:
             log.warning('Newer NDKs may not be fully supported by p4a.')
         self.ndk_build = Program.text(self.ndk_dir / 'ndk-build').partial('V=1')
+        self.memo = memo
 
     def build_tools_version(self):
         ignored = {'.DS_Store', '.ds_store'}
