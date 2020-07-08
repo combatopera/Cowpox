@@ -38,29 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox import LibRepo
-from cowpox.boot import Bootstrap
-from cowpox.config import Config
-from cowpox.recipe import BootstrapNDKRecipe
-from cowpox.util import Contrib
-from diapyr import types
-from pathlib import Path
+from cowpox.recipe import Recipe
+import shutil
 
-class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo):
+class LibSDL2Module(Recipe):
 
-    version = "2.0.9"
-    url = f"https://www.libsdl.org/release/SDL2-{version}.tar.gz"
-    md5sum = 'f2ecfba915c54f7200f504d8b48a5dfe'
-    dir_name = 'SDL'
-    depends = ['sdl2_image', 'sdl2_mixer', 'sdl2_ttf']
-
-    @types(Config, Bootstrap)
-    def __init(self, config, bootstrap):
-        self.jnicontrib = Contrib(Path(config.bootstrap.dir, 'jni'), Path(config.bootstrap.common.dir, 'jni'))
-
-    def mainbuild(self):
-        self.jnicontrib.mergeinto(self.jni_dir)
-        env = self.recipe_env_with_python()
-        env['APP_ALLOW_MISSING_DEPS'] = 'true'
-        self.ndk_build(env)
-        self.builtlibpaths = sorted((self.jni_dir.parent / 'libs' / self.arch.name).iterdir())
+    def installmodule(self, jni_dir):
+        # XXX: Would a symlink be sufficient?
+        shutil.copytree(self.recipebuilddir, jni_dir / self.dir_name)

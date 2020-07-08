@@ -38,9 +38,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox.recipe import BootstrapNDKRecipe
+from ..sdl2.module import LibSDL2Module
 
-class LibSDL2Mixer(BootstrapNDKRecipe):
+class LibSDL2Mixer(LibSDL2Module):
 
     version = '2.0.4'
     url = f"https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-{version}.tar.gz"
