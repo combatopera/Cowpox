@@ -39,7 +39,6 @@
 # THE SOFTWARE.
 
 from . import Arch, Graph, GraphInfo, InterpreterRecipe
-from .boot import Bootstrap
 from .config import Config
 from .mirror import Mirror
 from .platform import Platform
@@ -169,9 +168,9 @@ class Recipe(Plugin):
 
 class BootstrapNDKRecipe(Recipe):
 
-    @types(Bootstrap, InterpreterRecipe)
-    def __init(self, bootstrap, interpreterrecipe):
-        self.jni_dir = bootstrap.build_dir / 'jni'
+    @types(Config, InterpreterRecipe)
+    def __init(self, config, interpreterrecipe):
+        self.jni_dir = Path(config.builds.dir, config.bootstrap.name, 'jni')
         self.interpreterrecipe = interpreterrecipe
 
     @property

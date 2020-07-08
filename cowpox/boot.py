@@ -38,13 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .config import Config
 from .util import Plugin, PluginType
 from diapyr import types
-from pathlib import Path
-import logging
-
-log = logging.getLogger(__name__)
 
 class BootstrapType(PluginType): pass
 
@@ -52,6 +47,6 @@ class Bootstrap(Plugin, metaclass = BootstrapType):
 
     recipe_depends = 'python3', 'android'
 
-    @types(Config)
-    def __init__(self, config):
-        self.build_dir = Path(config.builds.dir, self.name)
+    @types()
+    def __init__(self):
+        pass
