@@ -140,7 +140,7 @@ class Private:
     def _copy_application_sources(self):
         topath = self.private_dir.mkdirp() / 'main.py'
         log.debug("Create: %s", topath)
-        self.config.processtemplate(resource_filename(skel.__name__, 'main.py.aridt'), topath)
+        self.config.processtemplate(resource_filename(skel.__name__, 'main.py.aridt'), topath) # TODO: Rebuild if relevant config changes.
         with resource_stream(skel.__name__, 'sitecustomize.py') as f, (self.private_dir / 'sitecustomize.py').open('wb') as g:
             shutil.copyfileobj(f, g)
         main_py = self.private_dir / 'service' / 'main.py'
