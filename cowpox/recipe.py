@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, Graph, GraphInfo
+from . import Arch, GraphInfo
 from .config import Config
 from .mirror import Mirror
 from .platform import Platform
@@ -77,13 +77,12 @@ class Recipe(Plugin):
     def get_opt_depends_in_list(cls, recipenames):
         return [name for name in recipenames if name in cls.opt_depends]
 
-    @types(Config, Platform, Graph, Mirror, Arch, GraphInfo)
-    def __init__(self, config, platform, graph, mirror, arch, graphinfo):
+    @types(Config, Platform, Mirror, Arch, GraphInfo)
+    def __init__(self, config, platform, mirror, arch, graphinfo):
         self.builds_dir = Path(config.builds.dir)
         self.projectbuilddir = Path(config.build.dir)
         self.extroot = Path(config.container.extroot)
         self.platform = platform
-        self.graph = graph
         self.mirror = mirror
         self.arch = arch
         self.graphinfo = graphinfo

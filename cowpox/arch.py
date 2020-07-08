@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, Graph
+from . import Arch
 from .config import Config
 from .platform import Platform
 from diapyr import types
@@ -66,8 +66,8 @@ class ArchImpl(Arch):
     MIN_TARGET_API = 26
     MIN_NDK_API = 21
 
-    @types(Config, Platform, Graph)
-    def __init__(self, config, platform, graph):
+    @types(Config, Platform)
+    def __init__(self, config, platform):
         android_api = config.android.api
         assert android_api < self.minbadapi
         if android_api < self.MIN_TARGET_API:
@@ -116,7 +116,6 @@ class ArchImpl(Arch):
             ),
         )
         self.strip = [platform.prebuiltbin(self) / strip[0], *strip[1:]]
-        self.graph = graph
 
     def target(self):
         return f"{self.command_prefix}{self.ndk_api}"

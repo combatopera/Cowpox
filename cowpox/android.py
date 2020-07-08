@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import AndroidProjectOK, APKPath, Arch, Graph, GraphInfo, JavaSrc, LibRepo, PrivateOK
+from . import AndroidProjectOK, APKPath, Arch, GraphInfo, JavaSrc, LibRepo, PrivateOK
 from .config import Config
 from .make import Make
 from .platform import Platform
@@ -100,8 +100,8 @@ class Assembly:
 
 class AssetArchive:
 
-    @types(Config, GraphInfo, Graph)
-    def __init__(self, config, graphinfo, graph):
+    @types(Config, GraphInfo)
+    def __init__(self, config, graphinfo):
         self.contribs = [
             Contrib(Path(config.private.dir)),
             Contrib(Path(config.bootstrap.dir, 'private'), Path(config.bootstrap.common.dir, 'private')),
@@ -121,7 +121,6 @@ class AssetArchive:
         ] + resource_string(__name__, 'blacklist.txt').decode().splitlines()
         if config.bootstrap.name in {'webview', 'service_only'} or 'sqlite3' not in graphinfo.recipenames:
             self.BLACKLIST_PATTERNS += ['sqlite3/*', 'lib-dynload/_sqlite3.so']
-        self.graph = graph
 
     def _accept(self, path):
         def match_filename(pattern_list):
