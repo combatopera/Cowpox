@@ -61,7 +61,7 @@ class ObjRepo: pass
 
 class RecipeMemos: pass
 
-class PipInstallOK: pass
+class PipInstallMemo: pass
 
 class AndroidProjectMemo: pass
 

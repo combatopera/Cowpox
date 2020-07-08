@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, GraphInfo, PipInstallOK
+from . import Graph, GraphInfo, PipInstallMemo
 from .config import Config
 from .container import compileall
 from .graph import GraphImpl
@@ -60,17 +60,17 @@ class PipInstallRecipe(CythonRecipe):
     def __init(self, config):
         self.pip_install_dir = Path(config.pip.install.dir)
 
-    @types(Make, GraphInfo, this = PipInstallOK)
+    @types(Make, GraphInfo, this = PipInstallMemo)
     def buildsite(self, make, graphinfo):
         def target():
-            yield self.pip_install_dir, # FIXME: Rebuild when requirements change.
             pypinames = graphinfo.pypinames
+            yield self.pip_install_dir, pypinames
             if pypinames:
                 pip.install._v.__no_deps.print('--target', self.pip_install_dir, *pypinames, env = self.get_recipe_env())
                 compileall(self.pip_install_dir)
             else:
                 self.pip_install_dir.mkdirp()
-        make(target)
+        return make(target)
 
     @property
     def bundlepackages(self):
