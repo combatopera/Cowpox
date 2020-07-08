@@ -59,7 +59,7 @@ class LibRepo: pass
 
 class ObjRepo: pass
 
-class RecipesOK: pass
+class RecipeMemos: pass
 
 class PipInstallOK: pass
 

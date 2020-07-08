@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import GraphInfo, RecipesOK
+from . import GraphInfo, RecipeMemos
 from .boot import BootstrapType
 from .config import Config
 from .make import Make
@@ -194,11 +194,13 @@ class GraphImpl:
     def get_recipe(self, name):
         return self.recipes[name]
 
-    @types(Make, this = RecipesOK)
+    @types(Make, this = RecipeMemos)
     def buildrecipes(self, make):
-        for recipe in self.recipes.values():
-            log.info("Build recipe: %s", recipe.name)
-            make(recipe.maketarget)
+        def memos():
+            for recipe in self.recipes.values():
+                log.info("Build recipe: %s", recipe.name)
+                yield make(recipe.maketarget)
+        return list(memos())
 
 def _get_recipe_order(names, blacklist):
     names = _fix_deplist([([name] if not isinstance(name, (list, tuple)) else name) for name in names])

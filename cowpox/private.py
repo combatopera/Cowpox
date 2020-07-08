@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, InterpreterRecipe, PipInstallOK, PrivateMemo, RecipesOK, skel
+from . import Arch, InterpreterRecipe, PipInstallOK, PrivateMemo, RecipeMemos, skel
 from .config import Config
 from .container import compileall
 from .make import Make
@@ -104,12 +104,12 @@ class Private:
         self.interpreter = interpreter
         self.recipes = recipes
 
-    @types(Make, PipInstallOK, RecipesOK, this = PrivateMemo)
-    def create_python_bundle(self, make, *_):
-        return make(self._createbundle)
+    @types(Make, PipInstallOK, RecipeMemos, this = PrivateMemo)
+    def create_python_bundle(self, make, _, recipememos):
+        return make(lambda: self._createbundle(recipememos))
 
-    def _createbundle(self):
-        yield self.private_dir,
+    def _createbundle(self, recipememos):
+        yield self.private_dir, recipememos
         self._copy_application_sources()
         modules_dir = (self.bundle_dir / 'modules').mkdirp()
         log.info("Copy %s files into the bundle", len(self.interpreter.module_filens))
