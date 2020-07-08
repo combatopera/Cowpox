@@ -43,7 +43,7 @@ from .boot import Bootstrap
 from .config import Config
 from .mirror import Mirror
 from .platform import Platform
-from .util import format_obj, Plugin
+from .util import Plugin
 from diapyr import types
 from lagoon import patch, tar, unzip
 from pathlib import Path
@@ -77,10 +77,6 @@ class Recipe(Plugin):
     @classmethod
     def get_opt_depends_in_list(cls, recipenames):
         return [name for name in recipenames if name in cls.opt_depends]
-
-    @property
-    def url(self):
-        return format_obj(self.urlformat, self)
 
     @types(Config, Platform, Graph, Mirror, Arch, GraphInfo)
     def __init__(self, config, platform, graph, mirror, arch, graphinfo):
