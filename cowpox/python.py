@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, InterpreterRecipe, LibRepo
+from . import Graph, GraphInfo, InterpreterRecipe, LibRepo
 from .config import Config
 from .container import compileall
 from .recipe import Recipe
@@ -59,7 +59,7 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
     '''The optional libraries which we would like to get our python linked'''
     zlibversionpattern = re.compile('^#define ZLIB_VERSION "(.+)"$', re.MULTILINE)
 
-    @types(Config, Graph)
+    @types(Config, Graph, GraphInfo)
     def __init(self, config, graph):
         self.ndk_dir = Path(config.NDK.dir)
         self.ndk_api = config.android.ndk_api
@@ -69,6 +69,7 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
         self.pylibname = f"python{self.majminversion}m"
         self.instsoname = f"lib{self.pylibname}.so"
         self.graph = graph
+        self.graphinfo = graphinfo
 
     def _set_libs_flags(self):
         env = os.environ.copy() # TODO: Probably redundant.
