@@ -92,6 +92,7 @@ class Assembly:
     @types(Make, AndroidProjectMemo, this = APKPath)
     def build_package(self, make, projectmemo):
         def target():
+            # TODO: Download gradle dependencies in advance.
             gradle.__no_daemon.print(self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
             log.info('Android packaging done!')
         make(self.gradle_builddir, projectmemo, target)
