@@ -109,7 +109,7 @@ class Private:
         return make(lambda: self._createbundle(pipinstallmemo, recipememos))
 
     def _createbundle(self, pipinstallmemo, recipememos):
-        yield self.private_dir, pipinstallmemo, recipememos
+        yield self.private_dir, [pipinstallmemo, recipememos]
         self._copy_application_sources()
         modules_dir = (self.bundle_dir / 'modules').mkdirp()
         log.info("Copy %s files into the bundle", len(self.interpreter.module_filens))

@@ -67,7 +67,7 @@ class TestMake(TestCase):
 
     def test_works(self):
         def install():
-            yield target,
+            yield target, None
             target.mkdir()
         with TemporaryDirectory() as tempdir:
             target = Path(tempdir, 'a')
@@ -121,7 +121,7 @@ class TestMake(TestCase):
     def test_fasterror(self):
         class X(Exception): pass
         def install():
-            yield target,
+            yield target, None
             raise X
         with TemporaryDirectory() as tempdir:
             target = Path(tempdir, 'a')
@@ -139,7 +139,7 @@ class TestMake(TestCase):
     def test_slowerror(self):
         class X(Exception): pass
         def install():
-            yield target,
+            yield target, None
             target.mkdir()
             raise X
         with TemporaryDirectory() as tempdir:
@@ -158,7 +158,7 @@ class TestMake(TestCase):
 
     def test_dirnotmade(self):
         def install():
-            yield target,
+            yield target, None
         with TemporaryDirectory() as tempdir:
             target = Path(tempdir, 'a')
             with self.assertRaises(FileNotFoundError):

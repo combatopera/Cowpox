@@ -54,7 +54,7 @@ class Make:
 
     def __call__(self, install):
         g = install()
-        target, *dependencies = next(g)
+        target, dependencies = next(g)
         infodir = target / '.Cowpox'
         infopath = infodir / 'info.json' # TODO: Exclude from artifact.
         okpath = infodir / 'OK'

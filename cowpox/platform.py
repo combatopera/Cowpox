@@ -72,7 +72,7 @@ class PlatformInfo:
         return [make(self._install_android_sdk), make(self._install_android_ndk)]
 
     def _install_android_sdk(self):
-        yield self.sdk_dir, self.skip_update, self.platformname
+        yield self.sdk_dir, [self.skip_update, self.platformname]
         log.info('Android SDK is missing, downloading')
         archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
         log.info('Unpacking Android SDK')
