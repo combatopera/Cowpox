@@ -110,9 +110,10 @@ class Private:
 
     def _createbundle(self):
         self._copy_application_sources()
+        module_filens = self.interpreter.module_filens()
         modules_dir = (self.bundle_dir / 'modules').mkdirp()
-        log.info("Copy %s files into the bundle", len(self.interpreter.module_filens))
-        for filen in self.interpreter.module_filens:
+        log.info("Copy %s files into the bundle", len(module_filens))
+        for filen in module_filens:
             shutil.copy2(filen, modules_dir)
         self.arch.striplibs(modules_dir)
         stdlib_filens = list(self._walk_valid_filens(self.interpreter.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
