@@ -42,6 +42,7 @@ from .sdl2.module import LibSDL2Module
 
 class LibSDL2TTF(LibSDL2Module):
 
+    name = 'sdl2_ttf'
     version = '2.0.14'
     url = f"https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-{version}.tar.gz"
     dir_name = 'SDL2_ttf'

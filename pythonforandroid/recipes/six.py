@@ -42,6 +42,7 @@ from cowpox.pyrecipe import PythonRecipe
 
 class SixRecipe(PythonRecipe): # XXX: Why do we need this?
 
+    name = 'six'
     version = '1.10.0'
     url = f"https://pypi.python.org/packages/source/s/six/six-{version}.tar.gz"
     depends = ['setuptools']

@@ -42,6 +42,7 @@ from cowpox.pyrecipe import PythonRecipe
 
 class SetuptoolsRecipe(PythonRecipe):
 
+    name = 'setuptools'
     version = '40.9.0'
     url = f"https://pypi.python.org/packages/source/s/setuptools/setuptools-{version}.zip"
 

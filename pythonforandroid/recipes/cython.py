@@ -42,7 +42,7 @@ from cowpox.pyrecipe import CompiledComponentsPythonRecipe
 
 class CythonRecipe(CompiledComponentsPythonRecipe):
 
-    # XXX: Can we use canonical name?
+    name = 'cython' # XXX: Can we use canonical name?
     version = '0.29.15' # XXX: Use same version as image?
     url = f"https://github.com/cython/cython/archive/{version}.tar.gz"
     depends = ['setuptools']

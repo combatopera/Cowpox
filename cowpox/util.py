@@ -84,15 +84,6 @@ class DictView(Mapping):
 def format_obj(format_string, obj):
     return format_string.format_map(DictView(obj))
 
-class PluginType(type):
-
-    def __init__(cls, *args):
-        super().__init__(*args)
-        fqmodule = cls.__module__
-        cls.name = fqmodule[fqmodule.rfind('.') + 1:] # FIXME LATER: Do not override (possibly inherited) explicit name.
-
-class Plugin(metaclass = PluginType): pass
-
 class NoSuchPluginException(Exception): pass
 
 def findimpl(modulename, basetype):

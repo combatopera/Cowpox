@@ -44,6 +44,7 @@ from diapyr import types
 
 class RecipeImpl(CythonRecipe):
 
+    name = 'bdozlib'
     url = None
 
     @types(Config)

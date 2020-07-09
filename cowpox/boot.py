@@ -38,12 +38,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .util import Plugin, PluginType
 from diapyr import types
 
-class BootstrapType(PluginType): pass
+class BootstrapType(type): pass
 
-class Bootstrap(Plugin, metaclass = BootstrapType):
+class Bootstrap(metaclass = BootstrapType):
 
     recipe_depends = 'python3', 'android'
 

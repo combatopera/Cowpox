@@ -42,6 +42,7 @@ from .sdl2.module import LibSDL2Module
 
 class LibSDL2Core(LibSDL2Module):
 
+    name = 'sdl2_core'
     version = '2.0.9'
     url = f"https://www.libsdl.org/release/SDL2-{version}.tar.gz"
     md5sum = 'f2ecfba915c54f7200f504d8b48a5dfe'

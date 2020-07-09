@@ -42,4 +42,5 @@ from cowpox.boot import Bootstrap
 
 class WebViewBootstrap(Bootstrap):
 
+    name = 'webview'
     recipe_depends = {*Bootstrap.recipe_depends, 'genericndkbuild'}

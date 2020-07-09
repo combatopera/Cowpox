@@ -42,7 +42,6 @@ from . import Arch
 from .config import Config
 from .mirror import Mirror
 from .platform import Platform
-from .util import Plugin
 from diapyr import types
 from lagoon import patch, tar, unzip
 from pathlib import Path
@@ -53,7 +52,7 @@ import hashlib, logging, os, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
-class Recipe(Plugin):
+class Recipe:
 
     md5sum = None
     depends = []

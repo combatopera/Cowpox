@@ -42,4 +42,5 @@ from cowpox.boot import Bootstrap
 
 class SDL2GradleBootstrap(Bootstrap):
 
+    name = 'sdl2'
     recipe_depends = {*Bootstrap.recipe_depends, 'sdl2'}
