@@ -163,9 +163,9 @@ class Recipe(Plugin):
 
 class BootstrapNDKRecipe(Recipe):
 
-    @property
-    def jni_dir(self):
-        return self.recipebuilddir / 'jni'
+    @types()
+    def __init(self):
+        self.jni_dir = self.recipebuilddir / 'jni'
 
     def ndk_build(self, env):
         self.platform.ndk_build.print(env = env, cwd = self.jni_dir)
