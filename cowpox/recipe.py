@@ -158,7 +158,7 @@ class Recipe(Plugin):
         def target():
             self._prepare()
             self.mainbuild()
-            self.arch.strip_object_files(self.recipebuilddir)
+            self.arch.strip_object_files(self.recipebuilddir) # TODO: CythonRecipe also does this.
         return make(self.recipebuilddir, self.platform.memo, target) # FIXME: Some recipes depend on others.
 
 class BootstrapNDKRecipe(Recipe):
