@@ -241,8 +241,9 @@ class AndroidProject:
                 shutil.copy2(librepo.recipebuilddir / builtlibpath, archlibs)
         self.arch.striplibs(self.android_project_libs)
         for javasrc in javasrcs:
-            log.info("Copying java files from: %s", javasrc.javasrc)
-            javasrc.javasrc.mergeinto(self.android_project_dir / 'src' / 'main' / 'java')
+            contrib = javasrc.javasrc()
+            log.info("Copying java files from: %s", contrib)
+            contrib.mergeinto(self.android_project_dir / 'src' / 'main' / 'java')
         self.assetarchive.makeprivate()
         shutil.copy2(self.icon_path, (self.res_dir / 'drawable').mkdirp() / 'icon.png')
         if self.bootstrapname != 'service_only':
