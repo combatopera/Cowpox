@@ -157,8 +157,8 @@ class AssetArchive:
 
 class AndroidProject:
 
-    @types(Config, Arch, Platform, AssetArchive, BuildMode)
-    def __init__(self, config, arch, platform, assetarchive, mode):
+    @types(Config, Arch, Platform, AssetArchive, BuildMode, [JavaSrc], [LibRepo])
+    def __init__(self, config, arch, platform, assetarchive, mode, javasrcs, librepos):
         ndk_api = config.android.ndk_api
         self.min_sdk_version = config.android.minSdkVersion
         if ndk_api != self.min_sdk_version:
@@ -193,6 +193,8 @@ class AndroidProject:
         self.platform = platform
         self.assetarchive = assetarchive
         self.mode = mode
+        self.javasrcs = javasrcs
+        self.librepos = librepos
 
     def _numver(self):
         version_code = 0
@@ -228,22 +230,22 @@ class AndroidProject:
             for f in so_src_dir.glob('*.so'):
                 cp._a.print(f, so_tgt_dir)
 
-    @types(Make, [JavaSrc], [LibRepo], PrivateMemo, this = AndroidProjectMemo) # XXX: Surely this depends on a few things, logically?
-    def prepare(self, make, javasrcs, librepos, privatememo):
-        return make(self.android_project_dir, privatememo, lambda: self._prepare(javasrcs, librepos))
+    @types(Make, PrivateMemo, this = AndroidProjectMemo) # XXX: Surely this depends on a few things, logically?
+    def prepare(self, make, privatememo):
+        return make(self.android_project_dir, privatememo, self._prepare)
 
-    def _prepare(self, javasrcs, librepos):
+    def _prepare(self):
         self.srccontrib.mergeinto(self.android_project_dir / 'src')
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
         writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.
         log.info('Copying libs.')
         self._distribute_aars()
         archlibs = (self.android_project_libs / self.arch.name).mkdirp()
-        for librepo in librepos:
+        for librepo in self.librepos:
             for builtlibpath in librepo.builtlibpaths():
                 shutil.copy2(librepo.recipebuilddir / builtlibpath, archlibs)
         self.arch.striplibs(self.android_project_libs)
-        for javasrc in javasrcs:
+        for javasrc in self.javasrcs:
             contrib = javasrc.javasrc()
             log.info("Copying java files from: %s", contrib)
             contrib.mergeinto(self.android_project_dir / 'src' / 'main' / 'java')
