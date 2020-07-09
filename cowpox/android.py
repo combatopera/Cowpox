@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import AndroidProjectMemo, APKPath, Arch, GraphInfo, JavaSrc, LibRepo, PrivateMemo
+from . import AndroidProjectMemo, APKPath, Arch, GraphInfo, JavaSrc, LibRepo, PrivateMemo, RecipeMemos
 from .config import Config
 from .make import Make
 from .platform import Platform
@@ -230,9 +230,16 @@ class AndroidProject:
             for f in so_src_dir.glob('*.so'):
                 cp._a.print(f, so_tgt_dir)
 
-    @types(Make, PrivateMemo, this = AndroidProjectMemo) # XXX: Surely this depends on a few things, logically?
-    def prepare(self, make, privatememo):
-        return make(self.android_project_dir, privatememo, self._prepare)
+    @types(Make, RecipeMemos, PrivateMemo, this = AndroidProjectMemo)
+    def prepare(self, make, recipememos, privatememo):
+        return make(self.android_project_dir, [
+            self.bootstrapname,
+            self.android_api, # XXX: And sdk_dir?
+            str(self.aar_dir), # XXX: Check what's in there?
+            self.arch.name, # TODO: And most of the config.
+            recipememos,
+            privatememo,
+        ], self._prepare)
 
     def _prepare(self):
         self.srccontrib.mergeinto(self.android_project_dir / 'src')
