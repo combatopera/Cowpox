@@ -120,6 +120,7 @@ class AssetArchive:
             '*.bak',
             '*.swp',
             '*.py',
+            '.Cowpox/*',
         ] + resource_string(__name__, 'blacklist.txt').decode().splitlines()
         if config.bootstrap.name in {'webview', 'service_only'} or 'sqlite3' not in graphinfo.recipenames:
             self.BLACKLIST_PATTERNS += ['sqlite3/*', 'lib-dynload/_sqlite3.so']
