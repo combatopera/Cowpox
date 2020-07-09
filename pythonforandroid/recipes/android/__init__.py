@@ -47,6 +47,7 @@ log = logging.getLogger(__name__)
 
 class AndroidRecipe(CythonRecipe):
 
+    name = 'android'
     url = 'src'
     depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
 

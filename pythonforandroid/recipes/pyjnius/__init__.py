@@ -45,6 +45,7 @@ from diapyr import types
 
 class PyjniusRecipe(CythonRecipe, JavaSrc):
 
+    name = 'pyjnius'
     version = '1.2.1'
     url = f"https://github.com/kivy/pyjnius/archive/{version}.zip"
     depends = [('genericndkbuild', 'sdl2'), 'six']

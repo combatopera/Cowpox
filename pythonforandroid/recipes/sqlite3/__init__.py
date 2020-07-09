@@ -45,6 +45,7 @@ import shutil
 
 class Sqlite3Recipe(NDKRecipe, LibRepo):
 
+    name = 'sqlite3'
     version = '3.15.1'
     url = 'https://www.sqlite.org/2016/sqlite-amalgamation-3150100.zip'
 

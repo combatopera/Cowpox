@@ -43,6 +43,7 @@ from multiprocessing import cpu_count
 
 class NumpyRecipe(CompiledComponentsPythonRecipe):
 
+    name = 'numpy'
     version = '1.18.1'
     url = f"https://pypi.python.org/packages/source/n/numpy/numpy-{version}.zip"
     depends = ['setuptools', 'cython']

@@ -47,6 +47,7 @@ from pathlib import Path
 
 class LibffiRecipe(Recipe, LibRepo):
 
+    name = 'libffi'
     version = '8fa8837'
     url = f"https://github.com/libffi/libffi/archive/{version}.tar.gz"
 

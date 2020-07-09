@@ -42,6 +42,7 @@ from ..sdl2.module import LibSDL2Module
 
 class LibSDL2Image(LibSDL2Module):
 
+    name = 'sdl2_image'
     version = '2.0.4'
     url = f"https://www.libsdl.org/projects/SDL_image/release/SDL2_image-{version}.tar.gz"
     dir_name = 'SDL2_image'
