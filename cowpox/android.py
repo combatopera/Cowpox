@@ -95,7 +95,8 @@ class Assembly:
             # TODO: Download gradle dependencies in advance.
             gradle.__no_daemon.print(self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
             log.info('Android packaging done!')
-        make(self.gradle_builddir, projectmemo, target)
+        make(self.gradle_builddir, [projectmemo, self.mode.name], target) # XXX: Should SDK/NDK be in dependencies?
+        # XXX: Can we tell gradle what to use for filename?
         return self.gradle_builddir / 'outputs' / 'apk' / self.mode.division.name / f"{self.android_project_dir.name}-{self.mode.name}.apk"
 
 class AssetArchive:
