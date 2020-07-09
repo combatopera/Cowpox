@@ -237,7 +237,7 @@ class AndroidProject:
         self._distribute_aars()
         archlibs = (self.android_project_libs / self.arch.name).mkdirp()
         for librepo in librepos:
-            for builtlibpath in librepo.builtlibpaths:
+            for builtlibpath in librepo.builtlibpaths():
                 shutil.copy2(librepo.recipebuilddir / builtlibpath, archlibs)
         self.arch.striplibs(self.android_project_libs)
         for javasrc in javasrcs:

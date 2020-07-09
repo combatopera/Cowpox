@@ -56,4 +56,6 @@ class Sqlite3Recipe(NDKRecipe, LibRepo):
         env = self.arch.env.copy()
         env['NDK_PROJECT_PATH'] = str(self.recipebuilddir)
         self.ndk_build(env)
-        self.builtlibpaths = [Path('libs', self.arch.name, 'libsqlite3.so')]
+
+    def builtlibpaths():
+        return [Path('libs', self.arch.name, 'libsqlite3.so')]

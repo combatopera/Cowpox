@@ -127,7 +127,9 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
         cp.print(self.androidbuild / 'pyconfig.h', self.include_root())
         compileall(self.modules_build_dir)
         compileall(self.stdlibdir, False)
-        self.builtlibpaths = [self.androidbuild / self.instsoname]
+
+    def builtlibpaths(self):
+        return [self.androidbuild / self.instsoname]
 
     def module_filens(self):
         return [*self.modules_build_dir.glob('*.so'), *self.modules_build_dir.glob('*.pyc')] # Recursion not needed.
