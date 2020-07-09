@@ -70,6 +70,7 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
         self.instsoname = f"lib{self.pylibname}.so"
         self.androidbuild = self.recipebuilddir / 'android-build'
         self.modules_build_dir = self.androidbuild / 'build' / f"lib.linux-{arch.command_prefix.split('-')[0]}-{self.majminversion}"
+        self.stdlibdir = self.recipebuilddir / 'Lib'
         self.graph = graph
         self.graphinfo = graphinfo
 
@@ -125,7 +126,6 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
         make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
         cp.print(self.androidbuild / 'pyconfig.h', self.include_root())
         compileall(self.modules_build_dir)
-        self.stdlibdir = self.recipebuilddir / 'Lib'
         compileall(self.stdlibdir, False)
         self.builtlibpaths = [self.androidbuild / self.instsoname]
 
