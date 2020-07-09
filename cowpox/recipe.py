@@ -79,7 +79,7 @@ class Recipe(Plugin):
 
     @types(Config, Platform, Mirror, Arch)
     def __init__(self, config, platform, mirror, arch):
-        self.builds_dir = Path(config.builds.dir)
+        self.recipebuilddir = Path(config.builds.dir, self.name)
         self.projectbuilddir = Path(config.build.dir)
         self.extroot = Path(config.container.extroot)
         self.platform = platform
@@ -96,10 +96,6 @@ class Recipe(Plugin):
         for relpath in relpaths:
             log.info("Apply patch: %s", relpath)
             patch._t._p1.print('-d', self.recipebuilddir, '-i', self.resourcepath(relpath))
-
-    @property
-    def recipebuilddir(self):
-        return self.builds_dir / self.name
 
     def _copywithoutbuild(self, frompath, topath):
         try:
