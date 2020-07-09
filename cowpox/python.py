@@ -126,7 +126,7 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
         Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = self.androidbuild)
         make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
         cp.print(self.androidbuild / 'pyconfig.h', self.include_root())
-        modules_build_dir = self.androidbuild / 'build' / f"lib.linux{2 if self.version[0] == '2' else ''}-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
+        modules_build_dir = self.androidbuild / 'build' / f"lib.linux-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
         compileall(modules_build_dir)
         self.module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # Recursion not needed.
         self.stdlibdir = self.recipebuilddir / 'Lib'
