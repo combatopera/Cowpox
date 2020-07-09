@@ -40,9 +40,9 @@
 
 RECOMMENDED_NDK_VERSION = 19b
 SDK
-    dir = $/($(build dir) SDK)
+    dir = $/($(build dir) Cowpox-SDK)
     accept licenses = false
-NDK dir = $/($(build dir) NDK)
+NDK dir = $/($(build dir) Cowpox-NDK)
 android
     ndk = $(RECOMMENDED_NDK_VERSION)
     api = 27
@@ -85,8 +85,8 @@ log path = $/($(build dir) Cowpox.log)
 : TODO: All Cowpox assets should go in dedicated subdirectory.
 build dir = $/($(container src) build)
 main name = main
-mirror path = $/($(build dir) mirror)
-private dir = $/($(build dir) private)
+mirror path = $/($(build dir) Cowpox-mirror)
+private dir = $/($(build dir) Cowpox-private)
 bundle dir = $/($(private dir) _python_bundle)
 builds dir = $/($(build dir) Cowpox)
 pip install dir = $/($(build dir) Cowpox-bundle)

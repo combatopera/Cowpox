@@ -72,6 +72,7 @@ class Private:
     site_packages_dir_blacklist = {
         '__pycache__',
         'tests',
+        '.Cowpox',
     }
     site_packages_filen_blacklist = [
         '*.py',
