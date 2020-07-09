@@ -68,6 +68,7 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
         self.majminversion = '.'.join(map(str, parts[:2]))
         self.pylibname = f"python{self.majminversion}m"
         self.instsoname = f"lib{self.pylibname}.so"
+        self.androidbuild = self.recipebuilddir / 'android-build'
         self.graph = graph
         self.graphinfo = graphinfo
 
@@ -114,10 +115,6 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
         env['LDFLAGS'] = ' '.join(ldflags)
         env['LIBS'] = ' '.join(libs)
         return env
-
-    @property
-    def androidbuild(self):
-        return self.recipebuilddir / 'android-build'
 
     def build_android(self, configure_args):
         assert self.ndk_api >= self.MIN_NDK_API
