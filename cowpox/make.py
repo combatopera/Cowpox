@@ -44,17 +44,13 @@ import json, logging, shutil
 
 log = logging.getLogger(__name__)
 
-class UnexpectedYieldException(Exception): pass
-
 class Make:
 
     @types()
     def __init__(self, log = log):
         self.log = log
 
-    def __call__(self, install):
-        g = install()
-        target, dependencies = next(g)
+    def __call__(self, target, dependencies, install):
         infodir = target / '.Cowpox'
         infopath = infodir / 'info.json' # TODO: Exclude from artifact.
         okpath = infodir / 'OK'
@@ -73,12 +69,7 @@ class Make:
                 shutil.rmtree(target)
             else:
                 target.pmkdirp()
-        try:
-            obj = next(g)
-        except StopIteration:
-            pass
-        else:
-            raise UnexpectedYieldException(obj)
+        install()
         uuid = str(uuid4())
         infodir.mkdir()
         with infopath.open('w') as f:

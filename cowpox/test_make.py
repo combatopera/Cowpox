@@ -65,54 +65,54 @@ class TestMake(TestCase):
         self.logs.clear()
         return v
 
+    def _make(self):
+        self.uuid = self.make(self.target, self.dependencies, self.install)
+        return self.uuid
+
     def test_works(self):
-        def install():
-            yield target, None
-            target.mkdir()
         with TemporaryDirectory() as tempdir:
-            target = Path(tempdir, 'a')
-            uuid = self.make(install)
+            self.target = target = Path(tempdir, 'a')
+            self.dependencies = None
+            self.install = target.mkdir
+            self._make()
             self.assertEqual([
                 I, "[%s] Start build.", target,
                 I, "[%s] Build OK.", target,
             ], self._pop())
-            self.assertEqual(uuid, self.make(install))
+            self.assertEqual(self.uuid, self._make())
             self.assertEqual([
                 I, "[%s] Already OK.", target,
             ], self._pop())
             (target / '.Cowpox' / 'OK').rmdir()
-            olduuid, uuid = uuid, self.make(install)
-            self.assertNotEqual(olduuid, uuid)
+            self.assertNotEqual(self.uuid, self._make())
             self.assertEqual([
                 I, "[%s] Start build.", target,
                 W, "[%s] Delete.", target,
                 I, "[%s] Build OK.", target,
             ], self._pop())
             shutil.rmtree(target)
-            self.assertNotEqual(uuid, self.make(install))
+            self.assertNotEqual(self.uuid, self._make())
             self.assertEqual([
                 I, "[%s] Start build.", target,
                 I, "[%s] Build OK.", target,
             ], self._pop())
 
-    def test_config(self):
-        def install():
-            yield target, config
-            target.mkdir()
+    def test_dependencies(self):
         with TemporaryDirectory() as tempdir:
-            target = Path(tempdir, 'a')
-            config = 100
-            uuid = self.make(install)
+            self.target = target = Path(tempdir, 'a')
+            self.dependencies = 100
+            self.install = target.mkdir
+            self._make()
             self.assertEqual([
                 I, "[%s] Start build.", target,
                 I, "[%s] Build OK.", target,
             ], self._pop())
-            self.assertEqual(uuid, self.make(install))
+            self.assertEqual(self.uuid, self._make())
             self.assertEqual([
                 I, "[%s] Already OK.", target,
             ], self._pop())
-            config = 101
-            self.assertNotEqual(uuid, self.make(install))
+            self.dependencies = 101
+            self.assertNotEqual(self.uuid, self._make())
             self.assertEqual([
                 I, "[%s] Rebuild due to changed dependencies.", target,
                 I, "[%s] Build OK.", target,
@@ -121,17 +121,18 @@ class TestMake(TestCase):
     def test_fasterror(self):
         class X(Exception): pass
         def install():
-            yield target, None
             raise X
         with TemporaryDirectory() as tempdir:
-            target = Path(tempdir, 'a')
+            self.target = target = Path(tempdir, 'a')
+            self.dependencies = None
+            self.install = install
             with self.assertRaises(X):
-                self.make(install)
+                self._make()
             self.assertEqual([
                 I, "[%s] Start build.", target,
             ], self._pop())
             with self.assertRaises(X):
-                self.make(install)
+                self._make()
             self.assertEqual([
                 I, "[%s] Start build.", target,
             ], self._pop())
@@ -139,35 +140,36 @@ class TestMake(TestCase):
     def test_slowerror(self):
         class X(Exception): pass
         def install():
-            yield target, None
             target.mkdir()
             raise X
         with TemporaryDirectory() as tempdir:
-            target = Path(tempdir, 'a')
+            self.target = target = Path(tempdir, 'a')
+            self.dependencies = None
+            self.install = install
             with self.assertRaises(X):
-                self.make(install)
+                self._make()
             self.assertEqual([
                 I, "[%s] Start build.", target,
             ], self._pop())
             with self.assertRaises(X):
-                self.make(install)
+                self._make()
             self.assertEqual([
                 I, "[%s] Start build.", target,
                 W, "[%s] Delete.", target,
             ], self._pop())
 
     def test_dirnotmade(self):
-        def install():
-            yield target, None
         with TemporaryDirectory() as tempdir:
-            target = Path(tempdir, 'a')
+            self.target = target = Path(tempdir, 'a')
+            self.dependencies = None
+            self.install = lambda: None
             with self.assertRaises(FileNotFoundError):
-                self.make(install)
+                self._make()
             self.assertEqual([
                 I, "[%s] Start build.", target,
             ], self._pop())
             with self.assertRaises(FileNotFoundError):
-                self.make(install)
+                self._make()
             self.assertEqual([
                 I, "[%s] Start build.", target,
             ], self._pop())
