@@ -58,6 +58,7 @@ class PythonRecipe(Recipe):
             depends = self.depends
             depends.append('python3')
             self.depends = list(set(depends)) # XXX: Can we error instead?
+        self.bundlepackages = self.recipebuilddir / 'Cowpox-bundle'
         self.interpreterrecipe = interpreterrecipe
 
     def get_recipe_env(self):
@@ -74,7 +75,6 @@ class PythonRecipe(Recipe):
         if env is None:
             env = self.get_recipe_env()
         log.info("Install %s into bundle.", self.name)
-        self.bundlepackages = self.recipebuilddir / 'Cowpox-bundle'
         rdir = self.bundlepackages / 'r'
         python.print('setup.py', 'install', '-O2', '--root', rdir, '--install-lib', 'l', env = env, cwd = self.recipebuilddir)
         for p in (rdir / 'l').iterdir():
