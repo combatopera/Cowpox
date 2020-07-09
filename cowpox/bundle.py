@@ -56,6 +56,8 @@ class GraphProxy(DIProxy, Graph): targetclass = GraphImpl
 
 class PipInstallRecipe(CythonRecipe):
 
+    name = 'FIXME' # FIXME: Make this a real recipe.
+
     @types(Config)
     def __init(self, config):
         self.bundlepackages = Path(config.pip.install.dir)
