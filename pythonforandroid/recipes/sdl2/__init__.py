@@ -65,5 +65,5 @@ class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo, ObjRepo):
         env['APP_ALLOW_MISSING_DEPS'] = 'true'
         self.ndk_build(env)
 
-    def builtlibpaths():
+    def builtlibpaths(self):
         return sorted((self.recipebuilddir / 'libs' / self.arch.name).iterdir())

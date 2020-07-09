@@ -60,7 +60,7 @@ class LibffiRecipe(Recipe, LibRepo):
                 f"--host={self.arch.command_prefix}", f"--prefix={self.recipebuilddir}", '--disable-builddir', '--enable-shared', env = env, cwd = self.recipebuilddir)
         make.print('-j', cpu_count(), 'libffi.la', env = env, cwd = self.recipebuilddir)
 
-    def builtlibpaths():
+    def builtlibpaths(self):
         return [Path('.libs', 'libffi.so')]
 
     def includeslinkslibs(self):

@@ -84,5 +84,5 @@ class OpenSSLRecipe(Recipe, LibRepo):
         self.apply_patches('disable-sover.patch')
         make.print('build_libs', env = env, cwd = self.recipebuilddir)
 
-    def builtlibpaths():
+    def builtlibpaths(self):
         return [f"libcrypto{self.version}.so", f"libssl{self.version}.so"]
