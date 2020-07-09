@@ -92,10 +92,9 @@ class Assembly:
     @types(Make, AndroidProjectMemo, this = APKPath)
     def build_package(self, make, projectmemo):
         def target():
-            yield self.gradle_builddir, projectmemo
             gradle.__no_daemon.print(self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
             log.info('Android packaging done!')
-        make(target)
+        make(self.gradle_builddir, projectmemo, target)
         return self.gradle_builddir / 'outputs' / 'apk' / self.mode.division.name / f"{self.android_project_dir.name}-{self.mode.name}.apk"
 
 class AssetArchive:
@@ -228,10 +227,9 @@ class AndroidProject:
 
     @types(Make, [JavaSrc], [LibRepo], PrivateMemo, this = AndroidProjectMemo) # XXX: Surely this depends on a few things, logically?
     def prepare(self, make, javasrcs, librepos, privatememo):
-        return make(lambda: self._prepare(javasrcs, librepos, privatememo))
+        return make(self.android_project_dir, privatememo, lambda: self._prepare(javasrcs, librepos))
 
-    def _prepare(self, javasrcs, librepos, privatememo):
-        yield self.android_project_dir, privatememo
+    def _prepare(self, javasrcs, librepos):
         self.srccontrib.mergeinto(self.android_project_dir / 'src')
         writeproperties(self.android_project_dir / 'project.properties', target = f"android-{self.android_api}")
         writeproperties(self.android_project_dir / 'local.properties', **{'sdk.dir': self.sdk_dir}) # Required by gradle build.

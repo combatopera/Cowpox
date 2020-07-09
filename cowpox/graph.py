@@ -199,7 +199,7 @@ class GraphImpl:
         def memos():
             for recipe in self.recipes.values():
                 log.info("Build recipe: %s", recipe.name)
-                yield make(recipe.maketarget)
+                yield recipe.makerecipe(make)
         return list(memos())
 
 def _get_recipe_order(names, blacklist):

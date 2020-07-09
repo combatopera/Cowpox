@@ -158,11 +158,12 @@ class Recipe(Plugin):
         if rootname != self.recipebuilddir.name:
             self.recipebuilddir.with_name(rootname).rename(self.recipebuilddir)
 
-    def maketarget(self):
-        yield self.recipebuilddir, self.platform.memo
-        self._prepare()
-        self.mainbuild()
-        self.arch.strip_object_files(self.recipebuilddir)
+    def makerecipe(self, make):
+        def target():
+            self._prepare()
+            self.mainbuild()
+            self.arch.strip_object_files(self.recipebuilddir)
+        return make(self.recipebuilddir, self.platform.memo, target)
 
 class BootstrapNDKRecipe(Recipe):
 

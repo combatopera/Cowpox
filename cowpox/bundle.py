@@ -63,14 +63,13 @@ class PipInstallRecipe(CythonRecipe):
     @types(Make, GraphInfo, this = PipInstallMemo)
     def buildsite(self, make, graphinfo):
         def target():
-            pypinames = graphinfo.pypinames
-            yield self.pip_install_dir, pypinames
             if pypinames:
                 pip.install._v.__no_deps.print('--target', self.pip_install_dir, *pypinames, env = self.get_recipe_env())
                 compileall(self.pip_install_dir)
             else:
                 self.pip_install_dir.mkdirp()
-        return make(target)
+        pypinames = graphinfo.pypinames
+        return make(self.pip_install_dir, pypinames, target)
 
     @property
     def bundlepackages(self):
