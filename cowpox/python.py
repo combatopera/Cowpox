@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, GraphInfo, InterpreterRecipe, LibRepo
+from . import Arch, Graph, GraphInfo, InterpreterRecipe, LibRepo
 from .config import Config
 from .container import compileall
 from .recipe import Recipe
@@ -59,8 +59,8 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
     '''The optional libraries which we would like to get our python linked'''
     zlibversionpattern = re.compile('^#define ZLIB_VERSION "(.+)"$', re.MULTILINE)
 
-    @types(Config, Graph, GraphInfo)
-    def __init(self, config, graph, graphinfo):
+    @types(Config, Arch, Graph, GraphInfo)
+    def __init(self, config, arch, graph, graphinfo):
         self.ndk_dir = Path(config.NDK.dir)
         self.ndk_api = config.android.ndk_api
         self.use_lld = config.use.lld
@@ -69,6 +69,7 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
         self.pylibname = f"python{self.majminversion}m"
         self.instsoname = f"lib{self.pylibname}.so"
         self.androidbuild = self.recipebuilddir / 'android-build'
+        self.modules_build_dir = self.androidbuild / 'build' / f"lib.linux-{arch.command_prefix.split('-')[0]}-{self.majminversion}"
         self.graph = graph
         self.graphinfo = graphinfo
 
@@ -123,9 +124,8 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
         Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = self.androidbuild)
         make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
         cp.print(self.androidbuild / 'pyconfig.h', self.include_root())
-        modules_build_dir = self.androidbuild / 'build' / f"lib.linux-{self.arch.command_prefix.split('-')[0]}-{self.majminversion}"
-        compileall(modules_build_dir)
-        self.module_filens = [*modules_build_dir.glob('*.so'), *modules_build_dir.glob('*.pyc')] # Recursion not needed.
+        compileall(self.modules_build_dir)
+        self.module_filens = [*self.modules_build_dir.glob('*.so'), *self.modules_build_dir.glob('*.pyc')] # Recursion not needed.
         self.stdlibdir = self.recipebuilddir / 'Lib'
         compileall(self.stdlibdir, False)
         self.builtlibpaths = [self.androidbuild / self.instsoname]
