@@ -159,7 +159,7 @@ class Recipe(Plugin):
             self._prepare()
             self.mainbuild()
             self.arch.strip_object_files(self.recipebuilddir)
-        return make(self.recipebuilddir, self.platform.memo, target)
+        return make(self.recipebuilddir, self.platform.memo, target) # FIXME: Some recipes depend on others.
 
 class BootstrapNDKRecipe(Recipe):
 
