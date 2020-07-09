@@ -56,7 +56,7 @@ class Make:
         g = install()
         target, *dependencies = next(g)
         infodir = target / '.Cowpox'
-        infopath = infodir / 'info.json'
+        infopath = infodir / 'info.json' # TODO: Exclude from artifact.
         okpath = infodir / 'OK'
         if okpath.exists():
             with infopath.open() as f:
