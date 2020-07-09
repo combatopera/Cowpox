@@ -107,7 +107,15 @@ class Private:
 
     @types(Make, PipInstallMemo, RecipeMemos, this = PrivateMemo)
     def create_python_bundle(self, make, pipinstallmemo, recipememos):
-        return make(self.private_dir, [pipinstallmemo, recipememos], self._createbundle)
+        return make(self.private_dir, [
+            self.bootstrap_name,
+            self.fullscreen,
+            self.orientation,
+            self.minsdkversion,
+            self.arch.name, # XXX: Isn't it enough that upstream items depend on it?
+            pipinstallmemo,
+            recipememos,
+        ], self._createbundle)
 
     def _createbundle(self):
         self._copy_application_sources()
