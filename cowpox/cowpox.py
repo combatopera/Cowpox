@@ -72,6 +72,7 @@ def _egginforequires(context, pathresolvable):
     # TODO LATER: This isn't lazy enough, which I suspect is the reason for multiple eval in high level API.
     requires = Config(context.createchild(islist = True), [])
     with TemporaryDirectory() as tempdir:
+        # FIXME: This will fail if there are any exotic imports.
         # FIXME: This invokes cythonize, but we should not write to mounted source.
         python.print('setup.py', 'egg_info', '-e', tempdir, cwd = pathresolvable.resolve(context).cat())
         egginfodir, = Path(tempdir).glob('*.egg-info')
