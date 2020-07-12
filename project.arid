@@ -56,3 +56,4 @@ resource types +=
     patch
     mk
     txt
+licheck exclude globs += MIT/**/*
