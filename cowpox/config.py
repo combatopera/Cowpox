@@ -79,12 +79,14 @@ class Config: # TODO: Migrate to aridity as high-level API.
     def _localcontext(self):
         return self._context.resolved(*self._prefix)
 
-    def list(self):
-        # TODO LATER: Should return Configs for non-scalars.
-        return [o.value for _, o in self._localcontext().itero()]
+    def __iter__(self):
+        # TODO LATER: This and items should return Configs for non-scalars.
+        for _, o in self._localcontext().itero():
+            yield o.value
 
-    def dict(self): # XXX: Expose items instead?
-        return {k: o.value for k, o in self._localcontext().itero()}
+    def items(self):
+        for k, o in self._localcontext().itero():
+            yield k, o.value
 
     def processtemplate(self, frompath, topath):
         with Repl(self._localcontext()) as repl:

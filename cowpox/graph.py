@@ -171,7 +171,7 @@ class GraphInfoImpl(GraphInfo):
     @types(Config, BootstrapType)
     def __init__(self, config, bootstraptype):
         # FIXME LATER: Overhaul logic so we don't have to exclude genericndkbuild every time.
-        self.recipenames, self.pypinames = _get_recipe_order({'python3', 'bdozlib', *config.requirements.list(), *bootstraptype.recipe_depends}, ['genericndkbuild'])
+        self.recipenames, self.pypinames = _get_recipe_order({'python3', 'bdozlib', *config.requirements, *bootstraptype.recipe_depends}, ['genericndkbuild'])
         log.info("Recipe build order is %s", self.recipenames)
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
 

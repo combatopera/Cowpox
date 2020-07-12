@@ -110,7 +110,7 @@ class AssetArchive:
         ]
         self.tarpath = Path(config.android.project.assets.dir, 'private.mp3')
         self.WHITELIST_PATTERNS = ['pyconfig.h'] if config.bootstrap.name in {'sdl2', 'webview', 'service_only'} else []
-        self.WHITELIST_PATTERNS.extend(config.android.whitelist.list())
+        self.WHITELIST_PATTERNS.extend(config.android.whitelist)
         self.BLACKLIST_PATTERNS = [
             '^*.hg/*',
             '^*.git/*',
@@ -178,7 +178,7 @@ class AndroidProject:
         self.icon_path = config.icon.full.path
         self.presplash_path = config.presplash.full.path
         self.wakelock = config.android.wakelock
-        self.permissions = config.android.permissions.list()
+        self.permissions = list(config.android.permissions)
         self.android_apptheme = config.android.apptheme
         self.fullscreen = config.android.fullscreen
         self.orientation = config.android.orientation
