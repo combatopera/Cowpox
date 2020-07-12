@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, InterpreterRecipe, PipInstallMemo, PrivateMemo, RecipeMemos, skel
+from . import Arch, InterpreterRecipe, PipInstallMemo, PrivateMemo, RecipeMemos
 from .config import Config
 from .container import compileall
 from .make import Make
@@ -47,7 +47,6 @@ from diapyr import types
 from fnmatch import fnmatch
 from lagoon import mv, rm, zip
 from pathlib import Path
-from pkg_resources import resource_filename, resource_stream
 import logging, os, shutil
 
 log = logging.getLogger(__name__)
@@ -100,6 +99,7 @@ class Private:
         self.fullscreen = config.android.fullscreen
         self.orientation = config.android.orientation
         self.minsdkversion = config.android.minSdkVersion
+        self.skel_path = Path(config.skel.path)
         self.config = config
         self.arch = arch
         self.interpreter = interpreter
@@ -149,9 +149,8 @@ class Private:
     def _copy_application_sources(self):
         topath = self.private_dir.mkdirp() / 'main.py'
         log.debug("Create: %s", topath)
-        self.config.processtemplate(resource_filename(skel.__name__, 'main.py.aridt'), topath) # TODO: Rebuild if relevant config changes.
-        with resource_stream(skel.__name__, 'sitecustomize.py') as f, (self.private_dir / 'sitecustomize.py').open('wb') as g:
-            shutil.copyfileobj(f, g)
+        self.config.processtemplate(self.skel_path / 'main.py.aridt', topath) # TODO: Rebuild if relevant config changes.
+        shutil.copy2(self.skel_path / 'sitecustomize.py', self.private_dir)
         main_py = self.private_dir / 'service' / 'main.py'
         if main_py.exists(): # XXX: Why would it?
             with open(main_py, 'rb') as fd:

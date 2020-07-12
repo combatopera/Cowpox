@@ -96,3 +96,4 @@ use lld = false
 requirements = $egg-info-requires$(container src)
 gradle buildDir = $/($(build dir) Cowpox-build)
 aar dir = $/($(container src) aars)
+skel path = $/($(container extroot) MIT skel)
