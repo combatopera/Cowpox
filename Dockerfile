@@ -44,9 +44,9 @@ RUN apt-get update && \
     wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - && \
     add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ && \
     apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends adoptopenjdk-8-hotspot build-essential ccache cmake gettext gradle lld zip && \
-    pip install pip==20.1.1 && \
-    pip install pyven==43 && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends adoptopenjdk-8-hotspot build-essential ccache cmake gettext gradle lld zip
+RUN pip install pip==20.1.1 && \
+    pip install pyven==46 && \
     echo /.pyven/ | tee ~/.gitignore_global && \
     git config --global core.excludesfile ~/.gitignore_global
 WORKDIR /Cowpox
