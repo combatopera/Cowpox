@@ -68,11 +68,11 @@ sdl2
     activity name = org.kivy.android.PythonActivity
 icon
     full path = $/($(container src) $(icon path))
-    default path = $/($(container extroot) media kivy-icon.png)
+    default path = $/($(container extroot) MIT media kivy-icon.png)
     path = $(default path)
 presplash
     full path = $/($(container src) $(presplash path))
-    default path = $/($(container extroot) media kivy-presplash.jpg)
+    default path = $/($(container extroot) MIT media kivy-presplash.jpg)
     path = $(default path)
 bootstrap
     name = sdl2
