@@ -51,6 +51,7 @@ from .platform import Platform, PlatformInfo
 from .private import Private
 from .util import findimpl, Logging
 from argparse import ArgumentParser
+from aridimpl.model import Resolved, Text
 from diapyr import DI
 from lagoon import groupadd, python, useradd
 from pathlib import Path
@@ -68,17 +69,25 @@ def _inituser(srcpath):
     os.setuid(uid)
     del os.environ['HOME'] # XXX: Why is it set in the first place?
 
-def _egginforequires(context, pathresolvable):
-    # TODO LATER: This isn't lazy enough, which I suspect is the reason for multiple eval in high level API.
-    requires = Config(context.createchild(islist = True), [])
-    with TemporaryDirectory() as tempdir:
-        # FIXME: This will fail if there are any exotic imports.
-        # FIXME: This invokes cythonize, but we should not write to mounted source.
-        python.print('setup.py', 'egg_info', '-e', tempdir, cwd = pathresolvable.resolve(context).cat())
-        egginfodir, = Path(tempdir).glob('*.egg-info')
-        for r in (egginfodir / 'requires.txt').read_text().splitlines():
-            requires.put(r, text = r)
-    return requires._context
+class EggInfoRequires(Resolved):
+
+    @classmethod
+    def factory(cls, context, pathresolvable):
+        requires = Config(context.createchild(islist = True), [])
+        requires.put('requires', resolvable = cls(pathresolvable.resolve(context).cat()))
+        return requires._context
+
+    def __init__(self, path):
+        self.path = path
+
+    def spread(self, _):
+        with TemporaryDirectory() as tempdir:
+            # FIXME: This will fail if there are any exotic imports.
+            # FIXME: This invokes cythonize, but we should not write to mounted source.
+            python.print('setup.py', 'egg_info', '-e', tempdir, cwd = self.path)
+            egginfodir, = Path(tempdir).glob('*.egg-info')
+            for r in (egginfodir / 'requires.txt').read_text().splitlines():
+                yield r, Text(r)
 
 def _main():
     logging = Logging()
@@ -89,7 +98,7 @@ def _main():
     config = Config.blank()
     config.put('container', 'src', text = str(args.srcpath))
     config.put('pyven', 'support', text = resource_filename(etc.__name__, 'pyven.arid'))
-    config.put('egg-info-requires', function = _egginforequires)
+    config.put('egg-info-requires', function = EggInfoRequires.factory)
     config.load(resource_filename(etc.__name__, 'root.arid'))
     config = config.Cowpox
     logging.setpath(Path(config.log.path))
