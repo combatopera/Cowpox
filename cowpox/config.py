@@ -62,13 +62,12 @@ class Config: # TODO: Migrate to aridity as high-level API.
     def __getattr__(self, name):
         path = [*self._prefix, name]
         try:
-            obj = self._context.resolved(*path)
+            obj = self._context.resolved(*path) # TODO LATER: Guidance for how lazy non-scalars should be in this situation.
         except NoSuchPathException:
             raise AttributeError(name) # XXX: Misleading?
         try:
             return obj.value # TODO: Does not work for all kinds of scalar.
         except AttributeError:
-            # FIXME: Not keeping obj means things get resolved multiple times, or perhaps resolvable not lazy enough.
             return type(self)(self._context, path)
 
     def put(self, *path, function = undefined, text = undefined, resolvable = undefined):
