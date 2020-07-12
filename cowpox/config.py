@@ -71,9 +71,9 @@ class Config: # TODO: Migrate to aridity as high-level API.
             # FIXME: Not keeping obj means things get resolved multiple times, or perhaps resolvable not lazy enough.
             return type(self)(self._context, path)
 
-    def put(self, *path, function = undefined, text = undefined):
+    def put(self, *path, function = undefined, text = undefined, resolvable = undefined):
         # TODO LATER: In theory we could add multiple types.
-        factory, = (partial(t, v) for t, v in [[Function, function], [Text, text]] if v is not undefined)
+        factory, = (partial(t, v) for t, v in [[Function, function], [Text, text], [lambda x: x, resolvable]] if v is not undefined)
         self._context[tuple([*self._prefix, *path])] = factory()
 
     def _localcontext(self):
