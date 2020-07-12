@@ -133,7 +133,7 @@ def enum(*lists):
 
 class Contrib:
 
-    def __init__(self, *srcdirs):
+    def __init__(self, srcdirs):
         self.srcdirs = srcdirs
 
     def filepaths(self):

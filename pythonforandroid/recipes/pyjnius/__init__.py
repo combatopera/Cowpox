@@ -62,4 +62,4 @@ class PyjniusRecipe(CythonRecipe, JavaSrc):
         self.install_python_package()
 
     def javasrc(self):
-        return Contrib(self.recipebuilddir / 'jnius' / 'src')
+        return Contrib([self.recipebuilddir / 'jnius' / 'src'])

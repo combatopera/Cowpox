@@ -46,6 +46,7 @@ from .util import Contrib, enum, writeproperties
 from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
+from itertools import chain
 from lagoon import cp, gradle, unzip
 from pathlib import Path
 from pkg_resources import resource_string
@@ -105,8 +106,8 @@ class AssetArchive:
     @types(Config, GraphInfo)
     def __init__(self, config, graphinfo):
         self.contribs = [
-            Contrib(Path(config.private.dir)),
-            Contrib(Path(config.bootstrap.dir, 'private'), Path(config.bootstrap.common.dir, 'private')),
+            Contrib([Path(config.private.dir)]),
+            Contrib([Path(d, 'private') for d in chain(config.bootstrap.dirs, config.bootstrap.common.dirs)]),
         ]
         self.tarpath = Path(config.android.project.assets.dir, 'private.mp3')
         self.WHITELIST_PATTERNS = ['pyconfig.h'] if config.bootstrap.name in {'sdl2', 'webview', 'service_only'} else []
@@ -188,8 +189,8 @@ class AndroidProject:
         self.package_name = config.package.name
         self.sdk_dir = config.SDK.dir
         self.aar_dir = Path(config.aar.dir)
-        self.srccontrib = Contrib(Path(config.bootstrap.dir, 'src'), Path(config.bootstrap.common.dir, 'src'))
-        self.templates = Contrib(Path(config.bootstrap.dir, 'templates'), Path(config.bootstrap.common.dir, 'templates'))
+        self.srccontrib = Contrib([Path(d, 'src') for d in chain(config.bootstrap.dirs, config.bootstrap.common.dirs)])
+        self.templates = Contrib([Path(d, 'templates') for d in chain(config.bootstrap.dirs, config.bootstrap.common.dirs)])
         self.arch = arch
         self.platform = platform
         self.assetarchive = assetarchive

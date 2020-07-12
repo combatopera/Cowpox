@@ -43,6 +43,7 @@ from cowpox.config import Config
 from cowpox.recipe import BootstrapNDKRecipe
 from cowpox.util import Contrib
 from diapyr import types
+from itertools import chain
 from pathlib import Path
 
 class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo, ObjRepo):
@@ -53,7 +54,7 @@ class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo, ObjRepo):
 
     @types(Config, [LibSDL2Module], InterpreterRecipe)
     def __init(self, config, modules, interpreter):
-        self.jnicontrib = Contrib(Path(config.bootstrap.dir, 'jni'), Path(config.bootstrap.common.dir, 'jni'))
+        self.jnicontrib = Contrib([Path(d, 'jni') for d in chain(config.bootstrap.dirs, config.bootstrap.common.dirs)])
         self.modules = modules
         self.interpreter = interpreter
 

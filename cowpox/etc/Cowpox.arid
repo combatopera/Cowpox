@@ -76,7 +76,7 @@ presplash
     path = $(default path)
 bootstrap
     name = sdl2
-    dir = $/($(bootstrapsdir) $(name))
+    dirs = $map($(bootstrapsdirs) d $/($(d) $(name)))
     common name = common
 package name = Cowpox-project
 build_mode = debug
@@ -90,7 +90,7 @@ private dir = $/($(build dir) Cowpox-private)
 bundle dir = $/($(private dir) _python_bundle)
 builds dir = $/($(build dir) Cowpox)
 pip install dir = $/($(build dir) Cowpox-bundle)
-bootstrapsdir = $/($(container extroot) pythonforandroid bootstraps)
+bootstrapsdirs += $/($(container extroot) pythonforandroid bootstraps)
 webview port = 5000
 use lld = false
 requirements = $egg-info-requires$(container src)
