@@ -54,9 +54,10 @@ class AndroidRecipe(CythonRecipe):
     @types(Config)
     def __init(self, config):
         self.bootstrap_name = config.bootstrap.name
+        self.srcpath = Path(config.container.extroot, 'MIT', 'android')
 
     def mainbuild(self):
-        self.preparedirlocal(Path('.'))
+        self.preparedirlocal(self.srcpath)
         is_sdl2 = self.bootstrap_name in {'sdl2', 'sdl2python3', 'sdl2_gradle'}
         is_webview = self.bootstrap_name == 'webview'
         is_service_only = self.bootstrap_name == 'service_only'

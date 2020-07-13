@@ -114,7 +114,7 @@ class Recipe:
     def preparedirlocal(self, srcpath):
         log.info("[%s] Copy from: %s", self.name, srcpath)
         # TODO: Copy without .git either.
-        self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), self.recipebuilddir)
+        self._copywithoutbuild(srcpath, self.recipebuilddir)
 
     def preparedir(self, url):
         log.info("[%s] Downloading.", self.name)
