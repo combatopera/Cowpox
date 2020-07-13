@@ -46,9 +46,8 @@ from diapyr import types
 from lagoon import patch, tar, unzip
 from pathlib import Path
 from pkg_resources import resource_filename
-from urllib.parse import urlparse
 from zipfile import ZipFile
-import hashlib, logging, os, shutil, subprocess
+import hashlib, logging, shutil, subprocess
 
 log = logging.getLogger(__name__)
 
