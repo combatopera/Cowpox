@@ -41,6 +41,7 @@
 from cowpox.config import Config
 from cowpox.pyrecipe import CythonRecipe
 from diapyr import types
+from pathlib import Path
 import logging
 
 log = logging.getLogger(__name__)
@@ -55,7 +56,7 @@ class AndroidRecipe(CythonRecipe):
         self.bootstrap_name = config.bootstrap.name
 
     def mainbuild(self):
-        self.preparedirlocal('src')
+        self.preparedirlocal(Path('src'))
         is_sdl2 = self.bootstrap_name in {'sdl2', 'sdl2python3', 'sdl2_gradle'}
         is_webview = self.bootstrap_name == 'webview'
         is_service_only = self.bootstrap_name == 'service_only'
