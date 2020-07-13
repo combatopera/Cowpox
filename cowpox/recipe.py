@@ -88,9 +88,6 @@ class Recipe:
     def resourcepath(self, relpath):
         return self.contrib.resolve(relpath)
 
-    def _extresourcepath(self, relpath):
-        return Path(self.extroot, *self.__module__.split('.'), relpath)
-
     def apply_patches(self, *relpaths):
         for relpath in relpaths:
             log.info("Apply patch: %s", relpath)
@@ -117,7 +114,7 @@ class Recipe:
     def preparedirlocal(self, srcpath):
         log.info("[%s] Copy from: %s", self.name, srcpath)
         # TODO: Copy without .git either.
-        self._copywithoutbuild(srcpath if srcpath.is_absolute() else self._extresourcepath(srcpath), self.recipebuilddir)
+        self._copywithoutbuild(srcpath if srcpath.is_absolute() else self.resourcepath(srcpath), self.recipebuilddir)
 
     def preparedir(self, url):
         log.info("[%s] Downloading.", self.name)
