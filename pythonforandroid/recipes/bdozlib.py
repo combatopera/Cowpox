@@ -51,5 +51,5 @@ class RecipeImpl(CythonRecipe):
         self.container_src = config.container.src
 
     def mainbuild(self):
-        self.preparedir(self.container_src)
+        self.preparedirlocal(self.container_src)
         self.install_python_package()

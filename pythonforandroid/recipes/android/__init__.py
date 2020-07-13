@@ -55,7 +55,7 @@ class AndroidRecipe(CythonRecipe):
         self.bootstrap_name = config.bootstrap.name
 
     def mainbuild(self):
-        self.preparedir('src')
+        self.preparedirlocal('src')
         is_sdl2 = self.bootstrap_name in {'sdl2', 'sdl2python3', 'sdl2_gradle'}
         is_webview = self.bootstrap_name == 'webview'
         is_service_only = self.bootstrap_name == 'service_only'

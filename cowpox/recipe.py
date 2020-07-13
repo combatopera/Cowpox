@@ -114,13 +114,12 @@ class Recipe:
         else:
             log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
 
+    def preparedirlocal(self, srcpath):
+        log.info("[%s] Copy from: %s", self.name, srcpath)
+        # TODO: Copy without .git either.
+        self._copywithoutbuild(srcpath if srcpath.is_absolute() else self._extresourcepath(srcpath), self.recipebuilddir)
+
     def preparedir(self, url):
-        if not urlparse(url).scheme:
-            srcpath = Path(url.replace('/', os.sep))
-            log.info("[%s] Copy from: %s", self.name, srcpath)
-            # TODO: Copy without .git either.
-            self._copywithoutbuild(srcpath if srcpath.is_absolute() else self._extresourcepath(srcpath), self.recipebuilddir)
-            return
         log.info("[%s] Downloading.", self.name)
         archivepath = self.mirror.download(url)
         if self.md5sum is not None:
