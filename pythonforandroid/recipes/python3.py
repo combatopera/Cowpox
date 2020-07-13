@@ -45,7 +45,7 @@ from lagoon.program import Program
 
 class Python3Recipe(GuestPythonRecipe):
 
-    from ..openssl import OpenSSLRecipe
+    from .openssl import OpenSSLRecipe
     name = 'python3'
     version = '3.8.1' # XXX: Should this match container version?
     depends = ['sqlite3', 'openssl', 'libffi']

@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from ..sdl2.module import LibSDL2Module
+from .sdl2.module import LibSDL2Module
 
 class LibSDL2Image(LibSDL2Module):
 
