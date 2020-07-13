@@ -44,8 +44,8 @@ class CythonRecipe(CompiledComponentsPythonRecipe):
 
     name = 'cython' # XXX: Can we use canonical name?
     version = '0.29.15' # XXX: Use same version as image?
-    url = f"https://github.com/cython/cython/archive/{version}.tar.gz"
     depends = ['setuptools']
 
     def mainbuild(self):
+        self.preparedir(f"https://github.com/cython/cython/archive/{self.version}.tar.gz")
         self.install_python_package()

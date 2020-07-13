@@ -114,19 +114,15 @@ class Recipe:
         else:
             log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
 
-    def _prepare(self):
-        if self.url is None:
-            log.debug("[%s] Skip unpack as no URL is set.", self.name)
-            self.recipebuilddir.mkdir()
-            return
-        if not urlparse(self.url).scheme:
-            srcpath = Path(self.url.replace('/', os.sep))
+    def preparedir(self, url):
+        if not urlparse(url).scheme:
+            srcpath = Path(url.replace('/', os.sep))
             log.info("[%s] Copy from: %s", self.name, srcpath)
             # TODO: Copy without .git either.
             self._copywithoutbuild(srcpath if srcpath.is_absolute() else self._extresourcepath(srcpath), self.recipebuilddir)
             return
         log.info("[%s] Downloading.", self.name)
-        archivepath = self.mirror.download(self.url)
+        archivepath = self.mirror.download(url)
         if self.md5sum is not None:
             current_md5 = hashlib.md5(archivepath.read_bytes()).hexdigest()
             if current_md5 != self.md5sum:
@@ -137,7 +133,7 @@ class Recipe:
         log.info("[%s] Unpack for: %s", self.name, self.arch.name)
         # TODO LATER: Not such a good idea to use parent.
         # TODO LATER: Do not assume single top-level directory in archive.
-        if self.url.endswith('.zip'):
+        if url.endswith('.zip'):
             try:
                 unzip.print(archivepath, cwd = self.recipebuilddir.parent)
             except subprocess.CalledProcessError as e:
@@ -145,17 +141,16 @@ class Recipe:
                     raise
             with ZipFile(archivepath) as zf:
                 rootname = zf.filelist[0].filename.split('/')[0]
-        elif self.url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
+        elif url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
             tar.xf.print(archivepath, cwd = self.recipebuilddir.parent)
             rootname = tar.tf(archivepath).splitlines()[0].split('/')[0]
         else:
-            raise Exception(f"Unsupported archive type: {self.url}")
+            raise Exception(f"Unsupported archive type: {url}")
         if rootname != self.recipebuilddir.name:
             self.recipebuilddir.with_name(rootname).rename(self.recipebuilddir)
 
     def makerecipe(self, make):
         def target():
-            self._prepare()
             self.mainbuild()
             self.arch.strip_object_files(self.recipebuilddir) # TODO: CythonRecipe also does this.
         return make(self.recipebuilddir, self.platform.memo, target) # FIXME: Some recipes depend on others.

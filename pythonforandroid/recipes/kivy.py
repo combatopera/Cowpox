@@ -48,7 +48,6 @@ class KivyRecipe(CythonRecipe):
     from .sdl2 import LibSDL2Recipe
     name = 'kivy'
     version = '1.11.1'
-    url = f"https://github.com/kivy/kivy/archive/{version}.zip"
     depends = ['sdl2', 'pyjnius', 'setuptools']
     python_depends = ['certifi']
 
@@ -69,6 +68,7 @@ class KivyRecipe(CythonRecipe):
                 yield path
 
     def mainbuild(self):
+        self.preparedir(f"https://github.com/kivy/kivy/archive/{self.version}.zip")
         env = self.get_recipe_env()
         if self.sdl2 is not None:
             env['USE_SDL2'] = '1'

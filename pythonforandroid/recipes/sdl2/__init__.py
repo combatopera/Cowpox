@@ -49,7 +49,6 @@ class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo, ObjRepo):
 
     from .module import LibSDL2Module
     name = 'sdl2'
-    url = None
     depends = 'sdl2_core', 'sdl2_image', 'sdl2_mixer', 'sdl2_ttf'
 
     @types(Config, [LibSDL2Module], InterpreterRecipe)

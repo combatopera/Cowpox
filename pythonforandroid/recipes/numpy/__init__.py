@@ -45,11 +45,11 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
 
     name = 'numpy'
     version = '1.18.1'
-    url = f"https://pypi.python.org/packages/source/n/numpy/numpy-{version}.zip"
     depends = ['setuptools', 'cython']
     build_ext_args = '-j', cpu_count()
 
     def mainbuild(self):
+        self.preparedir(f"https://pypi.python.org/packages/source/n/numpy/numpy-{self.version}.zip")
         self.apply_patches(
             'add_libm_explicitly_to_build.patch',
             'do_not_use_system_libs.patch',

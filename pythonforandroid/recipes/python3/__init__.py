@@ -48,7 +48,6 @@ class Python3Recipe(GuestPythonRecipe):
     from ..openssl import OpenSSLRecipe
     name = 'python3'
     version = '3.8.1' # XXX: Should this match container version?
-    url = f"https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
     depends = ['sqlite3', 'openssl', 'libffi']
     opt_depends = ['libbz2', 'liblzma']
 
@@ -58,6 +57,7 @@ class Python3Recipe(GuestPythonRecipe):
         self.openssl = openssl
 
     def mainbuild(self):
+        self.preparedir(f"https://www.python.org/ftp/python/{self.version}/Python-{self.version}.tgz")
         self.apply_patches('py3.8.1.patch')
         if self.use_lld:
             self.apply_patches('py3.8.1_fix_cortex_a8.patch')

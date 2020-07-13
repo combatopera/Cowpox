@@ -49,9 +49,9 @@ class LibffiRecipe(Recipe, LibRepo):
 
     name = 'libffi'
     version = '8fa8837'
-    url = f"https://github.com/libffi/libffi/archive/{version}.tar.gz"
 
     def mainbuild(self):
+        self.preparedir(f"https://github.com/libffi/libffi/archive/{self.version}.tar.gz")
         self.apply_patches('remove-version-info.patch')
         env = self.arch.env
         if not (self.recipebuilddir / 'configure').exists():

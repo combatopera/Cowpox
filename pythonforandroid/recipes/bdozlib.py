@@ -48,7 +48,8 @@ class RecipeImpl(CythonRecipe):
 
     @types(Config)
     def __init(self, config):
-        self.url = config.container.src
+        self.container_src = config.container.src
 
     def mainbuild(self):
+        self.preparedir(self.container_src)
         self.install_python_package()

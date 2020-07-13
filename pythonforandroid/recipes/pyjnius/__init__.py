@@ -47,7 +47,6 @@ class PyjniusRecipe(CythonRecipe, JavaSrc):
 
     name = 'pyjnius'
     version = '1.2.1'
-    url = f"https://github.com/kivy/pyjnius/archive/{version}.zip"
     depends = [('genericndkbuild', 'sdl2'), 'six']
 
     @types(GraphInfo)
@@ -55,6 +54,7 @@ class PyjniusRecipe(CythonRecipe, JavaSrc):
         self.graphinfo = graphinfo
 
     def mainbuild(self):
+        self.preparedir(f"https://github.com/kivy/pyjnius/archive/{self.version}.zip")
         if 'sdl2' in self.graphinfo.recipenames:
             self.apply_patches('sdl2_jnienv_getter.patch')
         if 'genericndkbuild' in self.graphinfo.recipenames:

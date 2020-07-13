@@ -44,8 +44,8 @@ class LibSDL2Mixer(LibSDL2Module):
 
     name = 'sdl2_mixer'
     version = '2.0.4'
-    url = f"https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-{version}.tar.gz"
     dir_name = 'SDL2_mixer'
 
     def mainbuild(self):
+        self.preparedir(f"https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-{self.version}.tar.gz")
         self.apply_patches('toggle_modplug_mikmod_smpeg_ogg.patch')

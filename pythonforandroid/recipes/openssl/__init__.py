@@ -48,7 +48,6 @@ class OpenSSLRecipe(Recipe, LibRepo):
 
     name = 'openssl'
     version = '1.1'
-    url = 'https://www.openssl.org/source/openssl-1.1.1f.tar.gz'
 
     @types(Config)
     def __init(self, config):
@@ -77,6 +76,7 @@ class OpenSSLRecipe(Recipe, LibRepo):
         return 'linux-armv4'
 
     def mainbuild(self):
+        self.preparedir('https://www.openssl.org/source/openssl-1.1.1f.tar.gz')
         env = self.arch.env.copy()
         env['OPENSSL_VERSION'] = self.version
         env['MAKE'] = 'make'
