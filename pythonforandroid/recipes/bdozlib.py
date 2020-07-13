@@ -41,6 +41,7 @@
 from cowpox.config import Config
 from cowpox.pyrecipe import CythonRecipe
 from diapyr import types
+from pathlib import Path
 
 class RecipeImpl(CythonRecipe):
 
@@ -48,7 +49,7 @@ class RecipeImpl(CythonRecipe):
 
     @types(Config)
     def __init(self, config):
-        self.container_src = config.container.src
+        self.container_src = Path(config.container.src)
 
     def mainbuild(self):
         self.preparedirlocal(self.container_src)
