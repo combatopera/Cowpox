@@ -42,10 +42,10 @@ from . import Arch
 from .config import Config
 from .mirror import Mirror
 from .platform import Platform
+from .util import Contrib
 from diapyr import types
 from lagoon import patch, tar, unzip
 from pathlib import Path
-from pkg_resources import resource_filename
 from zipfile import ZipFile
 import hashlib, logging, shutil, subprocess
 
@@ -80,12 +80,13 @@ class Recipe:
         self.recipebuilddir = Path(config.builds.dir, self.name)
         self.projectbuilddir = Path(config.build.dir)
         self.extroot = Path(config.container.extroot)
+        self.contrib = Contrib([Path(d, self.name) for d in config.recipesdirs])
         self.platform = platform
         self.mirror = mirror
         self.arch = arch
 
     def resourcepath(self, relpath):
-        return Path(resource_filename(self.__module__, str(relpath)))
+        return self.contrib.resolve(relpath)
 
     def _extresourcepath(self, relpath):
         return Path(self.extroot, *self.__module__.split('.'), relpath)

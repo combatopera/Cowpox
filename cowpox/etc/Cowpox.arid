@@ -93,6 +93,9 @@ pip install dir = $/($(build dir) Cowpox-bundle)
 bootstrapsdirs +=
     $/($(container extroot) MIT bootstraps)
     $/($(container extroot) pythonforandroid bootstraps)
+recipesdirs +=
+    $/($(container extroot) MIT recipes)
+    $/($(container extroot) pythonforandroid recipes)
 webview port = 5000
 use lld = false
 requirements = $egg-info-requires$(container src)
