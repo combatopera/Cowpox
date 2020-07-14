@@ -1,0 +1,104 @@
+: Copyright 2020 Andrzej Cichocki
+
+: This file is part of Cowpox.
+:
+: Cowpox is free software: you can redistribute it and/or modify
+: it under the terms of the GNU General Public License as published by
+: the Free Software Foundation, either version 3 of the License, or
+: (at your option) any later version.
+:
+: Cowpox is distributed in the hope that it will be useful,
+: but WITHOUT ANY WARRANTY; without even the implied warranty of
+: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+: GNU General Public License for more details.
+:
+: You should have received a copy of the GNU General Public License
+: along with Cowpox.  If not, see <http://www.gnu.org/licenses/>.
+
+: This file incorporates work covered by the following copyright and
+: permission notice:
+
+: Copyright (c) 2010-2017 Kivy Team and other contributors
+:
+: Permission is hereby granted, free of charge, to any person obtaining a copy
+: of this software and associated documentation files (the "Software"), to deal
+: in the Software without restriction, including without limitation the rights
+: to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+: copies of the Software, and to permit persons to whom the Software is
+: furnished to do so, subject to the following conditions:
+:
+: The above copyright notice and this permission notice shall be included in
+: all copies or substantial portions of the Software.
+:
+: THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+: IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+: FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+: AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+: LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+: OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+: THE SOFTWARE.
+
+RECOMMENDED_NDK_VERSION = 19b
+SDK
+    dir = $/($(build dir) Cowpox-SDK)
+    accept licenses = false
+NDK dir = $/($(build dir) Cowpox-NDK)
+android
+    ndk = $(RECOMMENDED_NDK_VERSION)
+    api = 27
+    platform = android-$(api)
+    minSdkVersion = 21
+    arch = armeabi-v7a
+    skip_update = false
+    ndk_api = $(minSdkVersion)
+    whitelist := $list()
+    permissions := $list()
+    apptheme = @android:style/Theme.NoTitleBar
+    wakelock = false
+    presplash_color = #000000
+    project
+        dir = $/($(build dir) $(package name))
+        assets dir = $/($(project dir) src main assets)
+        res dir = $/($(project dir) src main res)
+        jniLibs = $/($(dir) src main jniLibs)
+    fullscreen = false
+    orientation = portrait
+sdl2
+    launchMode = singleTask
+    activity name = org.kivy.android.PythonActivity
+icon
+    full path = $/($(container src) $(icon path))
+    default path = $/($(container extroot) MIT media kivy-icon.png)
+    path = $(default path)
+presplash
+    full path = $/($(container src) $(presplash path))
+    default path = $/($(container extroot) MIT media kivy-presplash.jpg)
+    path = $(default path)
+bootstrap
+    name = sdl2
+    dirs = $map($(bootstrapsdirs) d $/($(d) $(name)))
+    common name = common
+package name = Cowpox-project
+build_mode = debug
+version = $.(0.1)
+log path = $/($(build dir) Cowpox.log)
+: TODO: All Cowpox assets should go in dedicated subdirectory.
+build dir = $/($(container src) build)
+main name = main
+mirror path = $/($(build dir) Cowpox-mirror)
+private dir = $/($(build dir) Cowpox-private)
+bundle dir = $/($(private dir) _python_bundle)
+builds dir = $/($(build dir) Cowpox)
+pip install dir = $/($(build dir) Cowpox-bundle)
+bootstrapsdirs +=
+    $/($(container extroot) MIT bootstraps)
+    $/($(container extroot) pythonforandroid bootstraps)
+recipesdirs +=
+    $/($(container extroot) MIT recipes)
+    $/($(container extroot) pythonforandroid recipes)
+webview port = 5000
+use lld = false
+requirements = $egg-info-requires$(container src)
+gradle buildDir = $/($(build dir) Cowpox-build)
+aar dir = $/($(container src) aars)
+skel path = $/($(container extroot) MIT skel)
