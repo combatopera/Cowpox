@@ -52,7 +52,7 @@ import logging
 log = logging.getLogger(__name__)
 
 def _recipeimpl(name):
-    return findimpl(f"pythonforandroid.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
+    return findimpl(f"cowpox.recipes.{name.lower()}", Recipe) # XXX: Correct mangling?
 
 def _fix_deplist(deps):
     return [((dep.lower(),) if not isinstance(dep, (list, tuple)) else tuple(x.lower() for x in dep)) for dep in deps]

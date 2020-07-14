@@ -104,7 +104,7 @@ def _main():
     logging.setpath(Path(config.log.path))
     with DI() as di:
         di.add(all_archs[config.android.arch])
-        di.add(findimpl(f"pythonforandroid.bootstraps.{config.bootstrap.name}", Bootstrap))
+        di.add(findimpl(f"cowpox.bootstraps.{config.bootstrap.name}", Bootstrap))
         di.add(AndroidProject)
         di.add(Assembly)
         di.add(AssetArchive)
