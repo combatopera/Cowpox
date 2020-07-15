@@ -171,5 +171,5 @@ class NDKRecipe(Recipe):
         return self.recipebuilddir / 'obj' / 'local' / self.arch.name
 
     def ndk_build(self, env):
-        # XXX: Can the make variables go in the env?
+        # TODO: These look like Application.mk variables.
         self.platform.ndk_build.print(f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={self.arch.name}", env = env, cwd = self.recipebuilddir)
