@@ -165,6 +165,7 @@ class NDKRecipe(Recipe):
     @types(Config)
     def __init(self, config):
         self.ndk_api = config.android.ndk_api
+        self.jni_dir = self.recipebuilddir / 'jni'
 
     def get_lib_dir(self):
         return self.recipebuilddir / 'obj' / 'local' / self.arch.name
