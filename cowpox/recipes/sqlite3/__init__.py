@@ -40,8 +40,9 @@
 
 from cowpox import LibRepo
 from cowpox.recipe import NDKRecipe
+from cowpox.util import Contrib
 from pathlib import Path
-import shutil
+from pkg_resources import resource_filename
 
 class Sqlite3Recipe(NDKRecipe, LibRepo):
 
@@ -53,7 +54,7 @@ class Sqlite3Recipe(NDKRecipe, LibRepo):
 
     def mainbuild(self):
         self.preparedir('https://www.sqlite.org/2016/sqlite-amalgamation-3150100.zip')
-        shutil.copy2(self.resourcepath('Android.mk'), self.jni_dir.mkdirp())
+        Contrib([resource_filename(__name__, 'jni')]).mergeinto(self.jni_dir)
         env = self.arch.env.copy()
         env['NDK_PROJECT_PATH'] = str(self.recipebuilddir)
         self.ndk_build(env)
