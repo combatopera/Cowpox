@@ -54,7 +54,7 @@ class Sqlite3Recipe(NDKRecipe, LibRepo):
 
     def mainbuild(self):
         self.preparedir('https://www.sqlite.org/2016/sqlite-amalgamation-3150100.zip')
-        Contrib([resource_filename(__name__, 'jni')]).mergeinto(self.jni_dir)
+        Contrib([Path(resource_filename(__name__, 'jni'))]).mergeinto(self.jni_dir)
         env = self.arch.env.copy()
         env['NDK_PROJECT_PATH'] = str(self.recipebuilddir)
         self.ndk_build(env)
