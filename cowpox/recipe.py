@@ -42,7 +42,6 @@ from . import Arch
 from .config import Config
 from .mirror import Mirror
 from .platform import Platform
-from .util import Contrib
 from diapyr import types
 from lagoon import patch, tar, unzip
 from pathlib import Path
@@ -80,18 +79,15 @@ class Recipe:
         self.recipebuilddir = Path(config.builds.dir, self.name)
         self.projectbuilddir = Path(config.build.dir)
         self.extroot = Path(config.container.extroot)
-        self.contrib = Contrib([Path(d, self.name) for d in config.recipesdirs])
+        self.contribpath = Path(config.recipesdir, self.name)
         self.platform = platform
         self.mirror = mirror
         self.arch = arch
 
-    def resourcepath(self, relpath):
-        return self.contrib.resolve(relpath)
-
     def apply_patches(self, *relpaths):
         for relpath in relpaths:
             log.info("Apply patch: %s", relpath)
-            patch._t._p1.print('-d', self.recipebuilddir, '-i', self.resourcepath(relpath))
+            patch._t._p1.print('-d', self.recipebuilddir, '-i', self.contribpath / relpath)
 
     def _copywithoutbuild(self, frompath, topath):
         try:

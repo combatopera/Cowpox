@@ -53,9 +53,7 @@ pip install dir = $/($(build dir) Cowpox-bundle)
 bootstrapsdirs +=
     $/($(container extroot) MIT bootstraps)
     $/($(container extroot) cowpox bootstraps)
-recipesdirs +=
-    $/($(container extroot) MIT recipes)
-    $/($(container extroot) cowpox recipes)
+recipesdir = $/($(container extroot) MIT recipes)
 webview port = 5000
 use lld = false
 requirements = $egg-info-requires$(container src)
