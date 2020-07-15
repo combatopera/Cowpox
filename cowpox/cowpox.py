@@ -57,13 +57,16 @@ from lagoon import groupadd, python, useradd
 from pathlib import Path
 from pkg_resources import resource_filename
 from tempfile import TemporaryDirectory
-import logging, os
+import grp, logging, os
 
 log = logging.getLogger(__name__)
 
 def _inituser(srcpath):
     uid, gid = (x for s in [srcpath.stat()] for x in [s.st_uid, s.st_gid])
-    groupadd.print('-g', gid, 'Cowpox')
+    try:
+        log.info("Group already exists: %s", grp.getgrgid(gid))
+    except KeyError:
+        groupadd.print('-g', gid, 'Cowpox')
     useradd.__create_home.print('-g', gid, '-u', uid, '--shell', '/bin/bash', 'Cowpox')
     os.setgid(gid)
     os.setuid(uid)
