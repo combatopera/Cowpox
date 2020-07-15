@@ -8,3 +8,5 @@ Deploy Android apps written in Python
 * The [MIT](MIT) tree is additionally/instead provided under [LICENSE.kivy](LICENSE.kivy)
   * This covers all Cowpox code that can end up in your APK
 * Cowpox is in essence a heavily refactored [Buildozer](https://github.com/kivy/buildozer) and [python-for-android](https://github.com/kivy/python-for-android), without which it would not exist
+## Contact
+* DMs open [@Cowpox2020](https://twitter.com/Cowpox2020)
