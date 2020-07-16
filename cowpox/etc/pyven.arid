@@ -41,3 +41,4 @@
 pyven project . $/($(container src) project.arid)
 android app_name = $(pyven project name)
 requirements = $(pyven project requires)
+pipify = true

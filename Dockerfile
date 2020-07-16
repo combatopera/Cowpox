@@ -47,8 +47,8 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends adoptopenjdk-8-hotspot build-essential ccache cmake gettext gradle lld zip
 RUN pip install pip==20.1.1 && \
     pip install pyven==46 && \
-    echo /.pyven/ | tee ~/.gitignore_global && \
-    git config --global core.excludesfile ~/.gitignore_global
+    echo /.pyven/ | tee /etc/gitignore_global && \
+    git config --system core.excludesfile /etc/gitignore_global
 WORKDIR /Cowpox
 COPY project.arid .
 RUN script='from pyven.projectinfo import ProjectInfo; from shlex import quote; print("pip install %s" % " ".join(quote(r) for r in ProjectInfo.seek(".").allrequires()))' && \

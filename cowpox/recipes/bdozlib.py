@@ -41,6 +41,7 @@
 from cowpox.config import Config
 from cowpox.pyrecipe import CythonRecipe
 from diapyr import types
+from lagoon import pipify
 from pathlib import Path
 
 class RecipeImpl(CythonRecipe):
@@ -50,7 +51,10 @@ class RecipeImpl(CythonRecipe):
     @types(Config)
     def __init(self, config):
         self.container_src = Path(config.container.src)
+        self.pipify = config.pipify
 
     def mainbuild(self):
         self.preparedirlocal(self.container_src)
+        if self.pipify:
+            pipify.print(cwd = self.recipebuilddir)
         self.install_python_package()
