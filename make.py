@@ -38,12 +38,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-.ONESHELL:
-SHELL = /bin/bash
-export BASH_ENV = bash_env
+import os
 
-TAG = combatopera/cowpox
+tag = 'combatopera/cowpox'
 
-.PHONY: all
-all:
-	docker build -t '$(TAG)' .
+def main():
+    command = 'docker', 'build', '-t', tag, '.'
+    os.execvp(command[0], command)
+
+if '__main__' == __name__:
+    main()
