@@ -46,6 +46,4 @@ TAG = combatopera/cowpox
 
 .PHONY: all
 all:
-	docker build .
-	image=$$(docker build -q .)
-	docker tag $$image '$(TAG)'
+	docker build -t '$(TAG)' .
