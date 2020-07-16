@@ -40,6 +40,5 @@
 
 container . /etc/settings.arid
 Cowpox .
-    $./(Cowpox.arid)
     $/($(container extroot) MIT Cowpox.arid)
     $/($(container src) Cowpox.arid)
