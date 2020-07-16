@@ -102,7 +102,7 @@ def _main():
     config.put('container', 'src', text = str(args.srcpath))
     config.put('pyven', 'support', text = resource_filename(etc.__name__, 'pyven.arid'))
     config.put('egg-info-requires', function = EggInfoRequires.factory)
-    config.load(resource_filename(etc.__name__, 'root.arid'))
+    config.load(resource_filename(etc.__name__, 'Cowpox.arid'))
     config = config.Cowpox
     logging.setpath(Path(config.log.path))
     with DI() as di:
