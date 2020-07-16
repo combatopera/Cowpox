@@ -55,7 +55,7 @@ RUN script='from pyven.projectinfo import ProjectInfo; from shlex import quote; 
     eval "$(python -c "$script")" && \
     git init
 
-FROM base AS test
+FROM base
 COPY COPYING LICENSE.kivy .flakesignore ./
 RUN tests # Prepare and cache environment.
 COPY . .

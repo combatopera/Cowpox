@@ -49,7 +49,3 @@ all:
 	docker build .
 	image=$$(docker build -q .)
 	docker tag $$image '$(TAG)'
-
-.PHONY: test
-test:
-	docker build --target test .
