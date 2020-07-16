@@ -103,7 +103,7 @@ class Recipe:
                         log.debug("Not copying: %s", self.projectbuilddir)
                         return [self.projectbuilddir.name]
                     return []
-            shutil.copytree(frompath, topath, ignore = ignore)
+            shutil.copytree(frompath, topath, symlinks = True, ignore = ignore)
         else:
             log.warning("Refuse to copy %s descendant: %s", self.projectbuilddir, frompath)
 
