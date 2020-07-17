@@ -64,7 +64,7 @@ class Mirror:
 
     @types(Config)
     def __init__(self, config):
-        self.mirror = Path(config.mirror.path)
+        self.mirror = Path(config.container.mirror)
         self.urlretrieve = self.WgetDownloader().retrieve
 
     def getpath(self, url):

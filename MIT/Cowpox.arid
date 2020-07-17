@@ -45,7 +45,7 @@ log path = $/($(build dir) Cowpox.log)
 : TODO: All Cowpox assets should go in dedicated subdirectory.
 build dir = $/($(container src) build)
 main name = main
-mirror path = $/($(build dir) Cowpox-mirror)
+container mirror = $/($(build dir) Cowpox-mirror)
 private dir = $/($(build dir) Cowpox-private)
 bundle dir = $/($(private dir) _python_bundle)
 builds dir = $/($(build dir) Cowpox)
