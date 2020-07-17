@@ -17,7 +17,6 @@ modules = [Extension('android._android',
                      library_dirs=library_dirs)]
 
 setup(name='android',
-      version='1.0',
       packages=['android'],
       package_dir={'android': 'android'},
       ext_modules=modules
