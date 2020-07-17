@@ -102,7 +102,7 @@ def _main():
     def applyargs():
         for text in args.config:
             config.exec(text)
-    applyargs()
+    applyargs() # XXX: Use a prefix and fish out the src path only?
     config.load(resource_filename(etc.__name__, 'Cowpox.arid'))
     applyargs()
     _inituser(Path(config.container.src))
