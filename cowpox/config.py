@@ -59,6 +59,12 @@ class Config: # TODO: Migrate to aridity as high-level API.
         with Repl(self._context) as repl:
             repl.printf(f"""{''.join("%s " for _ in self._prefix)}. %s""", *self._prefix, path)
 
+    def exec(self, text):
+        assert not self._prefix
+        with Repl(self._context) as repl:
+            for line in text.splitlines():
+                repl(line)
+
     def __getattr__(self, name):
         path = [*self._prefix, name]
         try:

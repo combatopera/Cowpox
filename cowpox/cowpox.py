@@ -95,13 +95,17 @@ class EggInfoRequires(Resolved):
 def _main():
     logging = Logging()
     parser = ArgumentParser()
-    parser.add_argument('srcpath', type = Path)
+    parser.add_argument('config', nargs = '*')
     args = parser.parse_args()
-    _inituser(args.srcpath)
     config = Config.blank()
-    config.put('container', 'src', text = str(args.srcpath))
     config.put('egg-info-requires', function = EggInfoRequires.factory)
+    def applyargs():
+        for text in args.config:
+            config.exec(text)
+    applyargs()
     config.load(resource_filename(etc.__name__, 'Cowpox.arid'))
+    applyargs()
+    _inituser(Path(config.container.src))
     logging.setpath(Path(config.log.path))
     with DI() as di:
         di.add(all_archs[config.android.arch])
