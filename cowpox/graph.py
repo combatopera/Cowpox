@@ -47,7 +47,7 @@ from diapyr import types
 from importlib import import_module
 from packaging.utils import canonicalize_name
 from pkgutil import iter_modules
-import logging
+import logging, networkx as nx
 
 log = logging.getLogger(__name__)
 
@@ -55,43 +55,42 @@ class GraphInfoImpl(GraphInfo):
 
     @types(Config)
     def __init__(self, config):
-        nametoimpl = {canonicalize_name(impl.name): impl
+        impls = {canonicalize_name(impl.name): impl
                 for p in config.recipe.packages
                 for m in iter_modules(import_module(p).__path__, f"{p}.")
                 for impl in findimpls(import_module(m.name), Recipe)}
-        self.recipes, self.pypinames = self._get_recipe_order(nametoimpl,
-                ['python3', 'bdozlib', 'android', *config.requirements, 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild'])
-        log.info("Recipe build order is %s", self.recipes.keys())
-        log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
-
-    def _get_recipe_order(self, nametoimpl, depends):
-        recipes = {}
-        pypinames = set()
-        alternatives = set()
-        while depends:
-            newrecipes = {}
-            nextdepends = []
-            for d in depends:
-                if isinstance(d, tuple):
-                    alternatives.add(frozenset(d))
-                    continue
-                try:
-                    impl = nametoimpl[canonicalize_name(d)]
-                except KeyError:
-                    pypinames.add(d)
-                    continue
-                if impl.name not in newrecipes:
-                    newrecipes[impl.name] = impl
-                    nextdepends.extend(impl.depends)
-            newrecipes.update([n, r] for n, r in recipes.items() if n not in newrecipes)
-            recipes = newrecipes
-            depends = nextdepends
-        for a in alternatives:
-            assert a & recipes.keys()
-        return recipes, sorted(pypinames)
-
-    def recipeimpls(self):
-        return self.recipes.values()
+        groups = set()
+        pypinames = {}
+        g = nx.DiGraph()
+        def adddepend(depend, targetname):
+            if isinstance(depend, tuple):
+                groups.add(frozenset(map(canonicalize_name, depend)))
+                return
+            normdepend = canonicalize_name(depend)
+            try:
+                impl = impls[normdepend]
+            except KeyError:
+                pypinames[normdepend] = depend # Keep an arbitrary unnormalised name.
+                return
+            g.add_node(impl.name, impl = impl)
+            if targetname is not None:
+                g.add_edge(impl.name, targetname)
+            for d in impl.depends:
+                adddepend(d, impl.name)
+        def checkgroups():
+            names = {canonicalize_name(name): name for name in g.nodes}
+            for group in sorted(groups):
+                intersection = names.keys() & group
+                if not intersection:
+                    raise Exception("Alternatives not satisfied: %s" % ', '.join(sorted(group)))
+                log.debug("Alternatives %s satisfied by: %s", ', '.join(sorted(group)), [names[normname] for normname in sorted(intersection)])
+        for d in ['python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements]:
+            adddepend(d, None)
+        checkgroups()
+        self.recipes = {name: g.nodes[name]['impl'] for name in nx.topological_sort(g)}
+        self.pypinames = [name for _, name in sorted(pypinames.items())]
+        log.info("Recipe build order: %s", ', '.join(self.recipes.keys()))
+        log.info("Requirements not found as recipes will be installed with pip: %s", ', '.join(self.pypinames))
 
 class GraphImpl:
 

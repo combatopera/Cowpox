@@ -123,7 +123,7 @@ def _main():
         di.add(Platform)
         di.add(PlatformInfo)
         di.add(Private)
-        for recipeimpl in di(GraphInfoImpl).recipeimpls():
+        for recipeimpl in di(GraphInfoImpl).recipes.values():
             di.add(recipeimpl)
         return di(APKPath).relative_to(config.container.src)
 
