@@ -83,8 +83,6 @@ class DictView(Mapping):
 def format_obj(format_string, obj):
     return format_string.format_map(DictView(obj))
 
-class NoSuchPluginException(Exception): pass
-
 def findimpls(module, basetype):
     g = nx.DiGraph()
     def add(c):

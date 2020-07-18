@@ -42,7 +42,7 @@ from . import GraphInfo, RecipeMemos
 from .config import Config
 from .make import Make
 from .recipe import Recipe
-from .util import findimpls, NoSuchPluginException
+from .util import findimpls
 from diapyr import types
 from importlib import import_module
 from packaging.utils import canonicalize_name
@@ -64,12 +64,6 @@ class GraphInfoImpl(GraphInfo):
         log.info("Recipe build order is %s", self.recipes.keys())
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
 
-    def _recipeimpl(self, name):
-        try:
-            return self.nametoimpl[canonicalize_name(name)]
-        except KeyError:
-            raise NoSuchPluginException(name)
-
     def _get_recipe_order(self, *depends):
         recipes = {}
         pypinames = set()
@@ -82,8 +76,8 @@ class GraphInfoImpl(GraphInfo):
                     alternatives.add(frozenset(d))
                     continue
                 try:
-                    impl = self._recipeimpl(d)
-                except NoSuchPluginException:
+                    impl = self.nametoimpl[canonicalize_name(d)]
+                except KeyError:
                     pypinames.add(d)
                     continue
                 if impl.name not in newrecipes:
