@@ -184,7 +184,7 @@ def _get_recipe_order(names, blacklist, recipeimpl):
     pypinames = []
     for name in chosen_order:
         try:
-            pypinames += recipeimpl(name).python_depends
+            recipeimpl(name)
         except NoSuchPluginException:
             pypinames.append(name)
         else:

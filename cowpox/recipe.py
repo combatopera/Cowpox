@@ -59,11 +59,6 @@ class Recipe:
     opt_depends = []
     '''A list of optional dependencies, that must be built before this
     recipe if they are built at all, but whose presence is not essential.'''
-    python_depends = []
-    '''A list of pure-Python packages that this package requires. These
-    packages will NOT be available at build time, but will be added to the
-    list of pure-Python packages to install via pip. If you need these packages
-    at build time, you must create a recipe.'''
 
     @classmethod
     def get_opt_depends_in_list(cls, recipenames):
