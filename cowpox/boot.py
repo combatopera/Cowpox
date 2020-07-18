@@ -38,10 +38,4 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from diapyr import types
-
-class Bootstrap:
-
-    @types()
-    def __init__(self):
-        pass
+class Bootstrap: pass
