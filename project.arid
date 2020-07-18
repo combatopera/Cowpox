@@ -52,6 +52,7 @@ requires +=
     jproperties==2.1.0
     lagoon==16
     networkx==2.4
+    packaging==20.4
 resource types +=
     patch
     mk

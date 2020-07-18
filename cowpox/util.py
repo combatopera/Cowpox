@@ -86,11 +86,7 @@ def format_obj(format_string, obj):
 
 class NoSuchPluginException(Exception): pass
 
-def findimpl(modulename, basetype):
-    try:
-        module = import_module(modulename)
-    except ModuleNotFoundError:
-        raise NoSuchPluginException(modulename)
+def findimpls(module, basetype):
     g = nx.DiGraph()
     def add(c):
         if not g.has_node(c):
@@ -105,7 +101,14 @@ def findimpl(modulename, basetype):
     for obj in (getattr(module, name) for name in dir(module)):
         if isimpl(obj):
             add(obj)
-    impl, = (cls for cls, od in g.out_degree if not od)
+    return (cls for cls, od in g.out_degree if not od)
+
+def findimpl(modulename, basetype):
+    try:
+        module = import_module(modulename)
+    except ModuleNotFoundError: # TODO LATER: Retire as this causes an existing module with a bad import to fail silently.
+        raise NoSuchPluginException(modulename)
+    impl, = findimpls(module, basetype)
     return impl
 
 class DIProxy: # TODO: Migrate to diapyr.

@@ -41,6 +41,7 @@
 container . /etc/settings.arid
 pyven support := $./(pyven.arid)
 pipify = false
+recipe packages += cowpox.recipes
 .
     $/($(container extroot) MIT Cowpox.arid)
     $/($(container src) Cowpox.arid)
