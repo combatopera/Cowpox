@@ -56,11 +56,6 @@ class Recipe:
     depends = []
     '''A list containing the names of any recipes that this recipe depends on.
     '''
-
-    conflicts = []
-    '''A list containing the names of any recipes that are known to be
-    incompatible with this one.'''
-
     opt_depends = []
     '''A list of optional dependencies, that must be built before this
     recipe if they are built at all, but whose presence is not essential.'''
