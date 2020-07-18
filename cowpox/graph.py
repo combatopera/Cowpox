@@ -59,8 +59,6 @@ def _fix_deplist(deps):
 def _get_dependency_tuple_list_for_recipe(recipe, blacklist):
     if blacklist is None:
         blacklist = set()
-    if recipe.depends is None:
-        return []
     return [t for t in (tuple(set(deptuple) - blacklist) for deptuple in _fix_deplist(recipe.depends)) if t]
 
 def _recursively_collect_orders(name, all_inputs, orders, blacklist, recipeimpl):
