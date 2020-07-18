@@ -55,16 +55,16 @@ class GraphInfoImpl(GraphInfo):
 
     @types(Config)
     def __init__(self, config):
-        self.nametoimpl = {canonicalize_name(impl.name): impl
+        nametoimpl = {canonicalize_name(impl.name): impl
                 for p in config.recipe.packages
                 for m in iter_modules(import_module(p).__path__, f"{p}.")
                 for impl in findimpls(import_module(m.name), Recipe)}
-        self.recipes, self.pypinames = self._get_recipe_order(
-                'python3', 'bdozlib', 'android', *config.requirements, 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild')
+        self.recipes, self.pypinames = self._get_recipe_order(nametoimpl,
+                ['python3', 'bdozlib', 'android', *config.requirements, 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild'])
         log.info("Recipe build order is %s", self.recipes.keys())
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
 
-    def _get_recipe_order(self, *depends):
+    def _get_recipe_order(self, nametoimpl, depends):
         recipes = {}
         pypinames = set()
         alternatives = set()
@@ -76,7 +76,7 @@ class GraphInfoImpl(GraphInfo):
                     alternatives.add(frozenset(d))
                     continue
                 try:
-                    impl = self.nametoimpl[canonicalize_name(d)]
+                    impl = nametoimpl[canonicalize_name(d)]
                 except KeyError:
                     pypinames.add(d)
                     continue
