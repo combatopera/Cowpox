@@ -93,7 +93,7 @@ class GraphInfoImpl(GraphInfo):
             recipes = newrecipes
             depends = nextdepends
         for a in alternatives:
-            assert a & set(recipes)
+            assert a & recipes.keys()
         return recipes.keys(), sorted(pypinames)
 
     def recipeimpls(self):
