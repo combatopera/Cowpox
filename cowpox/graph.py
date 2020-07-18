@@ -83,7 +83,7 @@ class GraphInfoImpl(GraphInfo):
                 intersection = names.keys() & group
                 if not intersection:
                     raise Exception("Alternatives not satisfied: %s" % ', '.join(sorted(group)))
-                log.debug("Alternatives %s satisfied by: %s", ', '.join(sorted(group)), ', ',join(names[normname] for normname in sorted(intersection)))
+                log.debug("Alternatives %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(names[normname] for normname in sorted(intersection)))
         for d in ['python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements]:
             adddepend(d, None)
         checkgroups()
