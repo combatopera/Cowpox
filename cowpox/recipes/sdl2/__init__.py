@@ -50,7 +50,7 @@ class LibSDL2Recipe(BootstrapNDKRecipe, LibRepo, ObjRepo):
 
     from .module import LibSDL2Module
     name = 'sdl2'
-    depends = 'sdl2_core', 'sdl2_image', 'sdl2_mixer', 'sdl2_ttf'
+    depends = 'sdl2_core', 'sdl2_image', 'sdl2_mixer', 'sdl2_ttf', 'python3'
 
     @types(Config, [LibSDL2Module], InterpreterRecipe)
     def __init(self, config, modules, interpreter):
