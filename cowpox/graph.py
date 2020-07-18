@@ -71,7 +71,7 @@ class GraphInfoImpl(GraphInfo):
             raise NoSuchPluginException(name)
 
     def _get_recipe_order(self, *depends):
-        recipenames = []
+        recipes = {}
         pypinames = set()
         alternatives = set()
         while depends:
@@ -89,11 +89,12 @@ class GraphInfoImpl(GraphInfo):
                 if impl.name not in newrecipes:
                     newrecipes[impl.name] = impl
                     nextdepends.extend(impl.depends)
-            recipenames = [*newrecipes, *(r for r in recipenames if r not in newrecipes)]
+            newrecipes.update([n, r] for n, r in recipes.items() if n not in newrecipes)
+            recipes = newrecipes
             depends = nextdepends
         for a in alternatives:
-            assert a & set(recipenames)
-        return recipenames, sorted(pypinames)
+            assert a & set(recipes)
+        return recipes.keys(), sorted(pypinames)
 
     def recipeimpls(self):
         for name in self.recipenames:
