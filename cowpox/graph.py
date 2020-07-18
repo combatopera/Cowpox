@@ -75,7 +75,7 @@ class GraphInfoImpl(GraphInfo):
         pypinames = set()
         alternatives = set()
         while depends:
-            newrecipes = []
+            newrecipes = {}
             nextdepends = []
             for d in depends:
                 if isinstance(d, tuple):
@@ -87,7 +87,7 @@ class GraphInfoImpl(GraphInfo):
                     pypinames.add(d)
                     continue
                 if impl.name not in newrecipes:
-                    newrecipes.append(impl.name)
+                    newrecipes[impl.name] = impl
                     nextdepends.extend(impl.depends)
             recipenames = [*newrecipes, *(r for r in recipenames if r not in newrecipes)]
             depends = nextdepends
