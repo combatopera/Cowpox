@@ -44,7 +44,7 @@ class SixRecipe(PythonRecipe): # XXX: Why do we need this?
 
     name = 'six'
     version = '1.10.0'
-    depends = ['setuptools']
+    depends = ['setuptools'] # XXX: And python3?
 
     def mainbuild(self):
         self.preparedir(f"https://pypi.python.org/packages/source/s/six/six-{self.version}.tar.gz")
