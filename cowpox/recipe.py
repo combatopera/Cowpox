@@ -52,7 +52,7 @@ log = logging.getLogger(__name__)
 
 class Recipe:
 
-    depends = []
+    depends = ()
 
     @types(Config, Platform, Mirror, Arch)
     def __init__(self, config, platform, mirror, arch):

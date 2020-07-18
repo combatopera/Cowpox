@@ -45,7 +45,7 @@ class NumpyRecipe(CompiledComponentsPythonRecipe):
 
     name = 'numpy'
     version = '1.18.1'
-    depends = ['setuptools', 'cython']
+    depends = 'setuptools', 'cython'
     build_ext_args = '-j', cpu_count()
 
     def mainbuild(self):

@@ -49,7 +49,7 @@ log = logging.getLogger(__name__)
 class AndroidRecipe(CythonRecipe):
 
     name = 'android'
-    depends = [('sdl2', 'genericndkbuild'), 'pyjnius']
+    depends = ('sdl2', 'genericndkbuild'), 'pyjnius'
 
     @types(Config)
     def __init(self, config):

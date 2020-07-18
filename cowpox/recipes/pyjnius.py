@@ -47,7 +47,7 @@ class PyjniusRecipe(CythonRecipe, JavaSrc):
 
     name = 'pyjnius'
     version = '1.2.1'
-    depends = [('genericndkbuild', 'sdl2'), 'six']
+    depends = ('genericndkbuild', 'sdl2'), 'six'
 
     @types(GraphInfo)
     def __init(self, graphinfo):

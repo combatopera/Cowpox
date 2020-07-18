@@ -48,7 +48,7 @@ class Python3Recipe(GuestPythonRecipe):
     from .openssl import OpenSSLRecipe
     name = 'python3'
     version = '3.8.1' # XXX: Should this match container version?
-    depends = ['sqlite3', 'openssl', 'libffi']
+    depends = 'sqlite3', 'openssl', 'libffi'
 
     @types(Config, OpenSSLRecipe)
     def __init(self, config, openssl = None):
