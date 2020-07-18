@@ -41,7 +41,6 @@
 from chromalog.log import ColorizingFormatter, ColorizingStreamHandler
 from collections.abc import Mapping
 from diapyr import DI, types
-from importlib import import_module
 from jproperties import Properties
 import logging, networkx as nx, os, shutil
 
@@ -102,14 +101,6 @@ def findimpls(module, basetype):
         if isimpl(obj):
             add(obj)
     return (cls for cls, od in g.out_degree if not od)
-
-def findimpl(modulename, basetype):
-    try:
-        module = import_module(modulename)
-    except ModuleNotFoundError: # TODO LATER: Retire as this causes an existing module with a bad import to fail silently.
-        raise NoSuchPluginException(modulename)
-    impl, = findimpls(module, basetype)
-    return impl
 
 class DIProxy: # TODO: Migrate to diapyr.
 

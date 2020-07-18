@@ -39,7 +39,7 @@
 # THE SOFTWARE.
 
 from . import GraphInfo, RecipeMemos
-from .boot import BootstrapType
+from .boot import Bootstrap
 from .config import Config
 from .make import Make
 from .recipe import Recipe
@@ -168,12 +168,13 @@ def _obvious_conflict_checker(name_tuples, blacklist, recipeimpl):
 
 class GraphInfoImpl(GraphInfo):
 
-    @types(Config, BootstrapType)
-    def __init__(self, config, bootstraptype):
+    @types(Config)
+    def __init__(self, config):
         self.nametoimpl = {canonicalize_name(impl.name): impl
                 for p in config.recipe.packages
                 for m in iter_modules(import_module(p).__path__, f"{p}.")
                 for impl in findimpls(import_module(m.name), Recipe)}
+        bootstraptype, = findimpls(import_module(f"cowpox.bootstraps.{config.bootstrap.name}"), Bootstrap)
         # FIXME LATER: Overhaul logic so we don't have to exclude genericndkbuild every time.
         self.recipenames, self.pypinames = _get_recipe_order({'python3', 'bdozlib', *config.requirements, *bootstraptype.recipe_depends}, ['genericndkbuild'], self._recipeimpl)
         log.info("Recipe build order is %s", self.recipenames)

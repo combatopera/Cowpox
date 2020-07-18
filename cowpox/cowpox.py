@@ -41,7 +41,6 @@
 from . import APKPath, etc
 from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
-from .boot import Bootstrap
 from .bundle import GraphProxy, PipInstallRecipe
 from .config import Config
 from .graph import GraphImpl, GraphInfoImpl
@@ -49,7 +48,7 @@ from .make import Make
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
 from .private import Private
-from .util import findimpl, Logging
+from .util import Logging
 from argparse import ArgumentParser
 from aridimpl.model import Resolved, Text
 from diapyr import DI
@@ -109,7 +108,6 @@ def _main():
     logging.setpath(Path(config.log.path))
     with DI() as di:
         di.add(all_archs[config.android.arch])
-        di.add(findimpl(f"cowpox.bootstraps.{config.bootstrap.name}", Bootstrap))
         di.add(AndroidProject)
         di.add(Assembly)
         di.add(AssetArchive)

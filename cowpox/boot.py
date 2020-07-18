@@ -40,9 +40,7 @@
 
 from diapyr import types
 
-class BootstrapType(type): pass
-
-class Bootstrap(metaclass = BootstrapType):
+class Bootstrap:
 
     recipe_depends = 'python3', 'android'
 
