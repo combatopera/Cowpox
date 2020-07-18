@@ -54,10 +54,6 @@ class PythonRecipe(Recipe):
 
     @types(InterpreterRecipe)
     def __init(self, interpreterrecipe):
-        if 'python3' not in self.depends:
-            depends = self.depends
-            depends.append('python3')
-            self.depends = list(set(depends)) # XXX: Can we error instead?
         self.bundlepackages = self.recipebuilddir / 'Cowpox-bundle'
         self.interpreterrecipe = interpreterrecipe
 
