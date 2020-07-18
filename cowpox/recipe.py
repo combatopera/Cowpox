@@ -52,7 +52,6 @@ log = logging.getLogger(__name__)
 
 class Recipe:
 
-    md5sum = None
     depends = []
 
     @types(Config, Platform, Mirror, Arch)
@@ -93,14 +92,14 @@ class Recipe:
         # TODO: Copy without .git either.
         self._copywithoutbuild(srcpath, self.recipebuilddir)
 
-    def preparedir(self, url):
+    def preparedir(self, url, md5sum = None):
         log.info("[%s] Downloading.", self.name)
         archivepath = self.mirror.download(url)
-        if self.md5sum is not None:
+        if md5sum is not None:
             current_md5 = hashlib.md5(archivepath.read_bytes()).hexdigest()
-            if current_md5 != self.md5sum:
+            if current_md5 != md5sum:
                 log.debug("Generated md5sum: %s", current_md5)
-                log.debug("Expected md5sum: %s", self.md5sum)
+                log.debug("Expected md5sum: %s", md5sum)
                 raise ValueError(f"Generated md5sum does not match expected md5sum for {self.name} recipe")
             log.debug("[%s] MD5 OK.", self.name)
         log.info("[%s] Unpack for: %s", self.name, self.arch.name)

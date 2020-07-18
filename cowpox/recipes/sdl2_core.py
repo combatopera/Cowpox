@@ -44,8 +44,7 @@ class LibSDL2Core(LibSDL2Module):
 
     name = 'sdl2_core'
     version = '2.0.9'
-    md5sum = 'f2ecfba915c54f7200f504d8b48a5dfe'
     dir_name = 'SDL'
 
     def mainbuild(self):
-        self.preparedir(f"https://www.libsdl.org/release/SDL2-{self.version}.tar.gz")
+        self.preparedir(f"https://www.libsdl.org/release/SDL2-{self.version}.tar.gz", 'f2ecfba915c54f7200f504d8b48a5dfe')
