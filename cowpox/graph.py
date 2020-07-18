@@ -70,7 +70,6 @@ def _recursively_collect_orders(name, all_inputs, orders, blacklist, recipeimpl)
     try:
         recipe = recipeimpl(name)
         dependencies = _get_dependency_tuple_list_for_recipe(recipe, blacklist)
-        dependencies.extend(_fix_deplist([[d] for d in all_inputs if d in recipe.opt_depends and d.lower() not in blacklist]))
     except NoSuchPluginException:
         dependencies = []
     new_orders = []

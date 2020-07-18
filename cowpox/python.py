@@ -55,8 +55,6 @@ log = logging.getLogger(__name__)
 class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
 
     MIN_NDK_API = 21
-    opt_depends = ['sqlite3', 'libffi', 'openssl']
-    '''The optional libraries which we would like to get our python linked'''
     zlibversionpattern = re.compile('^#define ZLIB_VERSION "(.+)"$', re.MULTILINE)
 
     @types(Config, Arch, Graph, GraphInfo)

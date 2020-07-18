@@ -54,11 +54,6 @@ class Recipe:
 
     md5sum = None
     depends = []
-    '''A list containing the names of any recipes that this recipe depends on.
-    '''
-    opt_depends = []
-    '''A list of optional dependencies, that must be built before this
-    recipe if they are built at all, but whose presence is not essential.'''
 
     @types(Config, Platform, Mirror, Arch)
     def __init__(self, config, platform, mirror, arch):
