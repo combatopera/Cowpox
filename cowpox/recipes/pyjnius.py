@@ -55,9 +55,9 @@ class PyjniusRecipe(CythonRecipe, JavaSrc):
 
     def mainbuild(self):
         self.preparedir(f"https://github.com/kivy/pyjnius/archive/{self.version}.zip")
-        if 'sdl2' in self.graphinfo.recipenames:
+        if 'sdl2' in self.graphinfo.recipes:
             self.apply_patches('sdl2_jnienv_getter.patch')
-        if 'genericndkbuild' in self.graphinfo.recipenames:
+        if 'genericndkbuild' in self.graphinfo.recipes:
             self.apply_patches('genericndkbuild_jnienv_getter.patch')
         self.install_python_package()
 

@@ -59,9 +59,9 @@ class GraphInfoImpl(GraphInfo):
                 for p in config.recipe.packages
                 for m in iter_modules(import_module(p).__path__, f"{p}.")
                 for impl in findimpls(import_module(m.name), Recipe)}
-        self.recipenames, self.pypinames = self._get_recipe_order(
+        self.recipes, self.pypinames = self._get_recipe_order(
                 'python3', 'bdozlib', 'android', *config.requirements, 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild')
-        log.info("Recipe build order is %s", self.recipenames)
+        log.info("Recipe build order is %s", self.recipes.keys())
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
 
     def _recipeimpl(self, name):
@@ -97,17 +97,15 @@ class GraphInfoImpl(GraphInfo):
         return recipes.keys(), sorted(pypinames)
 
     def recipeimpls(self):
-        for name in self.recipenames:
-            yield self._recipeimpl(name)
+        return self.recipes.values()
 
 class GraphImpl:
 
     @types(GraphInfo, [Recipe])
     def __init__(self, info, recipes):
         self.recipes = {}
-        names = set(info.recipenames)
         for r in recipes:
-            if r.name in names:
+            if r.name in info.recipes:
                 self.recipes[r.name] = r
             else:
                 log.debug("Recipe not in lookup: %s", r)

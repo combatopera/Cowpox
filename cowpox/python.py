@@ -96,15 +96,15 @@ class GuestPythonRecipe(Recipe, InterpreterRecipe, LibRepo):
             libs.extend(f"-l{l}" for l in link_libs)
         # XXX: Could we make install to somewhere to avoid much of this sort of thing?
         # TODO LATER: Use polymorphism!
-        if 'sqlite3' in self.graphinfo.recipenames:
+        if 'sqlite3' in self.graphinfo.recipes:
             log.info('Activating flags for sqlite3')
             add_flags(*self.graph.get_recipe('sqlite3').includeslinkslibs())
-        if 'libffi' in self.graphinfo.recipenames:
+        if 'libffi' in self.graphinfo.recipes:
             log.info('Activating flags for libffi')
             recipe = self.graph.get_recipe('libffi')
             env['PKG_CONFIG_PATH'] = recipe.recipebuilddir
             add_flags(*recipe.includeslinkslibs())
-        if 'openssl' in self.graphinfo.recipenames:
+        if 'openssl' in self.graphinfo.recipes:
             log.info('Activating flags for openssl')
             add_flags(*self.graph.get_recipe('openssl').includeslinkslibs())
         log.info('''Activating flags for android's zlib''')
