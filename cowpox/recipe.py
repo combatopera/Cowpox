@@ -60,10 +60,6 @@ class Recipe:
     '''A list of optional dependencies, that must be built before this
     recipe if they are built at all, but whose presence is not essential.'''
 
-    @classmethod
-    def get_opt_depends_in_list(cls, recipenames):
-        return [name for name in recipenames if name in cls.opt_depends]
-
     @types(Config, Platform, Mirror, Arch)
     def __init__(self, config, platform, mirror, arch):
         self.recipebuilddir = Path(config.builds.dir, self.name)
