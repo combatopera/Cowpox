@@ -43,4 +43,4 @@ from cowpox.boot import Bootstrap
 class ServiceOnlyBootstrap(Bootstrap):
 
     name = 'service_only'
-    recipe_depends = {*Bootstrap.recipe_depends, 'genericndkbuild'}
+    recipe_depends = ['genericndkbuild']

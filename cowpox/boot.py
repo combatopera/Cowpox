@@ -42,8 +42,6 @@ from diapyr import types
 
 class Bootstrap:
 
-    recipe_depends = 'python3', 'android'
-
     @types()
     def __init__(self):
         pass

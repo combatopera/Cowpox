@@ -176,7 +176,7 @@ class GraphInfoImpl(GraphInfo):
                 for impl in findimpls(import_module(m.name), Recipe)}
         bootstraptype, = findimpls(import_module(f"cowpox.bootstraps.{config.bootstrap.name}"), Bootstrap)
         # FIXME LATER: Overhaul logic so we don't have to exclude genericndkbuild every time.
-        self.recipenames, self.pypinames = _get_recipe_order({'python3', 'bdozlib', *config.requirements, *bootstraptype.recipe_depends}, ['genericndkbuild'], self._recipeimpl)
+        self.recipenames, self.pypinames = _get_recipe_order({'python3', 'bdozlib', 'android', *config.requirements, *bootstraptype.recipe_depends}, ['genericndkbuild'], self._recipeimpl)
         log.info("Recipe build order is %s", self.recipenames)
         log.info("The requirements (%s) were not found as recipes, they will be installed with pip.", ', '.join(self.pypinames))
 
