@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox import Arch, Graph, GraphInfo, InterpreterRecipe, LibRepo
+from cowpox import Arch, InterpreterRecipe, LibRepo
 from cowpox.config import Config
 from cowpox.container import compileall
 from cowpox.recipe import Recipe
@@ -54,15 +54,17 @@ log = logging.getLogger(__name__)
 
 class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
 
+    from .libffi import LibffiRecipe
     from .openssl import OpenSSLRecipe
+    from .sqlite3 import Sqlite3Recipe
     name = 'python3'
     version = '3.8.1' # XXX: Should this match container version?
     depends = 'sqlite3', 'openssl', 'libffi'
     MIN_NDK_API = 21
     zlibversionpattern = re.compile('^#define ZLIB_VERSION "(.+)"$', re.MULTILINE)
 
-    @types(Config, Arch, Graph, GraphInfo, OpenSSLRecipe)
-    def __init(self, config, arch, graph, graphinfo, openssl = None):
+    @types(Config, Arch, LibffiRecipe, OpenSSLRecipe, Sqlite3Recipe)
+    def __init(self, config, arch, libffi = None, openssl = None, sqlite3 = None):
         self.ndk_dir = Path(config.NDK.dir)
         self.ndk_api = config.android.ndk_api
         self.use_lld = config.use.lld
@@ -73,9 +75,9 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
         self.androidbuild = self.recipebuilddir / 'android-build'
         self.modules_build_dir = self.androidbuild / 'build' / f"lib.linux-{arch.command_prefix.split('-')[0]}-{self.majminversion}"
         self.stdlibdir = self.recipebuilddir / 'Lib'
-        self.graph = graph
-        self.graphinfo = graphinfo
+        self.libffi = libffi
         self.openssl = openssl
+        self.sqlite3 = sqlite3
 
     def _set_libs_flags(self):
         env = os.environ.copy() # TODO: Probably redundant.
@@ -101,14 +103,13 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
             libs.extend(f"-l{l}" for l in link_libs)
         # XXX: Could we make install to somewhere to avoid much of this sort of thing?
         # TODO LATER: Use polymorphism!
-        if 'sqlite3' in self.graphinfo.recipes:
+        if self.sqlite3 is not None:
             log.info('Activating flags for sqlite3')
-            add_flags(*self.graph.get_recipe('sqlite3').includeslinkslibs())
-        if 'libffi' in self.graphinfo.recipes:
+            add_flags(*self.sqlite3.includeslinkslibs())
+        if self.libffi is not None:
             log.info('Activating flags for libffi')
-            recipe = self.graph.get_recipe('libffi')
-            env['PKG_CONFIG_PATH'] = recipe.recipebuilddir
-            add_flags(*recipe.includeslinkslibs())
+            env['PKG_CONFIG_PATH'] = self.libffi.recipebuilddir
+            add_flags(*self.libffi.includeslinkslibs())
         if self.openssl is not None:
             log.info('Activating flags for openssl')
             add_flags(*self.openssl.includeslinkslibs())
