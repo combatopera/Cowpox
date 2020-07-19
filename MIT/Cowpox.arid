@@ -49,7 +49,6 @@ container mirror = $/($(build dir) Cowpox-mirror)
 private dir = $/($(build dir) Cowpox-private)
 bundle dir = $/($(private dir) _python_bundle)
 builds dir = $/($(build dir) Cowpox)
-pip install dir = $/($(build dir) Cowpox-bundle)
 bootstrapsdirs +=
     $/($(container extroot) MIT bootstraps)
     $/($(container extroot) cowpox bootstraps)

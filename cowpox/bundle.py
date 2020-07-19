@@ -39,24 +39,18 @@
 # THE SOFTWARE.
 
 from . import Graph, PipInstallMemo
-from .config import Config
 from .container import compileall
 from .make import Make
 from .pyrecipe import CythonRecipe
 from diapyr import types
 from lagoon import pip
-from pathlib import Path
 import logging
 
 log = logging.getLogger(__name__)
 
 class PipInstallRecipe(CythonRecipe):
 
-    name = 'FIXME' # FIXME: Make this a real recipe.
-
-    @types(Config)
-    def __init(self, config):
-        self.bundlepackages = Path(config.pip.install.dir)
+    name = 'Cowpox-bundle'
 
     @types(Make, Graph, this = PipInstallMemo)
     def buildsite(self, make, graph):
@@ -67,4 +61,4 @@ class PipInstallRecipe(CythonRecipe):
             else:
                 self.bundlepackages.mkdirp()
         pypinames = graph.pypinames
-        return make(self.bundlepackages, pypinames, target)
+        return make(self.recipebuilddir, pypinames, target)
