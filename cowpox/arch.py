@@ -74,6 +74,7 @@ class ArchImpl(Arch):
             log.warning("Target API %s < %s", android_api, self.MIN_TARGET_API)
             log.warning('Target APIs lower than 26 are no longer supported on Google Play, and are not recommended. Note that the Target API can be higher than your device Android version, and should usually be as high as possible.')
         self.ndk_api = config.android.ndk_api
+        self.container_src = config.container.src
         assert self.ndk_api <= android_api
         if self.ndk_api < self.MIN_NDK_API:
             log.warning("NDK API less than %s is not supported", self.MIN_NDK_API)
@@ -124,7 +125,7 @@ class ArchImpl(Arch):
         return f"{self.name}__ndk_target_{self.ndk_api}"
 
     def striplibs(self, root):
-        log.info("[%s] Strip libs.", root)
+        log.info("[%s] Strip libs.", root.relative_to(self.container_src))
         self.strip.print(*root.rglob('*.so'))
 
 class BaseArchARM(ArchImpl):
