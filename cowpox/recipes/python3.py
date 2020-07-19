@@ -86,18 +86,9 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
         env['CC'] = self.platform.clang_exe(self.arch, with_target = True)
         env['PATH'] = os.pathsep.join([str(self.platform.prebuiltbin(self.arch)), env['PATH']]) # XXX: Why prepend?
         env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ndk_api}"
-        env['LDFLAGS'] = env.get('LDFLAGS', '')
-        if self.use_lld:
-            # Note: The -L. is to fix a bug in python 3.7.
-            # https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234409
-            env['LDFLAGS'] += ' -L. -fuse-ld=lld'
-        else:
-            log.warning('lld not enabled, linking without it. Consider installing lld if linker errors occur.')
-        def aslist(key):
-            return [env[key]] if key in env else []
-        cppflags = aslist('CPPFLAGS')
-        ldflags = aslist('LDFLAGS')
-        libs = aslist('LIBS')
+        cppflags = []
+        ldflags = ['-L.', '-fuse-ld=lld'] if self.use_lld else []
+        libs = []
         def add_flags(include_flags, link_dirs, link_libs):
             cppflags.extend(f"-I{i}" for i in include_flags)
             ldflags.extend(f"-L{d}" for d in link_dirs)
