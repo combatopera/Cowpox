@@ -56,18 +56,18 @@ class RecipeInfo:
 
     def __init__(self, impl):
         self.groups = []
-        self.normdepends = {}
-        for d in impl.depends:
-            if isinstance(d, tuple):
-                self.groups.append(frozenset(map(canonicalize_name, d)))
+        self.depends = {}
+        for depend in impl.depends:
+            if isinstance(depend, tuple):
+                self.groups.append(frozenset(map(canonicalize_name, depend)))
             else:
-                self.normdepends[canonicalize_name(d)] = d
+                self.depends[canonicalize_name(depend)] = depend
         self.impl = impl
 
     def dependmemotypes(self, groupmemotypes, implmemotypes):
         for group in self.groups:
             yield groupmemotypes[group]
-        for normdepend in self.normdepends:
+        for normdepend in self.depends:
             yield implmemotypes.get(normdepend, PipInstallMemo)
 
 class GraphInfoImpl(GraphInfo):
@@ -85,7 +85,7 @@ class GraphInfoImpl(GraphInfo):
             for group in info.groups:
                 if group not in groupmemotypes:
                     groupmemotypes[group] = type(f"{'Or'.join(allimpls[n].__name__ for n in sorted(group))}Memo", (), {})
-            for normdepend, depend in info.normdepends.items():
+            for normdepend, depend in info.depends.items():
                 if normdepend not in recipeinfos and normdepend not in pypinames:
                     if normdepend in allimpls:
                         recipeinfos[normdepend] = info = RecipeInfo(allimpls[normdepend])
