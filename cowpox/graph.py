@@ -47,7 +47,7 @@ from diapyr import types
 from importlib import import_module
 from packaging.utils import canonicalize_name
 from pkgutil import iter_modules
-import logging, networkx as nx
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -60,35 +60,34 @@ class GraphInfoImpl(GraphInfo):
                 for m in iter_modules(import_module(p).__path__, f"{p}.")
                 for impl in findimpls(import_module(m.name), Recipe)}
         self.groups = {}
+        self.recipeimpls = {}
         pypinames = {}
-        g = nx.DiGraph()
-        def adddepend(depend, targetname):
+        def adddepend(depend):
             if isinstance(depend, tuple):
                 group = frozenset(map(canonicalize_name, depend))
                 if group not in self.groups:
                     self.groups[group] = type(f"{'Or'.join(impls[n].__name__ for n in sorted(group))}Memo", (), {})
                 return
             normdepend = canonicalize_name(depend)
+            if normdepend in self.recipeimpls or normdepend in pypinames:
+                return
             try:
                 impl = impls[normdepend]
             except KeyError:
                 pypinames[normdepend] = depend # Keep an arbitrary unnormalised name.
                 return
-            g.add_node(normdepend, impl = impl)
-            if targetname is not None:
-                g.add_edge(normdepend, targetname)
+            self.recipeimpls[normdepend] = impl
             for d in impl.depends:
-                adddepend(d, normdepend)
+                adddepend(d)
         for d in ['python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements]:
-            adddepend(d, None)
+            adddepend(d)
         for group in self.groups:
-            intersection = sorted(g.nodes & group)
+            intersection = sorted(self.recipeimpls.keys() & group)
             if not intersection:
                 raise Exception("Group not satisfied: %s" % ', '.join(sorted(group)))
-            log.debug("Group %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(g.nodes[normname]['impl'].name for normname in intersection))
-        self.recipeimpls = {normname: g.nodes[normname]['impl'] for normname in nx.topological_sort(g)}
+            log.debug("Group %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(self.recipeimpls[normname].name for normname in intersection))
         self.pypinames = [name for _, name in sorted(pypinames.items())]
-        log.info("Recipe build order: %s", ', '.join(impl.name for impl in self.recipeimpls.values()))
+        log.info("Recipes to build: %s", ', '.join(impl.name for impl in self.recipeimpls.values()))
         log.info("Requirements not found as recipes will be installed with pip: %s", ', '.join(self.pypinames))
 
     def builders(self):
