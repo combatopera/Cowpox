@@ -98,7 +98,7 @@ class GraphInfoImpl(GraphInfo):
         memotypes = {}
         for normname, impl in self.recipeimpls.items():
             memotypes[normname] = type(f"{impl.__name__}Memo", tuple(memotypebases()), {})
-        def dependmemotypes():
+        def getdependmemotypes():
             for d in impl.depends:
                 if isinstance(d, tuple):
                     yield self.groups[frozenset(map(canonicalize_name, d))]
@@ -109,7 +109,9 @@ class GraphInfoImpl(GraphInfo):
                         pass
         for normname, impl in self.recipeimpls.items():
             yield impl
-            @types(impl, Make, *dependmemotypes(), this = memotypes[normname])
+            dependmemotypes = list(getdependmemotypes())
+            @types(impl, Make, *dependmemotypes, this = memotypes[normname])
             def makerecipe(recipe, make, *memos):
                 return make(recipe.recipebuilddir, memos, recipe.mainbuild)
+            log.debug("%s factory depends on: %s", memotypes[normname].__name__, ', '.join(t.__name__ for t in dependmemotypes))
             yield makerecipe
