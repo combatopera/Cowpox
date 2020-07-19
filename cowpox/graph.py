@@ -96,15 +96,16 @@ class GraphInfoImpl(GraphInfo):
                 'python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements])))
         for group in groupmemotypes:
             intersection = sorted(recipeinfos.keys() & group)
+            groupstr = ', '.join(sorted(group))
             if not intersection:
-                raise Exception("Group not satisfied: %s" % ', '.join(sorted(group)))
-            log.debug("Group %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(recipeinfos[normname].impl.name for normname in intersection))
+                raise Exception("Group not satisfied: %s" % groupstr)
+            log.debug("Group %s satisfied by: %s", groupstr, ', '.join(allimpls[normname].name for normname in intersection))
         log.info("Recipes to build: %s", ', '.join(info.impl.name for info in recipeinfos.values()))
         def memotypebases():
             yield RecipeMemo
-            for group, memotype in groupmemotypes.items():
+            for group, groupmemotype in groupmemotypes.items():
                 if normname in group:
-                    yield memotype
+                    yield groupmemotype
         implmemotypes = {}
         for normname, info in recipeinfos.items():
             implmemotypes[normname] = type(f"{info.impl.__name__}Memo", tuple(memotypebases()), {})
@@ -113,10 +114,10 @@ class GraphInfoImpl(GraphInfo):
             dependmemotypes = list(info.dependmemotypes(groupmemotypes, implmemotypes))
             implmemotype = implmemotypes[normname]
             @types(info.impl, Make, *dependmemotypes, this = implmemotype)
-            def makerecipe(recipe, make, *memos):
+            def builder(recipe, make, *memos):
                 return make(recipe.recipebuilddir, list(memos), recipe.mainbuild)
-            log.debug("%s%s requires: %s", implmemotype.__name__, f"({', '.join(b.__name__ for b in implmemotype.__bases__)})",
-                        ', '.join(t.__name__ for t in dependmemotypes) if dependmemotypes else ())
-            self.builders.append(makerecipe)
+            log.debug("%s(%s) requires: %s", implmemotype.__name__, ', '.join(b.__name__ for b in implmemotype.__bases__),
+                    ', '.join(t.__name__ for t in dependmemotypes) if dependmemotypes else ())
+            self.builders.append(builder)
         self.pypinames = list(pypinames.values())
         log.info("Requirements not found as recipes will be installed with pip: %s", ', '.join(self.pypinames))
