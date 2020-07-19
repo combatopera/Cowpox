@@ -42,6 +42,7 @@ from . import AndroidProjectMemo, APKPath, Arch, GraphInfo, JavaSrc, LibRepo, Pr
 from .config import Config
 from .make import Make
 from .platform import Platform
+from .recipes.sqlite3 import Sqlite3Recipe
 from .util import Contrib, enum, writeproperties
 from aridity import Repl
 from diapyr import types
@@ -103,8 +104,8 @@ class Assembly:
 
 class AssetArchive:
 
-    @types(Config, GraphInfo)
-    def __init__(self, config, graphinfo):
+    @types(Config, GraphInfo, Sqlite3Recipe)
+    def __init__(self, config, graphinfo, sqlite3 = None):
         self.contribs = [
             Contrib([Path(config.private.dir)]),
             Contrib([Path(d, 'private') for d in chain(config.bootstrap.dirs, config.bootstrap.common.dirs)]),
@@ -123,7 +124,7 @@ class AssetArchive:
             '*.py',
             '.Cowpox/*',
         ] + resource_string(__name__, 'blacklist.txt').decode().splitlines()
-        if config.bootstrap.name in {'webview', 'service_only'} or 'sqlite3' not in graphinfo.recipeimpls: # FIXME: Sucks.
+        if config.bootstrap.name in {'webview', 'service_only'} or self.sqlite3 is None:
             self.BLACKLIST_PATTERNS += ['sqlite3/*', 'lib-dynload/_sqlite3.so']
 
     def _accept(self, path):
