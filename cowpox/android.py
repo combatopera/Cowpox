@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import AndroidProjectMemo, APKPath, Arch, GraphInfo, JavaSrc, LibRepo, PrivateMemo, RecipeMemos
+from . import AndroidProjectMemo, APKPath, Arch, JavaSrc, LibRepo, PrivateMemo, RecipeMemos
 from .config import Config
 from .make import Make
 from .platform import Platform
@@ -104,8 +104,8 @@ class Assembly:
 
 class AssetArchive:
 
-    @types(Config, GraphInfo, Sqlite3Recipe)
-    def __init__(self, config, graphinfo, sqlite3 = None):
+    @types(Config, Sqlite3Recipe)
+    def __init__(self, config, sqlite3 = None):
         self.contribs = [
             Contrib([Path(config.private.dir)]),
             Contrib([Path(d, 'private') for d in chain(config.bootstrap.dirs, config.bootstrap.common.dirs)]),
