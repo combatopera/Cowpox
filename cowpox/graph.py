@@ -87,9 +87,9 @@ class GraphInfoImpl(GraphInfo):
         for d in ['python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements]:
             adddepend(d, None)
         checkgroups()
-        self.recipes = {name: g.nodes[name]['impl'] for name in nx.topological_sort(g)}
+        self.recipeimpls = {name: g.nodes[name]['impl'] for name in nx.topological_sort(g)}
         self.pypinames = [name for _, name in sorted(pypinames.items())]
-        log.info("Recipe build order: %s", ', '.join(self.recipes.keys()))
+        log.info("Recipe build order: %s", ', '.join(self.recipeimpls.keys()))
         log.info("Requirements not found as recipes will be installed with pip: %s", ', '.join(self.pypinames))
 
 class Graph:
@@ -98,7 +98,7 @@ class Graph:
     def __init__(self, info, recipes):
         self.recipes = {}
         for r in recipes:
-            if r.name in info.recipes:
+            if r.name in info.recipeimpls:
                 self.recipes[r.name] = r
             else:
                 log.debug("Recipe not in lookup: %s", r)
