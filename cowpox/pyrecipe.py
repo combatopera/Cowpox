@@ -43,7 +43,7 @@ from .config import Config
 from .container import compileall
 from .recipe import Recipe
 from diapyr import types
-from lagoon import find, python
+from lagoon import python
 import logging, shutil, subprocess
 
 log = logging.getLogger(__name__)
@@ -88,7 +88,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
         log.info("Building compiled components in %s", self.name)
         python.print('setup.py', 'build_ext', '-v', *self.build_ext_args, env = env, cwd = self.recipebuilddir)
         objsdir, = self.recipebuilddir.glob('build/lib.*')
-        find.print(objsdir, '-name', '*.o', '-exec', *self.arch.strip, '{}', ';') # TODO: Use rglob.
+        self.arch.rstrip(objsdir, '*.o')
         super().install_python_package(env)
 
 class CythonRecipe(PythonRecipe):
