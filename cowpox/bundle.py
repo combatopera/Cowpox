@@ -38,21 +38,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Graph, GraphInfo, PipInstallMemo
+from . import GraphInfo, PipInstallMemo
 from .config import Config
 from .container import compileall
-from .graph import GraphImpl
 from .make import Make
 from .pyrecipe import CythonRecipe
-from .util import DIProxy
 from diapyr import types
 from lagoon import pip
 from pathlib import Path
 import logging
 
 log = logging.getLogger(__name__)
-
-class GraphProxy(DIProxy, Graph): targetclass = GraphImpl
 
 class PipInstallRecipe(CythonRecipe):
 
