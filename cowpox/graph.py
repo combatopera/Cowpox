@@ -59,58 +59,58 @@ class GraphInfoImpl(GraphInfo):
                 for p in config.recipe.packages
                 for m in iter_modules(import_module(p).__path__, f"{p}.")
                 for impl in findimpls(import_module(m.name), Recipe)}
-        self.groupmemotypes = {}
-        self.recipeimpls = {}
+        groupmemotypes = {}
+        recipeimpls = {}
         pypinames = {}
         def adddepend(depend):
             if isinstance(depend, tuple):
                 group = frozenset(map(canonicalize_name, depend))
-                if group not in self.groupmemotypes:
-                    self.groupmemotypes[group] = type(f"{'Or'.join(allimpls[n].__name__ for n in sorted(group))}Memo", (), {})
+                if group not in groupmemotypes:
+                    groupmemotypes[group] = type(f"{'Or'.join(allimpls[n].__name__ for n in sorted(group))}Memo", (), {})
                 return
             normdepend = canonicalize_name(depend)
-            if normdepend in self.recipeimpls or normdepend in pypinames:
+            if normdepend in recipeimpls or normdepend in pypinames:
                 return
             try:
                 impl = allimpls[normdepend]
             except KeyError:
                 pypinames[normdepend] = depend # Keep an arbitrary unnormalised name.
                 return
-            self.recipeimpls[normdepend] = impl
+            recipeimpls[normdepend] = impl
             for d in impl.depends:
                 adddepend(d)
         for d in ['python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements]:
             adddepend(d)
-        for group in self.groupmemotypes:
-            intersection = sorted(self.recipeimpls.keys() & group)
+        for group in groupmemotypes:
+            intersection = sorted(recipeimpls.keys() & group)
             if not intersection:
                 raise Exception("Group not satisfied: %s" % ', '.join(sorted(group)))
-            log.debug("Group %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(self.recipeimpls[normname].name for normname in intersection))
-        self.pypinames = [name for _, name in sorted(pypinames.items())]
-        log.info("Recipes to build: %s", ', '.join(impl.name for impl in self.recipeimpls.values()))
-        log.info("Requirements not found as recipes will be installed with pip: %s", ', '.join(self.pypinames))
+            log.debug("Group %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(recipeimpls[normname].name for normname in intersection))
+        log.info("Recipes to build: %s", ', '.join(impl.name for impl in recipeimpls.values()))
         def memotypebases():
             yield RecipeMemo
-            for group, grouptype in self.groupmemotypes.items():
+            for group, grouptype in groupmemotypes.items():
                 if normname in group:
                     yield grouptype
         memotypes = {}
-        for normname, impl in self.recipeimpls.items():
+        for normname, impl in recipeimpls.items():
             memotypes[normname] = type(f"{impl.__name__}Memo", tuple(memotypebases()), {})
         def getdependmemotypes():
             for d in impl.depends:
                 if isinstance(d, tuple):
-                    yield self.groupmemotypes[frozenset(map(canonicalize_name, d))]
+                    yield groupmemotypes[frozenset(map(canonicalize_name, d))]
                 else:
                     try:
                         yield memotypes[canonicalize_name(d)]
                     except KeyError:
                         pass
-        self.builders = list(self.recipeimpls.values())
-        for normname, impl in self.recipeimpls.items():
+        self.builders = list(recipeimpls.values())
+        for normname, impl in recipeimpls.items():
             dependmemotypes = list(getdependmemotypes())
             @types(impl, Make, *dependmemotypes, this = memotypes[normname])
             def makerecipe(recipe, make, *memos):
                 return make(recipe.recipebuilddir, memos, recipe.mainbuild)
             log.debug("%s factory depends on: %s", memotypes[normname].__name__, ', '.join(t.__name__ for t in dependmemotypes))
             self.builders.append(makerecipe)
+        self.pypinames = pypinames.values()
+        log.info("Requirements not found as recipes will be installed with pip: %s", ', '.join(self.pypinames))
