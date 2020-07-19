@@ -81,11 +81,12 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
         self.sqlite3 = sqlite3
 
     def _getbuildenv(self):
-        env = os.environ.copy() # TODO: Probably redundant.
-        env['HOSTARCH'] = self.arch.command_prefix
-        env['CC'] = self.platform.clang_exe(self.arch, with_target = True)
-        env['PATH'] = os.pathsep.join([str(self.platform.prebuiltbin(self.arch)), env['PATH']]) # XXX: Why prepend?
-        env['CFLAGS'] = f"-fPIC -DANDROID -D__ANDROID_API__={self.ndk_api}"
+        env = dict(
+            HOSTARCH = self.arch.command_prefix,
+            CC = self.platform.clang_exe(self.arch, with_target = True),
+            PATH = os.pathsep.join([str(self.platform.prebuiltbin(self.arch)), os.environ['PATH']]), # XXX: Why prepend?
+            CFLAGS = f"-fPIC -DANDROID -D__ANDROID_API__={self.ndk_api}",
+        )
         cppflags = []
         ldflags = ['-L.', '-fuse-ld=lld'] if self.use_lld else []
         libs = []
@@ -127,11 +128,11 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
         return self.androidbuild
 
     def recipe_env_with_python(self):
-        env = self.arch.env.copy()
-        env['PYTHON_INCLUDE_ROOT'] = self.include_root()
-        env['PYTHON_LINK_ROOT'] = self.link_root()
-        env['EXTRA_LDLIBS'] = f"-l{self.pylibname}"
-        return env
+        return dict(self.arch.env,
+            PYTHON_INCLUDE_ROOT = self.include_root(),
+            PYTHON_LINK_ROOT = self.link_root(),
+            EXTRA_LDLIBS = f"-l{self.pylibname}",
+        )
 
     def mainbuild(self):
         self.preparedir(f"https://www.python.org/ftp/python/{self.version}/Python-{self.version}.tgz")
