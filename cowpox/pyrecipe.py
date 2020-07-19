@@ -87,7 +87,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
             env = self.get_recipe_env()
         log.info("Building compiled components in %s", self.name)
         python.print('setup.py', 'build_ext', '-v', *self.build_ext_args, env = env, cwd = self.recipebuilddir)
-        self.striplibs()
+        self.striplibs() # TODO LATER: This has silently failed to strip one lib.
         super().install_python_package(env)
 
 class CythonRecipe(PythonRecipe):
