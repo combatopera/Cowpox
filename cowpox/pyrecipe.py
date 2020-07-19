@@ -117,7 +117,7 @@ class CythonRecipe(PythonRecipe):
             build_ext.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
-        self.arch.strip_object_files(self.recipebuilddir)
+        self.arch.rstrip(self.recipebuilddir, '*.so')
         super().install_python_package(env)
 
     def cythonize_build(self, env):

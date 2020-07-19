@@ -123,12 +123,6 @@ class ArchImpl(Arch):
     def builddirname(self):
         return f"{self.name}__ndk_target_{self.ndk_api}"
 
-    def strip_object_files(self, root):
-        log.info('Stripping object files')
-        exec = find.partial(root, '-name', '*.so', '-exec')
-        exec.print('echo', '{}', ';')
-        exec.print(*self.strip, '{}', ';')
-
     def rstrip(self, root, rglob):
         log.info("[%s] Strip rglob: %s", root, rglob)
         strip = Program.text(self.strip[0]).partial(*self.strip[1:])
