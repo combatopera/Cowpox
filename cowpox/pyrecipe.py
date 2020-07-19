@@ -87,7 +87,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
             env = self.get_recipe_env()
         log.info("Building compiled components in %s", self.name)
         python.print('setup.py', 'build_ext', '-v', *self.build_ext_args, env = env, cwd = self.recipebuilddir)
-        self.striplibs() # FIXME LATER: Inexplicably leave _bounded_integers.so unstripped.
+        self.striplibs() # FIXME LATER: Inexplicably leaves _bounded_integers.so unstripped.
         super().install_python_package(env)
 
 class CythonRecipe(PythonRecipe):
