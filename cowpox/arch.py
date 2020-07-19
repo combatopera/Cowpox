@@ -60,7 +60,6 @@ class ArchImpl(Arch):
         USE_CCACHE = '1',
         NDK_CCACHE = ccachepath,
         MAKE = f"make -j{cpu_count()}",
-        **{k: v for k, v in os.environ.items() if k.startswith('CCACHE_')},
     )
     minbadapi = float('inf')
     MIN_TARGET_API = 26
