@@ -125,13 +125,7 @@ class ArchImpl(Arch):
 
     def striplibs(self, root):
         log.info("[%s] Strip libs.", root)
-        for path in root.rglob('*.so'):
-            try:
-                self.strip.print(path)
-            except subprocess.CalledProcessError as e:
-                if 1 != e.returncode:
-                    raise
-                log.warning("Failed to strip: %s", path)
+        self.strip.print(*root.rglob('*.so'))
 
 class BaseArchARM(ArchImpl):
 
