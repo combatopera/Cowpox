@@ -129,10 +129,10 @@ class ArchImpl(Arch):
         exec.print('echo', '{}', ';')
         exec.print(*self.strip, '{}', ';')
 
-    def striplibs(self, root):
-        log.info("Stripping libraries in: %s", root)
+    def rstrip(self, root, rglob):
+        log.info("[%s] Strip rglob: %s", root, rglob)
         strip = Program.text(self.strip[0]).partial(*self.strip[1:])
-        for path in root.rglob('*.so'):
+        for path in root.rglob(rglob):
             try:
                 strip.print(path)
             except subprocess.CalledProcessError as e:

@@ -124,7 +124,7 @@ class Private:
         log.info("Copy %s files into the bundle", len(module_filens))
         for filen in module_filens:
             shutil.copy2(filen, modules_dir)
-        self.arch.striplibs(modules_dir)
+        self.arch.rstrip(modules_dir, '*.so')
         stdlib_filens = list(self._walk_valid_filens(self.interpreter.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(self.bundle_dir / 'stdlib.zip', *(p.relative_to(self.interpreter.stdlibdir) for p in stdlib_filens), cwd = self.interpreter.stdlibdir)
