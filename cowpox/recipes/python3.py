@@ -80,7 +80,7 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
         self.openssl = openssl
         self.sqlite3 = sqlite3
 
-    def _set_libs_flags(self):
+    def _getbuildenv(self):
         env = os.environ.copy() # TODO: Probably redundant.
         env['HOSTARCH'] = self.arch.command_prefix
         env['CC'] = self.platform.clang_exe(self.arch, with_target = True)
@@ -162,7 +162,7 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
         if self.openssl is not None:
             configure_args += [f"--with-openssl={self.openssl.recipebuilddir}"]
         self.androidbuild.mkdirp()
-        env = self._set_libs_flags()
+        env = self._getbuildenv()
         Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = self.androidbuild)
         make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
         self.striplibs()
