@@ -38,31 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox import JavaSrc
-from cowpox.pyrecipe import CythonRecipe
-from cowpox.util import Contrib
-from diapyr import types
+from cowpox.recipe import BootstrapNDKRecipe
 
-class PyjniusRecipe(CythonRecipe, JavaSrc):
+class GenericNDKBuildRecipe(BootstrapNDKRecipe): # TODO LATER: Not implemented.
 
-    from .genericndkbuild import GenericNDKBuildRecipe
-    from .sdl2 import LibSDL2Recipe
-    name = 'pyjnius'
-    version = '1.2.1'
-    depends = ('genericndkbuild', 'sdl2'), 'six'
-
-    @types(GenericNDKBuildRecipe, LibSDL2Recipe)
-    def __init(self, genericndkbuild = None, sdl2 = None):
-        self.genericndkbuild = genericndkbuild
-        self.sdl2 = sdl2
-
-    def mainbuild(self):
-        self.preparedir(f"https://github.com/kivy/pyjnius/archive/{self.version}.zip")
-        if self.sdl2 is not None:
-            self.apply_patches('sdl2_jnienv_getter.patch')
-        if self.genericndkbuild is not None:
-            self.apply_patches('genericndkbuild_jnienv_getter.patch')
-        self.install_python_package()
-
-    def javasrc(self):
-        return Contrib([self.recipebuilddir / 'jnius' / 'src'])
+    name = 'genericndkbuild'
