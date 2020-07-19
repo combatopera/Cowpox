@@ -109,9 +109,9 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
             recipe = self.graph.get_recipe('libffi')
             env['PKG_CONFIG_PATH'] = recipe.recipebuilddir
             add_flags(*recipe.includeslinkslibs())
-        if 'openssl' in self.graphinfo.recipes:
+        if self.openssl is not None:
             log.info('Activating flags for openssl')
-            add_flags(*self.graph.get_recipe('openssl').includeslinkslibs())
+            add_flags(*self.openssl.includeslinkslibs())
         log.info('''Activating flags for android's zlib''')
         zlibinclude = self.ndk_dir / 'sysroot' / 'usr' / 'include'
         env['ZLIB_VERSION'] = self.zlibversionpattern.search((zlibinclude / 'zlib.h').read_text()).group(1)
