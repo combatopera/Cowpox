@@ -77,15 +77,13 @@ class GraphInfoImpl(GraphInfo):
                 g.add_edge(normdepend, targetname)
             for d in impl.depends:
                 adddepend(d, normdepend)
-        def checkgroups():
-            for group in sorted(groups):
-                intersection = g.nodes & group
-                if not intersection:
-                    raise Exception("Alternatives not satisfied: %s" % ', '.join(sorted(group)))
-                log.debug("Alternatives %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(g.nodes[normname]['impl'].name for normname in sorted(intersection)))
         for d in ['python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements]:
             adddepend(d, None)
-        checkgroups()
+        for group in sorted(groups):
+            intersection = sorted(g.nodes & group)
+            if not intersection:
+                raise Exception("Group not satisfied: %s" % ', '.join(sorted(group)))
+            log.debug("Group %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(g.nodes[normname]['impl'].name for normname in intersection))
         self.recipeimpls = {normname: g.nodes[normname]['impl'] for normname in nx.topological_sort(g)}
         self.pypinames = [name for _, name in sorted(pypinames.items())]
         log.info("Recipe build order: %s", ', '.join(impl.name for impl in self.recipeimpls.values()))
