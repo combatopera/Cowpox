@@ -253,7 +253,6 @@ class AndroidProject:
         for librepo in self.librepos:
             for builtlibpath in librepo.builtlibpaths():
                 shutil.copy2(librepo.recipebuilddir / builtlibpath, archlibs)
-        self.arch.rstrip(self.android_project_libs, '*.so')
         for javasrc in self.javasrcs:
             contrib = javasrc.javasrc()
             log.info("Copying java files from: %s", contrib)
