@@ -72,24 +72,23 @@ class GraphInfoImpl(GraphInfo):
             except KeyError:
                 pypinames[normdepend] = depend # Keep an arbitrary unnormalised name.
                 return
-            g.add_node(impl.name, impl = impl)
+            g.add_node(normdepend, impl = impl)
             if targetname is not None:
-                g.add_edge(impl.name, targetname)
+                g.add_edge(normdepend, targetname)
             for d in impl.depends:
-                adddepend(d, impl.name)
+                adddepend(d, normdepend)
         def checkgroups():
-            names = {canonicalize_name(name): name for name in g.nodes}
             for group in sorted(groups):
-                intersection = names.keys() & group
+                intersection = g.nodes & group
                 if not intersection:
                     raise Exception("Alternatives not satisfied: %s" % ', '.join(sorted(group)))
-                log.debug("Alternatives %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(names[normname] for normname in sorted(intersection)))
+                log.debug("Alternatives %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(g.nodes[normname]['impl'].name for normname in sorted(intersection)))
         for d in ['python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements]:
             adddepend(d, None)
         checkgroups()
-        self.recipeimpls = {name: g.nodes[name]['impl'] for name in nx.topological_sort(g)}
+        self.recipeimpls = {normname: g.nodes[normname]['impl'] for normname in nx.topological_sort(g)}
         self.pypinames = [name for _, name in sorted(pypinames.items())]
-        log.info("Recipe build order: %s", ', '.join(self.recipeimpls.keys()))
+        log.info("Recipe build order: %s", ', '.join(impl.name for impl in self.recipeimpls.values()))
         log.info("Requirements not found as recipes will be installed with pip: %s", ', '.join(self.pypinames))
 
 class Graph:
@@ -98,7 +97,7 @@ class Graph:
     def __init__(self, info, recipes):
         self.recipes = []
         for r in recipes:
-            if r.name in info.recipeimpls:
+            if canonicalize_name(r.name) in info.recipeimpls:
                 self.recipes.append(r)
             else:
                 log.debug("Recipe not in lookup: %s", r)
