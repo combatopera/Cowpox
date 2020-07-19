@@ -87,8 +87,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
             env = self.get_recipe_env()
         log.info("Building compiled components in %s", self.name)
         python.print('setup.py', 'build_ext', '-v', *self.build_ext_args, env = env, cwd = self.recipebuilddir)
-        objsdir, = self.recipebuilddir.glob('build/lib.*')
-        self.arch.rstrip(objsdir, '*.o') # TODO LATER: No such files in practice.
+        self.arch.rstrip(self.recipebuilddir, '*.so')
         super().install_python_package(env)
 
 class CythonRecipe(PythonRecipe):

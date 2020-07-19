@@ -128,6 +128,7 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
         env = self._set_libs_flags()
         Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = self.androidbuild)
         make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
+        self.arch.rstrip(self.recipebuilddir, '*.so')
         cp.print(self.androidbuild / 'pyconfig.h', self.include_root())
         compileall(self.modules_build_dir)
         compileall(self.stdlibdir, False)

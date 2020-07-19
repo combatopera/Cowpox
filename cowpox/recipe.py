@@ -122,10 +122,7 @@ class Recipe:
             self.recipebuilddir.with_name(rootname).rename(self.recipebuilddir)
 
     def makerecipe(self, make):
-        def target():
-            self.mainbuild()
-            self.arch.rstrip(self.recipebuilddir, '*.so') # TODO: CythonRecipe also does this.
-        return make(self.recipebuilddir, self.platform.memo, target) # FIXME: Some recipes depend on others.
+        return make(self.recipebuilddir, self.platform.memo, self.mainbuild) # FIXME: Some recipes depend on others.
 
 class BootstrapNDKRecipe(Recipe):
 
@@ -135,6 +132,7 @@ class BootstrapNDKRecipe(Recipe):
 
     def ndk_build(self, env):
         self.platform.ndk_build.print(env = env, cwd = self.jni_dir)
+        self.arch.rstrip(self.recipebuilddir, '*.so')
 
 class NDKRecipe(Recipe):
 
@@ -149,3 +147,4 @@ class NDKRecipe(Recipe):
     def ndk_build(self, env):
         # TODO: These look like Application.mk variables.
         self.platform.ndk_build.print(f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={self.arch.name}", env = env, cwd = self.recipebuilddir)
+        self.arch.rstrip(self.recipebuilddir, '*.so')
