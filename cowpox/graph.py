@@ -51,6 +51,11 @@ import logging
 
 log = logging.getLogger(__name__)
 
+class RecipeInfo:
+
+    def __init__(self, impl):
+        self.impl = impl
+
 class GraphInfoImpl(GraphInfo):
 
     @types(Config)
@@ -60,7 +65,7 @@ class GraphInfoImpl(GraphInfo):
                 for m in iter_modules(import_module(p).__path__, f"{p}.")
                 for impl in findimpls(import_module(m.name), Recipe)}
         memotypes = {}
-        recipeimpls = {}
+        recipeinfos = {}
         pypinames = {}
         def adddepend(depend):
             if isinstance(depend, tuple):
@@ -69,33 +74,33 @@ class GraphInfoImpl(GraphInfo):
                     memotypes[group] = type(f"{'Or'.join(allimpls[n].__name__ for n in sorted(group))}Memo", (), {})
                 return
             normdepend = canonicalize_name(depend)
-            if normdepend in recipeimpls or normdepend in pypinames:
+            if normdepend in recipeinfos or normdepend in pypinames:
                 return
             try:
                 impl = allimpls[normdepend]
             except KeyError:
                 pypinames[normdepend] = depend # Keep an arbitrary unnormalised name.
                 return
-            recipeimpls[normdepend] = impl
+            recipeinfos[normdepend] = RecipeInfo(impl)
             for d in impl.depends:
                 adddepend(d)
         for d in ['python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements]:
             adddepend(d)
         for group in (k for k in memotypes if isinstance(k, frozenset)):
-            intersection = sorted(recipeimpls.keys() & group)
+            intersection = sorted(recipeinfos.keys() & group)
             if not intersection:
                 raise Exception("Group not satisfied: %s" % ', '.join(sorted(group)))
-            log.debug("Group %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(recipeimpls[normname].name for normname in intersection))
-        log.info("Recipes to build: %s", ', '.join(impl.name for impl in recipeimpls.values()))
+            log.debug("Group %s satisfied by: %s", ', '.join(sorted(group)), ', '.join(recipeinfos[normname].impl.name for normname in intersection))
+        log.info("Recipes to build: %s", ', '.join(info.impl.name for info in recipeinfos.values()))
         def memotypebases():
             yield RecipeMemo
             for k, memotype in memotypes.items():
                 if isinstance(k, frozenset) and normname in k:
                     yield memotype
-        for normname, impl in recipeimpls.items():
-            memotypes[normname] = type(f"{impl.__name__}Memo", tuple(memotypebases()), {})
+        for normname, info in recipeinfos.items():
+            memotypes[normname] = type(f"{info.impl.__name__}Memo", tuple(memotypebases()), {})
         def getdependmemotypes():
-            for d in impl.depends:
+            for d in info.impl.depends:
                 if isinstance(d, tuple):
                     yield memotypes[frozenset(map(canonicalize_name, d))]
                 else:
@@ -103,10 +108,10 @@ class GraphInfoImpl(GraphInfo):
                         yield memotypes[canonicalize_name(d)]
                     except KeyError:
                         yield PipInstallMemo
-        self.builders = list(recipeimpls.values())
-        for normname, impl in recipeimpls.items():
+        self.builders = [info.impl for info in recipeinfos.values()]
+        for normname, info in recipeinfos.items():
             dependmemotypes = list(getdependmemotypes())
-            @types(impl, Make, *dependmemotypes, this = memotypes[normname])
+            @types(info.impl, Make, *dependmemotypes, this = memotypes[normname])
             def makerecipe(recipe, make, *memos):
                 return make(recipe.recipebuilddir, list(memos), recipe.mainbuild)
             log.debug("%s factory depends on: %s", memotypes[normname].__name__, ', '.join(t.__name__ for t in dependmemotypes))
