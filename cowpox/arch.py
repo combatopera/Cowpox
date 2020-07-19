@@ -42,7 +42,7 @@ from . import Arch
 from .config import Config
 from .platform import Platform
 from diapyr import types
-from lagoon import find, which
+from lagoon import which
 from lagoon.program import Program
 from multiprocessing import cpu_count
 import logging, os, subprocess
@@ -54,7 +54,7 @@ def _spjoin(*v):
 
 class ArchImpl(Arch):
 
-    ccachepath, = which('ccache').splitlines()
+    ccachepath, = which('ccache').splitlines() # XXX: Is there API for this?
     staticenv = dict(
         LDLIBS = '-lm',
         USE_CCACHE = '1',
