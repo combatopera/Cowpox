@@ -108,7 +108,7 @@ class GraphInfoImpl(GraphInfo):
             dependmemotypes = list(getdependmemotypes())
             @types(impl, Make, *dependmemotypes, this = memotypes[normname])
             def makerecipe(recipe, make, *memos):
-                return make(recipe.recipebuilddir, memos, recipe.mainbuild)
+                return make(recipe.recipebuilddir, list(memos), recipe.mainbuild)
             log.debug("%s factory depends on: %s", memotypes[normname].__name__, ', '.join(t.__name__ for t in dependmemotypes))
             self.builders.append(makerecipe)
         self.pypinames = pypinames.values()
