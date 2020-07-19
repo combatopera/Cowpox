@@ -116,5 +116,5 @@ class GraphInfoImpl(GraphInfo):
                 return make(recipe.recipebuilddir, list(memos), recipe.mainbuild)
             log.debug("%s factory depends on: %s", implmemotypes[normname].__name__, ', '.join(t.__name__ for t in dependmemotypes))
             self.builders.append(makerecipe)
-        self.pypinames = pypinames.values()
+        self.pypinames = list(pypinames.values())
         log.info("Requirements not found as recipes will be installed with pip: %s", ', '.join(self.pypinames))
