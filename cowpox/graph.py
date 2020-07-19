@@ -64,7 +64,9 @@ class GraphInfoImpl(GraphInfo):
         g = nx.DiGraph()
         def adddepend(depend, targetname):
             if isinstance(depend, tuple):
-                self.groups[frozenset(map(canonicalize_name, depend))] = type(f"Group{len(self.groups)}Memo", (), {})
+                group = frozenset(map(canonicalize_name, depend))
+                if group not in self.groups:
+                    self.groups[group] = type(f"Group{len(self.groups)}Memo", (), {})
                 return
             normdepend = canonicalize_name(depend)
             try:
