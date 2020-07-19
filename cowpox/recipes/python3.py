@@ -67,6 +67,7 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
     def __init(self, config, arch, libffi = None, openssl = None, sqlite3 = None):
         self.ndk_dir = Path(config.NDK.dir)
         self.ndk_api = config.android.ndk_api
+        assert self.ndk_api >= self.MIN_NDK_API
         self.use_lld = config.use.lld
         parts = LooseVersion(self.version).version
         self.majminversion = '.'.join(map(str, parts[:2]))
@@ -122,17 +123,6 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
         env['LIBS'] = ' '.join(libs)
         return env
 
-    def build_android(self, configure_args):
-        assert self.ndk_api >= self.MIN_NDK_API
-        self.androidbuild.mkdirp()
-        env = self._set_libs_flags()
-        Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = self.androidbuild)
-        make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
-        self.striplibs()
-        cp.print(self.androidbuild / 'pyconfig.h', self.include_root())
-        compileall(self.modules_build_dir)
-        compileall(self.stdlibdir, False)
-
     def builtlibpaths(self):
         return [self.androidbuild / self.instsoname]
 
@@ -171,4 +161,11 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
         ]
         if self.openssl is not None:
             configure_args += [f"--with-openssl={self.openssl.recipebuilddir}"]
-        self.build_android(configure_args)
+        self.androidbuild.mkdirp()
+        env = self._set_libs_flags()
+        Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = self.androidbuild)
+        make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
+        self.striplibs()
+        cp.print(self.androidbuild / 'pyconfig.h', self.include_root())
+        compileall(self.modules_build_dir)
+        compileall(self.stdlibdir, False)
