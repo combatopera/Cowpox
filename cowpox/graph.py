@@ -47,6 +47,7 @@ from diapyr import types
 from importlib import import_module
 from packaging.utils import canonicalize_name
 from pkgutil import iter_modules
+from types import SimpleNamespace
 import logging
 
 log = logging.getLogger(__name__)
@@ -54,7 +55,20 @@ log = logging.getLogger(__name__)
 class RecipeInfo:
 
     def __init__(self, impl):
+        self.groups = []
+        self.normdepends = {}
+        for d in impl.depends:
+            if isinstance(d, tuple):
+                self.groups.append(frozenset(map(canonicalize_name, d)))
+            else:
+                self.normdepends[canonicalize_name(d)] = d
         self.impl = impl
+
+    def dependmemotypes(self, groupmemotypes, implmemotypes):
+        for group in self.groups:
+            yield groupmemotypes[group]
+        for normdepend in self.normdepends:
+            yield implmemotypes.get(normdepend, PipInstallMemo)
 
 class GraphInfoImpl(GraphInfo):
 
@@ -64,29 +78,23 @@ class GraphInfoImpl(GraphInfo):
                 for p in config.recipe.packages
                 for m in iter_modules(import_module(p).__path__, f"{p}.")
                 for impl in findimpls(import_module(m.name), Recipe)}
-        memotypes = {}
+        groupmemotypes = {}
         recipeinfos = {}
         pypinames = {}
-        def adddepend(depend):
-            if isinstance(depend, tuple):
-                group = frozenset(map(canonicalize_name, depend))
-                if group not in memotypes:
-                    memotypes[group] = type(f"{'Or'.join(allimpls[n].__name__ for n in sorted(group))}Memo", (), {})
-                return
-            normdepend = canonicalize_name(depend)
-            if normdepend in recipeinfos or normdepend in pypinames:
-                return
-            try:
-                impl = allimpls[normdepend]
-            except KeyError:
-                pypinames[normdepend] = depend # Keep an arbitrary unnormalised name.
-                return
-            recipeinfos[normdepend] = RecipeInfo(impl)
-            for d in impl.depends:
-                adddepend(d)
-        for d in ['python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements]:
-            adddepend(d)
-        for group in (k for k in memotypes if isinstance(k, frozenset)):
+        def adddepends(info):
+            for group in info.groups:
+                if group not in groupmemotypes:
+                    groupmemotypes[group] = type(f"{'Or'.join(allimpls[n].__name__ for n in sorted(group))}Memo", (), {})
+            for normdepend, depend in info.normdepends.items():
+                if normdepend not in recipeinfos and normdepend not in pypinames:
+                    if normdepend in allimpls:
+                        recipeinfos[normdepend] = info = RecipeInfo(allimpls[normdepend])
+                        adddepends(info)
+                    else:
+                        pypinames[normdepend] = depend # Keep an arbitrary unnormalised name.
+        adddepends(RecipeInfo(SimpleNamespace(depends = [
+                'python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements])))
+        for group in groupmemotypes:
             intersection = sorted(recipeinfos.keys() & group)
             if not intersection:
                 raise Exception("Group not satisfied: %s" % ', '.join(sorted(group)))
@@ -94,27 +102,19 @@ class GraphInfoImpl(GraphInfo):
         log.info("Recipes to build: %s", ', '.join(info.impl.name for info in recipeinfos.values()))
         def memotypebases():
             yield RecipeMemo
-            for k, memotype in memotypes.items():
-                if isinstance(k, frozenset) and normname in k:
+            for group, memotype in groupmemotypes.items():
+                if normname in group:
                     yield memotype
+        implmemotypes = {}
         for normname, info in recipeinfos.items():
-            memotypes[normname] = type(f"{info.impl.__name__}Memo", tuple(memotypebases()), {})
-        def getdependmemotypes():
-            for d in info.impl.depends:
-                if isinstance(d, tuple):
-                    yield memotypes[frozenset(map(canonicalize_name, d))]
-                else:
-                    try:
-                        yield memotypes[canonicalize_name(d)]
-                    except KeyError:
-                        yield PipInstallMemo
+            implmemotypes[normname] = type(f"{info.impl.__name__}Memo", tuple(memotypebases()), {})
         self.builders = [info.impl for info in recipeinfos.values()]
         for normname, info in recipeinfos.items():
-            dependmemotypes = list(getdependmemotypes())
-            @types(info.impl, Make, *dependmemotypes, this = memotypes[normname])
+            dependmemotypes = list(info.dependmemotypes(groupmemotypes, implmemotypes))
+            @types(info.impl, Make, *dependmemotypes, this = implmemotypes[normname])
             def makerecipe(recipe, make, *memos):
                 return make(recipe.recipebuilddir, list(memos), recipe.mainbuild)
-            log.debug("%s factory depends on: %s", memotypes[normname].__name__, ', '.join(t.__name__ for t in dependmemotypes))
+            log.debug("%s factory depends on: %s", implmemotypes[normname].__name__, ', '.join(t.__name__ for t in dependmemotypes))
             self.builders.append(makerecipe)
         self.pypinames = pypinames.values()
         log.info("Requirements not found as recipes will be installed with pip: %s", ', '.join(self.pypinames))
