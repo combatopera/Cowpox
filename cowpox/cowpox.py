@@ -43,7 +43,7 @@ from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .bundle import GraphProxy, PipInstallRecipe
 from .config import Config
-from .graph import GraphImpl, GraphInfoImpl
+from .graph import Graph, GraphInfoImpl
 from .make import Make
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
@@ -114,7 +114,7 @@ def _main():
         di.add(config)
         di.add(di)
         di.add(getbuildmode)
-        di.add(GraphImpl)
+        di.add(Graph)
         di.add(GraphInfoImpl)
         di.add(GraphProxy)
         di.add(Make)
