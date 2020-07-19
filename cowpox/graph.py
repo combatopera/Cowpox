@@ -103,9 +103,6 @@ class Graph:
             else:
                 log.debug("Recipe not in lookup: %s", r)
 
-    def get_recipe(self, name):
-        return self.recipes[name]
-
     @types(Make, this = RecipeMemos)
     def buildrecipes(self, make):
         def memos():
