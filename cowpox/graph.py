@@ -55,24 +55,24 @@ class GraphInfoImpl(GraphInfo):
 
     @types(Config)
     def __init__(self, config):
-        impls = {canonicalize_name(impl.name): impl
+        allimpls = {canonicalize_name(impl.name): impl
                 for p in config.recipe.packages
                 for m in iter_modules(import_module(p).__path__, f"{p}.")
                 for impl in findimpls(import_module(m.name), Recipe)}
-        self.groups = {}
+        self.groupmemotypes = {}
         self.recipeimpls = {}
         pypinames = {}
         def adddepend(depend):
             if isinstance(depend, tuple):
                 group = frozenset(map(canonicalize_name, depend))
-                if group not in self.groups:
-                    self.groups[group] = type(f"{'Or'.join(impls[n].__name__ for n in sorted(group))}Memo", (), {})
+                if group not in self.groupmemotypes:
+                    self.groupmemotypes[group] = type(f"{'Or'.join(allimpls[n].__name__ for n in sorted(group))}Memo", (), {})
                 return
             normdepend = canonicalize_name(depend)
             if normdepend in self.recipeimpls or normdepend in pypinames:
                 return
             try:
-                impl = impls[normdepend]
+                impl = allimpls[normdepend]
             except KeyError:
                 pypinames[normdepend] = depend # Keep an arbitrary unnormalised name.
                 return
@@ -81,7 +81,7 @@ class GraphInfoImpl(GraphInfo):
                 adddepend(d)
         for d in ['python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements]:
             adddepend(d)
-        for group in self.groups:
+        for group in self.groupmemotypes:
             intersection = sorted(self.recipeimpls.keys() & group)
             if not intersection:
                 raise Exception("Group not satisfied: %s" % ', '.join(sorted(group)))
@@ -93,7 +93,7 @@ class GraphInfoImpl(GraphInfo):
     def builders(self):
         def memotypebases():
             yield RecipeMemo
-            for group, grouptype in self.groups.items():
+            for group, grouptype in self.groupmemotypes.items():
                 if normname in group:
                     yield grouptype
         memotypes = {}
@@ -102,7 +102,7 @@ class GraphInfoImpl(GraphInfo):
         def getdependmemotypes():
             for d in impl.depends:
                 if isinstance(d, tuple):
-                    yield self.groups[frozenset(map(canonicalize_name, d))]
+                    yield self.groupmemotypes[frozenset(map(canonicalize_name, d))]
                 else:
                     try:
                         yield memotypes[canonicalize_name(d)]
