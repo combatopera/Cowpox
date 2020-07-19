@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import GraphInfo, PipInstallMemo, RecipeMemo
+from . import Graph, PipInstallMemo, RecipeMemo
 from .config import Config
 from .make import Make
 from .recipe import Recipe
@@ -70,7 +70,7 @@ class RecipeInfo:
         for normdepend in self.depends:
             yield implmemotypes.get(normdepend, PipInstallMemo)
 
-class GraphInfoImpl(GraphInfo):
+class GraphImpl(Graph):
 
     @types(Config)
     def __init__(self, config):

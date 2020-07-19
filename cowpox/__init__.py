@@ -47,7 +47,7 @@ class APKPath: pass
 
 class Arch: pass
 
-class GraphInfo: pass
+class Graph: pass
 
 class InterpreterRecipe: pass
 

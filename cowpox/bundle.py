@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import GraphInfo, PipInstallMemo
+from . import Graph, PipInstallMemo
 from .config import Config
 from .container import compileall
 from .make import Make
@@ -58,7 +58,7 @@ class PipInstallRecipe(CythonRecipe):
     def __init(self, config):
         self.bundlepackages = Path(config.pip.install.dir)
 
-    @types(Make, GraphInfo, this = PipInstallMemo)
+    @types(Make, Graph, this = PipInstallMemo)
     def buildsite(self, make, graphinfo):
         def target():
             if pypinames:

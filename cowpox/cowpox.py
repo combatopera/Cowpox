@@ -43,7 +43,7 @@ from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .bundle import PipInstallRecipe
 from .config import Config
-from .graph import GraphInfoImpl
+from .graph import GraphImpl
 from .make import Make
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
@@ -114,14 +114,14 @@ def _main():
         di.add(config)
         di.add(di)
         di.add(getbuildmode)
-        di.add(GraphInfoImpl)
+        di.add(GraphImpl)
         di.add(Make)
         di.add(Mirror)
         di.add(PipInstallRecipe)
         di.add(Platform)
         di.add(PlatformInfo)
         di.add(Private)
-        for builder in di(GraphInfoImpl).builders:
+        for builder in di(GraphImpl).builders:
             di.add(builder)
         return di(APKPath).relative_to(config.container.src)
 
