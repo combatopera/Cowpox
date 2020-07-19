@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import GraphInfo, RecipeMemo
+from . import GraphInfo, PipInstallMemo, RecipeMemo
 from .config import Config
 from .make import Make
 from .recipe import Recipe
@@ -103,7 +103,7 @@ class GraphInfoImpl(GraphInfo):
                     try:
                         yield memotypes[canonicalize_name(d)]
                     except KeyError:
-                        pass
+                        yield PipInstallMemo
         self.builders = list(recipeimpls.values())
         for normname, impl in recipeimpls.items():
             dependmemotypes = list(getdependmemotypes())
