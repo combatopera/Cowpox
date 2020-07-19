@@ -91,22 +91,3 @@ class GraphInfoImpl(GraphInfo):
 
     def builders(self):
         return self.recipeimpls.values()
-
-class Graph:
-
-    @types(GraphInfo, [Recipe])
-    def __init__(self, info, recipes):
-        self.recipes = []
-        for r in recipes:
-            if canonicalize_name(r.name) in info.recipeimpls:
-                self.recipes.append(r)
-            else:
-                log.debug("Recipe not in lookup: %s", r)
-
-    @types(Make, this = RecipeMemos)
-    def buildrecipes(self, make):
-        def memos():
-            for recipe in self.recipes:
-                log.info("Build recipe: %s", recipe.name)
-                yield recipe.makerecipe(make)
-        return list(memos())
