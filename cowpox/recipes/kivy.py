@@ -46,7 +46,7 @@ import os
 class KivyRecipe(CythonRecipe):
 
     from .sdl2 import LibSDL2Recipe
-    name = 'kivy'
+    name = 'Kivy'
     version = '1.11.1'
     depends = 'sdl2', 'pyjnius', 'setuptools', 'certifi'
 
