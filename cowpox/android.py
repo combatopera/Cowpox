@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import AndroidProjectMemo, APKPath, Arch, JavaSrc, LibRepo, PrivateMemo, RecipeMemos
+from . import AndroidProjectMemo, APKPath, Arch, JavaSrc, LibRepo, PrivateMemo, RecipeMemo
 from .config import Config
 from .make import Make
 from .platform import Platform
@@ -233,7 +233,7 @@ class AndroidProject:
             for f in so_src_dir.glob('*.so'):
                 cp._a.print(f, so_tgt_dir)
 
-    @types(Make, RecipeMemos, PrivateMemo, this = AndroidProjectMemo)
+    @types(Make, [RecipeMemo], PrivateMemo, this = AndroidProjectMemo)
     def prepare(self, make, recipememos, privatememo):
         return make(self.android_project_dir, [
             self.bootstrapname,

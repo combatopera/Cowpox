@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import InterpreterRecipe, PipInstallMemo, PrivateMemo, RecipeMemos
+from . import InterpreterRecipe, PipInstallMemo, PrivateMemo, RecipeMemo
 from .config import Config
 from .container import compileall
 from .make import Make
@@ -104,7 +104,7 @@ class Private:
         self.interpreter = interpreter
         self.recipes = recipes
 
-    @types(Make, PipInstallMemo, RecipeMemos, this = PrivateMemo)
+    @types(Make, PipInstallMemo, [RecipeMemo], this = PrivateMemo)
     def create_python_bundle(self, make, pipinstallmemo, recipememos):
         return make(self.private_dir, [
             self.bootstrap_name,

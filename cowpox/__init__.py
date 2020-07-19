@@ -57,7 +57,7 @@ class LibRepo: pass
 
 class ObjRepo: pass
 
-class RecipeMemos: pass
+class RecipeMemo: pass
 
 class PipInstallMemo: pass
 
