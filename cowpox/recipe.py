@@ -59,7 +59,7 @@ class Recipe:
         self.recipebuilddir = Path(config.builds.dir, self.name)
         self.projectbuilddir = Path(config.build.dir)
         self.extroot = Path(config.container.extroot)
-        self.contribpath = Path(config.recipesdir, self.name)
+        self.contribpath = Path(config.recipesdir, self.name) # XXX: Or use normalised name?
         self.platform = platform
         self.mirror = mirror
         self.arch = arch
