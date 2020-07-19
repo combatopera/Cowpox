@@ -124,9 +124,6 @@ class Recipe:
     def striplibs(self):
         self.arch.striplibs(self.recipebuilddir)
 
-    def makerecipe(self, make):
-        return make(self.recipebuilddir, self.platform.memo, self.mainbuild) # FIXME: Some recipes depend on others.
-
 class BootstrapNDKRecipe(Recipe):
 
     @types()
