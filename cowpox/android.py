@@ -124,7 +124,7 @@ class AssetArchive:
             '*.py',
             '.Cowpox/*',
         ] + resource_string(__name__, 'blacklist.txt').decode().splitlines()
-        if config.bootstrap.name in {'webview', 'service_only'} or self.sqlite3 is None:
+        if config.bootstrap.name in {'webview', 'service_only'} or sqlite3 is None:
             self.BLACKLIST_PATTERNS += ['sqlite3/*', 'lib-dynload/_sqlite3.so']
 
     def _accept(self, path):
