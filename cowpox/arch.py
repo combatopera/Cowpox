@@ -115,7 +115,7 @@ class ArchImpl(Arch):
                 f"-I{platform.includepath(self)}",
             ),
         )
-        self.strip = [platform.prebuiltbin(self) / strip[0], *strip[1:]]
+        self.strip = Program.text(platform.prebuiltbin(self) / strip[0]).partial(*strip[1:])
 
     def target(self):
         return f"{self.command_prefix}{self.ndk_api}"
@@ -125,10 +125,9 @@ class ArchImpl(Arch):
 
     def rstrip(self, root, rglob):
         log.info("[%s] Strip rglob: %s", root, rglob)
-        strip = Program.text(self.strip[0]).partial(*self.strip[1:])
         for path in root.rglob(rglob):
             try:
-                strip.print(path)
+                self.strip.print(path)
             except subprocess.CalledProcessError as e:
                 if 1 != e.returncode:
                     raise
