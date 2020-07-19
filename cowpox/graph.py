@@ -91,6 +91,9 @@ class GraphInfoImpl(GraphInfo):
         log.info("Recipe build order: %s", ', '.join(impl.name for impl in self.recipeimpls.values()))
         log.info("Requirements not found as recipes will be installed with pip: %s", ', '.join(self.pypinames))
 
+    def builders(self):
+        return self.recipeimpls.values()
+
 class Graph:
 
     @types(GraphInfo, [Recipe])

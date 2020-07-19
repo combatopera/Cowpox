@@ -122,8 +122,8 @@ def _main():
         di.add(Platform)
         di.add(PlatformInfo)
         di.add(Private)
-        for recipeimpl in di(GraphInfoImpl).recipeimpls.values():
-            di.add(recipeimpl)
+        for builder in di(GraphInfoImpl).builders():
+            di.add(builder)
         return di(APKPath).relative_to(config.container.src)
 
 def main_Cowpox():
