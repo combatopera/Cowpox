@@ -46,7 +46,7 @@ from lagoon import make, perl
 
 class OpenSSLRecipe(Recipe, LibRepo):
 
-    name = 'openssl'
+    name = 'OpenSSL'
     version = '1.1'
 
     @types(Config)

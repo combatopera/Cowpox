@@ -59,7 +59,7 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
     from .sqlite3 import Sqlite3Recipe
     name = 'python3'
     version = '3.8.1' # XXX: Should this match container version?
-    depends = 'sqlite3', 'openssl', 'libffi'
+    depends = 'sqlite3', 'OpenSSL', 'libffi'
     MIN_NDK_API = 21
     zlibversionpattern = re.compile('^#define ZLIB_VERSION "(.+)"$', re.MULTILINE)
 
@@ -111,7 +111,7 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
             env['PKG_CONFIG_PATH'] = self.libffi.recipebuilddir
             add_flags(*self.libffi.includeslinkslibs())
         if self.openssl is not None:
-            log.info('Activating flags for openssl')
+            log.info('Activating flags for OpenSSL')
             add_flags(*self.openssl.includeslinkslibs())
         log.info('''Activating flags for android's zlib''')
         zlibinclude = self.ndk_dir / 'sysroot' / 'usr' / 'include'
