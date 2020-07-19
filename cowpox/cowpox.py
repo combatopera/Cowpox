@@ -121,7 +121,7 @@ def _main():
         di.add(Platform)
         di.add(PlatformInfo)
         di.add(Private)
-        for builder in di(GraphInfoImpl).builders():
+        for builder in di(GraphInfoImpl).builders:
             di.add(builder)
         return di(APKPath).relative_to(config.container.src)
 

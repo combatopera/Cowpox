@@ -89,8 +89,6 @@ class GraphInfoImpl(GraphInfo):
         self.pypinames = [name for _, name in sorted(pypinames.items())]
         log.info("Recipes to build: %s", ', '.join(impl.name for impl in self.recipeimpls.values()))
         log.info("Requirements not found as recipes will be installed with pip: %s", ', '.join(self.pypinames))
-
-    def builders(self):
         def memotypebases():
             yield RecipeMemo
             for group, grouptype in self.groupmemotypes.items():
@@ -108,11 +106,11 @@ class GraphInfoImpl(GraphInfo):
                         yield memotypes[canonicalize_name(d)]
                     except KeyError:
                         pass
+        self.builders = list(self.recipeimpls.values())
         for normname, impl in self.recipeimpls.items():
-            yield impl
             dependmemotypes = list(getdependmemotypes())
             @types(impl, Make, *dependmemotypes, this = memotypes[normname])
             def makerecipe(recipe, make, *memos):
                 return make(recipe.recipebuilddir, memos, recipe.mainbuild)
             log.debug("%s factory depends on: %s", memotypes[normname].__name__, ', '.join(t.__name__ for t in dependmemotypes))
-            yield makerecipe
+            self.builders.append(makerecipe)
