@@ -96,17 +96,17 @@ class Graph:
 
     @types(GraphInfo, [Recipe])
     def __init__(self, info, recipes):
-        self.recipes = {}
+        self.recipes = []
         for r in recipes:
             if r.name in info.recipeimpls:
-                self.recipes[r.name] = r
+                self.recipes.append(r)
             else:
                 log.debug("Recipe not in lookup: %s", r)
 
     @types(Make, this = RecipeMemos)
     def buildrecipes(self, make):
         def memos():
-            for recipe in self.recipes.values():
+            for recipe in self.recipes:
                 log.info("Build recipe: %s", recipe.name)
                 yield recipe.makerecipe(make)
         return list(memos())
