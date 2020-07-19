@@ -59,14 +59,14 @@ class GraphInfoImpl(GraphInfo):
                 for p in config.recipe.packages
                 for m in iter_modules(import_module(p).__path__, f"{p}.")
                 for impl in findimpls(import_module(m.name), Recipe)}
-        groupmemotypes = {}
+        memotypes = {}
         recipeimpls = {}
         pypinames = {}
         def adddepend(depend):
             if isinstance(depend, tuple):
                 group = frozenset(map(canonicalize_name, depend))
-                if group not in groupmemotypes:
-                    groupmemotypes[group] = type(f"{'Or'.join(allimpls[n].__name__ for n in sorted(group))}Memo", (), {})
+                if group not in memotypes:
+                    memotypes[group] = type(f"{'Or'.join(allimpls[n].__name__ for n in sorted(group))}Memo", (), {})
                 return
             normdepend = canonicalize_name(depend)
             if normdepend in recipeimpls or normdepend in pypinames:
@@ -81,7 +81,7 @@ class GraphInfoImpl(GraphInfo):
                 adddepend(d)
         for d in ['python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements]:
             adddepend(d)
-        for group in groupmemotypes:
+        for group in (k for k in memotypes if isinstance(k, frozenset)):
             intersection = sorted(recipeimpls.keys() & group)
             if not intersection:
                 raise Exception("Group not satisfied: %s" % ', '.join(sorted(group)))
@@ -89,16 +89,15 @@ class GraphInfoImpl(GraphInfo):
         log.info("Recipes to build: %s", ', '.join(impl.name for impl in recipeimpls.values()))
         def memotypebases():
             yield RecipeMemo
-            for group, grouptype in groupmemotypes.items():
-                if normname in group:
-                    yield grouptype
-        memotypes = {}
+            for k, memotype in memotypes.items():
+                if isinstance(k, frozenset) and normname in k:
+                    yield memotype
         for normname, impl in recipeimpls.items():
             memotypes[normname] = type(f"{impl.__name__}Memo", tuple(memotypebases()), {})
         def getdependmemotypes():
             for d in impl.depends:
                 if isinstance(d, tuple):
-                    yield groupmemotypes[frozenset(map(canonicalize_name, d))]
+                    yield memotypes[frozenset(map(canonicalize_name, d))]
                 else:
                     try:
                         yield memotypes[canonicalize_name(d)]
