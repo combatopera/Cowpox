@@ -87,7 +87,7 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
             env = self.get_recipe_env()
         log.info("Building compiled components in %s", self.name)
         python.print('setup.py', 'build_ext', '-v', *self.build_ext_args, env = env, cwd = self.recipebuilddir)
-        self.arch.rstrip(self.recipebuilddir, '*.so')
+        self.striplibs()
         super().install_python_package(env)
 
 class CythonRecipe(PythonRecipe):
@@ -116,7 +116,7 @@ class CythonRecipe(PythonRecipe):
             build_ext.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
-        self.arch.rstrip(self.recipebuilddir, '*.so')
+        self.striplibs()
         super().install_python_package(env)
 
     def cythonize_build(self, env):

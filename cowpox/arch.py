@@ -123,9 +123,9 @@ class ArchImpl(Arch):
     def builddirname(self):
         return f"{self.name}__ndk_target_{self.ndk_api}"
 
-    def rstrip(self, root, rglob):
-        log.info("[%s] Strip rglob: %s", root, rglob)
-        for path in root.rglob(rglob):
+    def striplibs(self, root):
+        log.info("[%s] Strip libs.", root)
+        for path in root.rglob('*.so'):
             try:
                 self.strip.print(path)
             except subprocess.CalledProcessError as e:
