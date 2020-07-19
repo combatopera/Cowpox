@@ -84,7 +84,7 @@ class GraphInfoImpl(GraphInfo):
         def adddepends(info):
             for group in info.groups:
                 if group not in groupmemotypes:
-                    groupmemotypes[group] = type(f"{'Or'.join(allimpls[n].__name__ for n in sorted(group))}Memo", (), {})
+                    groupmemotypes[group] = type(f"{'Or'.join(allimpls[normname].__name__ for normname in sorted(group))}Memo", (), {})
             for normdepend, depend in info.depends.items():
                 if normdepend not in recipeinfos and normdepend not in pypinames:
                     if normdepend in allimpls:
@@ -92,6 +92,7 @@ class GraphInfoImpl(GraphInfo):
                         adddepends(info)
                     else:
                         pypinames[normdepend] = depend # Keep an arbitrary unnormalised name.
+        # TODO: Minimise depends declared here.
         adddepends(RecipeInfo(SimpleNamespace(depends = [
                 'python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements])))
         for group in groupmemotypes:
