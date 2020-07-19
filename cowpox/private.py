@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import Arch, InterpreterRecipe, PipInstallMemo, PrivateMemo, RecipeMemos
+from . import InterpreterRecipe, PipInstallMemo, PrivateMemo, RecipeMemos
 from .config import Config
 from .container import compileall
 from .make import Make
@@ -91,8 +91,8 @@ class Private:
                 else:
                     yield Path(dirn, filen)
 
-    @types(Config, Arch, InterpreterRecipe, [PythonRecipe])
-    def __init__(self, config, arch, interpreter, recipes):
+    @types(Config, InterpreterRecipe, [PythonRecipe])
+    def __init__(self, config, interpreter, recipes):
         self.private_dir = Path(config.private.dir)
         self.bundle_dir = Path(config.bundle.dir)
         self.bootstrap_name = config.bootstrap.name
@@ -101,7 +101,6 @@ class Private:
         self.minsdkversion = config.android.minSdkVersion
         self.skel_path = Path(config.skel.path)
         self.config = config
-        self.arch = arch
         self.interpreter = interpreter
         self.recipes = recipes
 
@@ -112,7 +111,6 @@ class Private:
             self.fullscreen,
             self.orientation,
             self.minsdkversion,
-            self.arch.name, # XXX: Isn't it enough that upstream items depend on it?
             pipinstallmemo,
             recipememos,
         ], self._createbundle)
@@ -124,7 +122,6 @@ class Private:
         log.info("Copy %s files into the bundle", len(module_filens))
         for filen in module_filens:
             shutil.copy2(filen, modules_dir)
-        self.arch.rstrip(modules_dir, '*.so')
         stdlib_filens = list(self._walk_valid_filens(self.interpreter.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
         zip.print(self.bundle_dir / 'stdlib.zip', *(p.relative_to(self.interpreter.stdlibdir) for p in stdlib_filens), cwd = self.interpreter.stdlibdir)
