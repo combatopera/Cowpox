@@ -40,7 +40,6 @@
 
 from . import GraphInfo
 from .config import Config
-from .make import Make
 from .recipe import Recipe
 from .util import findimpls
 from diapyr import types
