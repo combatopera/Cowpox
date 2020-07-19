@@ -66,7 +66,7 @@ class GraphInfoImpl(GraphInfo):
             if isinstance(depend, tuple):
                 group = frozenset(map(canonicalize_name, depend))
                 if group not in self.groups:
-                    self.groups[group] = type(f"Group{len(self.groups)}Memo", (), {})
+                    self.groups[group] = type(f"Group{chr(ord('A') + len(self.groups))}Memo", (), {})
                 return
             normdepend = canonicalize_name(depend)
             try:
