@@ -40,8 +40,7 @@
 
 from cowpox.pyrecipe import CythonRecipe
 from diapyr import types
-from lagoon import cp
-import os
+import os, shutil
 
 class KivyRecipe(CythonRecipe):
 
@@ -59,7 +58,7 @@ class KivyRecipe(CythonRecipe):
         kivyinclude = self.recipebuilddir / 'kivy' / 'include'
         if kivyinclude.exists():
             for dirn in self.recipebuilddir.glob('build/lib.*'):
-                cp._r.print(kivyinclude, dirn / 'kivy')
+                shutil.copytree(kivyinclude, dirn / 'kivy' / 'include')
 
     def pyxpaths(self):
         for path in super().pyxpaths():

@@ -51,10 +51,10 @@ class RecipeImpl(CythonRecipe):
     @types(Config)
     def __init(self, config):
         self.container_src = Path(config.container.src)
-        self.pipify = config.pipify
+        self.pipify = config.pipify # XXX: Select a different recipe class instead?
 
     def mainbuild(self):
         self.preparedirlocal(self.container_src)
         if self.pipify:
-            pipify.print(cwd = self.recipebuilddir)
+            pipify.print(cwd = self.recipebuilddir) # XXX: Do we need a new process?
         self.install_python_package()
