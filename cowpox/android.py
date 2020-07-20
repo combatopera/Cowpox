@@ -187,7 +187,6 @@ class AndroidProject:
         self.package = config.android.package
         self.res_dir = Path(config.android.project.res.dir)
         self.gradle_builddir = config.gradle.buildDir
-        self.package_name = config.package.name
         self.sdk_dir = config.SDK.dir
         self.aar_dir = Path(config.aar.dir)
         self.srccontrib = Contrib([Path(d, 'src') for d in chain(config.bootstrap.dirs, config.bootstrap.common.dirs)])
