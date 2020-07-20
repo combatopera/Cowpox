@@ -17,7 +17,7 @@ android
     wakelock = false
     presplash_color = #000000
     project
-        dir = $/($(build dir) $(package name))
+        dir = $/($(build dir) Cowpox-project)
         assets dir = $/($(project dir) src main assets)
         res dir = $/($(project dir) src main res)
         jniLibs = $/($(dir) src main jniLibs)
@@ -38,7 +38,6 @@ bootstrap
     name = sdl2
     dirs = $map($(bootstrapsdirs) d $/($(d) $(name)))
     common name = common
-package name = Cowpox-project
 build_mode = debug
 version = $.(0.1)
 log path = $/($(build dir) Cowpox.log)
