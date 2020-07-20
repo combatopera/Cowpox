@@ -49,7 +49,7 @@ from lagoon import unzip
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import parse_version # XXX: Why not LooseVersion?
-import logging, re
+import logging, re, subprocess
 
 log = logging.getLogger(__name__)
 
