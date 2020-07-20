@@ -45,7 +45,7 @@ from .util import build_platform
 from diapyr import types
 from distutils.version import LooseVersion
 from jproperties import Properties
-from lagoon import unzip, yes
+from lagoon import unzip
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import parse_version # XXX: Why not LooseVersion?
@@ -86,8 +86,12 @@ class PlatformInfo:
         log.info('Install/update SDK platform tools.')
         sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         if self.accept_licenses:
-            with yes.bg(check = False) as yesproc:
-                sdkmanager.__licenses.print(stdin = yesproc.stdout)
+            try:
+                with sdkmanager.__licenses.bg(stdin = subprocess.PIPE, stdout = None) as stdin:
+                    while True:
+                        print('y', file = stdin)
+            except BrokenPipeError:
+                pass
         sdkmanager.tools.platform_tools.print()
         sdkmanager.__update.print()
         buildtoolsdir = self.sdk_dir / 'build-tools'
