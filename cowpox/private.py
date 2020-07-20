@@ -45,7 +45,7 @@ from .make import Make
 from .pyrecipe import PythonRecipe
 from diapyr import types
 from fnmatch import fnmatch
-from lagoon import mv, zip
+from lagoon import zip
 from pathlib import Path
 import logging, os, shutil
 
@@ -138,9 +138,9 @@ class Private:
         for rd in sitepackagesdir.iterdir():
             if rd.is_dir() and rd.name.endswith('.egg'):
                 log.debug("Egg: %s", rd.name)
-                files = [f for f in rd.iterdir() if f.name != 'EGG-INFO']
-                if files:
-                    mv._t.print(sitepackagesdir, *files)
+                for f in rd.iterdir():
+                    if f.name != 'EGG-INFO':
+                        f.rename(sitepackagesdir / f.name)
                 shutil.rmtree(rd)
 
     def _copy_application_sources(self):
