@@ -48,7 +48,7 @@ from aridity import Repl
 from diapyr import types
 from fnmatch import fnmatch
 from itertools import chain
-from lagoon import cp, gradle, unzip
+from lagoon import gradle, unzip
 from pathlib import Path
 from pkg_resources import resource_string
 from tempfile import TemporaryDirectory
@@ -223,14 +223,14 @@ class AndroidProject:
             log.debug("copy %s jar", name)
             log.debug("  from %s", jar_src)
             log.debug("  to %s", jar_tgt)
-            cp._a.print(jar_src, jar_tgt)
+            shutil.copy2(jar_src, jar_tgt)
             so_src_dir = Path(temp_dir, 'jni', self.arch.name)
             so_tgt_dir = (self.android_project_libs / self.arch.name).mkdirp()
             log.debug("copy %s .so", name)
             log.debug("  from %s", so_src_dir)
             log.debug("  to %s", so_tgt_dir)
             for f in so_src_dir.glob('*.so'):
-                cp._a.print(f, so_tgt_dir)
+                shutil.copy2(f, so_tgt_dir)
 
     @types(Make, [RecipeMemo], PrivateMemo, this = AndroidProjectMemo)
     def prepare(self, make, recipememos, privatememo):
