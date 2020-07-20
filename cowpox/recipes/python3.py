@@ -44,11 +44,11 @@ from cowpox.container import compileall
 from cowpox.recipe import Recipe
 from diapyr import types
 from distutils.version import LooseVersion
-from lagoon import cp, make
+from lagoon import make
 from lagoon.program import Program
 from multiprocessing import cpu_count
 from pathlib import Path
-import logging, os, re
+import logging, os, re, shutil
 
 log = logging.getLogger(__name__)
 
@@ -158,6 +158,6 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
         Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = self.androidbuild)
         make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
         self.striplibs()
-        cp.print(self.androidbuild / 'pyconfig.h', self.include_root())
+        shutil.copy2(self.androidbuild / 'pyconfig.h', self.include_root())
         compileall(self.modules_build_dir)
         compileall(self.stdlibdir, False)
