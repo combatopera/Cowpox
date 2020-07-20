@@ -45,7 +45,7 @@ from .make import Make
 from .pyrecipe import PythonRecipe
 from diapyr import types
 from fnmatch import fnmatch
-from lagoon import mv, rm, zip
+from lagoon import mv, zip
 from pathlib import Path
 import logging, os, shutil
 
@@ -141,7 +141,7 @@ class Private:
                 files = [f for f in rd.iterdir() if f.name != 'EGG-INFO']
                 if files:
                     mv._t.print(sitepackagesdir, *files)
-                rm._rf.print(rd)
+                shutil.rmtree(rd)
 
     def _copy_application_sources(self):
         topath = self.private_dir.mkdirp() / 'main.py'
