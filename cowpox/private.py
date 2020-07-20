@@ -171,4 +171,4 @@ class Private:
         for filen in dirn.rglob('*.so'):
             parts = filen.name.split('.')
             if len(parts) > 2:
-                mv.print(filen, filen.parent / f"{parts[0]}.so")
+                filen.rename(filen.parent / f"{parts[0]}.so")
