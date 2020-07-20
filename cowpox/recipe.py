@@ -59,7 +59,7 @@ class Recipe:
         self.recipebuilddir = Path(config.builds.dir, self.name)
         self.projectbuilddir = Path(config.build.dir)
         self.extroot = Path(config.container.extroot)
-        self.contribpath = Path(config.recipesdir, self.name) # XXX: Or use normalised name?
+        self.recipe_patch_dir = Path(config.patch.dir, self.name) # XXX: Or use normalised name?
         self.platform = platform
         self.mirror = mirror
         self.arch = arch
@@ -67,7 +67,7 @@ class Recipe:
     def apply_patches(self, *relpaths):
         for relpath in relpaths:
             log.info("Apply patch: %s", relpath)
-            patch._t._p1.print('-d', self.recipebuilddir, '-i', self.contribpath / relpath)
+            patch._t._p1.print('-d', self.recipebuilddir, '-i', self.recipe_patch_dir / relpath)
 
     def _copywithoutbuild(self, frompath, topath):
         try:

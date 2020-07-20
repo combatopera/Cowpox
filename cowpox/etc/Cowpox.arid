@@ -46,6 +46,8 @@ build
     root = $/($(container src) build)
     dir = $/($(root) Cowpox)
 log path = $/($(build root) Cowpox.log)
+MIT root = $/($(container extroot) MIT)
+patch dir = $/($(MIT root) patch)
 .
-    $/($(container extroot) MIT Cowpox.arid)
+    $/($(MIT root) Cowpox.arid)
     $/($(container src) Cowpox.arid)

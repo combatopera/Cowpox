@@ -48,7 +48,6 @@ builds dir = $/($(build dir) build)
 bootstrapsdirs +=
     $/($(container extroot) MIT bootstraps)
     $/($(container extroot) cowpox bootstraps)
-recipesdir = $/($(container extroot) MIT recipes)
 webview port = 5000
 use lld = false
 requirements = $egg-info-requires$(container src)
