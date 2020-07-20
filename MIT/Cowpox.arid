@@ -1,8 +1,8 @@
 RECOMMENDED_NDK_VERSION = 19b
 SDK
-    dir = $/($(build dir) Cowpox-SDK)
+    dir = $/($(build dir) SDK)
     accept licenses = false
-NDK dir = $/($(build dir) Cowpox-NDK)
+NDK dir = $/($(build dir) NDK)
 android
     ndk = $(RECOMMENDED_NDK_VERSION)
     api = 27
@@ -17,7 +17,7 @@ android
     wakelock = false
     presplash_color = #000000
     project
-        dir = $/($(build dir) Cowpox-project)
+        dir = $/($(build dir) project)
         assets dir = $/($(project dir) src main assets)
         res dir = $/($(project dir) src main res)
         jniLibs = $/($(dir) src main jniLibs)
@@ -40,14 +40,11 @@ bootstrap
     common name = common
 build_mode = debug
 version = $.(0.1)
-log path = $/($(build dir) Cowpox.log)
-: TODO: All Cowpox assets should go in dedicated subdirectory.
-build dir = $/($(container src) build)
 main name = main
-container mirror = $/($(build dir) Cowpox-mirror)
-private dir = $/($(build dir) Cowpox-private)
+container mirror = $/($(build dir) mirror)
+private dir = $/($(build dir) private)
 bundle dir = $/($(private dir) _python_bundle)
-builds dir = $/($(build dir) Cowpox)
+builds dir = $/($(build dir) build)
 bootstrapsdirs +=
     $/($(container extroot) MIT bootstraps)
     $/($(container extroot) cowpox bootstraps)
@@ -55,6 +52,6 @@ recipesdir = $/($(container extroot) MIT recipes)
 webview port = 5000
 use lld = false
 requirements = $egg-info-requires$(container src)
-gradle buildDir = $/($(build dir) Cowpox-build)
+gradle buildDir = $/($(build dir) bin)
 aar dir = $/($(container src) aars)
 skel path = $/($(container extroot) MIT skel)
