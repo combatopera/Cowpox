@@ -38,7 +38,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .config import Config
 from aridimpl.model import Resolved, Text
 from lagoon import python
 from pathlib import Path
@@ -48,9 +47,9 @@ class EggInfoRequires(Resolved):
 
     @classmethod
     def factory(cls, context, pathresolvable):
-        requires = Config(context.createchild(islist = True), [])
-        requires.put('requires', resolvable = cls(pathresolvable.resolve(context).cat()))
-        return requires._context
+        v = context.createchild(islist = True)
+        v['requires',] = cls(pathresolvable.resolve(context).cat())
+        return v
 
     def __init__(self, path):
         self.path = path
