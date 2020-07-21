@@ -43,6 +43,7 @@ from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .bundle import PipInstallRecipe
 from .config import Config
+from .egg import EggInfoRequires
 from .graph import GraphImpl
 from .make import Make
 from .mirror import Mirror
@@ -50,12 +51,10 @@ from .platform import Platform, PlatformInfo
 from .private import Private
 from .util import Logging
 from argparse import ArgumentParser
-from aridimpl.model import Resolved, Text
 from diapyr import DI
-from lagoon import groupadd, python, useradd
+from lagoon import groupadd, useradd
 from pathlib import Path
 from pkg_resources import resource_filename
-from tempfile import TemporaryDirectory
 import grp, logging, os
 
 log = logging.getLogger(__name__)
@@ -70,26 +69,6 @@ def _inituser(srcpath):
     os.setgid(gid)
     os.setuid(uid)
     del os.environ['HOME'] # XXX: Why is it set in the first place?
-
-class EggInfoRequires(Resolved):
-
-    @classmethod
-    def factory(cls, context, pathresolvable):
-        requires = Config(context.createchild(islist = True), [])
-        requires.put('requires', resolvable = cls(pathresolvable.resolve(context).cat()))
-        return requires._context
-
-    def __init__(self, path):
-        self.path = path
-
-    def spread(self, _):
-        with TemporaryDirectory() as tempdir:
-            # FIXME: This will fail if there are any exotic imports.
-            # FIXME: This invokes cythonize, but we should not write to mounted source.
-            python.print('setup.py', 'egg_info', '-e', tempdir, cwd = self.path)
-            egginfodir, = Path(tempdir).glob('*.egg-info')
-            for r in (egginfodir / 'requires.txt').read_text().splitlines():
-                yield r, Text(r)
 
 def _main():
     logging = Logging()
