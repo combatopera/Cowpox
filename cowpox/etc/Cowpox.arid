@@ -48,6 +48,7 @@ build
 log path = $/($(build root) Cowpox.log)
 MIT root = $/($(container extroot) MIT)
 patch dir = $/($(MIT root) patch)
+egg-info-requires = $pyref(cowpox.egg EggInfoRequires.factory)
 .
     $/($(MIT root) Cowpox.arid)
     $/($(container src) Cowpox.arid)

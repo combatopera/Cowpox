@@ -42,14 +42,23 @@ from aridimpl.model import Function, Text
 from aridimpl.util import NoSuchPathException
 from aridity import Context, Repl
 from functools import partial
+from importlib import import_module
 
 undefined = object()
+
+def pyref(context, moduleresolvable, qualnameresolvable):
+    pyobj = import_module(moduleresolvable.resolve(context).cat())
+    for name in qualnameresolvable.resolve(context).cat().split('.'):
+        pyobj = getattr(pyobj, name)
+    return Function(pyobj) # TODO LATER: Could be any type.
 
 class Config: # TODO: Migrate to aridity as high-level API.
 
     @classmethod
     def blank(cls):
-        return cls(Context(), [])
+        c = Context()
+        c['pyref',] = Function(pyref)
+        return cls(c, [])
 
     def __init__(self, context, prefix):
         self._context = context

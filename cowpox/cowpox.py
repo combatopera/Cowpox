@@ -43,7 +43,6 @@ from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .bundle import PipInstallRecipe
 from .config import Config
-from .egg import EggInfoRequires
 from .graph import GraphImpl
 from .make import Make
 from .mirror import Mirror
@@ -76,7 +75,6 @@ def _main():
     parser.add_argument('config', nargs = '*')
     args = parser.parse_args()
     config = Config.blank()
-    config.put('egg-info-requires', function = EggInfoRequires.factory)
     def applyargs():
         for text in args.config:
             config.exec(text)
