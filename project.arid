@@ -58,3 +58,4 @@ resource types +=
     mk
     txt
 licheck exclude globs += MIT/**/*
+docker tag = combatopera/cowpox
