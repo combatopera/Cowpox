@@ -42,7 +42,6 @@ from . import APKPath, etc
 from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .bundle import PipInstallRecipe
-from .config import Config
 from .graph import GraphImpl
 from .make import Make
 from .mirror import Mirror
@@ -50,6 +49,7 @@ from .platform import Platform, PlatformInfo
 from .private import Private
 from .util import Logging
 from argparse import ArgumentParser
+from aridity.config import Config
 from diapyr import DI
 from lagoon import groupadd, useradd
 from pathlib import Path
@@ -77,7 +77,7 @@ def _main():
     config = Config.blank()
     def applyargs():
         for text in args.config:
-            config.exec(text)
+            config.execute(text)
     applyargs() # XXX: Use a prefix and fish out the src path only?
     config.load(resource_filename(etc.__name__, 'Cowpox.arid'))
     applyargs()

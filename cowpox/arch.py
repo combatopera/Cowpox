@@ -39,8 +39,8 @@
 # THE SOFTWARE.
 
 from . import Arch
-from .config import Config
 from .platform import Platform
+from aridity.config import Config
 from diapyr import types
 from lagoon.program import Program
 from multiprocessing import cpu_count

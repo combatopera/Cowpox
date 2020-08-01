@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .config import Config
+from aridity.config import Config
 from diapyr import types
 from hashlib import md5
 from pathlib import Path

@@ -38,8 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from aridity.config import Config
 from cowpox import InterpreterRecipe, LibRepo, ObjRepo
-from cowpox.config import Config
 from cowpox.recipe import BootstrapNDKRecipe, Recipe
 from cowpox.util import Contrib
 from diapyr import types

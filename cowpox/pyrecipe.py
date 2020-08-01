@@ -39,9 +39,9 @@
 # THE SOFTWARE.
 
 from . import InterpreterRecipe, ObjRepo
-from .config import Config
 from .container import compileall
 from .recipe import Recipe
+from aridity.config import Config
 from diapyr import types
 from lagoon import python
 import logging, shutil, subprocess

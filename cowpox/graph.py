@@ -39,10 +39,10 @@
 # THE SOFTWARE.
 
 from . import Graph, PipInstallMemo, RecipeMemo
-from .config import Config
 from .make import Make
 from .recipe import Recipe
 from .util import findimpls
+from aridity.config import Config
 from diapyr import types
 from importlib import import_module
 from packaging.utils import canonicalize_name

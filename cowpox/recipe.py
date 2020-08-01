@@ -39,9 +39,9 @@
 # THE SOFTWARE.
 
 from . import Arch
-from .config import Config
 from .mirror import Mirror
 from .platform import Platform
+from aridity.config import Config
 from diapyr import types
 from lagoon import patch, tar, unzip
 from pathlib import Path

@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from cowpox.config import Config
+from aridity.config import Config
 from cowpox.pyrecipe import CythonRecipe
 from diapyr import types
 from pathlib import Path

@@ -39,10 +39,10 @@
 # THE SOFTWARE.
 
 from . import InterpreterRecipe, PipInstallMemo, PrivateMemo, RecipeMemo
-from .config import Config
 from .container import compileall
 from .make import Make
 from .pyrecipe import PythonRecipe
+from aridity.config import Config
 from diapyr import types
 from fnmatch import fnmatch
 from lagoon import zip

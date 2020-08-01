@@ -38,10 +38,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .config import Config
 from .make import Make
 from .mirror import Mirror
 from .util import build_platform
+from aridity.config import Config
 from diapyr import types
 from distutils.version import LooseVersion
 from jproperties import Properties
