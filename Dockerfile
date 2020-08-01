@@ -46,7 +46,7 @@ RUN apt-get update && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends adoptopenjdk-8-hotspot build-essential ccache cmake gettext gradle lld zip
 RUN pip install pip==20.1.1 && \
-    pip install pyven==46 && \
+    pip install pyven==48 && \
     echo /.pyven/ | tee /etc/gitignore_global && \
     git config --system core.excludesfile /etc/gitignore_global
 WORKDIR /Cowpox
