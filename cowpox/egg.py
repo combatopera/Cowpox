@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from aridimpl.model import Resolved, Text
+from aridity.model import Resolved, Text
 from lagoon import python
 from pathlib import Path
 from tempfile import TemporaryDirectory

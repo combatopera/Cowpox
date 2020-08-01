@@ -38,9 +38,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from aridimpl.model import Function, Text
-from aridimpl.util import NoSuchPathException
-from aridity import Context, Repl
+from aridity import Context, NoSuchPathException, Repl
+from aridity.model import Function, Text
 from functools import partial
 from importlib import import_module
 
