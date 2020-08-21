@@ -42,10 +42,11 @@ from . import AndroidProjectMemo, APKPath, Arch, JavaSrc, LibRepo, PrivateMemo, 
 from .make import Make
 from .platform import Platform
 from .recipes.sqlite3 import Sqlite3Recipe
-from .util import Contrib, enum, writeproperties
+from .util import Contrib, writeproperties
 from aridity import Repl
 from aridity.config import Config
 from diapyr import types
+from diapyr.util import enum
 from fnmatch import fnmatch
 from itertools import chain
 from lagoon import gradle, unzip
