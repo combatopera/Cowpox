@@ -48,7 +48,7 @@ requires +=
     aridity==31
     chromalog==1.0.5
     Cython==0.29.20
-    diapyr==16
+    diapyr==18
     jproperties==2.1.0
     lagoon==16
     networkx==2.4
