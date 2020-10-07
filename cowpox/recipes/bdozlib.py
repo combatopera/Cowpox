@@ -43,6 +43,7 @@ from cowpox.pyrecipe import CythonRecipe
 from diapyr import types
 from lagoon import pipify
 from pathlib import Path
+import shutil
 
 class RecipeImpl(CythonRecipe):
 
@@ -56,5 +57,7 @@ class RecipeImpl(CythonRecipe):
     def mainbuild(self):
         self.preparedirlocal(self.container_src)
         if self.pipify:
+            # TODO: Run warmup(s) here.
             pipify.print(cwd = self.recipebuilddir) # XXX: Do we need a new process?
+            shutil.rmtree(self.recipebuilddir / '.git')
         self.install_python_package()
