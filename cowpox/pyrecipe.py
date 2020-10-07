@@ -116,7 +116,7 @@ class CythonRecipe(PythonRecipe):
             build_ext.print()
         else:
             log.info('First build appeared to complete correctly, skipping manualcythonising.')
-        self.striplibs()
+        self.striplibs() # TODO: This breaks if host-arch libs are in the tree.
         super().install_python_package(env)
 
     def cythonize_build(self, env):
