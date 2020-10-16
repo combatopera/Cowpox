@@ -81,6 +81,7 @@ def _main():
     applyargs() # XXX: Use a prefix and fish out the src path only?
     config.load(resource_filename(etc.__name__, 'Cowpox.arid'))
     applyargs()
+    # TODO: Use config.node in new aridity API.
     _inituser(Path(config.container.src))
     logging.setpath(Path(config.log.path))
     with DI() as di:
