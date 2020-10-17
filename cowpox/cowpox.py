@@ -74,7 +74,7 @@ def _main():
     parser = ArgumentParser()
     parser.add_argument('config', nargs = '*')
     args = parser.parse_args()
-    config = Config.blank()
+    config = Config.blank() # TODO: Use ConfigCtrl in new aridity API.
     def applyargs():
         for text in args.config:
             config.execute(text)
