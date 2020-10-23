@@ -60,3 +60,4 @@ resource types +=
 licheck exclude globs += MIT/**/*
 docker tag = combatopera/cowpox
 pypi participant = false
+flakes exclude globs += MIT/android/android/__init__.py
