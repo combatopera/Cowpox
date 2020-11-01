@@ -44,25 +44,26 @@ RUN apt-get update && \
     wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - && \
     add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ && \
     apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends adoptopenjdk-8-hotspot build-essential ccache cmake gettext gradle lld zip
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends adoptopenjdk-8-hotspot build-essential ccache cmake gettext gradle lld virtualenv zip
 RUN pip install pip==20.1.1 && \
-    pip install pyven==48 && \
+    pip install pyven==64 && \
     echo /.pyven/ | tee /etc/gitignore_global && \
     git config --system core.excludesfile /etc/gitignore_global
 WORKDIR /Cowpox
-COPY project.arid .
+COPY project.arid .gitignore ./
 RUN script='from pyven.projectinfo import ProjectInfo; from shlex import quote; print("pip install %s" % " ".join(quote(r) for r in ProjectInfo.seek(".").allrequires()))' && \
     eval "$(python -c "$script")" && \
-    git init
+    git init && \
+    pipify
 
 FROM base
-COPY COPYING LICENSE.kivy .flakesignore ./
-RUN tests # Prepare and cache environment.
+COPY COPYING LICENSE.kivy ./
+RUN echo 'buildbot repo = $(None)' | tee ~/.settings.arid && tests # Prepare and cache environment.
 COPY . .
 RUN tests
 
 FROM base
 COPY . .
-RUN pipify && pip install . && echo "extroot = $PWD" | tee /etc/settings.arid
+RUN pip install . && echo "extroot = $PWD" | tee /etc/settings.arid
 ENTRYPOINT ["Cowpox"]
 WORKDIR /workspace

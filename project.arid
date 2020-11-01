@@ -50,7 +50,7 @@ requires +=
     Cython==0.29.20
     diapyr==18
     jproperties==2.1.0
-    lagoon==16
+    lagoon==19
     networkx==2.4
     packaging==20.4
 resource types +=
