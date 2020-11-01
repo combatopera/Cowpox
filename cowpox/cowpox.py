@@ -49,7 +49,7 @@ from .platform import Platform, PlatformInfo
 from .private import Private
 from .util import Logging
 from argparse import ArgumentParser
-from aridity.config import Config
+from aridity.config import ConfigCtrl
 from diapyr import DI
 from lagoon import groupadd, useradd
 from pathlib import Path
@@ -74,14 +74,14 @@ def _main():
     parser = ArgumentParser()
     parser.add_argument('config', nargs = '*')
     args = parser.parse_args()
-    config = Config.blank() # TODO: Use ConfigCtrl in new aridity API.
+    config = ConfigCtrl()
     def applyargs():
         for text in args.config:
             config.execute(text)
     applyargs() # XXX: Use a prefix and fish out the src path only?
-    config.load(resource_filename(etc.__name__, 'Cowpox.arid'))
+    config.load(resource_filename(etc.__name__, 'Cowpox.arid')) # XXX: Use stream?
     applyargs()
-    # TODO: Use config.node in new aridity API.
+    config = config.node
     _inituser(Path(config.container.src))
     logging.setpath(Path(config.log.path))
     with DI() as di:

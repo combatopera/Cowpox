@@ -41,7 +41,6 @@
 from . import InterpreterRecipe, ObjRepo
 from .container import compileall
 from .recipe import Recipe
-from aridity.config import Config
 from diapyr import types
 from lagoon import python
 import logging, shutil, subprocess
@@ -92,8 +91,8 @@ class CompiledComponentsPythonRecipe(PythonRecipe):
 
 class CythonRecipe(PythonRecipe):
 
-    @types(Config, [ObjRepo])
-    def __init(self, config, objrepos):
+    @types([ObjRepo])
+    def __init(self, objrepos):
         self.objrepos = objrepos
 
     def install_python_package(self, env = None):

@@ -100,7 +100,7 @@ class Private:
         self.orientation = config.android.orientation
         self.minsdkversion = config.android.minSdkVersion
         self.skel_path = Path(config.skel.path)
-        self.config = config
+        self.config = -config
         self.interpreter = interpreter
         self.recipes = recipes
 
