@@ -45,7 +45,7 @@ name = Cowpox
 licenses += MIT
 MIT path = LICENSE.kivy
 requires +=
-    aridity==40
+    aridity==41
     chromalog==1.0.5
     Cython==0.29.20
     diapyr==18
