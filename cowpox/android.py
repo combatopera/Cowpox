@@ -284,7 +284,7 @@ class AndroidProject:
                 repl.printf("activity name = %s", self.sdl2_activity_name)
             if self.bootstrapname != 'service_only':
                 repl.printf("orientation = %s", self.orientation)
-            repl.printf("xlargeScreens = %s", self.min_sdk_version >= 9)
+            repl.printf("xlargeScreens = %s", 'true' if self.min_sdk_version >= 9 else 'false')
             repl.printf("package = %s", self.package)
             repl.printf("versionCode = %s", numeric_version)
             repl.printf("versionName = %s", self.version)
