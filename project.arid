@@ -53,6 +53,7 @@ requires +=
     lagoon==19
     networkx==2.4
     packaging==20.4
+    setuptools==44.1.1
 resource types +=
     patch
     mk
