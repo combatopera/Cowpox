@@ -78,7 +78,7 @@ def _main():
     config = root.loadappconfig(main_Cowpox, 'etc/Cowpox.arid', settingsoptional = True)
     for text in args.config:
         root.execute(text)
-    root.execute('Cowpox . $/($(container src) Cowpox.arid)')
+    (-config).load(Path(config.container.src, 'Cowpox.arid'))
     _inituser(Path(config.container.src))
     logging.setpath(Path(config.log.path))
     with DI() as di:
