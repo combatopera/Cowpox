@@ -75,12 +75,10 @@ def _main():
     parser.add_argument('config', nargs = '*')
     args = parser.parse_args()
     config = ConfigCtrl()
-    def applyargs():
-        for text in args.config:
-            config.execute(text)
-    applyargs() # XXX: Use a prefix and fish out the src path only?
     config.load(resource_filename(etc.__name__, 'Cowpox.arid')) # XXX: Use stream?
-    applyargs()
+    for text in args.config:
+        config.execute(text)
+    config.execute('. $/($(container src) Cowpox.arid)')
     config = config.node
     _inituser(Path(config.container.src))
     logging.setpath(Path(config.log.path))
