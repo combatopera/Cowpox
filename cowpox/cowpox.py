@@ -70,16 +70,16 @@ def _inituser(srcpath):
 
 def _main():
     logging = Logging()
-    parser = ArgumentParser()
-    parser.add_argument('config', nargs = '*')
-    args = parser.parse_args()
     root = ConfigCtrl()
     root.load('/etc/settings.arid')
     config = root.loadappconfig(main_Cowpox, 'etc/Cowpox.arid', settingsoptional = True)
-    for text in args.config:
+    parser = ArgumentParser()
+    parser.add_argument('config', nargs = '*')
+    for text in parser.parse_args().config:
         root.execute(text)
-    (-config).load(Path(config.container.src, 'Cowpox.arid'))
-    _inituser(Path(config.container.src))
+    srcpath = Path(config.container.src)
+    (-config).load(srcpath / 'Cowpox.arid')
+    _inituser(srcpath)
     logging.setpath(Path(config.log.path))
     with DI() as di:
         di.add(all_archs[config.android.arch])
