@@ -76,11 +76,11 @@ def _main():
     args = parser.parse_args()
     config = ConfigCtrl()
     config.load('/etc/settings.arid')
-    config.load(resource_filename(__name__, 'etc/Cowpox.arid')) # XXX: Use stream?
+    config.printf("Cowpox . %s", resource_filename(__name__, 'etc/Cowpox.arid')) # XXX: Use stream?
     for text in args.config:
         config.execute(text)
-    config.execute('. $/($(container src) Cowpox.arid)')
-    config = config.node
+    config.execute('Cowpox . $/($(container src) Cowpox.arid)')
+    config = config.node.Cowpox
     _inituser(Path(config.container.src))
     logging.setpath(Path(config.log.path))
     with DI() as di:
