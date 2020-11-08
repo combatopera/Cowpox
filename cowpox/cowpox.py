@@ -75,7 +75,7 @@ def _main():
     parser.add_argument('config', nargs = '*')
     args = parser.parse_args()
     config = ConfigCtrl()
-    config.execute('container . /etc/settings.arid')
+    config.execute('. /etc/settings.arid')
     config.load(resource_filename(etc.__name__, 'Cowpox.arid')) # XXX: Use stream?
     for text in args.config:
         config.execute(text)
