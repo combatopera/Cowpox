@@ -53,7 +53,6 @@ from aridity.config import ConfigCtrl
 from diapyr import DI
 from lagoon import groupadd, useradd
 from pathlib import Path
-from pkg_resources import resource_filename
 import grp, logging, os
 
 log = logging.getLogger(__name__)
@@ -74,13 +73,12 @@ def _main():
     parser = ArgumentParser()
     parser.add_argument('config', nargs = '*')
     args = parser.parse_args()
-    config = ConfigCtrl()
-    config.load('/etc/settings.arid')
-    config.printf("Cowpox . %s", resource_filename(__name__, 'etc/Cowpox.arid')) # XXX: Use stream?
+    root = ConfigCtrl()
+    root.load('/etc/settings.arid')
+    config = root.loadappconfig(main_Cowpox, 'etc/Cowpox.arid', settingsoptional = True)
     for text in args.config:
-        config.execute(text)
-    config.execute('Cowpox . $/($(container src) Cowpox.arid)')
-    config = config.node.Cowpox
+        root.execute(text)
+    root.execute('Cowpox . $/($(container src) Cowpox.arid)')
     _inituser(Path(config.container.src))
     logging.setpath(Path(config.log.path))
     with DI() as di:
