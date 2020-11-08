@@ -38,7 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from . import APKPath, etc
+from . import APKPath
 from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .bundle import PipInstallRecipe
@@ -75,8 +75,8 @@ def _main():
     parser.add_argument('config', nargs = '*')
     args = parser.parse_args()
     config = ConfigCtrl()
-    config.execute('. /etc/settings.arid')
-    config.load(resource_filename(etc.__name__, 'Cowpox.arid')) # XXX: Use stream?
+    config.load('/etc/settings.arid')
+    config.load(resource_filename(__name__, 'etc/Cowpox.arid')) # XXX: Use stream?
     for text in args.config:
         config.execute(text)
     config.execute('. $/($(container src) Cowpox.arid)')
