@@ -72,7 +72,7 @@ def _main():
     logging = Logging()
     root = ConfigCtrl()
     root.load('/etc/settings.arid')
-    config = root.loadappconfig(main_Cowpox, 'etc/Cowpox.arid', settingsoptional = True)
+    config = root.loadappconfig(main_Cowpox, 'etc/Cowpox.arid')
     parser = ArgumentParser()
     parser.add_argument('config', nargs = '*')
     for text in parser.parse_args().config:
