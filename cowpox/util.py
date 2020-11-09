@@ -136,3 +136,13 @@ class Contrib:
             dstpath = dst / relpath
             assert not dstpath.is_dir()
             shutil.copy2(path, dstpath.pmkdirp())
+
+def coalesce(context, *resolvables):
+    for r in resolvables:
+        obj = r.resolve(context)
+        try:
+            if obj.scalar is not None:
+                break
+        except AttributeError:
+            break
+    return obj

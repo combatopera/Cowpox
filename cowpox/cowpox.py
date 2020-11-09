@@ -47,7 +47,7 @@ from .make import Make
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
 from .private import Private
-from .util import Logging
+from .util import coalesce, Logging
 from argparse import ArgumentParser
 from aridity.config import ConfigCtrl
 from diapyr import DI
@@ -71,6 +71,7 @@ def _inituser(srcpath):
 def _main():
     logging = Logging()
     root = ConfigCtrl()
+    root.node.coalesce = coalesce
     root.load('/etc/settings.arid')
     config = root.loadappconfig(main_Cowpox, 'etc/Cowpox.arid')
     parser = ArgumentParser()

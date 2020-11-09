@@ -41,7 +41,7 @@ bootstrap
 build_mode = debug
 version = $.(0.1)
 main name = main
-container mirror = $/($(build dir) mirror)
+container mirror = $coalesce($(cli mirror) $/($(build dir) mirror))
 private dir = $/($(build dir) private)
 bundle dir = $/($(private dir) _python_bundle)
 builds dir = $/($(build dir) build)
