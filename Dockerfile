@@ -64,6 +64,6 @@ RUN tests
 
 FROM base
 COPY . .
-RUN pip install . && echo "container extroot = $PWD" | tee /etc/settings.arid && touch ~/.settings.arid
+RUN pip install . && echo "Cowpox container extroot = $PWD" | tee /etc/settings.arid && touch ~/.settings.arid
 ENTRYPOINT ["Cowpox"]
 WORKDIR /workspace
