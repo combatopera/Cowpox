@@ -74,9 +74,9 @@ def _main():
     root.load('/etc/settings.arid')
     config = root.loadappconfig(main_Cowpox, 'etc/Cowpox.arid')
     parser = ArgumentParser()
-    parser.add_argument('config', nargs = '*')
-    for text in parser.parse_args().config:
-        root.execute(text)
+    parser.add_argument('--mirror')
+    parser.add_argument('src')
+    parser.parse_args(namespace = config.cli)
     srcpath = Path(config.container.src)
     (-config).load(srcpath / 'Cowpox.arid')
     _inituser(srcpath)
