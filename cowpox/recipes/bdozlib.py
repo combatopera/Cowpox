@@ -58,6 +58,7 @@ class RecipeImpl(CythonRecipe):
         self.preparedirlocal(self.container_src)
         if self.pipify:
             # TODO: Run warmup(s) here.
+            # FIXME: May create a venv with host-arch libs that later can't be stripped.
             pipify.print(cwd = self.recipebuilddir) # XXX: Do we need a new process?
             shutil.rmtree(self.recipebuilddir / '.git')
         self.install_python_package()
