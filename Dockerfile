@@ -53,17 +53,16 @@ WORKDIR /Cowpox
 COPY project.arid .gitignore ./
 RUN script='from pyven.projectinfo import ProjectInfo; from shlex import quote; print("pip install %s" % " ".join(quote(r) for r in ProjectInfo.seek(".").allrequires()))' && \
     eval "$(python -c "$script")" && \
-    git init && \
-    pipify
+    git init
 
 FROM base
 COPY COPYING LICENSE.kivy ./
-RUN echo 'buildbot repo = $(None)' | tee ~/.settings.arid && tests # Prepare and cache environment.
+RUN pipify && echo 'buildbot repo = $(None)' | tee ~/.settings.arid && tests # Prepare and cache environment.
 COPY . .
 RUN tests
 
 FROM base
 COPY . .
-RUN pip install . && echo "Cowpox container extroot = $PWD" | tee /etc/settings.arid && touch ~/.settings.arid
+RUN pipify && pip install . && echo "Cowpox container extroot = $PWD" | tee /etc/settings.arid && touch ~/.settings.arid
 ENTRYPOINT ["Cowpox"]
 WORKDIR /workspace
