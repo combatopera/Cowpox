@@ -46,7 +46,7 @@ class KivyRecipe(CythonRecipe):
 
     from .sdl2 import LibSDL2Recipe
     name = 'Kivy'
-    version = '1.11.1'
+    version = '1.11.1' # TODO: Upgrade.
     depends = 'sdl2', 'pyjnius', 'setuptools', 'certifi' # XXX: Can we get (some of) these from setup.py?
 
     @types(LibSDL2Recipe)
