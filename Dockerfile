@@ -45,7 +45,7 @@ RUN apt-get update && \
     add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends adoptopenjdk-8-hotspot build-essential ccache cmake gettext gradle lld virtualenv zip
-RUN pip install pip==20.1.1 && \
+RUN pip install pip==20.3.3 && \
     pip install pyven==64 && \
     echo /.pyven/ | tee /etc/gitignore_global && \
     git config --system core.excludesfile /etc/gitignore_global
