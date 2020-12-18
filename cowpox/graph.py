@@ -46,6 +46,7 @@ from aridity.config import Config
 from diapyr import types
 from importlib import import_module
 from packaging.utils import canonicalize_name
+from pkg_resources import parse_requirements
 from pkgutil import iter_modules
 from types import SimpleNamespace
 import logging
@@ -69,6 +70,10 @@ class RecipeInfo:
             yield groupmemotypes[group]
         for normdepend in self.depends:
             yield implmemotypes.get(normdepend, PipInstallMemo)
+
+def _namesonly(requires):
+    for r in parse_requirements(requires):
+        yield r.name
 
 class GraphImpl(Graph):
 
@@ -94,7 +99,7 @@ class GraphImpl(Graph):
                         pypinames[normdepend] = depend # Keep an arbitrary unnormalised name.
         # TODO: Minimise depends declared here.
         adddepends(RecipeInfo(SimpleNamespace(depends = [
-                'python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *config.requirements])))
+                'python3', 'bdozlib', 'android', 'sdl2' if 'sdl2' == config.bootstrap.name else 'genericndkbuild', *_namesonly(config.requirements)])))
         for group in groupmemotypes:
             intersection = sorted(recipeinfos.keys() & group)
             groupstr = ', '.join(sorted(group))
