@@ -92,6 +92,7 @@ class PlatformInfo:
                         print('y', file = stdin)
             except BrokenPipeError:
                 pass
+        # FIXME: Following commands mych too spammy in CI.
         sdkmanager.tools.platform_tools.print()
         sdkmanager.__update.print()
         buildtoolsdir = self.sdk_dir / 'build-tools'
