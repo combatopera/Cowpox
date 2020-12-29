@@ -40,7 +40,7 @@
 
 from pathlib import Path
 from pkg_resources import iter_entry_points
-import os
+import os, sys
 
 host_mirror = Path.home() / '.Cowpox' / 'mirror'
 container_mirror = '/mirror'
@@ -62,7 +62,7 @@ def _imagetag():
 def main_Cowpox():
     host_mirror.mkdir(parents = True, exist_ok = True)
     command = [
-        'docker', 'run', '--rm', '-it',
+        'docker', 'run', '--rm', '-i', *(['-t'] if sys.stdin.isatty() else []),
         '-v', f"{Path.cwd()}:{container_src}",
         '-v', f"{host_mirror}:{container_mirror}",
         '-e', f"TZ=COWPOX{_tzoffset()}",
