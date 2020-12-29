@@ -66,7 +66,7 @@ def main_Cowpox():
         '-v', f"{Path.cwd()}:{container_src}",
         '-v', f"{host_mirror}:{container_mirror}",
         '-e', f"TZ=COWPOX{_tzoffset()}",
-        f"combatopera/cowpox:{_imagetag()}",
+        f"combatopera/cowpox:{_imagetag()}", # TODO LATER: Unduplicate with project.arid image name.
         '--mirror', container_mirror,
         container_src,
     ]
