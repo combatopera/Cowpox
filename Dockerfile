@@ -51,7 +51,8 @@ RUN pip install pip==20.3.3 && \
     git config --system core.excludesfile /etc/gitignore_global
 WORKDIR /Cowpox
 COPY project.arid .gitignore ./
-RUN script='from pyven.projectinfo import ProjectInfo; from shlex import quote; print("pip install %s" % " ".join(quote(r) for r in ProjectInfo.seek(".").allrequires()))' && \
+RUN minreqs | tee -a project.arid && \
+    script='from pyven.projectinfo import ProjectInfo; from shlex import quote; print("pip install %s" % " ".join(quote(r) for r in ProjectInfo.seek(".").allrequires()))' && \
     eval "$(python -c "$script")" && \
     git init
 
