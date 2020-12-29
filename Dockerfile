@@ -65,5 +65,5 @@ RUN tests
 FROM base
 COPY . .
 RUN pipify && pip install . && echo "Cowpox container extroot = $PWD" | tee /etc/settings.arid && touch ~/.settings.arid
-ENTRYPOINT ["Cowpox"]
+ENTRYPOINT ["Cowpox-servant"]
 WORKDIR /workspace

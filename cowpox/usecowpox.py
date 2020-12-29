@@ -52,14 +52,14 @@ def _tzoffset():
     off = datetime.utcfromtimestamp(now) - datetime.fromtimestamp(now)
     return f"-{-off}" if off < timedelta() else f"+{off}"
 
-def main_usecowpox():
+def main_Cowpox():
     host_mirror.mkdir(parents = True, exist_ok = True)
     command = [
         'docker', 'run', '--rm', '-it',
         '-v', f"{Path.cwd()}:{container_src}",
         '-v', f"{host_mirror}:{container_mirror}",
         '-e', f"TZ=COWPOX{_tzoffset()}",
-        'combatopera/cowpox',
+        'combatopera/cowpox', # TODO: Use image corresponding to release.
         '--mirror', container_mirror,
         container_src,
     ]

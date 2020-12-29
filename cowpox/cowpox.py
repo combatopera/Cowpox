@@ -47,6 +47,7 @@ from .make import Make
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
 from .private import Private
+from .usecowpox import main_Cowpox
 from .util import coalesce, Logging
 from argparse import ArgumentParser
 from aridity.config import ConfigCtrl
@@ -101,7 +102,7 @@ def _main():
             di.add(builder)
         return di(APKPath).relative_to(config.container.src)
 
-def main_Cowpox():
+def main_Cowpox_servant():
     try:
         log.info("APK path: %s", _main())
     except:
