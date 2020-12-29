@@ -59,7 +59,7 @@ class Mirror:
             progression = '{0} bytes'.format(index * blksize)
         else:
             progression = '{0:.2f}%'.format(index * blksize * 100. / float(size))
-        sys.stdout.write('- Download {}\r'.format(progression))
+        sys.stdout.write('- Download {}\r'.format(progression)) # FIXME: This is much too spammy.
         sys.stdout.flush()
 
     @types(Config)
