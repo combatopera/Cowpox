@@ -42,12 +42,12 @@ from . import APKPath
 from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .bundle import PipInstallRecipe
+from .cowpox import main_Cowpox
 from .graph import GraphImpl
 from .make import Make
 from .mirror import Mirror
 from .platform import Platform, PlatformInfo
 from .private import Private
-from .usecowpox import main_Cowpox
 from .util import coalesce, Logging
 from argparse import ArgumentParser
 from aridity.config import ConfigCtrl
