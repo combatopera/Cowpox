@@ -39,6 +39,7 @@
 # THE SOFTWARE.
 
 from pathlib import Path
+from pkg_resources import iter_entry_points
 import os
 
 host_mirror = Path.home() / '.Cowpox' / 'mirror'
@@ -52,6 +53,12 @@ def _tzoffset():
     off = datetime.utcfromtimestamp(now) - datetime.fromtimestamp(now)
     return f"-{-off}" if off < timedelta() else f"+{off}"
 
+def _imagetag():
+    for ep in iter_entry_points('console_scripts'):
+        if __name__ == ep.module_name:
+            version = ep.dist.version
+            return 'latest' if version.endswith('.dev0') else version
+
 def main_Cowpox():
     host_mirror.mkdir(parents = True, exist_ok = True)
     command = [
@@ -59,7 +66,7 @@ def main_Cowpox():
         '-v', f"{Path.cwd()}:{container_src}",
         '-v', f"{host_mirror}:{container_mirror}",
         '-e', f"TZ=COWPOX{_tzoffset()}",
-        'combatopera/cowpox', # TODO: Use image corresponding to release.
+        f"combatopera/cowpox:{_imagetag()}",
         '--mirror', container_mirror,
         container_src,
     ]
