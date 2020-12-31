@@ -67,11 +67,8 @@ class Mirror:
         self.mirror = Path(config.container.mirror)
         self.urlretrieve = self.WgetDownloader().retrieve
 
-    def getpath(self, url):
-        return self.mirror / md5(url.encode('ascii')).hexdigest()
-
     def download(self, url):
-        mirrorpath = self.getpath(url)
+        mirrorpath = self.mirror / md5(url.encode('ascii')).hexdigest()
         if mirrorpath.exists():
             log.info("Already downloaded: %s", url)
         else:
