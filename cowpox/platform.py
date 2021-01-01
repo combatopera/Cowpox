@@ -49,7 +49,7 @@ from lagoon import unzip
 from lagoon.program import Program
 from pathlib import Path
 from pkg_resources import parse_version # XXX: Why not LooseVersion?
-import logging, re, subprocess
+import logging, re, subprocess, sys, time
 
 log = logging.getLogger(__name__)
 
@@ -76,7 +76,25 @@ class PlatformInfo:
 
     @staticmethod
     def _print(partial):
-        partial.print()
+        'Squash CR-terminated updates to reduce spamminess in GitHub Actions.'
+        with partial.bg() as f:
+            unwritten = ''
+            oktime = time.time()
+            for line in f:
+                now = time.time()
+                if 40 < len(line) and '[' == line[0] and ']' == line[40]:
+                    if now >= oktime:
+                        sys.stdout.write(line)
+                        unwritten = ''
+                        oktime = now + 1
+                    else:
+                        unwritten = line
+                else:
+                    sys.stdout.write(unwritten)
+                    sys.stdout.write(line)
+                    unwritten = ''
+                    oktime = now
+            sys.stdout.write(unwritten)
 
     def _install_android_sdk(self):
         log.info('Android SDK is missing, downloading')
