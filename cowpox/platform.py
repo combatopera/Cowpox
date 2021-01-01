@@ -87,7 +87,7 @@ class PlatformInfo:
         sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         if self.accept_licenses:
             try:
-                with sdkmanager.__licenses.bg(stdin = subprocess.PIPE, stdout = None) as stdin:
+                with sdkmanager.__licenses.bg(stdin = subprocess.PIPE, stdout = subprocess.DEVNULL) as stdin:
                     while True:
                         print('y', file = stdin)
             except BrokenPipeError:
