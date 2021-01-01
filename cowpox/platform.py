@@ -76,8 +76,9 @@ class PlatformInfo:
 
     @staticmethod
     def _print(partial):
-        'Squash CR-terminated updates to reduce spamminess in GitHub Actions.'
-        flush = lambda *lines: [*map(sys.stdout.write, lines), sys.stdout.flush()]
+        'Elide redundant CR-terminated updates to reduce spamminess in GitHub Actions.'
+        target = sys.stderr # Avoid sys.stdout as it is likely to be fully buffered.
+        flush = lambda *lines: [*map(target.write, lines), target.flush()] # Consistent with StreamHandler.
         with partial.bg() as f:
             unwritten = ''
             oktime = time.time()
@@ -94,7 +95,7 @@ class PlatformInfo:
                     flush(unwritten, line)
                     unwritten = ''
                     oktime = now
-            flush(unwritten) # XXX: Why is this unreliable in GitHub Actions?
+            flush(unwritten)
 
     def _install_android_sdk(self):
         log.info('Android SDK is missing, downloading')
