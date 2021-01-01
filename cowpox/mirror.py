@@ -41,6 +41,7 @@
 from aridity.config import Config
 from diapyr import types
 from hashlib import md5
+from lagoon.util import atomic
 from pathlib import Path
 from urllib.request import FancyURLopener
 import logging, sys, time
@@ -72,17 +73,16 @@ class Mirror:
         if mirrorpath.exists():
             log.info("Already downloaded: %s", url)
         else:
-            partialpath = mirrorpath.with_name(f"{mirrorpath.name}.part").pmkdirp()
-            attempts = 0
-            while True:
-                try:
-                    self.urlretrieve(url, partialpath, self._report_hook)
-                    break
-                except OSError:
-                    attempts += 1
-                    if attempts >= 5:
-                        raise
-                log.warning('Download failed retrying in a second...')
-                time.sleep(1)
-            partialpath.rename(mirrorpath)
+            with atomic(mirrorpath) as partialpath:
+                attempts = 0
+                while True:
+                    try:
+                        self.urlretrieve(url, partialpath, self._report_hook)
+                        break
+                    except OSError:
+                        attempts += 1
+                        if attempts >= 5:
+                            raise
+                    log.warning('Download failed retrying in a second...')
+                    time.sleep(1)
         return mirrorpath
