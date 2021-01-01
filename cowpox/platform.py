@@ -94,7 +94,7 @@ class PlatformInfo:
                     flush(unwritten, line)
                     unwritten = ''
                     oktime = now
-            flush(unwritten)
+            flush(unwritten) # XXX: Why is this unreliable in GitHub Actions?
 
     def _install_android_sdk(self):
         log.info('Android SDK is missing, downloading')
@@ -114,7 +114,6 @@ class PlatformInfo:
                         print('y', file = stdin)
             except BrokenPipeError:
                 pass
-        # FIXME: Following commands mych too spammy in CI.
         self._print(sdkmanager.tools.platform_tools)
         self._print(sdkmanager.__update)
         buildtoolsdir = self.sdk_dir / 'build-tools'
