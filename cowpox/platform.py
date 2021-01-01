@@ -74,6 +74,10 @@ class PlatformInfo:
             make(self.ndk_dir, self.android_ndk_version, self._install_android_ndk),
         ]
 
+    @staticmethod
+    def _print(partial):
+        partial.print()
+
     def _install_android_sdk(self):
         log.info('Android SDK is missing, downloading')
         archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
@@ -93,19 +97,19 @@ class PlatformInfo:
             except BrokenPipeError:
                 pass
         # FIXME: Following commands mych too spammy in CI.
-        sdkmanager.tools.platform_tools.print()
-        sdkmanager.__update.print()
+        self._print(sdkmanager.tools.platform_tools)
+        self._print(sdkmanager.__update)
         buildtoolsdir = self.sdk_dir / 'build-tools'
         actualo, actuals = max([parse_version(p.name), p.name] for p in buildtoolsdir.iterdir()) if buildtoolsdir.exists() else [None, None]
         latesto, latests = max([parse_version(v), v] for v in re.findall(r'\bbuild-tools;(\S+)', sdkmanager.__list()))
         if actualo is None or latesto > actualo:
             log.info("Update build-tools to: %s", latests)
-            sdkmanager.print(f"build-tools;{latests}")
+            self._print(sdkmanager.partial(f"build-tools;{latests}"))
         else:
             log.debug("Already have latest build-tools: %s", actuals)
         if not (self.sdk_dir / 'platforms' / self.platformname).exists():
             log.info("Download platform: %s", self.platformname)
-            sdkmanager.print(f"platforms;{self.platformname}")
+            self._print(sdkmanager.partial(f"platforms;{self.platformname}"))
         else:
             log.debug("Already have platform: %s", self.platformname)
 
