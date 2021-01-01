@@ -77,6 +77,7 @@ class PlatformInfo:
     @staticmethod
     def _print(partial):
         'Squash CR-terminated updates to reduce spamminess in GitHub Actions.'
+        flush = lambda *lines: [*map(sys.stdout.write, lines), sys.stdout.flush()]
         with partial.bg() as f:
             unwritten = ''
             oktime = time.time()
@@ -84,17 +85,16 @@ class PlatformInfo:
                 now = time.time()
                 if 40 < len(line) and '[' == line[0] and ']' == line[40]:
                     if now >= oktime:
-                        sys.stdout.write(line)
+                        flush(line)
                         unwritten = ''
                         oktime = now + 1
                     else:
                         unwritten = line
                 else:
-                    sys.stdout.write(unwritten)
-                    sys.stdout.write(line)
+                    flush(unwritten, line)
                     unwritten = ''
                     oktime = now
-            sys.stdout.write(unwritten)
+            flush(unwritten)
 
     def _install_android_sdk(self):
         log.info('Android SDK is missing, downloading')
