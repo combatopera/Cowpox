@@ -44,7 +44,7 @@ from hashlib import md5
 from lagoon.util import atomic
 from pathlib import Path
 from urllib.request import FancyURLopener
-import logging, sys, time
+import logging, sys
 
 log = logging.getLogger(__name__)
 
@@ -74,15 +74,5 @@ class Mirror:
             log.info("Already downloaded: %s", url)
         else:
             with atomic(mirrorpath) as partialpath:
-                attempts = 0
-                while True:
-                    try:
-                        self.urlretrieve(url, partialpath, self._report_hook)
-                        break
-                    except OSError:
-                        attempts += 1
-                        if attempts >= 5:
-                            raise
-                    log.warning('Download failed retrying in a second...')
-                    time.sleep(1)
+                self.urlretrieve(url, partialpath, self._report_hook)
         return mirrorpath
