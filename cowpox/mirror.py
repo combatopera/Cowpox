@@ -72,7 +72,7 @@ class Mirror:
                         break
                     g.write(data)
                     total += len(data)
-                    log.debug("Total bytes: %s", total)
+                    log.info("Total bytes: %s", total)
                     prev, mark = mark, time.time()
                     chunksize = round(chunksize / (mark - prev) * self.alpha + chunksize * (1 - self.alpha))
         return mirrorpath
