@@ -43,36 +43,36 @@ from diapyr import types
 from hashlib import md5
 from lagoon.util import atomic
 from pathlib import Path
-from urllib.request import FancyURLopener
-import logging, sys
+from urllib.request import Request, urlopen
+import logging, time
 
 log = logging.getLogger(__name__)
 
 class Mirror:
 
-    class WgetDownloader(FancyURLopener):
-
-        version = 'Wget/1.17.1'
-
-    @staticmethod
-    def _report_hook(index, blksize, size):
-        if size <= 0:
-            progression = '{0} bytes'.format(index * blksize)
-        else:
-            progression = '{0:.2f}%'.format(index * blksize * 100. / float(size))
-        sys.stdout.write('- Download {}\r'.format(progression)) # FIXME: This is much too spammy in CI.
-        sys.stdout.flush()
+    headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:83.0) Gecko/20100101 Firefox/83.0'}
+    firstchunk = 1000000
+    alpha = .1
 
     @types(Config)
     def __init__(self, config):
         self.mirror = Path(config.container.mirror)
-        self.urlretrieve = self.WgetDownloader().retrieve
 
     def download(self, url):
         mirrorpath = self.mirror / md5(url.encode('ascii')).hexdigest()
         if mirrorpath.exists():
             log.info("Already downloaded: %s", url)
         else:
-            with atomic(mirrorpath) as partialpath:
-                self.urlretrieve(url, partialpath, self._report_hook)
+            with urlopen(Request(url, headers = self.headers)) as f, atomic(mirrorpath) as partialpath, open(partialpath, 'wb') as g:
+                total, chunksize = 0, self.firstchunk
+                mark = time.time()
+                while True:
+                    data = f.read(chunksize)
+                    if not data:
+                        break
+                    g.write(data)
+                    total += len(data)
+                    log.debug("Total bytes: %s", total)
+                    prev, mark = mark, time.time()
+                    chunksize = round(chunksize / (mark - prev) * self.alpha + chunksize * (1 - self.alpha))
         return mirrorpath
