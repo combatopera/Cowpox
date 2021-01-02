@@ -49,7 +49,7 @@ from diapyr import types
 from diapyr.util import enum
 from fnmatch import fnmatch
 from itertools import chain
-from lagoon import gradle, unzip
+from lagoon import unzip
 from pathlib import Path
 from pkg_resources import resource_string
 from tempfile import TemporaryDirectory
@@ -99,6 +99,7 @@ class Assembly:
         return self.gradle_builddir / 'outputs' / 'apk' / self.mode.division.name / f"{self.android_project_dir.name}-{self.mode.name}.apk"
 
     def _target(self):
+        from lagoon import gradle
         # TODO: Download gradle dependencies in advance.
         gradle.__no_daemon.print(self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
         log.info('Android packaging done!')
