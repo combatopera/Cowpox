@@ -60,6 +60,7 @@ def _imagetag():
             return 'latest' if version.endswith('.dev0') else version
 
 def main_Cowpox():
+    'Build APK for project.'
     host_mirror.mkdir(parents = True, exist_ok = True)
     command = [
         'docker', 'run', '--rm', '-i', *(['-t'] if sys.stdin.isatty() else []),

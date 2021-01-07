@@ -103,6 +103,7 @@ def _main():
         return di(APKPath).relative_to(config.container.src)
 
 def main_Cowpox_servant():
+    'Containerised component, not for direct invocation.'
     try:
         log.info("APK path: %s", _main())
     except:

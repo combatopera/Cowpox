@@ -39,6 +39,14 @@ venvname/bin/pip install -e Cowpox
 . venvname/bin/activate
 ```
 
+## Commands
+
+### Cowpox
+Build APK for project.
+
+### Cowpox-servant
+Containerised component, not for direct invocation.
+
 ## Licensing
 * Cowpox as a whole is provided under the terms of the GPL, see [COPYING](COPYING)
 * The [MIT](MIT) tree is additionally/instead provided under [LICENSE.kivy](LICENSE.kivy)
