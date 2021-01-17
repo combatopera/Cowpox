@@ -44,4 +44,4 @@ import os
 def compileall(dirpath, check = True):
     for path in dirpath.rglob('*.py'):
         os.utime(path, (0, 0)) # Determinism.
-    python._OO._m.compileall._b._f.print(dirpath, check = check)
+    python._OO._m.compileall._b._f[print](dirpath, check = check)

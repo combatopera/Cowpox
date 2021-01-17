@@ -67,7 +67,7 @@ class Recipe:
     def apply_patches(self, *relpaths):
         for relpath in relpaths:
             log.info("Apply patch: %s", relpath)
-            patch._t._p1.print('-d', self.recipebuilddir, '-i', self.recipe_patch_dir / relpath)
+            patch._t._p1[print]('-d', self.recipebuilddir, '-i', self.recipe_patch_dir / relpath)
 
     def _copywithoutbuild(self, frompath, topath):
         try:
@@ -107,14 +107,14 @@ class Recipe:
         # TODO LATER: Do not assume single top-level directory in archive.
         if url.endswith('.zip'):
             try:
-                unzip.print(archivepath, cwd = self.recipebuilddir.parent)
+                unzip[print](archivepath, cwd = self.recipebuilddir.parent)
             except subprocess.CalledProcessError as e:
                 if e.returncode not in {1, 2}:
                     raise
             with ZipFile(archivepath) as zf:
                 rootname = zf.filelist[0].filename.split('/')[0]
         elif url.endswith(('.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz')):
-            tar.xf.print(archivepath, cwd = self.recipebuilddir.parent)
+            tar.xf[print](archivepath, cwd = self.recipebuilddir.parent)
             rootname = tar.tf(archivepath).splitlines()[0].split('/')[0]
         else:
             raise Exception(f"Unsupported archive type: {url}")
@@ -131,7 +131,7 @@ class BootstrapNDKRecipe(Recipe):
         self.jni_dir = self.recipebuilddir / 'jni'
 
     def ndk_build(self, env):
-        self.platform.ndk_build.print(env = env, cwd = self.jni_dir)
+        self.platform.ndk_build[print](env = env, cwd = self.jni_dir)
         self.striplibs()
 
 class NDKRecipe(Recipe):
@@ -146,5 +146,5 @@ class NDKRecipe(Recipe):
 
     def ndk_build(self, env):
         # TODO: These look like Application.mk variables.
-        self.platform.ndk_build.print(f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={self.arch.name}", env = env, cwd = self.recipebuilddir)
+        self.platform.ndk_build[print](f"APP_PLATFORM=android-{self.ndk_api}", f"APP_ABI={self.arch.name}", env = env, cwd = self.recipebuilddir)
         self.striplibs()

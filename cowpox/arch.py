@@ -124,7 +124,7 @@ class ArchImpl(Arch):
 
     def striplibs(self, root):
         log.info("[%s] Strip libs.", root.relative_to(self.container_src))
-        self.strip.print(*root.rglob('*.so'))
+        self.strip[print](*root.rglob('*.so'))
 
 class BaseArchARM(ArchImpl):
 

@@ -58,7 +58,7 @@ class RecipeImpl(CythonRecipe):
         self.preparedirlocal(self.container_src)
         if self.pipify:
             # TODO: Run warmup(s) here.
-            pipify.print(cwd = self.recipebuilddir) # XXX: Do we need a new process?
+            pipify[print](cwd = self.recipebuilddir) # XXX: Do we need a new process?
             [shutil.rmtree(d) for d in [self.recipebuilddir / '.pyven'] if d.exists()]
             shutil.rmtree(self.recipebuilddir / '.git')
         self.install_python_package()

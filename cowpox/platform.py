@@ -46,7 +46,7 @@ from diapyr import types
 from distutils.version import LooseVersion
 from jproperties import Properties
 from lagoon import unzip
-from lagoon.program import Program
+from lagoon.program import bg, Program
 from pathlib import Path
 from pkg_resources import parse_version # XXX: Why not LooseVersion?
 import logging, re, subprocess, sys, time
@@ -79,7 +79,7 @@ class PlatformInfo:
         'Elide redundant CR-terminated updates to reduce spamminess in GitHub Actions.'
         target = sys.stderr # Avoid sys.stdout as it is likely to be fully buffered.
         flush = lambda *lines: [*map(target.write, lines), target.flush()] # Consistent with StreamHandler.
-        with partial.bg() as f:
+        with partial[bg]() as f:
             unwritten = ''
             oktime = time.time()
             for line in f:
@@ -102,7 +102,7 @@ class PlatformInfo:
         archive = self.mirror.download('http://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
         log.info('Unpacking Android SDK')
         self.sdk_dir.mkdir()
-        unzip._q.print(archive, cwd = self.sdk_dir)
+        unzip._q[print](archive, cwd = self.sdk_dir)
         log.info('Android SDK tools base installation done.')
         if self.skip_update:
             return
@@ -110,7 +110,7 @@ class PlatformInfo:
         sdkmanager = Program.text(self.sdk_dir / 'tools' / 'bin' / 'sdkmanager')
         if self.accept_licenses:
             try:
-                with sdkmanager.__licenses.bg(stdin = subprocess.PIPE, stdout = subprocess.DEVNULL) as stdin:
+                with sdkmanager.__licenses[bg](stdin = subprocess.PIPE, stdout = subprocess.DEVNULL) as stdin:
                     while True:
                         print('y', file = stdin)
             except BrokenPipeError:
@@ -136,7 +136,7 @@ class PlatformInfo:
         archive = self.mirror.download(f"https://dl.google.com/android/repository/android-ndk-r{self.android_ndk_version}-linux-x86_64.zip")
         log.info('Unpacking Android NDK')
         self.ndk_dir.mkdir()
-        unzip._q.print(archive, cwd = self.ndk_dir)
+        unzip._q[print](archive, cwd = self.ndk_dir)
         rootdir, = self.ndk_dir.iterdir()
         for path in rootdir.iterdir():
             path.rename(self.ndk_dir / path.relative_to(rootdir))

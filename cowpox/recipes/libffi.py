@@ -55,11 +55,11 @@ class LibffiRecipe(Recipe, LibRepo):
         self.apply_patches('remove-version-info.patch')
         env = self.arch.env
         if not (self.recipebuilddir / 'configure').exists():
-            Program.text(Path('autogen.sh')).print(env = env, cwd = self.recipebuilddir)
-        autoreconf._vif.print(env = env, cwd = self.recipebuilddir)
-        Program.text(Path('configure')).print(
+            Program.text(Path('autogen.sh'))[print](env = env, cwd = self.recipebuilddir)
+        autoreconf._vif[print](env = env, cwd = self.recipebuilddir)
+        Program.text(Path('configure'))[print](
                 f"--host={self.arch.command_prefix}", f"--prefix={self.recipebuilddir}", '--disable-builddir', '--enable-shared', env = env, cwd = self.recipebuilddir)
-        make.print('-j', cpu_count(), 'libffi.la', env = env, cwd = self.recipebuilddir)
+        make[print]('-j', cpu_count(), 'libffi.la', env = env, cwd = self.recipebuilddir)
         self.striplibs()
 
     def builtlibpaths(self):

@@ -101,7 +101,7 @@ class Assembly:
     def _target(self):
         from lagoon import gradle
         # TODO: Download gradle dependencies in advance.
-        gradle.__no_daemon.print(self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
+        gradle.__no_daemon[print](self.mode.division.goal, env = self.gradleenv, cwd = self.android_project_dir)
         log.info('Android packaging done!')
 
 class AssetArchive:
@@ -219,7 +219,7 @@ class AndroidProject:
             log.info("unpack %s aar", name)
             log.debug("  from %s", aar)
             log.debug("  to %s", temp_dir)
-            unzip._o.print(aar, '-d', temp_dir)
+            unzip._o[print](aar, '-d', temp_dir)
             jar_src = Path(temp_dir, 'classes.jar')
             jar_tgt = self.android_project_libs.mkdirp() / jar_name
             log.debug("copy %s jar", name)

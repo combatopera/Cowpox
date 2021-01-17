@@ -155,8 +155,8 @@ class Python3Recipe(Recipe, InterpreterRecipe, LibRepo):
             configure_args += [f"--with-openssl={self.openssl.recipebuilddir}"]
         self.androidbuild.mkdirp()
         env = self._getbuildenv()
-        Program.text(self.recipebuilddir / 'configure').print(*configure_args, env = env, cwd = self.androidbuild)
-        make.all.print('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
+        Program.text(self.recipebuilddir / 'configure')[print](*configure_args, env = env, cwd = self.androidbuild)
+        make.all[print]('-j', cpu_count(), f"INSTSONAME={self.instsoname}", env = env, cwd = self.androidbuild)
         self.striplibs()
         shutil.copy2(self.androidbuild / 'pyconfig.h', self.include_root())
         compileall(self.modules_build_dir)

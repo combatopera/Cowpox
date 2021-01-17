@@ -124,7 +124,7 @@ class Private:
             shutil.copy2(filen, modules_dir)
         stdlib_filens = list(self._walk_valid_filens(self.interpreter.stdlibdir, self.stdlib_dir_blacklist, self.stdlib_filen_blacklist))
         log.info("Zip %s files into the bundle", len(stdlib_filens))
-        zip.print(self.bundle_dir / 'stdlib.zip', *(p.relative_to(self.interpreter.stdlibdir) for p in stdlib_filens), cwd = self.interpreter.stdlibdir)
+        zip[print](self.bundle_dir / 'stdlib.zip', *(p.relative_to(self.interpreter.stdlibdir) for p in stdlib_filens), cwd = self.interpreter.stdlibdir)
         sitepackagesdir = (self.bundle_dir / 'site-packages').mkdirp()
         for recipe in self.recipes:
             # TODO: Get bundlepackages from a result object coming out of every recipe.

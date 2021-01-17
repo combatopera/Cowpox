@@ -56,7 +56,7 @@ class PipInstallRecipe(CythonRecipe):
     def buildsite(self, make, graph):
         def target():
             if pypinames:
-                pip.install._v.__no_deps.print('--target', self.bundlepackages, *pypinames, env = self.get_recipe_env())
+                pip.install._v.__no_deps[print]('--target', self.bundlepackages, *pypinames, env = self.get_recipe_env())
                 compileall(self.bundlepackages)
             else:
                 self.bundlepackages.mkdirp()

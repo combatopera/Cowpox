@@ -81,9 +81,9 @@ class OpenSSLRecipe(Recipe, LibRepo):
         env['OPENSSL_VERSION'] = self.version
         env['MAKE'] = 'make'
         env['ANDROID_NDK'] = self.ndk_dir
-        perl.print('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = self.recipebuilddir)
+        perl[print]('Configure', 'shared', 'no-dso', 'no-asm', self._select_build_arch(), f"-D__ANDROID_API__={self.ndk_api}", env = env, cwd = self.recipebuilddir)
         self.apply_patches('disable-sover.patch')
-        make.print('build_libs', env = env, cwd = self.recipebuilddir)
+        make[print]('build_libs', env = env, cwd = self.recipebuilddir)
         self.striplibs()
 
     def builtlibpaths(self):

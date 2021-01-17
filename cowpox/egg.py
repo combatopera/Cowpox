@@ -58,7 +58,7 @@ class EggInfoRequires(Resolved):
         with TemporaryDirectory() as tempdir:
             # FIXME: This will fail if there are any exotic imports.
             # FIXME: This invokes cythonize, but we should not write to mounted source.
-            python.print('setup.py', 'egg_info', '-e', tempdir, cwd = self.path)
+            python[print]('setup.py', 'egg_info', '-e', tempdir, cwd = self.path)
             egginfodir, = Path(tempdir).glob('*.egg-info')
             for r in (egginfodir / 'requires.txt').read_text().splitlines():
                 yield r, Text(r)
