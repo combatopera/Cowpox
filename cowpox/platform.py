@@ -46,7 +46,7 @@ from diapyr import types
 from distutils.version import LooseVersion
 from jproperties import Properties
 from lagoon import unzip
-from lagoon.program import bg, Program
+from lagoon.program import bg, partial, Program
 from pathlib import Path
 from pkg_resources import parse_version # XXX: Why not LooseVersion?
 import logging, re, subprocess, sys, time
@@ -122,12 +122,12 @@ class PlatformInfo:
         latesto, latests = max([parse_version(v), v] for v in re.findall(r'\bbuild-tools;(\S+)', sdkmanager.__list()))
         if actualo is None or latesto > actualo:
             log.info("Update build-tools to: %s", latests)
-            self._print(sdkmanager.partial(f"build-tools;{latests}"))
+            self._print(sdkmanager[partial](f"build-tools;{latests}"))
         else:
             log.debug("Already have latest build-tools: %s", actuals)
         if not (self.sdk_dir / 'platforms' / self.platformname).exists():
             log.info("Download platform: %s", self.platformname)
-            self._print(sdkmanager.partial(f"platforms;{self.platformname}"))
+            self._print(sdkmanager[partial](f"platforms;{self.platformname}"))
         else:
             log.debug("Already have platform: %s", self.platformname)
 
@@ -169,7 +169,7 @@ class Platform:
         assert major_version >= self.MIN_NDK_VERSION
         if major_version > self.MAX_NDK_VERSION:
             log.warning('Newer NDKs may not be fully supported by p4a.')
-        self.ndk_build = Program.text(self.ndk_dir / 'ndk-build').partial('V=1')
+        self.ndk_build = Program.text(self.ndk_dir / 'ndk-build')[partial]('V=1')
         self.memo = memo
 
     def build_tools_version(self):

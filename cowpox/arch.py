@@ -42,7 +42,7 @@ from . import Arch
 from .platform import Platform
 from aridity.config import Config
 from diapyr import types
-from lagoon.program import Program
+from lagoon.program import partial, Program
 from multiprocessing import cpu_count
 import logging, os, shutil
 
@@ -114,7 +114,7 @@ class ArchImpl(Arch):
                 f"-I{platform.includepath(self)}",
             ),
         )
-        self.strip = Program.text(platform.prebuiltbin(self) / strip[0]).partial(*strip[1:])
+        self.strip = Program.text(platform.prebuiltbin(self) / strip[0])[partial](*strip[1:])
 
     def target(self):
         return f"{self.command_prefix}{self.ndk_api}"

@@ -43,6 +43,7 @@ from .container import compileall
 from .recipe import Recipe
 from diapyr import types
 from lagoon import python
+from lagoon.program import partial
 import logging, shutil, subprocess
 
 log = logging.getLogger(__name__)
@@ -101,7 +102,7 @@ class CythonRecipe(PythonRecipe):
         log.info("Cythonizing anything necessary in %s", self.name)
         log.info("Trying first build of %s to get cython files: this is expected to fail", self.name)
         manually_cythonise = False
-        build_ext = python.partial('setup.py', 'build_ext', env = env, cwd = self.recipebuilddir)._v
+        build_ext = python[partial]('setup.py', 'build_ext', env = env, cwd = self.recipebuilddir)._v
         try:
             build_ext[print]()
         except subprocess.CalledProcessError as e:
