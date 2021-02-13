@@ -42,7 +42,7 @@ from pathlib import Path
 from pkg_resources import iter_entry_points
 import os, sys
 
-host_mirror = Path.home() / '.Cowpox' / 'mirror'
+host_mirror = Path.home() / '.cache' / 'Cowpox' / 'mirror'
 container_mirror = '/mirror'
 container_src = '/src'
 
