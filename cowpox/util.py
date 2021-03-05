@@ -137,9 +137,9 @@ class Contrib:
             assert not dstpath.is_dir()
             shutil.copy2(path, dstpath.pmkdirp())
 
-def coalesce(context, *resolvables):
+def coalesce(scope, *resolvables):
     for r in resolvables:
-        obj = r.resolve(context)
+        obj = r.resolve(scope)
         try:
             if obj.scalar is not None:
                 break

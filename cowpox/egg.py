@@ -46,9 +46,9 @@ from tempfile import TemporaryDirectory
 class EggInfoRequires(Resolved):
 
     @classmethod
-    def factory(cls, context, pathresolvable):
-        v = context.createchild(islist = True)
-        v['requires',] = cls(pathresolvable.resolve(context).cat())
+    def factory(cls, scope, pathresolvable):
+        v = scope.createchild(islist = True)
+        v['requires',] = cls(pathresolvable.resolve(scope).cat())
         return v
 
     def __init__(self, path):
