@@ -42,7 +42,7 @@ from . import APKPath
 from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .bundle import PipInstallRecipe
-from .cowpox import main_Cowpox
+from .Cowpox import main_Cowpox
 from .graph import GraphImpl
 from .make import Make
 from .mirror import Mirror
@@ -109,3 +109,6 @@ def main_Cowpox_servant():
     except:
         log.exception('Abort:')
         raise
+
+if '__main__' == __name__:
+    main_Cowpox_servant()

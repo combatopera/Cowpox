@@ -72,3 +72,6 @@ def main_Cowpox():
         container_src,
     ]
     os.execvp(command[0], command)
+
+if '__main__' == __name__:
+    main_Cowpox()
