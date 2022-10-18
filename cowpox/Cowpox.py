@@ -38,6 +38,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+'Build APK for project.'
 from pathlib import Path
 from pkg_resources import iter_entry_points
 import os, sys
@@ -59,8 +60,7 @@ def _imagetag():
             version = ep.dist.version
             return 'latest' if version.endswith('.dev0') else version
 
-def main_Cowpox():
-    'Build APK for project.'
+def main():
     host_mirror.mkdir(parents = True, exist_ok = True)
     command = [
         'docker', 'run', '--rm', '-i', *(['-t'] if sys.stdin.isatty() else []),
@@ -74,4 +74,4 @@ def main_Cowpox():
     os.execvp(command[0], command)
 
 if '__main__' == __name__:
-    main_Cowpox()
+    main()

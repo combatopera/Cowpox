@@ -38,11 +38,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+'Containerised component, not for direct invocation.'
 from . import APKPath
 from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .bundle import PipInstallRecipe
-from .Cowpox import main_Cowpox
+from .Cowpox import main as cowpoxmain
 from .graph import GraphImpl
 from .make import Make
 from .mirror import Mirror
@@ -74,7 +75,7 @@ def _main():
     root = ConfigCtrl()
     root.node.coalesce = coalesce
     root.load('/etc/settings.arid')
-    config = root.loadappconfig(main_Cowpox, 'etc/Cowpox.arid')
+    config = root.loadappconfig(cowpoxmain, 'etc/Cowpox.arid')
     parser = ArgumentParser()
     parser.add_argument('--mirror')
     parser.add_argument('src')
@@ -102,8 +103,7 @@ def _main():
             di.add(builder)
         return di(APKPath).relative_to(config.container.src)
 
-def main_Cowpox_servant():
-    'Containerised component, not for direct invocation.'
+def main():
     try:
         log.info("APK path: %s", _main())
     except:
@@ -111,4 +111,4 @@ def main_Cowpox_servant():
         raise
 
 if '__main__' == __name__:
-    main_Cowpox_servant()
+    main()
