@@ -39,11 +39,10 @@
 # THE SOFTWARE.
 
 'Containerised component, not for direct invocation.'
-from . import APKPath
+from . import APKPath, Cowpox
 from .android import AndroidProject, Assembly, AssetArchive, getbuildmode
 from .arch import all_archs
 from .bundle import PipInstallRecipe
-from .Cowpox import main as cowpoxmain
 from .graph import GraphImpl
 from .make import Make
 from .mirror import Mirror
@@ -75,7 +74,7 @@ def _main():
     root = ConfigCtrl()
     root.node.coalesce = coalesce
     root.load('/etc/settings.arid')
-    config = root.loadappconfig(cowpoxmain, 'etc/Cowpox.arid')
+    config = root.loadappconfig(Cowpox.main, 'etc/Cowpox.arid')
     parser = ArgumentParser()
     parser.add_argument('--mirror')
     parser.add_argument('src')
