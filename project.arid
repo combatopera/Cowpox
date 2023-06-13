@@ -62,4 +62,4 @@ licheck exclude globs += MIT/**/*
 docker tag = combatopera/cowpox
 flakes exclude globs += MIT/android/android/__init__.py
 executable = true
-buildbot enabled = true
+buildbot enabled = false
